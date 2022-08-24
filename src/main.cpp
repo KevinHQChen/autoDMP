@@ -9,6 +9,7 @@
 // It creates a namespace called `autoDMP`.
 // You can modify the source template at `configured_files/config.hpp.in`.
 #include <internal_use_only/config.hpp>
+#include <opencv2/opencv.hpp>
 
 
 // NOLINTNEXTLINE(bugprone-exception-escape)
@@ -32,6 +33,28 @@ int main(int argc, const char **argv)
     // Use the default logger (stdout, multi-threaded, colored)
     spdlog::info("Hello, {}!", "World");
 
+    cv::namedWindow("Display window");
+    cv::Mat image;
+    char key;
+    cv::VideoCapture* cam = new cv::VideoCapture(0);
+
+    if (!cam->isOpened()) {
+      fmt::print("cannot open camera\n");
+    }
+
+    while(true) {
+      if(!cam->read(image)) {
+        fmt::print("cannot read image\n");
+        return 1;
+      } else {
+        cv::imshow("Display window", image);
+        key = (char) cv::waitKey(1);
+        if(key != -1) {
+          cv::destroyAllWindows();
+          break;
+        }
+      }
+    }
 
     if (message) {
       fmt::print("Message: '{}'\n", *message);

@@ -10,12 +10,18 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(fmt CONFIG)
 find_package(spdlog CONFIG)
 find_package(CLI11 CONFIG REQUIRED)
+find_package(OpenCV REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
 
 # Generic test that uses conan libs
 add_executable(intro main.cpp)
 target_link_libraries(
   intro
   PUBLIC project_options project_warnings
-  PRIVATE CLI11::CLI11 fmt::fmt fmt::fmt-header-only spdlog::spdlog spdlog::spdlog_header_only)
+  PRIVATE CLI11::CLI11 fmt::fmt fmt::fmt-header-only spdlog::spdlog spdlog::spdlog_header_only
+  PUBLIC ${OpenCV_LIBS}
+)
 
-target_include_directories(intro PRIVATE "${CMAKE_BINARY_DIR}/configured_files/include")
+target_include_directories(intro
+  PRIVATE "${CMAKE_BINARY_DIR}/configured_files/include"
+)
