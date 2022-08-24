@@ -29,11 +29,11 @@ RUN apt-get install -y --no-install-recommends \
     nasm
 
 #### prepare project
+RUN --mount=type=ssh git clone git@github.com:KevinHQChen/autoDMP.git
 ARG GIT_EMAIL
 ARG GIT_NAME
 RUN git config --global user.email "${GIT_EMAIL}"
 RUN git config --global user.name "${GIT_NAME}"
-RUN --mount=type=ssh git clone git@github.com:KevinHQChen/autoDMP.git autoDMP
 WORKDIR /autoDMP
 
 ENTRYPOINT ["/bin/bash"]
