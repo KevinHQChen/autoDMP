@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
-  "name": "autoDMP",
+  "name": "autodmp",
   "version-string": "0.1.0",
   "builtin-baseline": "a3df696929b28195b0d7a477ba6cd16dba48fa52",
   "dependencies": [
