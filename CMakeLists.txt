@@ -116,7 +116,7 @@ add_library(autoDMP::project_warnings INTERFACE IMPORTED)
 
 # configure files based on CMake configuration options
 add_subdirectory(configured_files)
-target_include_directories(project_options INTERFACE "${CMAKE_BINARY_DIR}")
+# target_include_directories(project_options INTERFACE "${CMAKE_BINARY_DIR}")
 
 # Adding src directories:
 add_subdirectory(src)
