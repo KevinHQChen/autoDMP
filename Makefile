@@ -11,19 +11,19 @@ configure:	## Configure the build.
 build:	## Build the project.
 	make debug
 
-docker-build:	## Install only build tools in a Docker container (tag: ubuntu-cpp:prebuild).
+docker-build:	## Build ubuntu-cpp:prebuild image (build tools).
 	./.devcontainer/build_deps.bash "ubuntu:20.04"
 
-docker-build-dev:	## Install custom dev tools in a Docker container (tag: ubuntu-dev:prebuild).
+docker-build-dev:	## Build ubuntu-dev:prebuild image (custom dev tools).
 	./.devcontainer/build_dev.bash
 
-docker-build-deps:	## Install both dev and build tools in a Docker container (tag: ubuntu-cpp:prebuild).
+docker-build-deps:	## Build ubuntu-cpp:prebuild image (both dev and build tools).
 	./.devcontainer/build_deps.bash "ubuntu-dev:prebuild"
 
-docker-run-prebuild:	## Run Docker container to setup dev tools (tag: ubuntu-cpp:prebuild).
+docker-run-prebuild:	## Run ubuntu-cpp:prebuild container from current image.
 	./.devcontainer/run.bash "ubuntu-cpp:prebuild"
 
-docker-run:	## Run Docker container with full dev environment (tag: ubuntu-cpp:latest).
+docker-run:	## Run ubuntu-cpp:latest container from current image.
 	./.devcontainer/run.bash "ubuntu-cpp:latest"
 
 #   -DGIT_SHA:STRING=${{ github.sha }} # https://medium.com/@mtiller/using-git-hashes-in-makefile-rules-387a099b9cb

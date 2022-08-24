@@ -4,3 +4,8 @@
 [![CodeQL](https://github.com/KevinHQChen/autoDMP/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/KevinHQChen/autoDMP/actions/workflows/codeql-analysis.yml)
 
 ## About autoDMP
+
+## Docker setup
+
+- download and install docker, add current user to docker group so we don't need sudo.
+- ensure buildx is used (docker buildx install).
