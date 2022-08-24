@@ -111,6 +111,8 @@ dynamic_project_options(
 )
 
 target_compile_features(project_options INTERFACE cxx_std_${CMAKE_CXX_STANDARD})
+add_library(autoDMP::project_options INTERFACE IMPORTED)
+add_library(autoDMP::project_warnings INTERFACE IMPORTED)
 
 # configure files based on CMake configuration options
 add_subdirectory(configured_files)
