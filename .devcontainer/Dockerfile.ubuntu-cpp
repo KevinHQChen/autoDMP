@@ -1,0 +1,39 @@
+ARG VARIANT
+FROM ${VARIANT}
+
+#### get project-specific dependencies
+# clone private repos as needed for closed-source dependencies
+RUN --mount=type=ssh git clone git@github.com:KevinHQChen/RoboDrop2.git RoboDrop2
+
+# install dependencies specific to our cpp build system
+# (by default, anything you run in Docker is done as superuser, so we won't need sudo)
+RUN wget --no-verbose --no-check-certificate "https://github.com/aminya/setup-cpp/releases/download/v0.19.0/setup_cpp_linux"
+RUN chmod +x setup_cpp_linux
+RUN ./setup_cpp_linux --compiler gcc \
+    # build system tools
+    --cmake true --ninja true --make true \
+    # code analysis tools
+     --cppcheck true  --clangtidy true --clangformat true \
+    # package management
+    --vcpkg true \
+    # code coverage
+    --gcovr true \
+    # cache
+    --ccache true
+
+# install any additional dependencies
+RUN apt-get install -y --no-install-recommends \
+# X server dependencies for cpp GUI libs
+    libx11-dev libxext-dev libxrender-dev libxrandr-dev libxxf86vm-dev \
+# additional dependencies for opencv
+    nasm
+
+#### prepare project
+ARG GIT_EMAIL
+ARG GIT_NAME
+RUN git config --global user.email "${GIT_EMAIL}"
+RUN git config --global user.name "${GIT_NAME}"
+RUN --mount=type=ssh git clone git@github.com:KevinHQChen/autoDMP.git autoDMP
+WORKDIR /autoDMP
+
+ENTRYPOINT ["/bin/bash"]
