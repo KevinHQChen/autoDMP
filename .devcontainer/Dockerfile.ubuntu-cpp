@@ -38,9 +38,9 @@ RUN ./setup_cpp_linux --compiler gcc \
 # install any additional dependencies
 RUN apt-get install -y --no-install-recommends \
 # X server dependencies for cpp GUI libs
-    libx11-dev libxext-dev libxrender-dev libxrandr-dev libxxf86vm-dev \
+    libx11-dev libxft-dev libxext-dev libxrender-dev libxrandr-dev libxxf86vm-dev \
 # additional dependencies for opencv
-    nasm
+    nasm libgtk2.0-dev bison gperf
 
 #### prepare project
 RUN --mount=type=ssh git clone git@github.com:KevinHQChen/autoDMP.git

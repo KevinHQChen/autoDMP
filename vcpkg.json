@@ -31,7 +31,7 @@
     {
       "name": "opencv4",
       "default-features": false,
-      "features": ["contrib", "eigen", "ffmpeg", "opengl"]
+      "features": ["contrib", "eigen", "ffmpeg", "opengl", "gtk"]
     }
   ]
 }
