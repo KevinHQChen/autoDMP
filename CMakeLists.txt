@@ -16,9 +16,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(ENABLE_DEVELOPER_MODE
     FALSE
     CACHE BOOL "Enable 'developer mode'")
-
-# Change this to false if you want to disable warnings_as_errors in developer mode
-set(OPT_WARNINGS_AS_ERRORS_DEVELOPER_DEFAULT FALSE)
+set(OPT_WARNINGS_AS_ERRORS_DEVELOPER_DEFAULT FALSE) # disable warnings_as_errors in developer mode (for now)
 
 # Add project_options (https://github.com/cpp-best-practices/project_options)
 include(FetchContent)
