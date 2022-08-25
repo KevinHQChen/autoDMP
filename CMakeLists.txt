@@ -120,6 +120,7 @@ add_subdirectory(configured_files)
 
 # Adding src directories:
 add_subdirectory(src)
+add_subdirectory(apps)
 
 # Adding the tests:
 option(ENABLE_TESTING "Enable the tests" ${PROJECT_IS_TOP_LEVEL})

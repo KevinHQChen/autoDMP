@@ -8,7 +8,9 @@
 // This file will be generated automatically when you run the CMake configuration step.
 // It creates a namespace called `autoDMP`.
 // You can modify the source template at `configured_files/config.hpp.in`.
-#include <internal_use_only/config.hpp>
+// #include <internal_use_only/config.hpp>
+
+#include "util/util.hpp"
 #include <opencv2/opencv.hpp>
 
 
@@ -16,7 +18,9 @@
 int main(int argc, const char **argv)
 {
   try {
-    CLI::App app{ fmt::format("{} version {}", autoDMP::cmake::project_name, autoDMP::cmake::project_version) };
+    // CLI::App app{ fmt::format("{} version {}", autoDMP::cmake::project_name, autoDMP::cmake::project_version) };
+
+    CLI::App app{ fmt::format("{} version {}", "project name", "0.0.1") };
 
     std::optional<std::string> message;
     app.add_option("-m,--message", message, "A message to print back out");
@@ -26,7 +30,8 @@ int main(int argc, const char **argv)
     CLI11_PARSE(app, argc, argv);
 
     if (show_version) {
-      fmt::print("{}\n", autoDMP::cmake::project_version);
+      // fmt::print("{}\n", autoDMP::cmake::project_version);
+      fmt::print("{}\n", "0.0.1");
       return EXIT_SUCCESS;
     }
 

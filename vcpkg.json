@@ -32,6 +32,9 @@
       "name": "opencv4",
       "default-features": false,
       "features": ["contrib", "eigen", "ffmpeg", "opengl", "gtk"]
+    },
+    {
+      "name": "boost-program-options"
     }
   ]
 }
