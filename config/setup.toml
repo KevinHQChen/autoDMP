@@ -4,6 +4,57 @@ source      = "Andor"
 # if source = "File", the selected video file is used [string]
 file        = ""
 
+[andor]
+# Bools
+Overlap                     = false             # link framerate to exposure
+StaticBlemishCorrection     = true              # FPGA noisy pixels
+FastAOIFrameRateEnable      = true              # increase fps for small AOI
+FullAOIControl              = true              # arbitrary selection
+AlternatingReadoutDirection = true              # sensor direction
+RollingShutterGlobalClear   = false             # faster clear
+ScanSpeedControlEnable      = false             # allow change line row scan
+SensorCooling               = true
+MetadataEnable              = false
+MetadataTimestamp           = false
+MetadataFrameinfo           = false
+
+# ints
+FrameCount                  = 1         # number of images to acquire in each sequence
+Accumulatecount             = 1         # number of images to sum as one
+ImageSizeBytes              = 0
+TimeStampClock              = 0
+TimeStampClockFrequency     = 0
+
+# floats
+ExposureTime                = 0.004     # seconds
+FrameRate                   = 40.0      # Hz
+ReadoutTime                 = 0
+RowReadTime                 = 0
+LineScanSpeed               = 0
+TargetSensorTemperature     = 0
+SensorTemperature           = 0
+
+# enums/ints
+TriggerMode                 = "Internal"        # trigger shutter
+CycleMode                   = "Continous"       # fix or continuous sequence
+ElectronicShutteringMode    = "Rolling"         # rolling or global
+PixelReadoutRate            = "280 MHz"
+TemperatureStatus           = "Stabilized"
+# set Area/Region of Interest (AOI/ROI)
+AOIBinning                  = "2x2"             # binning, intensity vs resolution
+AOIHBin                     = 2                 # horizontal binning
+AOIWidth                    = 888 # 1776/2      # units in superpixels (540 superpixels * 2 pixels/superpixel)
+AOILeft                     = 1                 # units in sensor pixels
+AOIVBin                     = 2                 # vertical binning
+AOIHeight                   = 1760              # units in superpixels
+AOITop                      = 1                 # units in sensor pixels
+AOIStride                   = 1776 # 1776/2*2   # row size (AOIWidth) in bytes (1080 pixels * 2 bytes/pixel)
+AOILayout                   = "Image"       # Kinetic, TDI, Multitrack
+SensorReadoutMode           = "Bottom Up Sequential"
+SimplePreAmpGainControl     = "16-bit (low noise & high well capacity)"
+PixelEncoding               = "Mono16"      # Single channel 16-bit
+BitDepth                    = "16 Bit"
+
 [improc]
 # enable/disable image processing [bool]
 enabled     = false
@@ -26,6 +77,4 @@ dryRun      = true
 [postproc]
 path        = "/autoDMP/data/"
 saveRaw     = false
-rawFPS      = 40
 saveProc    = true
-procFPS     = 40

@@ -18,6 +18,24 @@ int main() {
     conf = toml::parse_file("config/setup.toml");
     info("Parsed setup.toml: \n{}", conf);
 
+    /* VIDEO SOURCE SETUP */
+    cam* onlineCam;
+    cv::VideoCapture* offlineCam;
+    if(conf.videoSource == 2) {
+        // add camera
+        onlineCam = new cam(0);
+        // get default settings
+        camSettings settings = camSettings();
+        // set default settings on camera
+        onlineCam->set(settings);
+        // start camera (allocate circular buffer to store frames)
+        // timerInterval sets the size of buffers needed (min size of 1) multiplied by the framerate (pretty sure)
+        // if timerInterval is less than 1000ms, only 1 buffer is needed (i.e. 40 frames)
+        onlineCam->start((int)(100 / 1000));  // timerInterval of 100ms
+    } else if(conf.videoSource == 1)
+        offlineCam = new cv::VideoCapture(conf.vidSrcFn);
+    else if(conf.videoSource == 0)
+        offlineCam = new cv::VideoCapture(0);
 
 
 

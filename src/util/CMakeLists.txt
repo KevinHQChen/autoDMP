@@ -1,18 +1,8 @@
 # Utility library for autoDMP
-# Note that headers are optional, and do not affect add_library, but they will
-# not show up in IDEs unless they are listed in add_library.
-
 set(HEADER_LIST "../../include/util/util.hpp")
 
 # Make an automatic library - will be static or dynamic based on user setting
 add_library(util util.cpp ${HEADER_LIST})   # target is created
-
-# one of these libraries needs pthread
-set(CMAKE_THREAD_LIBS_INIT "-lpthread")
-set(CMAKE_HAVE_THREADS_LIBRARY 1)
-set(CMAKE_USE_WIN32_THREADS_INIT 0)
-set(CMAKE_USE_PTHREADS_INIT 1)
-set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 find_package(fmt CONFIG)
 find_package(spdlog CONFIG)
@@ -47,7 +37,6 @@ target_link_libraries(
 # We need this directory, and users of our library will need it too
 target_include_directories(util
     PUBLIC ../../include
-    PUBLIC ../../external/eigen
     PUBLIC ${OpenCV_INCLUDE_DIRS}
     PUBLIC ${Boost_INCLUDE_DIR}
 )

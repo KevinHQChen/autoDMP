@@ -5,7 +5,6 @@
 #include "atcore.h"
 #include "atutility.h"
 
-#include <QtGui>
 
 // create a generic type queue class template for storing frames (typename and
 // class are equivalent) you specify the type when you use it
@@ -18,7 +17,7 @@ public:
   // epoch, in which case use now().time_since_epoch().count()) a difference
   // between 2 timepoints returns a duration for which the number of ticks is
   // given by duration.count()
-  QueueFPS(std::wstring fileName)
+  QueueFPS(std::string fileName)
       : counter(0), out(fileName), startTime(std::chrono::steady_clock::now()) {
   }
 
