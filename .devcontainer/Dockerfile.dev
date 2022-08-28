@@ -87,6 +87,13 @@ RUN bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
 #         clang-${LLVM_VER} lldb-${LLVM_VER} lld-${LLVM_VER} clangd-${LLVM_VER} \
 #         llvm-${LLVM_VER}-dev libclang-${LLVM_VER}-dev clang-tidy-${LLVM_VER}
 
+# needed for emacs DAP-mode
+RUN git clone git@github.com:lldb-tools/lldb-mi.git
+RUN cd /lldb-mi \
+    && cmake . \
+    && cmake --build .
+RUN ln -s /lldb-mi/src/lldb-mi /usr/local/bin/lldb-mi
+
 # get fonts
 RUN wget -P ~/.local/share/fonts/ https://www.1001fonts.com/download/jetbrains-mono.zip \
     && unzip ~/.local/share/fonts/jetbrains-mono.zip -d ~/.local/share/fonts/ \

@@ -20,6 +20,7 @@ docker run \
     --volume "$HOME/.Xauthority:/root/.Xauthority:rw" \
     --volume "/tmp/.X11-unix:/tmp/.X11-unix" \
     --volume "/dev/video0:/dev/video0" \
+    --volume "$HOME/.vscode:/root/.vscode" \
     -p 8080:80 \
     -it \
     --privileged \
