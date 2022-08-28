@@ -50,4 +50,4 @@ target_include_directories(util
     PUBLIC ../../external/eigen
     PUBLIC ${OpenCV_INCLUDE_DIRS}
     PUBLIC ${Boost_INCLUDE_DIR}
-    )
+)

@@ -7,7 +7,8 @@
 
   int value = 0;
   for (std::size_t offset = 0; offset < Size; ++offset) {
-    value += static_cast<int>(*std::next(Data, static_cast<long>(offset))) * scale;
+    value +=
+        static_cast<int>(*std::next(Data, static_cast<long>(offset))) * scale;
   }
   return value;
 }

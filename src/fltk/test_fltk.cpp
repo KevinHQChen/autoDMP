@@ -14,8 +14,7 @@
 #include <iostream>
 #include <memory>
 
-int main()
-{
+int main() {
   // very important note:
   //
   // The application generates a few memory leaks on shutdown
@@ -24,12 +23,14 @@ int main()
   // FLTK application, or if ASAN suppressions should be added
   // https://clang.llvm.org/docs/AddressSanitizer.html#suppressing-reports-in-external-libraries
 
-  auto window = std::make_unique<Fl_Window>(340, 180, "Hello, World!");// NOLINT (magic numbers)
-  auto box = std::make_unique<Fl_Box>(20, 40, 300, 100, "Goodbye, World!");// NOLINT (magic numbers)
+  auto window = std::make_unique<Fl_Window>(
+      340, 180, "Hello, World!"); // NOLINT (magic numbers)
+  auto box = std::make_unique<Fl_Box>(
+      20, 40, 300, 100, "Goodbye, World!"); // NOLINT (magic numbers)
 
   box->box(FL_UP_BOX);
   box->labelfont(FL_BOLD + FL_ITALIC);
-  box->labelsize(36);// NOLINT (magic numbers)
+  box->labelsize(36); // NOLINT (magic numbers)
   box->labeltype(FL_SHADOW_LABEL);
 
   window->end();
