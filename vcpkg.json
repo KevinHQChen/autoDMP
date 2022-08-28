@@ -37,7 +37,7 @@
       "name": "boost-program-options"
     },
     {
-      "name": "tomlplusplus"
+      "name": "toml11"
     }
   ]
 }

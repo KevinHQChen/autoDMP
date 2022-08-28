@@ -7,6 +7,7 @@ add_library(util util.cpp ${HEADER_LIST})   # target is created
 find_package(fmt CONFIG)
 find_package(spdlog CONFIG)
 find_package(CLI11 CONFIG REQUIRED)
+find_package(toml11 CONFIG REQUIRED)
 
 find_package(OpenCV REQUIRED)
 if (${OpenCV_FOUND})
@@ -29,7 +30,10 @@ target_include_directories(util
 target_link_libraries(
   util
   PUBLIC project_options project_warnings
-  PRIVATE CLI11::CLI11 fmt::fmt fmt::fmt-header-only spdlog::spdlog spdlog::spdlog_header_only
+  PRIVATE CLI11::CLI11
+  PRIVATE fmt::fmt fmt::fmt-header-only
+  PRIVATE spdlog::spdlog spdlog::spdlog_header_only
+  PRIVATE toml11::toml11
   PUBLIC ${OpenCV_LIBS}
   PUBLIC Boost::program_options
 )
