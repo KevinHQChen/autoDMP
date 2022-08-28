@@ -2,7 +2,7 @@
 # target_link_libraries(robodrop PRIVATE util cam pump ctrl improc)
 
 add_executable(intro main.cpp)
-target_link_libraries(intro PRIVATE util)
+target_link_libraries(intro PRIVATE util cam)
 
 target_include_directories(util
   PRIVATE "${CMAKE_BINARY_DIR}/configured_files/include"

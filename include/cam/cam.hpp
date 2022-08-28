@@ -5,7 +5,6 @@
 #include "atcore.h"
 #include "atutility.h"
 
-
 // create a generic type queue class template for storing frames (typename and
 // class are equivalent) you specify the type when you use it
 template <typename T> class QueueFPS : public std::queue<T> {
@@ -88,23 +87,56 @@ private:
 };
 
 struct camSettings {
-  camSettings();
-  ~camSettings();
+  // Bools
+  AT_BOOL Overlap;
+  AT_BOOL StaticBlemishCorrection;
+  AT_BOOL FastAOIFrameRateEnable;
+  AT_BOOL FullAOIControl;
+  AT_BOOL AlternatingReadoutDirection;
+  AT_BOOL RollingShutterGlobalClear;
+  AT_BOOL ScanSpeedControlEnable;
+  AT_BOOL SensorCooling;
+  AT_BOOL MetadataEnable;
+  AT_BOOL MetadataTimestamp;
+  AT_BOOL MetadataFrameinfo;
 
-  void print();
-  void collapse();
-  void expand();
+  // Ints
+  AT_64 FrameCount;
+  AT_64 Accumulatecount;
+  AT_64 ImageSizeBytes;
+  AT_64 TimeStampClock;
+  AT_64 TimeStampClockFrequency;
 
-  QMap<QString, QString> allMap;
+  // Floats
+  double ExposureTime;
+  double FrameRate;
+  double ReadoutTime;
+  double RowReadTime;
+  double LineScanSpeed;
+  double TargetSensorTemperature;
+  double SensorTemperature;
 
-  std::map<AT_WC *, AT_BOOL> boolMap;
-  std::map<AT_WC *, AT_BOOL>::iterator boolMapIterator;
-  std::map<AT_WC *, AT_64> intMap;
-  std::map<AT_WC *, AT_64>::iterator intMapIterator;
-  std::map<AT_WC *, double> floatMap;
-  std::map<AT_WC *, double>::iterator floatMapIterator;
-  std::map<AT_WC *, AT_WC *> enumMap;
-  std::map<AT_WC *, AT_WC *>::iterator enumMapIterator;
+  // Enums
+  AT_WC *TriggerMode;
+  AT_WC *CycleMode;
+  AT_WC *ElectronicShutteringMode;
+  AT_WC *PixelReadoutRate;
+  AT_WC *TemperatureStatus;
+  AT_WC *SensorReadoutMode;
+  AT_WC *SimplePreAmpGainControl;
+  AT_WC *PixelEncoding;
+  AT_WC *BitDepth;
+
+  // Area/Region of Interest (AOI/ROI)
+  AT_WC *AOIBinning;
+  AT_WC *AOILayout;
+  AT_64 AOIHBin;
+  AT_64 AOIWidth;
+  AT_64 AOILeft;
+  AT_64 AOIVBin;
+  AT_64 AOIHeight;
+  AT_64 AOITop;
+  AT_64 AOIStride;
 };
 
 class cam {
@@ -118,7 +150,7 @@ public:
           - to open a camera handle, pass in its DeviceIndex,
           and the address of Handle will be updated (pass-by-reference)
   */
-  cam(int cameraIdx);
+  cam(int cameraIdx, toml::value conf);
 
   /* alternate constructor that uses AT_OpenDevice
    */
@@ -130,8 +162,6 @@ public:
   */
   ~cam();
 
-  void get(camSettings &s);
-  void set(camSettings &s);
   void start(const int &Ts); // void singleAcq(cv::Mat &image);
   void stop();
   int process(cv::Mat &image);
@@ -139,6 +169,7 @@ public:
 
 private:
   int cameraIndex;
+  toml::value config;
   int returnCode;
   AT_64 imageSizeBytes;
   AT_64 imageStride;
