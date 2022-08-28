@@ -1,9 +1,5 @@
 #include <functional>
-#include <iostream>
 #include <optional>
-
-#include <CLI/CLI.hpp>
-#include <spdlog/spdlog.h>
 
 // This file will be generated automatically when you run the CMake
 // configuration step. It creates a namespace called `autoDMP`. You can modify
@@ -11,22 +7,19 @@
 // <internal_use_only/config.hpp>
 
 #include "util/util.hpp"
-#include <opencv2/opencv.hpp>
+
+using namespace std;
+using namespace spdlog;
 
 // NOLINTNEXTLINE(bugprone-exception-escape)
-int main(int argc, const char **argv) {
+int main() {
+  toml::table conf;
   try {
-    CLI::App app;
+    conf = toml::parse_file("config/setup.toml");
+    info("Parsed setup.toml: \n{}", conf);
 
-    int item;
 
-    app.add_flag("--simple");
-    app.add_option("--item", item);
-    app.set_config("--config", "config.toml", "Read config toml file", true);
 
-    CLI11_PARSE(app, argc, argv);
-
-    std::cout << app.config_to_str(true, true) << std::endl;
 
     // bool run = false;
 
@@ -78,7 +71,7 @@ int main(int argc, const char **argv) {
     //   fmt::print("No Message Provided :( (use -m, --message then provide
     //   a message.)\n");
     // }
-  } catch (const std::exception &e) {
-    spdlog::error("Unhandled exception in main: {}", e.what());
+  } catch (const toml::parse_error &e) {
+    error("Unhandled exception in main: {}", e.what());
   }
 }

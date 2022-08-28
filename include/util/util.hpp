@@ -19,9 +19,11 @@
 #include "opencv2/core/cuda.hpp"
 #include <Eigen/Dense>
 
-#include "nlohmann/json.hpp"
+#include <toml++/toml.h>
 #include <CLI/CLI.hpp>
 #include <fmt/format.h>
+#include <fmt/ostream.h>
+#include <spdlog/spdlog.h>
 
 
 struct config {

@@ -1,0 +1,31 @@
+[cam]
+# select camera source [string: "Webcam"/"File"/"Andor"]
+source      = "Andor"
+# if source = "File", the selected video file is used [string]
+file        = ""
+
+[improc]
+# enable/disable image processing [bool]
+enabled     = false
+# source for droplet interface templates [string: "fromVideo"/"fromFile"]
+tmplSrc     = "fromVideo"
+# select template matching threshold: pxIntensity/255 (8-bit) [double]
+# 0.5 - 0.85 is a good range
+tmplThres   = 0.75
+# source for channel bounding boxes [string: "fromVideo"/"fromFile"]
+chanSrc     = "fromVideo"
+# number of channels to observe for improc
+numChans    = 3
+
+[ctrl]
+# status of supervisory controller [string: "disabled"/"sysID"/enabled"]
+status      = "disabled"
+# perform all steps but don't send control signal to pump [bool]
+dryRun      = true
+
+[postproc]
+path        = "/autoDMP/data/"
+saveRaw     = false
+rawFPS      = 40
+saveProc    = true
+procFPS     = 40

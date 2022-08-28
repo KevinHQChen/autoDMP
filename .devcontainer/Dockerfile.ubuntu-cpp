@@ -1,6 +1,7 @@
 ARG VARIANT
 FROM ${VARIANT}
 
+WORKDIR "/"
 # Install necessary packages available from standard repos
 RUN apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y --no-install-recommends \
@@ -17,7 +18,8 @@ RUN mkdir -p -m 0700 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 #### get project-specific dependencies
 # clone private repos as needed for closed-source dependencies
-RUN --mount=type=ssh git clone git@github.com:KevinHQChen/RoboDrop2.git RoboDrop2
+RUN --mount=type=ssh git clone git@github.com:KevinHQChen/andor_sdk.git
+RUN cd /andor_sdk && ./install_andor
 
 # install dependencies specific to our cpp build system
 # (by default, anything you run in Docker is done as superuser, so we won't need sudo)
