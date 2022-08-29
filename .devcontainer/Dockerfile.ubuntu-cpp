@@ -19,7 +19,10 @@ RUN mkdir -p -m 0700 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
 #### get project-specific dependencies
 # clone private repos as needed for closed-source dependencies
 RUN --mount=type=ssh git clone git@github.com:KevinHQChen/andor_sdk.git
+# libusb is needed for Andor SDK
+RUN apt-get install -y libusb-1.0-0
 #run this manually in container: cd /andor_sdk && ./install_andor
+# restart PC after installing this (likely related to udev rules)
 
 # install dependencies specific to our cpp build system
 # (by default, anything you run in Docker is done as superuser, so we won't need sudo)

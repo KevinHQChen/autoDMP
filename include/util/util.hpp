@@ -24,8 +24,14 @@
 #include <fmt/ostream.h>
 #include <spdlog/spdlog.h>
 #include <toml.hpp>
+#include <tsl/ordered_map.h>
 
 #include <string_view>
+
+using namespace std;
+using namespace spdlog;
+using ordered_value =
+    toml::basic_value<toml::discard_comments, tsl::ordered_map, std::vector>;
 
 // usage (print variable type in human-readable format): info("var type: {}",
 // type_name<decltype(var)>());

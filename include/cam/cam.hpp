@@ -86,59 +86,6 @@ private:
   unsigned int counter;
 };
 
-struct camSettings {
-  // Bools
-  AT_BOOL Overlap;
-  AT_BOOL StaticBlemishCorrection;
-  AT_BOOL FastAOIFrameRateEnable;
-  AT_BOOL FullAOIControl;
-  AT_BOOL AlternatingReadoutDirection;
-  AT_BOOL RollingShutterGlobalClear;
-  AT_BOOL ScanSpeedControlEnable;
-  AT_BOOL SensorCooling;
-  AT_BOOL MetadataEnable;
-  AT_BOOL MetadataTimestamp;
-  AT_BOOL MetadataFrameinfo;
-
-  // Ints
-  AT_64 FrameCount;
-  AT_64 Accumulatecount;
-  AT_64 ImageSizeBytes;
-  AT_64 TimeStampClock;
-  AT_64 TimeStampClockFrequency;
-
-  // Floats
-  double ExposureTime;
-  double FrameRate;
-  double ReadoutTime;
-  double RowReadTime;
-  double LineScanSpeed;
-  double TargetSensorTemperature;
-  double SensorTemperature;
-
-  // Enums
-  AT_WC *TriggerMode;
-  AT_WC *CycleMode;
-  AT_WC *ElectronicShutteringMode;
-  AT_WC *PixelReadoutRate;
-  AT_WC *TemperatureStatus;
-  AT_WC *SensorReadoutMode;
-  AT_WC *SimplePreAmpGainControl;
-  AT_WC *PixelEncoding;
-  AT_WC *BitDepth;
-
-  // Area/Region of Interest (AOI/ROI)
-  AT_WC *AOIBinning;
-  AT_WC *AOILayout;
-  AT_64 AOIHBin;
-  AT_64 AOIWidth;
-  AT_64 AOILeft;
-  AT_64 AOIVBin;
-  AT_64 AOIHeight;
-  AT_64 AOITop;
-  AT_64 AOIStride;
-};
-
 class cam {
 public:
   /* cam constructor implements Andor SDK3 camera initialization process:
@@ -150,7 +97,7 @@ public:
           - to open a camera handle, pass in its DeviceIndex,
           and the address of Handle will be updated (pass-by-reference)
   */
-  cam(int cameraIdx, toml::value conf);
+  cam(int cameraIdx, ordered_value conf);
 
   /* alternate constructor that uses AT_OpenDevice
    */
@@ -169,7 +116,7 @@ public:
 
 private:
   int cameraIndex;
-  toml::value config;
+  ordered_value config;
   int returnCode;
   AT_64 imageSizeBytes;
   AT_64 imageStride;

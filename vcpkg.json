@@ -38,6 +38,9 @@
     },
     {
       "name": "toml11"
+    },
+    {
+      "name": "tsl-ordered-map"
     }
   ]
 }

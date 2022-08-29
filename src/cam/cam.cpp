@@ -1,9 +1,6 @@
 #include "cam/cam.hpp"
 
-using namespace std;
-using namespace spdlog;
-
-cam::cam(int cameraIdx, toml::value conf)
+cam::cam(int cameraIdx, ordered_value conf)
     : cameraIndex(cameraIdx), config(conf) {
   // init libs
   returnCode = AT_InitialiseLibrary();
@@ -30,16 +27,32 @@ cam::cam(int cameraIdx, toml::value conf)
 
   // set camera features
   auto &andorConf = toml::find(conf, "andor");
-
   auto &boolConf = toml::find(andorConf, "bool");
   for (const auto &[key, val] : boolConf.as_table()) {
     wstring wKey = wstring(key.begin(), key.end());
     const AT_WC *wcKey = wKey.c_str();
 
-    if (AT_SetBool(handle, wcKey, toml::get<AT_BOOL>(val)) != AT_SUCCESS)
-      error("FAIL: zyla can not set bool feature {} to {}\n", key, val);
-    else
-      info("zyla set bool feature {} to {}\n", key, val);
+    AT_BOOL impl;
+    returnCode = AT_IsImplemented(handle, wcKey, &impl);
+    AT_BOOL readOnly;
+    returnCode = AT_IsReadOnly(handle, wcKey, &readOnly);
+    AT_BOOL readable;
+    returnCode = AT_IsReadable(handle, wcKey, &readable);
+    AT_BOOL writable;
+    returnCode = AT_IsWritable(handle, wcKey, &writable);
+    if (returnCode != AT_SUCCESS)
+      error("FAIL: can not set {}\n", key);
+    else {
+      info("i{}o{}r{}w{}\t{}", impl, readOnly, readable, writable, key);
+      if (writable) {
+        returnCode = AT_SetBool(handle, wcKey, toml::get<AT_BOOL>(val));
+        if (returnCode != AT_SUCCESS) {
+          error("FAIL: zyla can not set bool feature {} to {}, return {}\n",
+                key, val, returnCode);
+        } else
+          info("zyla set bool feature {} to {}\n", key, val);
+      }
+    }
   }
 
   auto &intConf = toml::find(andorConf, "int");
@@ -47,10 +60,27 @@ cam::cam(int cameraIdx, toml::value conf)
     wstring wKey = wstring(key.begin(), key.end());
     const AT_WC *wcKey = wKey.c_str();
 
-    if (AT_SetInt(handle, wcKey, toml::get<AT_64>(val)) != AT_SUCCESS)
-      error("FAIL: zyla can not set int feature {} to {}\n", key, val);
-    else
-      info("zyla set int feature {} to {}\n", key, val);
+    AT_BOOL impl;
+    returnCode = AT_IsImplemented(handle, wcKey, &impl);
+    AT_BOOL readOnly;
+    returnCode = AT_IsReadOnly(handle, wcKey, &readOnly);
+    AT_BOOL readable;
+    returnCode = AT_IsReadable(handle, wcKey, &readable);
+    AT_BOOL writable;
+    returnCode = AT_IsWritable(handle, wcKey, &writable);
+    if (returnCode != AT_SUCCESS)
+      error("FAIL: can not set {}\n", key);
+    else {
+      info("i{}o{}r{}w{}\t{}", impl, readOnly, readable, writable, key);
+      if (writable) {
+        returnCode = AT_SetInt(handle, wcKey, toml::get<AT_64>(val));
+        if (returnCode != AT_SUCCESS) {
+          error("FAIL: zyla can not set int feature {} to {}, return {}\n", key,
+                val, returnCode);
+        } else
+          info("zyla set int feature {} to {}\n", key, val);
+      }
+    }
   }
 
   auto &floatConf = toml::find(andorConf, "float");
@@ -58,10 +88,27 @@ cam::cam(int cameraIdx, toml::value conf)
     wstring wKey = wstring(key.begin(), key.end());
     const AT_WC *wcKey = wKey.c_str();
 
-    if (AT_SetFloat(handle, wcKey, toml::get<double>(val)) != AT_SUCCESS)
-      error("FAIL: zyla can not set float feature {} to {}\n", key, val);
-    else
-      info("zyla set float feature {} to {}\n", key, val);
+    AT_BOOL impl;
+    returnCode = AT_IsImplemented(handle, wcKey, &impl);
+    AT_BOOL readOnly;
+    returnCode = AT_IsReadOnly(handle, wcKey, &readOnly);
+    AT_BOOL readable;
+    returnCode = AT_IsReadable(handle, wcKey, &readable);
+    AT_BOOL writable;
+    returnCode = AT_IsWritable(handle, wcKey, &writable);
+    if (returnCode != AT_SUCCESS)
+      error("FAIL: can not set {}\n", key);
+    else {
+      info("i{}o{}r{}w{}\t{}", impl, readOnly, readable, writable, key);
+      if (writable) {
+        returnCode = AT_SetFloat(handle, wcKey, toml::get<double>(val));
+        if (returnCode != AT_SUCCESS) {
+          error("FAIL: zyla can not set float feature {} to {}, return {}\n",
+                key, val, returnCode);
+        } else
+          info("zyla set float feature {} to {}\n", key, val);
+      }
+    }
   }
 
   auto &enumConf = toml::find(andorConf, "enum");
@@ -73,10 +120,27 @@ cam::cam(int cameraIdx, toml::value conf)
     wstring wVal = wstring(sVal.begin(), sVal.end());
     const AT_WC *wcVal = wVal.c_str();
 
-    if (AT_SetEnumString(handle, wcKey, wcVal) != AT_SUCCESS)
-      error("FAIL: zyla can not set enum feature {} to {}\n", key, val);
-    else
-      info("zyla set enum feature {} to {}\n", key, val);
+    AT_BOOL impl;
+    returnCode = AT_IsImplemented(handle, wcKey, &impl);
+    AT_BOOL readOnly;
+    returnCode = AT_IsReadOnly(handle, wcKey, &readOnly);
+    AT_BOOL readable;
+    returnCode = AT_IsReadable(handle, wcKey, &readable);
+    AT_BOOL writable;
+    returnCode = AT_IsWritable(handle, wcKey, &writable);
+    if (returnCode != AT_SUCCESS)
+      error("FAIL: can not set {}\n", key);
+    else {
+      info("i{}o{}r{}w{}\t{}", impl, readOnly, readable, writable, key);
+      if (writable) {
+        returnCode = AT_SetEnumString(handle, wcKey, wcVal);
+        if (returnCode != AT_SUCCESS) {
+          error("FAIL: zyla can not set enum feature {} to {}, return {}\n",
+                key, val, returnCode);
+        } else
+          info("zyla set enum feature {} to {}\n", key, val);
+      }
+    }
   }
 }
 
@@ -104,7 +168,6 @@ cam::~cam() {
 }
 
 void cam::start(const int &Ts) {
-  // std::lock_guard<std::mutex> lockGuard(mutex);
   //// flush queue and wait buffers;
   returnCode = AT_Flush(handle);
 

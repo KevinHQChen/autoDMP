@@ -14,9 +14,14 @@ using namespace spdlog;
 
 // NOLINTNEXTLINE(bugprone-exception-escape)
 int main() {
-  toml::value conf = toml::parse("config/setup.toml");
-  info("Parsed setup.toml: {}", conf);
+  ordered_value conf = toml::parse<toml::discard_comments, tsl::ordered_map>(
+      "config/setup.toml");
+  info("Config type: {}", type_name<decltype(conf)>());
+  info("Parsed config: {}", conf);
+
   auto &camConf = toml::find(conf, "cam");
+  info("Camconf type: {}", type_name<decltype(camConf)>());
+  info("Parsed camConf: {}", camConf);
 
   /* VIDEO SOURCE SETUP */
   cam *onlineCam;
@@ -33,6 +38,29 @@ int main() {
     offlineCam = new cv::VideoCapture(toml::get<std::string>(camConf["File"]));
   else if (toml::get<std::string>(camConf["source"]) == "Webcam")
     offlineCam = new cv::VideoCapture(0);
+
+  info("Starting image capture...");
+  cv::Mat currentImage = cv::Mat(0, 0, CV_16UC1);
+  cv::Mat currentImageRaw = cv::Mat(0, 0, CV_16UC1);
+  cv::namedWindow("Display window");
+  bool imCapSuccess;
+  char key;
+
+  while (true) {
+    imCapSuccess = !onlineCam->process(currentImage);
+    if (imCapSuccess) {
+      cv::imshow("Display window", currentImage);
+      key = (char)cv::waitKey(1);
+      if (key != -1) {
+        cv::destroyAllWindows();
+        break;
+      }
+    } else {
+      error("cannot read image\n");
+    }
+  }
+
+  delete onlineCam;
 
   // bool run = false;
 

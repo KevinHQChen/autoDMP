@@ -8,6 +8,9 @@ find_package(fmt CONFIG)
 find_package(spdlog CONFIG)
 find_package(CLI11 CONFIG REQUIRED)
 find_package(toml11 CONFIG REQUIRED)
+find_package(tsl-ordered-map CONFIG REQUIRED)
+
+
 
 find_package(OpenCV REQUIRED)
 if (${OpenCV_FOUND})
@@ -34,6 +37,7 @@ target_link_libraries(
   PRIVATE fmt::fmt fmt::fmt-header-only
   PRIVATE spdlog::spdlog spdlog::spdlog_header_only
   PRIVATE toml11::toml11
+  PRIVATE tsl::ordered_map
   PUBLIC ${OpenCV_LIBS}
   PUBLIC Boost::program_options
 )
