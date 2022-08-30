@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <chrono>
 #include <cmath>
 #include <fstream>
@@ -27,13 +28,6 @@
 #include <tsl/ordered_map.h>
 
 #include <string_view>
-
-#include "imgui.h"
-#include "imgui_impl_opengl3.h"
-#include "imgui_impl_sdl.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_opengl.h>
-#include <GL/gl.h>
 
 using namespace std;
 using namespace spdlog;

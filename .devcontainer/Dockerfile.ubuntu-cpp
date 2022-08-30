@@ -19,8 +19,10 @@ RUN mkdir -p -m 0700 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
 #### get project-specific dependencies
 # clone private repos as needed for closed-source dependencies
 RUN --mount=type=ssh git clone git@github.com:KevinHQChen/andor_sdk.git
-# libusb is needed for Andor SDK
+# Andor SDK dependencies
 RUN apt-get install -y libusb-1.0-0
+# OpenGL, GLU, GLFW dependencies
+RUN apt-get install -y libxmu-dev libxi-dev libgl-dev libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev
 #run this manually in container: cd /andor_sdk && ./install_andor
 # restart PC after installing this (likely related to udev rules)
 

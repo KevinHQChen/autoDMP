@@ -21,9 +21,18 @@
       "version>=": "2.0.20"
     },
     {
+      "name": "glew",
+      "$feature-description": "OpenGL Extension Wrangler: cross-platform open-source C/C++ extension (anything byond OpenGL 1.1) library for OpenGL."
+    },
+    {
+      "name": "glfw3",
+      "$feature-description": "OpenGL Framework designed for game development"
+    },
+    {
       "name": "imgui",
       "default-features": false,
-      "features": ["sdl2-binding", "opengl3-binding"]
+      "$feature-description": "Platform/Renderer backends",
+      "features": ["sdl2-binding", "opengl3-binding", "glfw-binding"]
     },
     {
       "name": "fltk",

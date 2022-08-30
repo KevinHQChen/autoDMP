@@ -7,6 +7,7 @@
 // <internal_use_only/config.hpp>
 
 #include "cam/cam.hpp"
+#include "gui/gui.hpp"
 #include "util/util.hpp"
 
 using namespace std;
@@ -14,7 +15,6 @@ using namespace spdlog;
 
 // NOLINTNEXTLINE(bugprone-exception-escape)
 int main() {
-
   info("setup DSL: status code = {}",
        SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER));
 
