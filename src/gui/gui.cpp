@@ -1,6 +1,5 @@
 #include "gui/gui.hpp"
 #include <cstdio>
-
 #if 0
 static void glfw_error_callback(int error, const char *description) {
   fprintf(stderr, "Glfw Error %d: %s\n", error, description);
@@ -53,7 +52,8 @@ int GUIRenderer::InitGUI() {
   return 0;
 }
 
-void GUIRenderer::Render() {
+void GUIRenderer::Render(Cam *cam) {
+  cv::Mat currentImage = cv::Mat(0, 0, CV_16UC1);
 
   while (!glfwWindowShouldClose(window_)) {
     /* Poll and handle events (inputs, window resize, etc.)
@@ -93,6 +93,40 @@ void GUIRenderer::Render() {
   glfwDestroyWindow(window_);
   glfwTerminate();
 }
+
+void GUIRenderer::LiveWebcam(Cam *cam) {
+  if (cam->process(currentImage)) {
+    info("New image captured...");
+    updateTexture = true;
+    if (is_quitting) {
+      cv::destroyAllWindows();
+      delete cam;
+      return 0;
+    }
+  } else {
+    error("cannot read image\n");
+    updateTexture= false;
+  }
+
+  ImGui::Begin("Image");
+  if(updateTexture && !currentImage.empty()) {
+    info("Updating texture...");
+    unsigned char *data = currentImage.ptr();
+    if (textureID == -1)
+      glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+                 currentImage.cols, currentImage.rows, 0, GL_BGR,
+                 GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    updateTexture = false;
+  }
+  ImGui::End();
+}
+
 
 void GUIRenderer::ShowImage() {
   ImGui::Begin("Image");

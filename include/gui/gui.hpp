@@ -1,11 +1,12 @@
 #pragma once
 
 #include "util/util.hpp"
+#include "cam/cam.hpp"
 
-#include "imgui.h"
-#include "imgui_impl_opengl3.h"
+// #include "imgui.h"
+// #include "imgui_impl_opengl3.h"
 // glfw (more direct access to OpenGL) is a lower level alternative to SDL
-#include "imgui_impl_glfw.h"
+// #include "imgui_impl_glfw.h"
 // SDL is more suited for 2D game dev
 // #include "imgui_impl_sdl.h"
 
@@ -27,7 +28,8 @@ public:
   GUIRenderer();
   ~GUIRenderer(void);
   int InitGUI();
-  void Render();
+  void Render(Cam *cam);
+  // void LiveWebcam(Cam *cam);
   void ShowImage();
   void UpdateTexture();
 

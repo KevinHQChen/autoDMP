@@ -31,7 +31,7 @@ else ()
     message("Couldn't find GLEW")
 endif()
 
-find_package(glfw3 CONFIG REQUIRED)
+# find_package(glfw3 CONFIG REQUIRED)
 # if (GLFW3_FOUND)
 #     message("GLFW3 include dir: ${GLFW3_INCLUDE_DIR}")
 #     include_directories( ${GLFW3_INCLUDE_DIR} )
@@ -44,7 +44,7 @@ target_link_libraries(
   gui
   PUBLIC util
   PUBLIC imguiwrap
-  PUBLIC imgui::imgui
+  # PUBLIC imgui::imgui
   # PRIVATE SDL2::SDL2 SDL2::SDL2main SDL2::SDL2-static
   PRIVATE ${OPENGL_opengl_LIBRARY}
   # PRIVATE ${OPENGL_glu_LIBRARY}

@@ -34,8 +34,8 @@ using namespace spdlog;
 using namespace std::chrono;
 using ordered_value = toml::basic_value<toml::discard_comments, tsl::ordered_map, std::vector>;
 
-// usage (print variable type in human-readable format): info("var type: {}",
-// type_name<decltype(var)>());
+// print variable type in human-readable format
+// usage (): info("var type: {}", type_name<decltype(var)>());
 template <typename T> constexpr auto type_name() {
   std::string_view name, prefix, suffix;
 #ifdef __clang__

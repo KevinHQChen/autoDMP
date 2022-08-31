@@ -1,3 +1,14 @@
+[gui]
+windowTitle = "autoDMP"
+width = 1920
+height = 1080
+clearColor = [0.45, 0.55, 0.6, 1.0]     # [x, y, z, w]
+enableVsync = 1
+keyboardNav = true
+startDark = false
+fontSize = 36.0
+fontPath = "/root/.local/share/fonts/JetBrainsMono-1.0.2/ttf/JetBrainsMono-Medium.ttf"
+
 [cam]
 # select camera source [string: "Webcam"/"File"/"Andor"]
 source      = "Webcam"
