@@ -22,7 +22,7 @@
     },
     {
       "name": "glew",
-      "$feature-description": "OpenGL Extension Wrangler: cross-platform open-source C/C++ extension (anything byond OpenGL 1.1) library for OpenGL."
+      "$feature-description": "OpenGL Extension Wrangler: cross-platform open-source C/C++ extension (anything beyond OpenGL 1.1) library for OpenGL."
     },
     {
       "name": "glfw3",
@@ -45,7 +45,7 @@
     {
       "name": "opencv4",
       "default-features": false,
-      "features": ["contrib", "eigen", "ffmpeg", "opengl", "gtk"]
+      "features": ["contrib", "eigen", "ffmpeg", "opengl", "gtk", "jpeg", "png"]
     },
     {
       "name": "boost-program-options"

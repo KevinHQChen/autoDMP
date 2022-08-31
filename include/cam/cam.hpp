@@ -5,8 +5,7 @@
 #include "atcore.h"
 #include "atutility.h"
 
-// create a generic type queue class template for storing frames (typename and
-// class are equivalent) you specify the type when you use it
+// create a generic type queue class template for storing frames
 template <typename T> class QueueFPS : public std::queue<T> {
 public:
   // constructor:
@@ -17,15 +16,14 @@ public:
   // between 2 timepoints returns a duration for which the number of ticks is
   // given by duration.count()
   QueueFPS(std::string fileName)
-      : counter(0), out(fileName), startTime(std::chrono::steady_clock::now()) {
-  }
+      : counter(0), out(fileName), startTime(std::chrono::steady_clock::now()) {}
 
   void push(const T &entry) {
     std::lock_guard<std::mutex> lockGuard(mutex);
     std::queue<T>::push(entry);
     out << std::fixed << std::setprecision(3);
-    out << std::chrono::duration_cast<std::chrono::milliseconds>(
-               std::chrono::steady_clock::now() - startTime)
+    out << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() -
+                                                                 startTime)
                .count()
         << ", ";
     counter += 1;
@@ -86,7 +84,7 @@ private:
   unsigned int counter;
 };
 
-class cam {
+class Cam {
 public:
   /* cam constructor implements Andor SDK3 camera initialization process:
       - Library initialization: AT_InitializeLibrary()
@@ -97,7 +95,7 @@ public:
           - to open a camera handle, pass in its DeviceIndex,
           and the address of Handle will be updated (pass-by-reference)
   */
-  cam(int cameraIdx, ordered_value conf);
+  Cam(int cameraIdx, ordered_value conf);
 
   /* alternate constructor that uses AT_OpenDevice
    */
@@ -107,17 +105,21 @@ public:
       - Closes camera handle: AT_Close(AT_H Handle)
       - Library cleanup: AT_FinalizeLibrary()
   */
-  ~cam();
+  ~Cam();
+  int setFeatures();
 
   void start(const int &Ts); // void singleAcq(cv::Mat &image);
   void stop();
-  int process(cv::Mat &image);
+  bool process(cv::Mat &image);
   AT_H handle;
 
 private:
   int cameraIndex;
   ordered_value config;
+  ordered_value &camConf;
   int returnCode;
+  cv::VideoCapture *offlineCam;
+  cv::Mat rawImage;
   AT_64 imageSizeBytes;
   AT_64 imageStride;
   AT_64 imageWidth;

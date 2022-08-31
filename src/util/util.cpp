@@ -145,8 +145,7 @@ mstream::~mstream() { multiStream.close(); }
 
 void saveData(std::string fileName, Eigen::MatrixXd matrix) {
   // https://eigen.tuxfamily.org/dox/structEigen_1_1IOFormat.html
-  const static Eigen::IOFormat CSVFormat(Eigen::FullPrecision,
-                                         Eigen::DontAlignCols, ", ", "\n");
+  const static Eigen::IOFormat CSVFormat(Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
 
   std::ofstream file(fileName);
   if (file.is_open()) {
@@ -187,26 +186,22 @@ Eigen::MatrixXd openData(std::string fileToOpen) {
   // this variable is used to track the number of rows
   int matrixRowNumber = 0;
 
-  while (
-      std::getline(matrixDataFile,
-                   matrixRowString)) // here we read a row by row of
-                                     // matrixDataFile and store every line into
-                                     // the string variable matrixRowString
+  while (std::getline(matrixDataFile,
+                      matrixRowString)) // here we read a row by row of
+                                        // matrixDataFile and store every line into
+                                        // the string variable matrixRowString
   {
-    std::stringstream matrixRowStringStream(
-        matrixRowString); // convert matrixRowString that is a string to
-                          // a stream variable.
+    std::stringstream matrixRowStringStream(matrixRowString); // convert matrixRowString that is a
+                                                              // string to a stream variable.
 
-    while (
-        std::getline(matrixRowStringStream, matrixEntry,
-                     ',')) // here we read pieces of the stream
-                           // matrixRowStringStream until every comma, and store
-                           // the resulting character into the matrixEntry
+    while (std::getline(matrixRowStringStream, matrixEntry,
+                        ',')) // here we read pieces of the stream
+                              // matrixRowStringStream until every comma, and store
+                              // the resulting character into the matrixEntry
     {
-      matrixEntries.push_back(
-          std::stod(matrixEntry)); // here we convert the string to double
-                                   // and fill in the row vector storing
-                                   // all the matrix entries
+      matrixEntries.push_back(std::stod(matrixEntry)); // here we convert the string to double
+                                                       // and fill in the row vector storing
+                                                       // all the matrix entries
     }
     matrixRowNumber++; // update the column numbers
   }
@@ -215,8 +210,6 @@ Eigen::MatrixXd openData(std::string fileToOpen) {
   // resulting object, note that matrixEntries.data() is the pointer to
   // the first memory location at which the entries of the vector
   // matrixEntries are stored;
-  return Eigen::Map<
-      Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>>(
-      matrixEntries.data(), matrixRowNumber,
-      matrixEntries.size() / matrixRowNumber);
+  return Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>>(
+      matrixEntries.data(), matrixRowNumber, matrixEntries.size() / matrixRowNumber);
 }

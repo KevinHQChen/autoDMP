@@ -67,8 +67,7 @@ private:
 };
 
 void ctrl(config conf, std::vector<QueueFPS<cv::Point> *> &procDataQueues,
-          std::vector<QueueFPS<cv::Mat> *> &procFramesQueues,
-          ChannelPose &chanPose,
+          std::vector<QueueFPS<cv::Mat> *> &procFramesQueues, ChannelPose &chanPose,
           QueueFPS<uint16_t> &ctrlDataQueue, // placeholder for shared memory
                                              // idea for interfacing to nodejs
           bool &run);

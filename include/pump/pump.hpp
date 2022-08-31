@@ -28,9 +28,8 @@ private:
                                            // (numPressureChannels)
   fgt_CONTROLLER_INFO controllerInfo[256]; // each idx represents one
                                            // controller (numControllers)
-  fgt_INSTRUMENT_TYPE
-      instrumentType[256]; // None for each idx w/o an instrument
-  unsigned short SN[256];  // Zero for each idx w/o an instrument
+  fgt_INSTRUMENT_TYPE instrumentType[256]; // None for each idx w/o an instrument
+  unsigned short SN[256];                  // Zero for each idx w/o an instrument
 
   unsigned char numControllers = 0;
   unsigned char numPressureChannels = 0;

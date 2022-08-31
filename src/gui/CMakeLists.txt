@@ -4,8 +4,15 @@ set(HEADER_LIST "../../include/gui/gui.hpp")
 # Make an automatic library - will be static or dynamic based on user setting
 add_library(gui gui.cpp ${HEADER_LIST})   # target is created
 
+include(FetchContent)
+FetchContent_Declare(_imguiwrap GIT_REPOSITORY https://github.com/KevinHQChen/imguiwrap.git
+  GIT_TAG origin/main)
+FetchContent_MakeAvailable(_imguiwrap)
+message("imguiwrap vars: ${imguiwrap_SOURCE_DIR}")
+include_directories(${imguiwrap_SOURCE_DIR})
+
 find_package(imgui CONFIG REQUIRED)
-find_package(SDL2 CONFIG REQUIRED)
+# find_package(SDL2 CONFIG REQUIRED)
 
 find_package(OpenGL REQUIRED)
 if (OPENGL_FOUND)
@@ -20,13 +27,12 @@ find_package(GLEW REQUIRED)
 if (GLEW_FOUND)
     message("GLEW include dir: ${GLEW_INCLUDE_DIRS}")
     include_directories( ${GLEW_INCLUDE_DIRS} )
-    message("GLEW link libraries: ${GLEW_LIBRARIES}")
 else ()
     message("Couldn't find GLEW")
 endif()
 
 find_package(glfw3 CONFIG REQUIRED)
-# if (GLFW_FOUND)
+# if (GLFW3_FOUND)
 #     message("GLFW3 include dir: ${GLFW3_INCLUDE_DIR}")
 #     include_directories( ${GLFW3_INCLUDE_DIR} )
 #     message("GLFW3 link libraries: ${GLFW3_LIBRARIES}")
@@ -37,11 +43,12 @@ find_package(glfw3 CONFIG REQUIRED)
 target_link_libraries(
   gui
   PUBLIC util
-  PRIVATE imgui::imgui
-  PRIVATE SDL2::SDL2 SDL2::SDL2main SDL2::SDL2-static
+  PUBLIC imguiwrap
+  PUBLIC imgui::imgui
+  # PRIVATE SDL2::SDL2 SDL2::SDL2main SDL2::SDL2-static
   PRIVATE ${OPENGL_opengl_LIBRARY}
   # PRIVATE ${OPENGL_glu_LIBRARY}
-  PRIVATE ${GLEW_LIBRARIES}
+  PRIVATE GLEW::GLEW
   PRIVATE glfw
 )
 
@@ -49,4 +56,5 @@ target_link_libraries(
 target_include_directories(util
     PUBLIC ../../include
     PUBLIC ${OPENGL_INCLUDE_DIR}
+    PUBLIC ${imguiwrap_SOURCE_DIR}
 )

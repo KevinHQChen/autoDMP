@@ -26,16 +26,13 @@ void rotateMatCropped(cv::Mat &src, cv::Mat &dst, double angle);
 
 int tmSetup(config conf, cam *onlineCam, cv::VideoCapture *offlineCam,
             std::array<cv::Mat, NUM_TEMPLATES> &templateImg,
-            std::array<cv::cuda::GpuMat, NUM_TEMPLATES> &templateImgGPU,
-            ChannelPose &chanPose);
+            std::array<cv::cuda::GpuMat, NUM_TEMPLATES> &templateImgGPU, ChannelPose &chanPose);
 
-void imCap(config conf, QueueFPS<cv::Mat> &rawFramesQueue,
-           QueueFPS<cv::Mat> &preFramesQueue, cam *onlineCam,
-           cv::VideoCapture *offlineCam, bool &run);
+void imCap(config conf, QueueFPS<cv::Mat> &rawFramesQueue, QueueFPS<cv::Mat> &preFramesQueue,
+           cam *onlineCam, cv::VideoCapture *offlineCam, bool &run);
 
 void imProc(config conf, std::array<cv::Mat, NUM_TEMPLATES> &templateImg,
-            std::array<cv::cuda::GpuMat, NUM_TEMPLATES> &templateImgGPU,
-            ChannelPose &chanPose, QueueFPS<cv::Mat> &preFramesQueue,
-            std::vector<QueueFPS<cv::Mat> *> &tempResultsQueues,
+            std::array<cv::cuda::GpuMat, NUM_TEMPLATES> &templateImgGPU, ChannelPose &chanPose,
+            QueueFPS<cv::Mat> &preFramesQueue, std::vector<QueueFPS<cv::Mat> *> &tempResultsQueues,
             std::vector<QueueFPS<cv::Mat> *> &procFramesQueues,
             std::vector<QueueFPS<cv::Point> *> &procDataQueues, bool &run);

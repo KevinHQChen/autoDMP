@@ -1,6 +1,6 @@
 [cam]
 # select camera source [string: "Webcam"/"File"/"Andor"]
-source      = "Andor"
+source      = "Webcam"
 # if source = "File", the selected video file is used [string]
 file        = ""
 
