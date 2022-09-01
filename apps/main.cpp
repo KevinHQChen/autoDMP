@@ -7,165 +7,142 @@
 #include "gui/gui.hpp"
 #include "util/util.hpp"
 
-ImGuiWrapperReturnType
-windowFn()
-{
-    static bool show_visualizer{true};
-    static bool selected{false};
+QueueFPS<cv::Mat> rawFramesQueue("rawFramesQueue.txt");
+QueueFPS<cv::Mat> preFramesQueue("preFramesQueue.txt");
+std::vector<QueueFPS<cv::Mat>*> tempResultsQueues{new QueueFPS<cv::Mat>("tempResultsQueue1.txt"), new QueueFPS<cv::Mat>("tempResultsQueue2.txt"), new QueueFPS<cv::Mat>("tempResultsQueue3.txt")};
+std::vector<QueueFPS<cv::Mat>*> procFramesQueues{new QueueFPS<cv::Mat>("procFramesQueue1.txt"), new QueueFPS<cv::Mat>("procFramesQueue2.txt"), new QueueFPS<cv::Mat>("procFramesQueue3.txt")};
+std::vector<QueueFPS<cv::Point>*> procDataQueues{new QueueFPS<cv::Point>("procDataQueue1.txt"), new QueueFPS<cv::Point>("procDataQueue2.txt"), new QueueFPS<cv::Point>("procDataQueue3.txt")};
 
-    // Returning a value will translate to an exit code.
-    if (!show_visualizer)
-        return 0;
+void updateTexture(const cv::Mat &img, GLuint &textureID) {
+  // mimic opencv grayscale image in opengl by making each color channel the same
+  if (img.empty()) {
+    error("Image is empty");
+    return;
+  }
+  cv::Mat tmp;
+  cv::merge(std::vector<cv::Mat>{img, img, img}, tmp);
 
-    static bool is_quitting;
-    dear::Begin("Visualizer", &show_visualizer) && []() {
-        dear::MainMenuBar() && []() {
-            dear::Menu("File") && []() {
-                ImGui::MenuItem("Wibble", nullptr, &selected);
-                ImGui::MenuItem("BOOM");
-            };
-            dear::Menu("Quitters") && []() {
-                is_quitting = ImGui::MenuItem("QUIT NAOW");
-            };
-        };
-        ImGui::Text("hello");
-        dear::TabBar("##TabBar") && []() {
-            dear::TabItem("Files") && []() {
-                ImGui::Text("...files...");
-            };
-            dear::TabItem("Blueprints") && []() {
-                ImGui::Text("...blueprints...");
-            };
-            dear::TabItem("Enums") && []() {
-                ImGui::Text("...enums...");
-            };
-            dear::TabItem("Prototypes") && []() {
-                ImGui::Text("...prototypes...");
-            };
-            dear::TabItem("More") && []() {
-                dear::Child("hello") && []() {
-                    dear::Group() && []() {
-                        dear::Combo("me", "you") && []() {
-                            dear::Tooltip() && []() {
-                                ImGui::SetTooltip("You are now viewing a tooltip...");
-                            };
-                        };
-                        dear::ListBox("list of things");
-                    };
-                };
-            };
-        };
-    };
-    if (is_quitting)
-        return 0;
-
-    // Returns "no value" (see std::optional)
-    return {};
+  // update texture
+  // glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+  // create opengl texture identifier
+  glGenTextures(1, &textureID);
+  glBindTexture(GL_TEXTURE_2D, textureID);
+  // setup filtering parameters for display
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  // upload pixels into texture
+  glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+  glTexImage2D(
+      GL_TEXTURE_2D,      // texture type
+      0,                  // pyramid level (for mip-mapping), 0 is the top level
+      GL_RGB,             // internal color format to convert to
+                          // (https://www.khronos.org/opengl/wiki/Image_Format)
+      tmp.cols, tmp.rows, // image width, height
+      0,                  // border width in pixels (can be 1 or 0)
+      GL_BGR,             // input image format
+      GL_UNSIGNED_BYTE,   // image data type (https://www.khronos.org/opengl/wiki/OpenGL_Type)
+      tmp.ptr());         // pointer to data
+  glGenerateMipmap(GL_TEXTURE_2D);
 }
 
-ImGuiWrapperReturnType
-liveWebcam()
-{
-  static bool videoSourceSetup{true};
-  static cv::Mat currentImage, dispImage;
-  static Cam *cam;
-  static bool updateTexture{false};
-  static ordered_value conf = toml::parse<toml::discard_comments, tsl::ordered_map>("config/setup.toml");
+void showImCap(ordered_value &conf, bool &startImCap) {
+  static cv::Mat rawFrame = cv::Mat(0, 0, CV_16UC1);
+  static GLuint textureID;
 
-  static bool selected{false};
-  static bool is_quitting{false};
+  // set window to fullscreen
+  static ImGuiWindowFlags imCapFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
+  const ImGuiViewport* viewport = ImGui::GetMainViewport();
+  ImGui::SetNextWindowPos(viewport->WorkPos);
+  ImGui::SetNextWindowSize(viewport->WorkSize);
 
-  if (videoSourceSetup) {
-    cam = new Cam(0, conf);
-    // start camera (allocate circular buffer to store frames)
-    // timerInterval sets the size of buffers needed (min size of 1)
-    // multiplied by the framerate(pretty sure)
-    // if timerInterval is less than 1000ms, only 1 buffer (i.e .40 frames) is
-    // needed
-    cam->start((int)(100 / 1000)); // timerInterval of 100ms
-    info("Starting image capture...");
-    // currentImage = cv::Mat(0, 0, CV_16UC1);
-    videoSourceSetup = false;
-  }
+  // set up video saving
+  static int codec = cv::VideoWriter::fourcc('M', 'J', 'P', 'G');    // allows us to save as avi
+  // int codec = cv::VideoWriter::fourcc('R', 'G', 'B', 'A');    // allows us to save as avi
+  // int codec = cv::VideoWriter::fourcc('a', 'v', 'c', '1');    // allows us to save as mp4
+  // int codec = cv::VideoWriter::fourcc('H', '2', '6', '4');    // allows us to save as avi
+  // int codec = cv::VideoWriter::fourcc('M', 'S', 'V', 'C');    // allows us to save as avi (David's codec)
 
-  if (cam->process(currentImage)) {
-    info("New image captured...");
-    info("Image size: {} x {}", currentImage.rows, currentImage.cols);
-    updateTexture = true;
-    if (is_quitting) {
-      cv::destroyAllWindows();
-      delete cam;
-      return 0;
+  if (!rawFramesQueue.empty_()) {
+    rawFrame = rawFramesQueue.get();    // get most recent frame
+    if(conf.saveRaw) {
+      // open video writer on first frame received to get its type and size
+      // TODO: Change framerate at the end of video to be more accurate
+      if(!firstRawFrameRcvd) {
+        bool isColor = (rawFrame.type() == CV_8UC3);
+        rawVideoWriter.open("rawVideo.avi", codec, conf.rawFPS, rawFrame.size(), isColor);
+        if (!rawVideoWriter.isOpened()) {
+          mOut << "Could not open the output video file for write\n";
+          break;
+        }
+        firstRawFrameRcvd = true;
+      }
     }
-  } else {
-    error("cannot read image\n");
-    updateTexture= false;
-  }
+    imgAnnotation(rawFramesQueue, rawFrame);
+    if(conf.saveRaw) {
+      if (firstRawFrameRcvd) {
+        rawFrame.convertTo(rawFrame8UC1, CV_8UC1, 255.0/65535.0);
+        rawVideoWriter.write(rawFrame8UC1);    // video file will be closed and released automatically (via VideoWriter destructor) once we go out of scope
+      }
+    }
 
-  dear::Begin("Webcam") && []() {
-    ImGui::Text("Description");
-    dear::MainMenuBar() && []() {
-      dear::Menu("File") && []() {
-        ImGui::MenuItem("Test", nullptr, &selected);
-        is_quitting = ImGui::MenuItem("Quit");
-      };
+    updateTexture(rawFrame, textureID);
+    dear::Begin("Image Capture", &startImCap, imCapFlags) && []() {
+      ImGui::Image((void *)(intptr_t)textureID, ImVec2(rawFrame.cols, rawFrame.rows));
     };
+  }
+}
 
-    if (updateTexture && !currentImage.empty()) {
-      GLuint textureID;
-      // std::string filename = "./bird.jpeg";
-      // cv::Mat resized_image;
-      // cv::Mat image = cv::imread(filename);
-      // int resized_width = 640;
-      // double scale = static_cast<float>(resized_width) / currentImage.size().width;
-      // info("scale: {}", scale);
-      // cv::resize(currentImage, resized_image, cv::Size(0, 0), scale, scale);
-      info("Updating texture...");
-      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-      // if (textureID == -1)
-      glGenTextures(1, &textureID);
-      glBindTexture(GL_TEXTURE_2D, textureID);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-      // glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-      glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-      // glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-      // glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
-      // glTexImage2D(GL_TEXTURE_2D, 0, GL_SINGLE_COLOR, resized_image.cols, resized_image.rows, 0, GL_SINGLE_COLOR,
-      //              GL_UNSIGNED_BYTE, resized_image.ptr());
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, currentImage.cols, currentImage.rows, 0, GL_BGR, GL_UNSIGNED_BYTE, currentImage.ptr());
-      glGenerateMipmap(GL_TEXTURE_2D);
-      ImGui::Image((void *)(intptr_t)textureID, ImVec2(currentImage.cols, currentImage.rows));
-      updateTexture = false;
-    }
+ImGuiWrapperReturnType appFn() {
+  // TODO put all our GUI-related state in conf
+  static bool startImCap{false}, needToQuit{false}, debug{false};
+  static ordered_value conf =
+      toml::parse<toml::discard_comments, tsl::ordered_map>("config/setup.toml");
+
+  dear::Begin("Menu") && []() {
+    ImGui::Text("Instructions: TODO");
+    ImGui::Text("Help (this might be a button?)");
+    dear::MainMenuBar() && []() {
+      dear::Menu("File") && []() { needToQuit = ImGui::MenuItem("Quit"); };
+      dear::Menu("Setup") && []() { ImGui::MenuItem("Image Capture", nullptr, &startImCap); };
+      dear::Menu("Debug") && []() { ImGui::MenuItem("Show Demo Window", nullptr, &debug); };
+    };
   };
+
+  showImCap(conf, startImCap);
+
+  if (debug)
+    ImGui::ShowDemoWindow();
+    // ImGui::ShowMetricsWindow();
+
+  if (needToQuit)
+    return 0;
 
   return {};
 }
 
-#if 1
-int
-main(int, const char**)
-{
+// NOLINTNEXTLINE(bugprone-exception-escape)
+int main(int, const char **) {
   ordered_value conf = toml::parse<toml::discard_comments, tsl::ordered_map>("config/setup.toml");
   info("Config type: {}", type_name<decltype(conf)>());
   info("Parsed config: {}", conf);
 
-  // // VIDEO SOURCE SETUP
-  // Cam *cam = new Cam(0, conf);
-  // cam->start((int)(100 / 1000));
-  // info("Starting image capture...");
+  QueueFPS<cv::Mat> rawFramesQueue(L"rawFramesQueue.txt");
+  QueueFPS<cv::Mat> preFramesQueue(L"preFramesQueue.txt");
+  std::thread captureThread(imCap,
+                            conf,
+                            std::ref(rawFramesQueue),
+                            std::ref(preFramesQueue),
+                            onlineCam,
+                            offlineCam,
+                            std::ref(run));
 
-  // GUIRenderer renderer;
-  // renderer.InitGUI();
-  // renderer.Render(cam);
+  std::thread renderThread(imgui_main, std::ref(toml::find(conf, "gui")), std::ref(appFn));
 
 
-  return imgui_main(toml::find(conf, "gui"), liveWebcam);
+  renderThread.join();
 }
-#endif
 
 #if 0
 // NOLINTNEXTLINE(bugprone-exception-escape)

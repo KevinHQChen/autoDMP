@@ -7,6 +7,7 @@ enableVsync = 1
 keyboardNav = true
 startDark = false
 fontSize = 36.0
+scale = 2.0
 fontPath = "/root/.local/share/fonts/JetBrainsMono-1.0.2/ttf/JetBrainsMono-Medium.ttf"
 
 [cam]

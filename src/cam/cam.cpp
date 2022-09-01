@@ -309,11 +309,11 @@ bool Cam::process(cv::Mat &image) {
     if (returnCode == 0)
       return true;
   } else {
-    if (!offlineCam->read(image)) {
+    if (!offlineCam->read(rawImage)) {
       error("cannot read frame from video stream");
       return false;
     }
-    // cv::cvtColor(rawImage, image, cv::COLOR_RGB2GRAY);
+    cv::cvtColor(rawImage, image, cv::COLOR_RGB2GRAY);
     // std::this_thread::sleep_for(milliseconds(6));
     return true;
   }

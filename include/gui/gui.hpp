@@ -1,7 +1,7 @@
 #pragma once
 
-#include "util/util.hpp"
 #include "cam/cam.hpp"
+#include "util/util.hpp"
 
 // #include "imgui.h"
 // #include "imgui_impl_opengl3.h"
@@ -18,9 +18,9 @@
 // #include <SDL2/SDL.h>
 // #include <SDL2/SDL_opengl.h>
 
-#include <stdio.h>
 #include "imguiwrap.dear.h"
 #include "imguiwrap.helpers.h"
+#include <stdio.h>
 
 #if 0
 class GUIRenderer {

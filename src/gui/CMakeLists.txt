@@ -11,7 +11,7 @@ FetchContent_MakeAvailable(_imguiwrap)
 message("imguiwrap vars: ${imguiwrap_SOURCE_DIR}")
 include_directories(${imguiwrap_SOURCE_DIR})
 
-find_package(imgui CONFIG REQUIRED)
+# find_package(imgui CONFIG REQUIRED)
 # find_package(SDL2 CONFIG REQUIRED)
 
 find_package(OpenGL REQUIRED)
