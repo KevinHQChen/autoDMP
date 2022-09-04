@@ -1,20 +1,15 @@
 #pragma once
 
-#include "cam/cam.hpp"
-#include "util/util.hpp"
-
-// #include "imgui.h"
-// #include "imgui_impl_opengl3.h"
-// glfw (more direct access to OpenGL) is a lower level alternative to SDL
-// #include "imgui_impl_glfw.h"
-// SDL is more suited for 2D game dev
-// #include "imgui_impl_sdl.h"
-
 // renderers
+#include "imgui_impl_opengl3.h"
 #include <GL/glew.h>
 
 // platforms
+// glfw (more direct access to OpenGL) is a lower level alternative to SDL
+#include "imgui_impl_glfw.h"
 #include <GLFW/glfw3.h>
+// SDL is more suited for 2D game dev
+// #include "imgui_impl_sdl.h"
 // #include <SDL2/SDL.h>
 // #include <SDL2/SDL_opengl.h>
 
@@ -22,24 +17,42 @@
 #include "imguiwrap.helpers.h"
 #include <stdio.h>
 
-#if 0
-class GUIRenderer {
-public:
-  GUIRenderer();
-  ~GUIRenderer(void);
-  int InitGUI();
-  void Render(Cam *cam);
-  // void LiveWebcam(Cam *cam);
-  void ShowImage();
-  void UpdateTexture();
+#include "improc/imcap.hpp"
+#include "util/util.hpp"
 
-private:
-  ImVec4 clear_color = ImVec4(0.45f, 0.56f, 0.67f, 1.00f);
-  GLFWwindow *window_;
-  GLuint texture_id_;
-  int image_width_, image_height_;
-  cv::Mat resized_image_;
-  cv::Mat thresholded_image_;
-  int threshold_;
+#include <cstdio>
+
+class GUI {
+  ordered_value conf;
+  guiConfig guiConf;
+
+  ImCap *imCap = nullptr;
+  // ImProc *imProc = nullptr;
+  // Supervisor *supervisor = nullptr;
+
+
+  GLFWwindow *window;
+  GLuint textureID;
+  ImGuiWindowFlags imCapFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
+  bool needToQuit{false};
+  std::optional<std::pair<int, int>> newSize{};
+
+  cv::Mat rawFrame;
+  int rawWidth, rawHeight;
+  std::vector<QueueFPS<cv::Mat>*> tempResultsQueues, procFramesQueues;
+  std::vector<QueueFPS<cv::Point>*> procDataQueues;
+
+public:
+  GUI();
+  ~GUI();
+  void startGUIThread();
+  void stopGUIThread();
+  ImGuiWrapperReturnType render();
+  int imguiMain();
+
+  void showRawImCap();
+  // void showProcImCap(bool &startImCap);
+  void updateTexture(const cv::Mat &img);
+
+  std::thread guiThread;
 };
-#endif

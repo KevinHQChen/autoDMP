@@ -56,36 +56,35 @@ template <typename T> constexpr auto type_name() {
   return name;
 }
 
-struct config {
-  CLI::App cli{fmt::format("{} version {}", "project name", "0.0.1")};
-  // app = { fmt::format("{} version {}", autoDMP::cmake::project_name,
-  // autoDMP::cmake::project_version) };
+struct guiConfig {
+  std::string windowTitle;
+  int width;
+  int height;
+  std::vector<float> clearColor;
+  int enableVsync;
+  bool keyboardNav;
+  bool startDark;
+  float fontSize;
+  float scale;
+  std::string fontPath;
+  bool startImCap;
+  bool showDebug;
 
-  CLI::App *cameraCli;
-
-  bool paramsValid;     // 0:Invalid,   1:Valid
-  int videoSource;      // 0:Webcam,    1:From file,       2:Andor
-  std::string vidSrcFn; // used only if videoSource = 1
-  int templateSource;   // 0:From file, 1:From videoSource
-  int chanSource;       // 0:From file, 1:From videoSource
-  // template matching threshold percentage (8-bit, i.e. pixel intensity/255
-  // in
-  // %) (0.5 is good for our current offline videos, 0.75 is good for live
-  // videos)
-  double tmThres; // replace this with repl later
-  int saveRaw;    // 0:No,        1:Yes
-  double rawFPS;  // used only if saveRaw = 1
-  int saveProc;   // 0:No,        1:Yes
-  double procFPS; // used only if saveProc = 1
-  int imProc;     // 0:No,        1:Yes
-  int ctrl;       // 0:No,        1:Yes
-  int useGPU;     // 0:No,        1:Yes
-  int numChannels;
-  int dryRun;
-
-  config();
-
-  int parse(int argc, const char **argv);
+  void from_toml(const ordered_value& v)
+  {
+    windowTitle = toml::find<std::string>(v, "windowTitle");
+    width = toml::find<int>(v, "width");
+    height = toml::find<int>(v, "height");
+    clearColor = toml::find<std::vector<float>>(v, "clearColor");
+    enableVsync = toml::find<int>(v, "enableVsync");
+    keyboardNav = toml::find<bool>(v, "keyboardNav");
+    startDark = toml::find<bool>(v, "startDark");
+    fontSize = toml::find<float>(v, "fontSize");
+    scale = toml::find<float>(v, "scale");
+    fontPath = toml::find<std::string>(v, "fontPath");
+    startImCap = toml::find<bool>(v, "startImCap");
+    showDebug = toml::find<bool>(v, "showDebug");
+  }
 };
 
 struct ffstream {

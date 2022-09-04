@@ -2,7 +2,7 @@
 set(HEADER_LIST "../../include/gui/gui.hpp")
 
 # Make an automatic library - will be static or dynamic based on user setting
-add_library(gui gui.cpp ${HEADER_LIST})   # target is created
+add_library(gui gui.cpp imgui_helpers.cpp ${HEADER_LIST})   # target is created
 
 include(FetchContent)
 FetchContent_Declare(_imguiwrap GIT_REPOSITORY https://github.com/KevinHQChen/imguiwrap.git
@@ -43,6 +43,7 @@ endif()
 target_link_libraries(
   gui
   PUBLIC util
+  PUBLIC imcap
   PUBLIC imguiwrap
   # PUBLIC imgui::imgui
   # PRIVATE SDL2::SDL2 SDL2::SDL2main SDL2::SDL2-static

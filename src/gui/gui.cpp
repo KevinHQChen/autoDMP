@@ -1,177 +1,76 @@
 #include "gui/gui.hpp"
 #include <cstdio>
-#if 0
-static void glfw_error_callback(int error, const char *description) {
-  fprintf(stderr, "Glfw Error %d: %s\n", error, description);
+
+GUI::GUI() : conf(toml::parse<toml::discard_comments, tsl::ordered_map>("config/setup.toml"))
+           , guiConf(toml::find<guiConfig>(conf, "gui"))
+           , imCap(new ImCap())
+           // , imProc(new ImProc())
+           // , supervisor(new Supervisor())
+{
+  info("Config type: {}", type_name<decltype(guiConf)>());
+  info("Parsed config: {}", toml::find(conf, "gui"));
 }
 
-GUIRenderer::GUIRenderer(void) : texture_id_(-1), threshold_(127) {}
-
-GUIRenderer::~GUIRenderer(void) {}
-
-int GUIRenderer::InitGUI() {
-  // Setup window
-  glfwSetErrorCallback(glfw_error_callback);
-  if (!glfwInit())
-    return 1;
-
-  // glsl_version corresponds to OpenGL version (use glxinfo | grep version to get OpenGL version)
-  // (see https://www.khronos.org/opengl/wiki/Core_Language_(GLSL)#Version)
-  const char *glsl_version = "#version 460";
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // 3.2+ only
-
-  // Create window with graphics context
-  window_ = glfwCreateWindow(1280, 720, "imgui-opencv demo", NULL, NULL);
-  if (window_ == NULL)
-    return 1;
-  glfwMakeContextCurrent(window_);
-  glfwSwapInterval(1); // Enable vsync
-
-  // Initialize OpenGL loader
-  bool err = glewInit() != GLEW_OK;
-  if (err)
-  {
-    fprintf(stderr, "Failed to initialize OpenGL loader!\n");
-    return 1;
-  }
-
-  // Setup Dear ImGui context
-  IMGUI_CHECKVERSION();
-  ImGui::CreateContext();
-  ImGuiIO &io = ImGui::GetIO();
-  (void)io;
-  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
-  // Setup Dear ImGui style
-  ImGui::StyleColorsDark(); // ImGui::StyleColorsLight();
-
-  // Setup Platform/Renderer backends
-  ImGui_ImplGlfw_InitForOpenGL(window_, true);
-  ImGui_ImplOpenGL3_Init(glsl_version);
-  return 0;
+GUI::~GUI() {
+  stopGUIThread();
+  delete imCap;
 }
 
-void GUIRenderer::Render(Cam *cam) {
-  cv::Mat currentImage = cv::Mat(0, 0, CV_16UC1);
+void GUI::showRawImCap() {
+  if(!imCap->started())
+    imCap->startCaptureThread();
 
-  while (!glfwWindowShouldClose(window_)) {
-    /* Poll and handle events (inputs, window resize, etc.)
-     * You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui
-     * wants to use your inputs.
-     * - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main
-     * application, or clear/overwrite your copy of the mouse data.
-     * - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main
-     * application, or clear/overwrite your copy of the keyboard data. Generally you may always pass
-     * all inputs to dear imgui, and hide them from your application based on those two flags.
-     */
-    glfwPollEvents();
-    // Start the Dear ImGui frame
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
+  // set window to fullscreen
+  const ImGuiViewport* viewport = ImGui::GetMainViewport();
+  ImGui::SetNextWindowPos(viewport->WorkPos);
+  ImGui::SetNextWindowSize(viewport->WorkSize);
 
-    ShowImage();
-
-    // Rendering
-    ImGui::Render();
-    int display_w, display_h;
-    // glfwMakeContextCurrent(window_);
-    glfwGetFramebufferSize(window_, &display_w, &display_h);
-    glViewport(0, 0, display_w, display_h);
-    glClearColor(0.45, 0.56, 0.67, 1);
-    glClear(GL_COLOR_BUFFER_BIT);
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-    // glfwMakeContextCurrent(window_);
-    glfwSwapBuffers(window_);
+  // show most recent frame or repeat previous frame if no new frame available
+  rawFrame = imCap->getRawFrame();
+  if (!rawFrame.empty()) {
+    updateTexture(rawFrame);
+    rawWidth = rawFrame.cols;
+    rawHeight = rawFrame.rows;
   }
-
-  // Cleanup
-  ImGui_ImplOpenGL3_Shutdown();
-  ImGui_ImplGlfw_Shutdown();
-  ImGui::DestroyContext();
-  glfwDestroyWindow(window_);
-  glfwTerminate();
+  dear::Begin("Image Capture", &guiConf.startImCap, imCapFlags) && [this]() {
+      ImGui::Image((void *)(intptr_t)textureID, ImVec2(rawWidth, rawHeight));
+  };
 }
 
-void GUIRenderer::LiveWebcam(Cam *cam) {
-  if (cam->process(currentImage)) {
-    info("New image captured...");
-    updateTexture = true;
-    if (is_quitting) {
-      cv::destroyAllWindows();
-      delete cam;
-      return 0;
-    }
-  } else {
-    error("cannot read image\n");
-    updateTexture= false;
-  }
+ImGuiWrapperReturnType GUI::render() {
+  dear::Begin("Menu") && [this]() {
+    ImGui::Text("Instructions: TODO");
+    ImGui::Text("Help (this might be a button?)");
+    dear::MainMenuBar() && [this]() {
+      dear::Menu("File") && [this]() { needToQuit = ImGui::MenuItem("Quit"); };
+      dear::Menu("Setup") && [this]() { ImGui::MenuItem("Image Capture", nullptr, &guiConf.startImCap); };
+      dear::Menu("Debug") && [this]() { ImGui::MenuItem("Show Demo Window", nullptr, &guiConf.showDebug); };
+    };
+  };
 
-  ImGui::Begin("Image");
-  if(updateTexture && !currentImage.empty()) {
-    info("Updating texture...");
-    unsigned char *data = currentImage.ptr();
-    if (textureID == -1)
-      glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-                 currentImage.cols, currentImage.rows, 0, GL_BGR,
-                 GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    updateTexture = false;
-  }
-  ImGui::End();
+  if (guiConf.startImCap)
+    showRawImCap();
+  else
+    imCap->stopCaptureThread();
+
+  if (guiConf.showDebug)
+    ImGui::ShowDemoWindow(&guiConf.showDebug);
+
+  if (needToQuit)
+    return 0;
+
+  return {};
 }
 
-
-void GUIRenderer::ShowImage() {
-  ImGui::Begin("Image");
-  // Image downloaded from: https://www.pexels.com/photo/green-bird-1661179/
-  static char image_url[256] =
-      "https://raw.githubusercontent.com/czoido/imgui-opencv/master/data/bird.jpeg";
-  ImGui::InputText("URL:", image_url, IM_ARRAYSIZE(image_url));
-  ImGui::SameLine();
-  if (ImGui::Button("Open")) {
-    std::string filename = "./bird.jpeg";
-    cv::Mat image = cv::imread(filename);
-    if (!image.empty()) {
-      // info("updating texture");
-      int resized_width = 640;
-      double scale = static_cast<float>(resized_width) / image.size().width;
-      // info("scale: {}", scale);
-      cv::resize(image, resized_image_, cv::Size(0, 0), scale, scale);
-      resized_image_.copyTo(thresholded_image_);
-      UpdateTexture();
-    }
-  }
-  if (texture_id_ != -1) {
-    ImVec2 canvas_size = ImVec2(image_width_, image_height_);
-    ImGui::ImageButton((void *)(intptr_t)texture_id_, canvas_size, ImVec2(0, 0), ImVec2(1, 1), 0);
-    ImGui::PushItemWidth(300);
-    if (ImGui::SliderInt("threshold level", &threshold_, 0, 255)) {
-      cv::threshold(resized_image_, thresholded_image_, threshold_, 255, cv::THRESH_BINARY);
-      UpdateTexture();
-    }
-  }
-  ImGui::End();
+void GUI::startGUIThread() {
+  guiThread = std::thread(&GUI::imguiMain, this);
+  guiThread.detach();
 }
 
-void GUIRenderer::UpdateTexture() {
-  unsigned char *data = thresholded_image_.ptr();
-  image_width_ = thresholded_image_.cols;
-  image_height_ = thresholded_image_.rows;
-  if (texture_id_ == -1)
-    glGenTextures(1, &texture_id_);
-  glBindTexture(GL_TEXTURE_2D, texture_id_);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image_width_, image_height_, 0, GL_BGR, GL_UNSIGNED_BYTE,
-               data);
-  glGenerateMipmap(GL_TEXTURE_2D);
+void GUI::stopGUIThread() {
+  info("Stopping GUI thread...");
+  needToQuit = true;
+  guiThread.join();
 }
-#endif
+
+// void GUI::showProcImCap(bool &startImCap) {}

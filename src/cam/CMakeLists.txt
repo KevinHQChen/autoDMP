@@ -1,4 +1,4 @@
-# Camera library for RoboDrop2
+# Camera library for autoDMP
 set(HEADER_LIST "../../include/cam/cam.hpp")
 
 # Make an automatic library - will be static or dynamic based on user setting

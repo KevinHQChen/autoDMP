@@ -70,6 +70,7 @@ Cam::~Cam() {
 *feature values
 */
 int Cam::setFeatures() {
+  std::lock_guard<std::mutex> lockGuard(mutex);
   auto &andorConf = toml::find(config, "andor");
 
   auto &boolConf = toml::find(andorConf, "bool");
@@ -192,6 +193,7 @@ int Cam::setFeatures() {
 }
 
 void Cam::start(const int &Ts) {
+  std::lock_guard<std::mutex> lockGuard(mutex);
   if (toml::get<std::string>(camConf["source"]) == "Andor") {
     /* flush queue and waitbuffers */
     returnCode = AT_Flush(handle);
@@ -264,6 +266,7 @@ void Cam::start(const int &Ts) {
 }
 
 void Cam::stop() {
+  std::lock_guard<std::mutex> lockGuard(mutex);
   if (toml::get<std::string>(camConf["source"]) == "Andor") {
     /* stop acquisition */
     returnCode = AT_Command(handle, L"AcquisitionStop");
@@ -281,6 +284,7 @@ void Cam::stop() {
 }
 
 bool Cam::process(cv::Mat &image) {
+  std::lock_guard<std::mutex> lockGuard(mutex);
   if (toml::get<std::string>(camConf["source"]) == "Andor") {
     // grab buffer
     unsigned char *pointer;
