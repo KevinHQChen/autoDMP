@@ -30,23 +30,22 @@ class GUI {
   // ImProc *imProc = nullptr;
   // Supervisor *supervisor = nullptr;
 
-
   GLFWwindow *window;
   GLuint textureID;
-  ImGuiWindowFlags imCapFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
+  ImGuiWindowFlags imCapFlags =
+      ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
   bool needToQuit{false};
   std::optional<std::pair<int, int>> newSize{};
 
   cv::Mat rawFrame;
   int rawWidth, rawHeight;
-  std::vector<QueueFPS<cv::Mat>*> tempResultsQueues, procFramesQueues;
-  std::vector<QueueFPS<cv::Point>*> procDataQueues;
+  std::vector<QueueFPS<cv::Mat> *> tempResultsQueues, procFramesQueues;
+  std::vector<QueueFPS<cv::Point> *> procDataQueues;
 
 public:
   GUI();
   ~GUI();
   void startGUIThread();
-  void stopGUIThread();
   ImGuiWrapperReturnType render();
   int imguiMain();
 

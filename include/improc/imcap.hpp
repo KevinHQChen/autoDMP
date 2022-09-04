@@ -15,7 +15,7 @@ class ImCap {
   // Called within captureThread context
   void start();
 
- public:
+public:
   ImCap();
   ~ImCap();
   void startCaptureThread();

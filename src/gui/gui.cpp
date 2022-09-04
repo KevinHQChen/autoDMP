@@ -1,27 +1,20 @@
 #include "gui/gui.hpp"
-#include <cstdio>
 
-GUI::GUI() : conf(toml::parse<toml::discard_comments, tsl::ordered_map>("config/setup.toml"))
-           , guiConf(toml::find<guiConfig>(conf, "gui"))
-           , imCap(new ImCap())
-           // , imProc(new ImProc())
-           // , supervisor(new Supervisor())
+GUI::GUI()
+    : conf(toml::parse<toml::discard_comments, tsl::ordered_map>("config/setup.toml")),
+      guiConf(toml::find<guiConfig>(conf, "gui")), imCap(new ImCap())
+// , imProc(new ImProc())
+// , supervisor(new Supervisor())
 {
   info("Config type: {}", type_name<decltype(guiConf)>());
   info("Parsed config: {}", toml::find(conf, "gui"));
 }
 
-GUI::~GUI() {
-  stopGUIThread();
-  delete imCap;
-}
+GUI::~GUI() { delete imCap; }
 
 void GUI::showRawImCap() {
-  if(!imCap->started())
-    imCap->startCaptureThread();
-
   // set window to fullscreen
-  const ImGuiViewport* viewport = ImGui::GetMainViewport();
+  const ImGuiViewport *viewport = ImGui::GetMainViewport();
   ImGui::SetNextWindowPos(viewport->WorkPos);
   ImGui::SetNextWindowSize(viewport->WorkSize);
 
@@ -32,9 +25,8 @@ void GUI::showRawImCap() {
     rawWidth = rawFrame.cols;
     rawHeight = rawFrame.rows;
   }
-  dear::Begin("Image Capture", &guiConf.startImCap, imCapFlags) && [this]() {
-      ImGui::Image((void *)(intptr_t)textureID, ImVec2(rawWidth, rawHeight));
-  };
+  dear::Begin("Image Capture", &guiConf.startImCap, imCapFlags) &&
+      [this]() { ImGui::Image((void *)(intptr_t)textureID, ImVec2(rawWidth, rawHeight)); };
 }
 
 ImGuiWrapperReturnType GUI::render() {
@@ -43,15 +35,21 @@ ImGuiWrapperReturnType GUI::render() {
     ImGui::Text("Help (this might be a button?)");
     dear::MainMenuBar() && [this]() {
       dear::Menu("File") && [this]() { needToQuit = ImGui::MenuItem("Quit"); };
-      dear::Menu("Setup") && [this]() { ImGui::MenuItem("Image Capture", nullptr, &guiConf.startImCap); };
-      dear::Menu("Debug") && [this]() { ImGui::MenuItem("Show Demo Window", nullptr, &guiConf.showDebug); };
+      dear::Menu("Setup") &&
+          [this]() { ImGui::MenuItem("Image Capture", nullptr, &guiConf.startImCap); };
+      dear::Menu("Debug") &&
+          [this]() { ImGui::MenuItem("Show Demo Window", nullptr, &guiConf.showDebug); };
     };
   };
 
-  if (guiConf.startImCap)
+  if (guiConf.startImCap) {
+    if (!imCap->started())
+      imCap->startCaptureThread();
     showRawImCap();
-  else
-    imCap->stopCaptureThread();
+  } else {
+    if (imCap->started())
+      imCap->stopCaptureThread();
+  }
 
   if (guiConf.showDebug)
     ImGui::ShowDemoWindow(&guiConf.showDebug);
@@ -64,12 +62,6 @@ ImGuiWrapperReturnType GUI::render() {
 
 void GUI::startGUIThread() {
   guiThread = std::thread(&GUI::imguiMain, this);
-  guiThread.detach();
-}
-
-void GUI::stopGUIThread() {
-  info("Stopping GUI thread...");
-  needToQuit = true;
   guiThread.join();
 }
 

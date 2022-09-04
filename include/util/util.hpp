@@ -70,8 +70,7 @@ struct guiConfig {
   bool startImCap;
   bool showDebug;
 
-  void from_toml(const ordered_value& v)
-  {
+  void from_toml(const ordered_value &v) {
     windowTitle = toml::find<std::string>(v, "windowTitle");
     width = toml::find<int>(v, "width");
     height = toml::find<int>(v, "height");

@@ -1,136 +1,133 @@
 #include "gui/gui.hpp"
+#include <cstdio>
 
-static void glfw_error_callback(int error, const char* description)
-{
-    fprintf(stderr, "Glfw Error %d: %s\n", error, description);
+static void glfw_error_callback(int error, const char *description) {
+  fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 
 // imgui_main initializes an ImGui openGL/glfw backend and then runs
 // the passed ImGuiWrapperFn repeatedly until the std::optional it
 // returns has a value, which is then returned as the exit code.
-int GUI::imguiMain()
-{
-    // Setup window
-    glfwSetErrorCallback(glfw_error_callback);
-    if (glfwInit() == 0) {
-        return 1;
-    }
+int GUI::imguiMain() {
+  // Setup window
+  glfwSetErrorCallback(glfw_error_callback);
+  if (glfwInit() == 0) {
+    return 1;
+  }
 
-    // Decide GL+GLSL versions
+  // Decide GL+GLSL versions
 #if defined(IMGUI_IMPL_OPENGL_ES2)
-    // GL ES 2.0 + GLSL 100
-    const char* glsl_version = "#version 100";
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+  // GL ES 2.0 + GLSL 100
+  const char *glsl_version = "#version 100";
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+  glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
 #else
-    // GL 4.6 + GLSL 460
-    // glsl_version corresponds to OpenGL version
-    // (use glxinfo | grep version to get OpenGL version)
-    // (see https://www.khronos.org/opengl/wiki/Core_Language_(GLSL)#Version)
-    const char* glsl_version = "#version 460";
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-    // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
+  // GL 4.6 + GLSL 460
+  // glsl_version corresponds to OpenGL version
+  // (use glxinfo | grep version to get OpenGL version)
+  // (see https://www.khronos.org/opengl/wiki/Core_Language_(GLSL)#Version)
+  const char *glsl_version = "#version 460";
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // 3.2+ only
 #endif
 
-    // Create window with graphics context
-    window = glfwCreateWindow(guiConf.width, guiConf.height, guiConf.windowTitle.c_str(), nullptr, nullptr);
-    if (window == nullptr) {
-        return 1;
+  // Create window with graphics context
+  window = glfwCreateWindow(guiConf.width, guiConf.height,
+                            guiConf.windowTitle.c_str(), nullptr, nullptr);
+  if (window == nullptr) {
+    return 1;
+  }
+
+  glfwMakeContextCurrent(window);
+  glfwSwapInterval(guiConf.enableVsync); // Enable vsync
+
+  // Initialize OpenGL loader
+  bool err = glewInit() != GLEW_OK;
+  if (err) {
+    fprintf(stderr, "Failed to initialize OpenGL loader!\n");
+    return 1;
+  }
+
+  // Setup Dear ImGui context
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  ImGuiIO &io = ImGui::GetIO();
+  (void)io;
+  if (guiConf.keyboardNav) {
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+  }
+
+  guiConf.startDark ? ImGui::StyleColorsDark() : ImGui::StyleColorsLight();
+
+  // Setup Platform/Renderer backends
+  /// TODO: Needs to be based on cmake config.
+  ImGui_ImplGlfw_InitForOpenGL(window, true);
+  ImGui_ImplOpenGL3_Init(glsl_version);
+
+  // io.Fonts->AddFontDefault();
+  io.Fonts->AddFontFromFileTTF(guiConf.fontPath.c_str(), guiConf.fontSize);
+  // ImGuiStyle& style = ImGui::GetStyle();
+  // style.ScaleAllSizes(guiConf.scale);
+
+  // Main loop
+  const auto &clearColor = guiConf.clearColor;
+  std::optional<int> exitCode{};
+
+  while (!exitCode.has_value() && glfwWindowShouldClose(window) == 0) {
+    // Poll and handle events (inputs, window resize, etc.)
+    // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui
+    // wants to use your inputs.
+    // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main
+    // application.
+    // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main
+    // application. Generally you may always pass all inputs to dear imgui, and hide them from
+    // your application based on those two flags.
+    glfwPollEvents();
+
+    // Start the Dear ImGui frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    exitCode = this->render();
+
+    // Rendering
+    ImGui::Render();
+
+    // NOLINTNEXTLINE(readability-isolate-declaration) input parameters to next call.
+    int display_w{0}, display_h{0};
+    glfwGetFramebufferSize(window, &display_w, &display_h);
+    glViewport(0, 0, display_w, display_h);
+
+    // setup the 'clear' background.
+    glClearColor(clearColor[0] * clearColor[3], clearColor[1] * clearColor[3],
+                 clearColor[2] * clearColor[3], clearColor[3]);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    // finialize the imgui render into draw data, and render it.
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    // swap the render/draw buffers so the user can see this frame.
+    glfwSwapBuffers(window);
+
+    // change the native (host) window size if requested.
+    if (newSize.has_value()) {
+      glfwSetWindowSize(window, newSize.value().first, newSize.value().second);
+      newSize.reset();
     }
+  }
 
-    glfwMakeContextCurrent(window);
-    glfwSwapInterval(guiConf.enableVsync);  // Enable vsync
+  // Cleanup
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplGlfw_Shutdown();
+  ImGui::DestroyContext();
 
-    // Initialize OpenGL loader
-    bool err = glewInit() != GLEW_OK;
-    if (err)
-    {
-        fprintf(stderr, "Failed to initialize OpenGL loader!\n");
-        return 1;
-    }
+  glfwDestroyWindow(window);
+  glfwTerminate();
 
-    // Setup Dear ImGui context
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO &io = ImGui::GetIO();
-    (void)io;
-    if (guiConf.keyboardNav) {
-        io.ConfigFlags |=
-            ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
-    }
-
-    guiConf.startDark ? ImGui::StyleColorsDark() : ImGui::StyleColorsLight();
-
-    // Setup Platform/Renderer backends
-    /// TODO: Needs to be based on cmake config.
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init(glsl_version);
-
-    // io.Fonts->AddFontDefault();
-    io.Fonts->AddFontFromFileTTF(guiConf.fontPath.c_str(), guiConf.fontSize);
-    // ImGuiStyle& style = ImGui::GetStyle();
-    // style.ScaleAllSizes(guiConf.scale);
-
-    // Main loop
-    const auto&        clearColor = guiConf.clearColor;
-    std::optional<int> exitCode{};
-
-    while (!exitCode.has_value() && glfwWindowShouldClose(window) == 0) {
-        // Poll and handle events (inputs, window resize, etc.)
-        // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui
-        // wants to use your inputs.
-        // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main
-        // application.
-        // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main
-        // application. Generally you may always pass all inputs to dear imgui, and hide them from
-        // your application based on those two flags.
-        glfwPollEvents();
-
-        // Start the Dear ImGui frame
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-
-        exitCode = this->render();
-
-        // Rendering
-        ImGui::Render();
-
-        // NOLINTNEXTLINE(readability-isolate-declaration) input parameters to next call.
-        int display_w{0}, display_h{0};
-        glfwGetFramebufferSize(window, &display_w, &display_h);
-        glViewport(0, 0, display_w, display_h);
-
-        // setup the 'clear' background.
-        glClearColor(clearColor[0] * clearColor[3], clearColor[1] * clearColor[3],
-                     clearColor[2] * clearColor[3], clearColor[3]);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        // finialize the imgui render into draw data, and render it.
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-        // swap the render/draw buffers so the user can see this frame.
-        glfwSwapBuffers(window);
-
-        // change the native (host) window size if requested.
-        if (newSize.has_value()) {
-            glfwSetWindowSize(window, newSize.value().first, newSize.value().second);
-            newSize.reset();
-        }
-    }
-
-    // Cleanup
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-
-    glfwDestroyWindow(window);
-    glfwTerminate();
-
-    return exitCode.value_or(0);
+  return exitCode.value_or(0);
 }
 
 void GUI::updateTexture(const cv::Mat &img) {
