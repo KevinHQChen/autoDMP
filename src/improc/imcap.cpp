@@ -13,12 +13,12 @@ ImCap::~ImCap() {
 }
 
 void ImCap::startCaptureThread() {
+  info("Starting image capture...");
   captureThread = std::thread(&ImCap::start, this);
   captureThread.detach();
 }
 
 void ImCap::start() {
-  info("Starting image capture...");
   // start camera (allocate circular buffer to store frames)
   // timerInterval sets the size of buffers needed (min size of 1) multiplied by the framerate
   // (pretty sure) if timerInterval is less than 1000ms, only 1 buffer (i.e .40 frames) is needed
@@ -39,6 +39,10 @@ bool ImCap::started() { return startImCap; }
 void ImCap::stopCaptureThread() {
   info("Stopping image capture...");
   startImCap = false;
+  /* QUESTIONABLE */
+  if (captureThread.joinable())
+    captureThread.join();
+  /* QUESTIONABLE */
   cam->stop();
   rawFrameQueuePtr->clear();
   preFrameQueuePtr->clear();

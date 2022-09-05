@@ -5,6 +5,7 @@ set(HEADER_LIST "../../include/gui/gui.hpp")
 add_library(gui gui.cpp imgui_helpers.cpp ${HEADER_LIST})   # target is created
 
 include(FetchContent)
+# FetchContent_Declare(_imguiwrap URL https://github.com/kfsone/imguiwrap/archive/refs/tags/v1.2.2.tar.gz)
 FetchContent_Declare(_imguiwrap GIT_REPOSITORY https://github.com/KevinHQChen/imguiwrap.git
   GIT_TAG origin/main)
 FetchContent_MakeAvailable(_imguiwrap)

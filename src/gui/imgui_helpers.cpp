@@ -34,8 +34,8 @@ int GUI::imguiMain() {
 #endif
 
   // Create window with graphics context
-  window = glfwCreateWindow(guiConf.width, guiConf.height,
-                            guiConf.windowTitle.c_str(), nullptr, nullptr);
+  window = glfwCreateWindow(guiConf.width, guiConf.height, guiConf.windowTitle.c_str(), nullptr,
+                            nullptr);
   if (window == nullptr) {
     return 1;
   }
@@ -130,7 +130,7 @@ int GUI::imguiMain() {
   return exitCode.value_or(0);
 }
 
-void GUI::updateTexture(const cv::Mat &img) {
+void GUI::updateTexture(const cv::Mat &img, GLuint &textureID) {
   // mimic opencv grayscale image in opengl by making each color channel the same
   if (img.empty()) {
     error("Image is empty");

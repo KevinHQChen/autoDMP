@@ -11,6 +11,8 @@ scale = 2.0
 fontPath = "/root/.local/share/fonts/JetBrainsMono-1.0.2/ttf/JetBrainsMono-Medium.ttf"
 
 startImCap = false
+setupTmplMatch = false
+startImProc = false
 showDebug = false
 
 [cam]

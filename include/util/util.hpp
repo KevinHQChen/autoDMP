@@ -68,6 +68,8 @@ struct guiConfig {
   float scale;
   std::string fontPath;
   bool startImCap;
+  bool setupTmplMatch;
+  bool startImProc;
   bool showDebug;
 
   void from_toml(const ordered_value &v) {
@@ -82,6 +84,8 @@ struct guiConfig {
     scale = toml::find<float>(v, "scale");
     fontPath = toml::find<std::string>(v, "fontPath");
     startImCap = toml::find<bool>(v, "startImCap");
+    setupTmplMatch = toml::find<bool>(v, "setupTmplMatch");
+    startImProc = toml::find<bool>(v, "startImProc");
     showDebug = toml::find<bool>(v, "showDebug");
   }
 };
@@ -115,3 +119,77 @@ template <class T> mstream &operator<<(mstream &st, T val) {
 void saveData(std::string fileName, Eigen::MatrixXd matrix);
 
 Eigen::MatrixXd openData(std::string fileToOpen);
+
+// create a generic type queue class template for storing frames
+template <typename T> class QueueFPS : public std::queue<T> {
+public:
+  // constructor:
+  // chrono uses the concepts of timepoints and durations
+  // now() provides a single timepoint (num of ticks since epoch) from a
+  // specific clock this has no meaning by itself (unless you want ticks since
+  // epoch, in which case use now().time_since_epoch().count()) a difference
+  // between 2 timepoints returns a duration for which the number of ticks is
+  // given by duration.count()
+  QueueFPS(std::string fileName)
+      : counter(0), out(fileName), startTime(std::chrono::steady_clock::now()) {}
+
+  void push(const T &entry) {
+    std::lock_guard<std::mutex> lockGuard(mutex);
+    std::queue<T>::push(entry);
+    out << std::fixed << std::setprecision(3);
+    out << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() -
+                                                                 startTime)
+               .count()
+        << ", ";
+    counter += 1;
+    if (counter == 1) {
+      // Start counting from a second frame (warmup).
+      tm.reset();
+      tm.start();
+    }
+    tmSinceLastPush.reset();
+    tmSinceLastPush.start();
+  }
+
+  T get() {
+    std::lock_guard<std::mutex> lockGuard(mutex);
+    T entry = this->front();
+    this->pop();
+    return entry;
+  }
+
+  float getFPS() {
+    // std::lock_guard<std::mutex> lockGuard(mutex);
+    tm.stop();
+    double fps = counter / tm.getTimeSec();
+    tm.start();
+    return static_cast<float>(fps);
+  }
+
+  int getTimeSinceLastPush() {
+    std::lock_guard<std::mutex> lockGuard(mutex);
+    tmSinceLastPush.stop();
+    double time = tmSinceLastPush.getTimeMilli();
+    tmSinceLastPush.start();
+    return (int)std::round(time);
+  }
+
+  void clear() {
+    std::lock_guard<std::mutex> lockGuard(mutex);
+    while (!this->empty())
+      this->pop();
+  }
+
+  unsigned int counter_() {
+    // std::lock_guard<std::mutex> lockGuard(mutex);
+    return counter;
+  }
+
+  ffstream out;
+  std::chrono::time_point<std::chrono::steady_clock> startTime;
+
+private:
+  cv::TickMeter tm, tmSinceLastPush;
+  std::mutex mutex;
+  unsigned int counter;
+};

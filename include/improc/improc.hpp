@@ -1,8 +1,8 @@
 #pragma once
 
+#include "improc/imcap.hpp"
 #include "util/util.hpp"
 
-#if 0
 #define NUM_TEMPLATES 4
 
 struct pose {
@@ -16,22 +16,31 @@ struct ChannelPose {
   std::vector<cv::Rect> rotChanBBox;
 };
 
-void matInfo(cv::Mat mat);
+class ImProc {
+  ordered_value conf;
+  ordered_value &imProcConf;
+  ImCap *imCap = nullptr;
+  std::vector<QueueFPS<cv::Mat> *> tempResultQueueArr, procFrameQueueArr;
+  cv::Mat preFrame{0, 0, CV_16UC1};
+  std::array<cv::Mat, NUM_TEMPLATES> templateImg;
+  ChannelPose chanPose;
 
-void imgAnnotation(QueueFPS<cv::Mat> &imgQueue, cv::Mat &img);
+  std::vector<int> compParams;
 
-void rotateMat(cv::Mat &src, cv::Mat &dst, double angle);
+  std::atomic<bool> startImProc{false};
+  std::thread imProcThread;
 
-void rotateMatCropped(cv::Mat &src, cv::Mat &dst, double angle);
+  // Called within captureThread context
+  void start();
 
-int tmSetup(config conf, Cam *onlineCam, cv::VideoCapture *offlineCam,
-            std::array<cv::Mat, NUM_TEMPLATES> &templateImg,
-            std::array<cv::cuda::GpuMat, NUM_TEMPLATES> &templateImgGPU, ChannelPose &chanPose);
+public:
+  ImProc(ImCap *imCap);
+  ~ImProc();
+  void startImProcThread();
+  void stopImProcThread();
+  std::vector<cv::Mat> getTempFrames();
+  std::vector<cv::Mat> getProcFrames();
+  bool started();
 
-void imProc(config conf, std::array<cv::Mat, NUM_TEMPLATES> &templateImg,
-            std::array<cv::cuda::GpuMat, NUM_TEMPLATES> &templateImgGPU, ChannelPose &chanPose,
-            QueueFPS<cv::Mat> &preFramesQueue, std::vector<QueueFPS<cv::Mat> *> &tempResultsQueues,
-            std::vector<QueueFPS<cv::Mat> *> &procFramesQueues,
-            std::vector<QueueFPS<cv::Point> *> &procDataQueues, bool &run);
-
-#endif
+  void setupTmplMatch();
+};

@@ -18,6 +18,7 @@
 #include <stdio.h>
 
 #include "improc/imcap.hpp"
+#include "improc/improc.hpp"
 #include "util/util.hpp"
 
 #include <cstdio>
@@ -27,19 +28,37 @@ class GUI {
   guiConfig guiConf;
 
   ImCap *imCap = nullptr;
-  // ImProc *imProc = nullptr;
+  ImProc *imProc = nullptr;
   // Supervisor *supervisor = nullptr;
 
   GLFWwindow *window;
-  GLuint textureID;
+  GLuint rawTextureID, preTextureID;
+  std::vector<GLuint> procTextureIDs;
   ImGuiWindowFlags imCapFlags =
       ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
-  bool needToQuit{false};
   std::optional<std::pair<int, int>> newSize{};
+  bool needToQuit{false};
 
-  cv::Mat rawFrame;
-  int rawWidth, rawHeight;
-  std::vector<QueueFPS<cv::Mat> *> tempResultsQueues, procFramesQueues;
+  // for template matching
+  ChannelPose chanPose;
+  cv::Mat chans[4], firstChan, currChan;
+  cv::Rect firstChanBBox, firstRotChanBBox, templateBBox;
+  // template matching interactions
+  ImVector<ImVec2> points;
+  ImVec2 rectStart, rectEnd;
+  ImVec2 scrolling{0.0f, 0.0f};
+  bool opt_enable_grid = true;
+  bool opt_enable_rect = false;
+  bool opt_enable_context_menu = true;
+  bool adding_line = false;
+  bool addingRect = false;
+
+  // for showing raw/processed frames
+  cv::Mat rawFrame, preFrame;
+  int rawWidth, rawHeight, preWidth, preHeight;
+  std::vector<cv::Mat> procFrames;
+  std::vector<int> procWidths, procHeights;
+
   std::vector<QueueFPS<cv::Point> *> procDataQueues;
 
 public:
@@ -50,8 +69,9 @@ public:
   int imguiMain();
 
   void showRawImCap();
-  // void showProcImCap(bool &startImCap);
-  void updateTexture(const cv::Mat &img);
+  void showTmplMatchSetup();
+  void showImProc();
+  void updateTexture(const cv::Mat &img, GLuint &textureID);
 
   std::thread guiThread;
 };
