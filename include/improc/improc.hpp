@@ -27,20 +27,27 @@ class ImProc {
 
   std::vector<int> compParams;
 
-  std::atomic<bool> startImProc{false};
-  std::thread imProcThread;
+  std::atomic<bool> startedImProc{false}, startedImProcSetup{false};
+  std::thread procThread, setupThread;
 
-  // Called within captureThread context
+  // Called within imProcSetupThread context
+  void startSetup();
+
+  // Called within imProcThread context
   void start();
 
 public:
   ImProc(ImCap *imCap);
   ~ImProc();
-  void startImProcThread();
-  void stopImProcThread();
-  std::vector<cv::Mat> getTempFrames();
-  std::vector<cv::Mat> getProcFrames();
+
+  void startSetupThread();
+  void stopSetupThread();
+  bool startedSetup();
+
+  void startProcThread();
+  void stopProcThread();
   bool started();
 
-  void setupTmplMatch();
+  std::vector<cv::Mat> getTempFrames();
+  std::vector<cv::Mat> getProcFrames();
 };

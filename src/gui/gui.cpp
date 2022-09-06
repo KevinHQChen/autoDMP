@@ -9,7 +9,7 @@ GUI::GUI()
   info("Parsed config: {}", toml::find(conf, "gui"));
 }
 
-GUI::~GUI() { delete imCap; }
+GUI::~GUI() { delete imProc; delete imCap; }
 
 void GUI::showRawImCap() {
   // set window to fullscreen
@@ -38,12 +38,13 @@ void GUI::showImProcSetup() {
   //     preWidth = preFrame.cols;
   //     preHeight = preFrame.rows;
   //   }
-  //   info("Select bounding boxes for channel(s) (first channel must contain a droplet interface).");
-  //   cv::selectROIs("channel selection", preFrame, chanPose.chanBBox, true, false);
+  //   info("Select bounding boxes for channel(s) (first channel must contain a droplet
+  //   interface)."); cv::selectROIs("channel selection", preFrame, chanPose.chanBBox, true, false);
   //   for (int i = 0; i < chanPose.chanBBox.size(); i++) {
   //     // save cropped channel as separate image
   //     currChan = preFrame(chanPose.chanBBox[i]).clone();
-  //     // straighten any channels if necessary (for Y-junctions, the droplet will always start in an angled channel, thus we need to straighten the channel and define another bbox for it)
+  //     // straighten any channels if necessary (for Y-junctions, the droplet will always start in
+  //     an angled channel, thus we need to straighten the channel and define another bbox for it)
 
   //   }
 
@@ -121,13 +122,16 @@ void GUI::showImProcSetup() {
     ImVec2 drag_delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
     if (opt_enable_context_menu && drag_delta.x == 0.0f && drag_delta.y == 0.0f)
       ImGui::OpenPopupOnItemClick("context", ImGuiPopupFlags_MouseButtonRight);
-    if (ImGui::BeginPopup("context"))
-    {
+    if (ImGui::BeginPopup("context")) {
       if (adding_line)
         points.resize(points.size() - 2);
       adding_line = false;
-      if (ImGui::MenuItem("Remove one", NULL, false, points.Size > 0)) { points.resize(points.size() - 2); }
-      if (ImGui::MenuItem("Remove all", NULL, false, points.Size > 0)) { points.clear(); }
+      if (ImGui::MenuItem("Remove one", NULL, false, points.Size > 0)) {
+        points.resize(points.size() - 2);
+      }
+      if (ImGui::MenuItem("Remove all", NULL, false, points.Size > 0)) {
+        points.clear();
+      }
       ImGui::EndPopup();
     }
 
@@ -182,9 +186,10 @@ ImGuiWrapperReturnType GUI::render() {
     ImGui::Text("Help (this might be a button?)");
     dear::MainMenuBar() && [this]() {
       dear::Menu("File") && [this]() { needToQuit = ImGui::MenuItem("Quit"); };
-      dear::Menu("Setup") &&
-          [this]() { ImGui::MenuItem("Image Capture", nullptr, &guiConf.startImCap);
-        ImGui::MenuItem("Image Processing", nullptr, &guiConf.setupImProc); };
+      dear::Menu("Setup") && [this]() {
+        ImGui::MenuItem("Image Capture", nullptr, &guiConf.startImCap);
+        ImGui::MenuItem("Image Processing", nullptr, &guiConf.setupImProc);
+      };
       dear::Menu("Debug") &&
           [this]() { ImGui::MenuItem("Show Demo Window", nullptr, &guiConf.showDebug); };
     };
@@ -194,33 +199,22 @@ ImGuiWrapperReturnType GUI::render() {
     if (!imCap->started())
       imCap->startCaptureThread();
     showRawImCap();
-  }
-  else {
-    if (imCap->started())
-      imCap->stopCaptureThread();
-  }
+  } else if (imCap->started())
+    imCap->stopCaptureThread();
 
   if (guiConf.setupImProc) {
-    if (imCap->started() && !startedImProcSetup) {
-      imCap->clearPreFrameQueue();
-      startedImProcSetup = true;
-    }
-    if (imProc->started())
-      imProc->stopImProcThread();
-    if (!doneImProcSetup)
-      showImProcSetup();
-  }
-  else if (!doneImProcSetup)
-    startedImProcSetup = false;
+    if (!imProc->startedSetup())
+      imProc->startSetupThread();
+    showImProcSetup();
+  } else if (imProc->startedSetup())
+    imProc->stopSetupThread();
 
-  // if (guiConf.startImProc) {
-  //   if (!imProc->started())
-  //     imProc->startImProcThread();
-  //   showImProc();
-  // } else {
-  //   if (imProc->started())
-  //     imProc->stopImProcThread();
-  // }
+  if (guiConf.startImProc) {
+    if (!imProc->started())
+      imProc->startProcThread();
+    showImProc();
+  } else if (imProc->started())
+      imProc->stopProcThread();
 
   if (guiConf.showDebug)
     ImGui::ShowDemoWindow(&guiConf.showDebug);

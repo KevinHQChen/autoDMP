@@ -180,6 +180,11 @@ public:
       this->pop();
   }
 
+  bool empty_() {
+    std::lock_guard<std::mutex> lockGuard(mutex);
+    return this->empty();
+  }
+
   unsigned int counter_() {
     // std::lock_guard<std::mutex> lockGuard(mutex);
     return counter;

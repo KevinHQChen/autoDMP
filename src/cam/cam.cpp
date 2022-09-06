@@ -293,9 +293,10 @@ bool Cam::process(cv::Mat &image) {
     // put calling thread to sleep until timeout elapses or an image becomes
     // available (if timeout equals 0, only get existing frames without waiting)
     // (0 timeout causes AT_WaitBuffer to hang quite often, setting to 15ms
-    // helps a lot) std::cerr << "zyla process wait buffer returns ";
+    // helps a lot)
+    info("zyla process wait buffer returns ");
     returnCode = AT_WaitBuffer(handle, &pointer, &size, 15);
-    // std::cerr << returnCode << "\n";
+    info(returnCode);
     if (returnCode != 0)
       return false;
 
@@ -304,12 +305,12 @@ bool Cam::process(cv::Mat &image) {
     returnCode = AT_QueueBuffer(handle, alignedBuffers[accumNumFrames % queueLength], bufferSize);
     // std::cerr << "re-queue returns " << returnCode << "\n";
     accumNumFrames++;
-    std::cerr << "accumNumFrames: " << accumNumFrames << "\n";
+    info("accumNumFrames: {}", accumNumFrames);
     // clean up buffer
     image = cv::Mat(imageHeight, imageWidth, CV_16UC1);
     returnCode = AT_ConvertBuffer(pointer, reinterpret_cast<unsigned char *>(image.data),
                                   imageWidth, imageHeight, imageStride, imageEncode, L"Mono16");
-    // std::cerr << "convert returns " << returnCode << "\n";
+    info("convert returns {}", returnCode);
     if (returnCode == 0)
       return true;
   } else {

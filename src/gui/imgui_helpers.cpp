@@ -136,6 +136,20 @@ void updateTexture(GUIFrame &frame) {
     error("Image is empty");
     return;
   }
+
+  // get image data type
+  GLenum imgDataType;
+  if (frame.mat.type() == CV_8UC1) {
+    imgDataType = GL_UNSIGNED_BYTE;
+    info("Image is CV_8UC1");
+  } else if (frame.mat.type() == CV_16UC1) {
+    imgDataType = GL_UNSIGNED_SHORT;
+    info("Image is CV_16UC1");
+  } else {
+    error("Unsupported image data type");
+    return;
+  }
+
   cv::Mat tmp;
   cv::merge(std::vector<cv::Mat>{frame.mat, frame.mat, frame.mat}, tmp);
 
@@ -151,15 +165,14 @@ void updateTexture(GUIFrame &frame) {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   // upload pixels into texture
   glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-  glTexImage2D(
-      GL_TEXTURE_2D,      // texture type
-      0,                  // pyramid level (for mip-mapping), 0 is the top level
-      GL_RGB,             // internal color format to convert to
-                          // (https://www.khronos.org/opengl/wiki/Image_Format)
-      tmp.cols, tmp.rows, // image width, height
-      0,                  // border width in pixels (can be 1 or 0)
-      GL_BGR,             // input image format
-      GL_UNSIGNED_BYTE,   // image data type (https://www.khronos.org/opengl/wiki/OpenGL_Type)
-      tmp.ptr());         // pointer to data
+  glTexImage2D(GL_TEXTURE_2D, // texture type
+               0,             // pyramid level (for mip-mapping), 0 is the top level
+               GL_RGB,        // internal color format to convert to
+               // (https://www.khronos.org/opengl/wiki/Image_Format)
+               tmp.cols, tmp.rows, // image width, height
+               0,                  // border width in pixels (can be 1 or 0)
+               GL_BGR,             // input image format
+               imgDataType, // image data type (https://www.khronos.org/opengl/wiki/OpenGL_Type)
+               tmp.ptr());  // pointer to data
   glGenerateMipmap(GL_TEXTURE_2D);
 }

@@ -34,7 +34,7 @@ struct GUIFrame {
   bool empty;
   GLuint texture;
 
-  GUIFrame& operator=(const cv::Mat& matInstance) {
+  GUIFrame &operator=(const cv::Mat &matInstance) {
     // grab most recent non-empty frame
     mat = matInstance;
     if (!mat.empty()) {
@@ -42,7 +42,7 @@ struct GUIFrame {
       updateTexture(*this);
       width = mat.cols;
       height = mat.rows;
-    // or repeat previous frame if no new frame available
+      // or repeat previous frame if no new frame available
     } else if (width > 0 && height > 0)
       empty = false;
     else
@@ -65,7 +65,9 @@ class GUI {
   ImGuiWindowFlags imCapFlags =
       ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
   std::optional<std::pair<int, int>> newSize{};
-  bool needToQuit{false}, startedImProcSetup{false}, doneImProcSetup{false};
+  bool needToQuit{false};
+  bool startedImCapSetup{false}; //, doneImCapSetup{false};
+  bool startedImProcSetup{false}, doneImProcSetup{false};
 
   // for template matching
   ChannelPose chanPose;
@@ -102,5 +104,3 @@ public:
 
   std::thread guiThread;
 };
-
-

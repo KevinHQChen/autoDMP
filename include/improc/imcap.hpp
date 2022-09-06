@@ -9,7 +9,7 @@ class ImCap {
   QueueFPS<cv::Mat> *rawFrameQueuePtr, *preFrameQueuePtr;
   cv::Mat currImg{0, 0, CV_16UC1};
   bool imCapSuccess;
-  std::atomic<bool> startImCap{false};
+  std::atomic<bool> startedImCap{false};
   std::thread captureThread;
 
   // Called within captureThread context

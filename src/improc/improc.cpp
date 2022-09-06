@@ -2,10 +2,10 @@
 
 ImProc::ImProc(ImCap *imCap)
     : conf(toml::parse<toml::discard_comments, tsl::ordered_map>("config/setup.toml")),
-      imProcConf(toml::find(conf, "improc")),
-      imCap(imCap), tempResultQueueArr({new QueueFPS<cv::Mat>("tempResultsQueue1.txt"),
-                                        new QueueFPS<cv::Mat>("tempResultsQueue2.txt"),
-                                        new QueueFPS<cv::Mat>("tempResultsQueue3.txt")}),
+      imProcConf(toml::find(conf, "improc")), imCap(imCap),
+      tempResultQueueArr({new QueueFPS<cv::Mat>("tempResultsQueue1.txt"),
+                          new QueueFPS<cv::Mat>("tempResultsQueue2.txt"),
+                          new QueueFPS<cv::Mat>("tempResultsQueue3.txt")}),
       procFrameQueueArr({new QueueFPS<cv::Mat>("procFramesQueue1.txt"),
                          new QueueFPS<cv::Mat>("procFramesQueue2.txt"),
                          new QueueFPS<cv::Mat>("procFramesQueue3.txt")}) {
@@ -15,31 +15,69 @@ ImProc::ImProc(ImCap *imCap)
 }
 
 ImProc::~ImProc() {
-  stopImProcThread();
+  stopSetupThread();
+  stopProcThread();
   for (auto &q : procFrameQueueArr)
     delete q;
   for (auto &q : tempResultQueueArr)
     delete q;
 }
 
-void ImProc::startImProcThread() {
-  info("Starting image processing...");
-  imProcThread = std::thread(&ImProc::start, this);
-  imProcThread.detach();
+void ImProc::startSetupThread() {
+  info("Starting image processing setup...");
+  startedImProcSetup = true;
+  imCap->clearPreFrameQueue();
+  setupThread = std::thread(&ImProc::startSetup, this);
+  setupThread.detach();
 }
 
-void ImProc::setupTmplMatch() {
-  if(toml::get<std::string>(imProcConf["tmplSrc"]) == "fromFile") {
-    // TODO load template from file
+void ImProc::stopSetupThread() {
+  info("Stopping image processing setup...");
+  startedImProcSetup = false;
+  if (setupThread.joinable())
+    setupThread.join();
+  imCap->clearPreFrameQueue();
+}
+
+void ImProc::startSetup() {
+  while(true) {
+  if (readFromFile)
+    // TODO read channel/template config from file
+  if (writeToFile)
+    // TODO write channel/template config to file
+  }
+
+  if (toml::get<std::string>(imProcConf["tmplSrc"]) == "fromFile") {
   } else {
     // TODO grab template from user-selected frame
   }
 }
 
+bool ImProc::startedSetup() { return startedImProcSetup; }
+
+void ImProc::startProcThread() {
+  info("Starting image processing...");
+  startedImProc = true;
+  imCap->clearPreFrameQueue();
+  procThread = std::thread(&ImProc::start, this);
+  procThread.detach();
+}
+
+void ImProc::stopProcThread() {
+  info("Stopping image processing...");
+  startedImProc = false;
+  if (procThread.joinable())
+    procThread.join();
+  imCap->clearPreFrameQueue();
+  for (auto &q : procFrameQueueArr)
+    q->clear();
+  for (auto &q : tempResultQueueArr)
+    q->clear();
+}
+
 void ImProc::start() {
-  setupTmplMatch();
-  startImProc = true;
-  while (startImProc) {
+  startedImProc = true;
+  while (startedImProc) {
     continue;
     // TODO implement image processing
     // for (auto &q : procFrameQueueArr) {
@@ -53,18 +91,7 @@ void ImProc::start() {
   }
 }
 
-bool ImProc::started() { return startImProc; }
-
-void ImProc::stopImProcThread() {
-  info("Stopping image processing...");
-  startImProc = false;
-  if (imProcThread.joinable())
-    imProcThread.join();
-  for (auto &q : procFrameQueueArr)
-    q->clear();
-  for (auto &q : tempResultQueueArr)
-    q->clear();
-}
+bool ImProc::started() { return startedImProc; }
 
 std::vector<cv::Mat> ImProc::getTempFrames() {
   std::vector<cv::Mat> tempFrames;

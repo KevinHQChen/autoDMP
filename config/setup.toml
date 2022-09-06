@@ -17,7 +17,7 @@ showDebug = false
 
 [cam]
 # select camera source [string: "Webcam"/"File"/"Andor"]
-source      = "Webcam"
+source      = "Andor"
 # if source = "File", the selected video file is used [string]
 file        = ""
 
