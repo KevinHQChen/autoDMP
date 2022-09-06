@@ -22,5 +22,7 @@ public:
   void stopCaptureThread();
   cv::Mat getRawFrame();
   cv::Mat getPreFrame();
+  void clearRawFrameQueue();
+  void clearPreFrameQueue();
   bool started();
 };

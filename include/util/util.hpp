@@ -68,7 +68,7 @@ struct guiConfig {
   float scale;
   std::string fontPath;
   bool startImCap;
-  bool setupTmplMatch;
+  bool setupImProc;
   bool startImProc;
   bool showDebug;
 
@@ -84,7 +84,7 @@ struct guiConfig {
     scale = toml::find<float>(v, "scale");
     fontPath = toml::find<std::string>(v, "fontPath");
     startImCap = toml::find<bool>(v, "startImCap");
-    setupTmplMatch = toml::find<bool>(v, "setupTmplMatch");
+    setupImProc = toml::find<bool>(v, "setupImProc");
     startImProc = toml::find<bool>(v, "startImProc");
     showDebug = toml::find<bool>(v, "showDebug");
   }

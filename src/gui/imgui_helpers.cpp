@@ -130,20 +130,20 @@ int GUI::imguiMain() {
   return exitCode.value_or(0);
 }
 
-void GUI::updateTexture(const cv::Mat &img, GLuint &textureID) {
+void updateTexture(GUIFrame &frame) {
   // mimic opencv grayscale image in opengl by making each color channel the same
-  if (img.empty()) {
+  if (frame.mat.empty()) {
     error("Image is empty");
     return;
   }
   cv::Mat tmp;
-  cv::merge(std::vector<cv::Mat>{img, img, img}, tmp);
+  cv::merge(std::vector<cv::Mat>{frame.mat, frame.mat, frame.mat}, tmp);
 
   // update texture
   // glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
   // create opengl texture identifier
-  glGenTextures(1, &textureID);
-  glBindTexture(GL_TEXTURE_2D, textureID);
+  glGenTextures(1, &frame.texture);
+  glBindTexture(GL_TEXTURE_2D, frame.texture);
   // setup filtering parameters for display
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

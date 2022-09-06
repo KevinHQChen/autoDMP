@@ -23,6 +23,35 @@
 
 #include <cstdio>
 
+struct GUIFrame;
+
+void updateTexture(GUIFrame &frame);
+
+struct GUIFrame {
+  cv::Mat mat;
+  int width;
+  int height;
+  bool empty;
+  GLuint texture;
+
+  GUIFrame& operator=(const cv::Mat& matInstance) {
+    // grab most recent non-empty frame
+    mat = matInstance;
+    if (!mat.empty()) {
+      empty = false;
+      updateTexture(*this);
+      width = mat.cols;
+      height = mat.rows;
+    // or repeat previous frame if no new frame available
+    } else if (width > 0 && height > 0)
+      empty = false;
+    else
+      empty = true;
+
+    return *this; // this is apparently inferred by compiler? still works without it
+  }
+};
+
 class GUI {
   ordered_value conf;
   guiConfig guiConf;
@@ -32,12 +61,11 @@ class GUI {
   // Supervisor *supervisor = nullptr;
 
   GLFWwindow *window;
-  GLuint rawTextureID, preTextureID;
   std::vector<GLuint> procTextureIDs;
   ImGuiWindowFlags imCapFlags =
       ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
   std::optional<std::pair<int, int>> newSize{};
-  bool needToQuit{false};
+  bool needToQuit{false}, startedImProcSetup{false}, doneImProcSetup{false};
 
   // for template matching
   ChannelPose chanPose;
@@ -54,9 +82,9 @@ class GUI {
   bool addingRect = false;
 
   // for showing raw/processed frames
-  cv::Mat rawFrame, preFrame;
-  int rawWidth, rawHeight, preWidth, preHeight;
+  GUIFrame rawFrame, preFrame;
   std::vector<cv::Mat> procFrames;
+  std::vector<GUIFrame> procGUIFrames;
   std::vector<int> procWidths, procHeights;
 
   std::vector<QueueFPS<cv::Point> *> procDataQueues;
@@ -69,9 +97,10 @@ public:
   int imguiMain();
 
   void showRawImCap();
-  void showTmplMatchSetup();
+  void showImProcSetup();
   void showImProc();
-  void updateTexture(const cv::Mat &img, GLuint &textureID);
 
   std::thread guiThread;
 };
+
+

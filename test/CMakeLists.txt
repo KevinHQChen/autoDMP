@@ -21,8 +21,6 @@ find_package(Catch2 CONFIG REQUIRED)
 
 include(Catch)
 
-# find_package(Catch2 CONFIG QUIET REQUIRED)
-
 # if(TARGET Catch2::Catch2)
 #   message("catch2 has been installed previously")
 #   include(Catch)

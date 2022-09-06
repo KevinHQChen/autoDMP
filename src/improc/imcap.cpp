@@ -59,3 +59,7 @@ cv::Mat ImCap::getPreFrame() {
     return preFrameQueuePtr->get();
   return cv::Mat();
 }
+
+void ImCap::clearRawFrameQueue() { rawFrameQueuePtr->clear(); }
+
+void ImCap::clearPreFrameQueue() { preFrameQueuePtr->clear(); }

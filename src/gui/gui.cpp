@@ -17,22 +17,15 @@ void GUI::showRawImCap() {
   ImGui::SetNextWindowPos(viewport->WorkPos);
   ImGui::SetNextWindowSize(viewport->WorkSize);
 
-  // show most recent frame or repeat previous frame if no new frame available
-  rawFrame = imCap->getRawFrame();
-  if (!rawFrame.empty()) {
-    updateTexture(rawFrame, rawTextureID);
-    rawWidth = rawFrame.cols;
-    rawHeight = rawFrame.rows;
-  }
   dear::Begin("Raw Image Capture", &guiConf.startImCap, imCapFlags) && [this]() {
-    if (rawWidth > 0 && rawHeight > 0)
-      ImGui::Image((void *)(intptr_t)rawTextureID, ImVec2(rawWidth, rawHeight));
-    else
-      ImGui::Text("Empty frame");
+    rawFrame = imCap->getRawFrame();
+    (rawFrame.empty)
+        ? ImGui::Text("No image available")
+        : ImGui::Image((void *)(intptr_t)rawFrame.texture, ImVec2(rawFrame.width, rawFrame.height));
   };
 }
 
-void GUI::showTmplMatchSetup() {
+void GUI::showImProcSetup() {
   // TODO load template from file
   // if(toml::get<std::string>(conf["improc"]["tmplSrc"]) == "fromFile") {
 
@@ -58,17 +51,10 @@ void GUI::showTmplMatchSetup() {
 
   // imProc->setupTmplMatch();
 
-  preFrame = imCap->getPreFrame();
-  if (!preFrame.empty()) {
-    updateTexture(preFrame, preTextureID);
-    preWidth = preFrame.cols;
-    preHeight = preFrame.rows;
-  }
+  ImGuiWindowFlags imProcSetupFlags = 0;
+  imProcSetupFlags |= ImGuiWindowFlags_NoBackground;
 
-  ImGuiWindowFlags tmplMatchFlags = 0;
-  tmplMatchFlags |= ImGuiWindowFlags_NoBackground;
-
-  dear::Begin("Template Match Setup", &guiConf.setupTmplMatch, tmplMatchFlags) && [this]() {
+  dear::Begin("Image Processing Setup", &guiConf.setupImProc, imProcSetupFlags) && [this]() {
     ImGui::Checkbox("Enable grid", &opt_enable_grid);
     ImGui::Checkbox("Enable context menu", &opt_enable_context_menu);
     ImGui::Checkbox("Draw rectangle", &opt_enable_rect);
@@ -90,10 +76,11 @@ void GUI::showTmplMatchSetup() {
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
     // draw_list->AddRectFilled(canvas_p0, canvas_p1, IM_COL32(50, 50, 50, 255));
     // Draw current frame
-    // if (preWidth > 0 && preHeight > 0)
-    //   ImGui::Image((void *)(intptr_t)preTextureID, ImVec2(preWidth, preHeight));
-    if (preWidth > 0 && preHeight > 0)
-      draw_list->AddImage((void *)(intptr_t)preTextureID, canvas_p0, canvas_p1);
+    preFrame = imCap->getPreFrame();
+    (preFrame.empty)
+        ? draw_list->AddText(canvas_p0, IM_COL32(255, 255, 255, 255), "No image available")
+        : draw_list->AddImage((void *)(intptr_t)preFrame.texture, canvas_p0, canvas_p1);
+
     draw_list->AddRect(canvas_p0, canvas_p1, IM_COL32(255, 255, 255, 255));
 
     // This will catch our interactions
@@ -130,7 +117,6 @@ void GUI::showTmplMatchSetup() {
       }
     }
 
-
     // Context menu (under default mouse threshold)
     ImVec2 drag_delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
     if (opt_enable_context_menu && drag_delta.x == 0.0f && drag_delta.y == 0.0f)
@@ -163,42 +149,29 @@ void GUI::showTmplMatchSetup() {
                          ImVec2(origin.x + points[n + 1].x, origin.y + points[n + 1].y),
                          IM_COL32(255, 255, 0, 255), 2.0f);
     // Draw rectangle
-    if (opt_enable_rect) {
-      draw_list->AddLine(ImVec2(origin.x + rectStart.x, origin.y + rectStart.y),
-                         ImVec2(origin.x + rectStart.x, origin.y + rectEnd.y),
-                         IM_COL32(255, 255, 0, 255), 2.0f);
-      draw_list->AddLine(ImVec2(origin.x + rectStart.x, origin.y + rectEnd.y),
+    if (opt_enable_rect)
+      draw_list->AddRect(ImVec2(origin.x + rectStart.x, origin.y + rectStart.y),
                          ImVec2(origin.x + rectEnd.x, origin.y + rectEnd.y),
-                         IM_COL32(255, 255, 0, 255), 2.0f);
-      draw_list->AddLine(ImVec2(origin.x + rectEnd.x, origin.y + rectEnd.y),
-                         ImVec2(origin.x + rectEnd.x, origin.y + rectStart.y),
-                         IM_COL32(255, 255, 0, 255), 2.0f);
-      draw_list->AddLine(ImVec2(origin.x + rectEnd.x, origin.y + rectStart.y),
-                         ImVec2(origin.x + rectStart.x, origin.y + rectStart.y),
-                         IM_COL32(255, 255, 0, 255), 2.0f);
-    }
+                         IM_COL32(255, 255, 0, 255), 0.0f, 0, 2.0f);
     draw_list->PopClipRect();
   };
 }
 
 void GUI::showImProc() {
   // show most recent frame or repeat previous frame if no new frame available
-  procFrames = imProc->getProcFrames();
-  int idx = 0;
-  for (auto &frame : procFrames) {
-    if (!frame.empty()) {
-      updateTexture(frame, procTextureIDs[idx]);
-      procWidths[idx] = frame.cols;
-      procHeights[idx] = frame.rows;
-    }
-  }
   dear::Begin("Processed Image Capture", &guiConf.startImProc) && [this]() {
+    procFrames = imProc->getProcFrames();
     int idx = 0;
-    for (auto &textureID : procTextureIDs) {
-      if (procWidths[idx] > 0 && procHeights[idx] > 0)
-        ImGui::Image((void *)(intptr_t)textureID, ImVec2(procWidths[idx], procHeights[idx]));
-      else
-        ImGui::Text("Empty frame %d", idx);
+    for (auto &frame : procFrames) {
+      if (!frame.empty()) {
+        procGUIFrames[idx] = frame;
+        updateTexture(procGUIFrames[idx]);
+      }
+      (procGUIFrames[idx].width > 0 && procGUIFrames[idx].height > 0)
+          ? ImGui::Image((void *)(intptr_t)procGUIFrames[idx].texture,
+                         ImVec2(procGUIFrames[idx].width, procGUIFrames[idx].height))
+          : ImGui::Text("Empty frame %d", idx);
+      idx++;
     }
   };
 }
@@ -211,7 +184,7 @@ ImGuiWrapperReturnType GUI::render() {
       dear::Menu("File") && [this]() { needToQuit = ImGui::MenuItem("Quit"); };
       dear::Menu("Setup") &&
           [this]() { ImGui::MenuItem("Image Capture", nullptr, &guiConf.startImCap);
-        ImGui::MenuItem("Template Matching", nullptr, &guiConf.setupTmplMatch); };
+        ImGui::MenuItem("Image Processing", nullptr, &guiConf.setupImProc); };
       dear::Menu("Debug") &&
           [this]() { ImGui::MenuItem("Show Demo Window", nullptr, &guiConf.showDebug); };
     };
@@ -221,16 +194,24 @@ ImGuiWrapperReturnType GUI::render() {
     if (!imCap->started())
       imCap->startCaptureThread();
     showRawImCap();
-  } else {
+  }
+  else {
     if (imCap->started())
       imCap->stopCaptureThread();
   }
 
-  if (guiConf.setupTmplMatch) {
+  if (guiConf.setupImProc) {
+    if (imCap->started() && !startedImProcSetup) {
+      imCap->clearPreFrameQueue();
+      startedImProcSetup = true;
+    }
     if (imProc->started())
       imProc->stopImProcThread();
-    showTmplMatchSetup();
+    if (!doneImProcSetup)
+      showImProcSetup();
   }
+  else if (!doneImProcSetup)
+    startedImProcSetup = false;
 
   // if (guiConf.startImProc) {
   //   if (!imProc->started())
