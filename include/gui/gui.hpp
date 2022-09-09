@@ -1,5 +1,7 @@
 #pragma once
 
+#include "imgui.h"
+
 // renderers
 #include "imgui_impl_opengl3.h"
 #include <GL/glew.h>
@@ -13,8 +15,8 @@
 // #include <SDL2/SDL.h>
 // #include <SDL2/SDL_opengl.h>
 
-#include "imguiwrap.dear.h"
-#include "imguiwrap.helpers.h"
+// #include "imguiwrap.dear.h"
+// #include "imguiwrap.helpers.h"
 #include <stdio.h>
 
 #include "improc/imcap.hpp"
@@ -22,6 +24,8 @@
 #include "util/util.hpp"
 
 #include <cstdio>
+
+void setWindowFullscreen();
 
 struct GUIFrame;
 
@@ -52,6 +56,8 @@ struct GUIFrame {
   }
 };
 
+
+
 class GUI {
   ordered_value conf;
   guiConfig guiConf;
@@ -61,13 +67,22 @@ class GUI {
   // Supervisor *supervisor = nullptr;
 
   GLFWwindow *window;
-  std::vector<GLuint> procTextureIDs;
-  ImGuiWindowFlags imCapFlags =
-      ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
   std::optional<std::pair<int, int>> newSize{};
+  std::vector<GLuint> procTextureIDs;
+  ImGuiDockNodeFlags dockNodeFlags = ImGuiDockNodeFlags_PassthruCentralNode;
+  // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
+  // because it would be confusing to have two docking targets within each others.
+  // When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background
+  // and handle the pass-thru hole, so we ask Begin() to not render a background.
+  ImGuiWindowFlags dockSpaceFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking |
+                                    ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
+                                    ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+                                    ImGuiWindowFlags_NoBringToFrontOnFocus |
+                                    ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoBackground;
+  ImGuiWindowFlags imCapFlags = 0;
+  // ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
+  ImGuiWindowFlags imProcSetupFlags = 0;
   bool needToQuit{false};
-  bool startedImCapSetup{false}; //, doneImCapSetup{false};
-  bool startedImProcSetup{false}, doneImProcSetup{false};
 
   // for template matching
   ChannelPose chanPose;
@@ -75,6 +90,7 @@ class GUI {
   cv::Rect firstChanBBox, firstRotChanBBox, templateBBox;
   // template matching interactions
   ImVector<ImVec2> points;
+  ImVec2 canvas_p0, canvas_p1, canvas_sz;
   ImVec2 rectStart, rectEnd;
   ImVec2 scrolling{0.0f, 0.0f};
   bool opt_enable_grid = true;
@@ -85,8 +101,8 @@ class GUI {
 
   // for showing raw/processed frames
   GUIFrame rawFrame, preFrame;
+  GUIFrame procGUIFrames[3];
   std::vector<cv::Mat> procFrames;
-  std::vector<GUIFrame> procGUIFrames;
   std::vector<int> procWidths, procHeights;
 
   std::vector<QueueFPS<cv::Point> *> procDataQueues;
@@ -95,12 +111,15 @@ public:
   GUI();
   ~GUI();
   void startGUIThread();
-  ImGuiWrapperReturnType render();
+  std::optional<int> render();
   int imguiMain();
 
   void showRawImCap();
   void showImProcSetup();
   void showImProc();
 
+  void contextMenu(bool enable);
+
   std::thread guiThread;
 };
+

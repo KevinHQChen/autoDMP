@@ -24,7 +24,7 @@ FetchContent_Declare(_project_options URL https://github.com/aminya/project_opti
 FetchContent_MakeAvailable(_project_options)
 include(${_project_options_SOURCE_DIR}/Index.cmake)
 
-# # Setup vcpkg - should be called before defining project()
+# Setup vcpkg - should be called before defining project()
 run_vcpkg()
 
 # Set the project name and language

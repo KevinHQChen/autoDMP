@@ -6,7 +6,7 @@ static void glfw_error_callback(int error, const char *description) {
 }
 
 // imgui_main initializes an ImGui openGL/glfw backend and then runs
-// the passed ImGuiWrapperFn repeatedly until the std::optional it
+// the passed std::function<std::optional<int>()> repeatedly until the std::optional it
 // returns has a value, which is then returned as the exit code.
 int GUI::imguiMain() {
   // Setup window
@@ -55,9 +55,9 @@ int GUI::imguiMain() {
   ImGui::CreateContext();
   ImGuiIO &io = ImGui::GetIO();
   (void)io;
-  if (guiConf.keyboardNav) {
+  if (guiConf.keyboardNav)
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
-  }
+  io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;       // Enable Docking
 
   guiConf.startDark ? ImGui::StyleColorsDark() : ImGui::StyleColorsLight();
 
@@ -175,4 +175,15 @@ void updateTexture(GUIFrame &frame) {
                imgDataType, // image data type (https://www.khronos.org/opengl/wiki/OpenGL_Type)
                tmp.ptr());  // pointer to data
   glGenerateMipmap(GL_TEXTURE_2D);
+}
+
+void setWindowFullscreen() {
+    // set window to fullscreen
+    const ImGuiViewport *viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->WorkPos);
+    ImGui::SetNextWindowSize(viewport->WorkSize);
+
+    ImGui::SetNextWindowViewport(viewport->ID);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 }

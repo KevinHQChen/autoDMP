@@ -7,29 +7,36 @@ GUI::GUI()
 {
   info("Config type: {}", type_name<decltype(guiConf)>());
   info("Parsed config: {}", toml::find(conf, "gui"));
+  // TODO may want to make GUI, ImCap, ImProc, Supervisor, etc. singletons
 }
 
 GUI::~GUI() { delete imProc; delete imCap; }
 
 void GUI::showRawImCap() {
-  // set window to fullscreen
-  const ImGuiViewport *viewport = ImGui::GetMainViewport();
-  ImGui::SetNextWindowPos(viewport->WorkPos);
-  ImGui::SetNextWindowSize(viewport->WorkSize);
+  if (guiConf.startImCap) {
+    imCap->startCaptureThread();
 
-  dear::Begin("Raw Image Capture", &guiConf.startImCap, imCapFlags) && [this]() {
-    rawFrame = imCap->getRawFrame();
-    (rawFrame.empty)
+    // setWindowFullscreen();
+
+    if(ImGui::Begin("Raw Image Capture", &guiConf.startImCap, imCapFlags)) {
+      rawFrame = imCap->getRawFrame();
+      (rawFrame.empty)
         ? ImGui::Text("No image available")
         : ImGui::Image((void *)(intptr_t)rawFrame.texture, ImVec2(rawFrame.width, rawFrame.height));
-  };
+      ImGui::End();
+    }
+  } else
+    imCap->stopCaptureThread();
 }
+
+/*
 
 void GUI::showImProcSetup() {
   // TODO load template from file
-  // if(toml::get<std::string>(conf["improc"]["tmplSrc"]) == "fromFile") {
+  if(toml::get<std::string>(conf["improc"]["tmplSrc"]) == "fromFile") {
+    imProc->loadConfig(toml::get<std::string>(conf["improc"]["path"]));
 
-  // }
+  }
   // // grab template from user-selected frame
   // else {
   //   cv::FileStorage chanPoseFile("chanPose.yml", cv::FileStorage::WRITE);
@@ -52,172 +59,157 @@ void GUI::showImProcSetup() {
 
   // imProc->setupTmplMatch();
 
-  ImGuiWindowFlags imProcSetupFlags = 0;
-  imProcSetupFlags |= ImGuiWindowFlags_NoBackground;
+  if (guiConf.setupImProc) {
+    imProc->startSetupThread();
 
-  dear::Begin("Image Processing Setup", &guiConf.setupImProc, imProcSetupFlags) && [this]() {
-    ImGui::Checkbox("Enable grid", &opt_enable_grid);
-    ImGui::Checkbox("Enable context menu", &opt_enable_context_menu);
-    ImGui::Checkbox("Draw rectangle", &opt_enable_rect);
-    ImGui::Text(
-        "Mouse Left: drag to add lines,\nMouse Right: drag to scroll, click for context menu.");
+    if (ImGui::Begin("Image Processing Setup", &guiConf.setupImProc, imProcSetupFlags)) {
+      ImGui::Checkbox("Enable grid", &opt_enable_grid);
+      ImGui::Checkbox("Enable context menu", &opt_enable_context_menu);
+      ImGui::Checkbox("Draw rectangle", &opt_enable_rect);
+      ImGui::Text(
+          "Mouse Left: drag to add lines,\nMouse Right: drag to scroll, click for context menu.");
 
-    // Using InvisibleButton() as a convenience 1) it will advance the layout cursor and 2) allows
-    // us to use IsItemHovered()/IsItemActive()
-    ImVec2 canvas_p0 = ImGui::GetCursorScreenPos();    // ImDrawList API uses screen coordinates!
-    ImVec2 canvas_sz = ImGui::GetContentRegionAvail(); // Resize canvas to what's available
-    if (canvas_sz.x < 50.0f)
-      canvas_sz.x = 50.0f;
-    if (canvas_sz.y < 50.0f)
-      canvas_sz.y = 50.0f;
-    ImVec2 canvas_p1 = ImVec2(canvas_p0.x + canvas_sz.x, canvas_p0.y + canvas_sz.y);
+      canvas_p0 = ImGui::GetCursorScreenPos();    // ImDrawList API uses screen coordinates!
+      canvas_sz = ImGui::GetContentRegionAvail(); // Resize canvas to what's available
+      if (canvas_sz.x < 50.0f)
+        canvas_sz.x = 50.0f;
+      if (canvas_sz.y < 50.0f)
+        canvas_sz.y = 50.0f;
+      canvas_p1 = ImVec2(canvas_p0.x + canvas_sz.x, canvas_p0.y + canvas_sz.y);
 
-    // Draw border and background color
-    ImGuiIO &io = ImGui::GetIO();
-    ImDrawList *draw_list = ImGui::GetWindowDrawList();
-    // draw_list->AddRectFilled(canvas_p0, canvas_p1, IM_COL32(50, 50, 50, 255));
-    // Draw current frame
-    preFrame = imCap->getPreFrame();
-    (preFrame.empty)
-        ? draw_list->AddText(canvas_p0, IM_COL32(255, 255, 255, 255), "No image available")
-        : draw_list->AddImage((void *)(intptr_t)preFrame.texture, canvas_p0, canvas_p1);
+      // Draw border and background color
+      ImGuiIO &io = ImGui::GetIO();
+      ImDrawList *draw_list = ImGui::GetWindowDrawList();
+      // draw_list->AddRectFilled(canvas_p0, canvas_p1, IM_COL32(50, 50, 50, 255));
+      // Draw current frame
+      preFrame = imCap->getPreFrame();
+      (preFrame.empty)
+          ? draw_list->AddText(canvas_p0, IM_COL32(255, 255, 255, 255), "No image available")
+          : draw_list->AddImage((void *)(intptr_t)preFrame.texture, canvas_p0, canvas_p1);
 
-    draw_list->AddRect(canvas_p0, canvas_p1, IM_COL32(255, 255, 255, 255));
+      draw_list->AddRect(canvas_p0, canvas_p1, IM_COL32(255, 255, 255, 255));
 
-    // This will catch our interactions
-    ImGui::InvisibleButton("canvas", canvas_sz,
-                           ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
-    const bool is_hovered = ImGui::IsItemHovered(); // Hovered
-    const bool is_active = ImGui::IsItemActive();   // Held
-    const ImVec2 origin(canvas_p0.x + scrolling.x,
-                        canvas_p0.y + scrolling.y); // Lock scrolled origin
-    const ImVec2 mouse_pos_in_canvas(io.MousePos.x - origin.x, io.MousePos.y - origin.y);
+      // This will catch our interactions
+      // Using InvisibleButton() as a convenience 1) it will advance the layout cursor and 2) allows
+      // us to use IsItemHovered()/IsItemActive()
+      ImGui::InvisibleButton("canvas", canvas_sz,
+                             ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
+      const bool is_hovered = ImGui::IsItemHovered(); // Hovered
+      const bool is_active = ImGui::IsItemActive();   // Held
+      const ImVec2 origin(canvas_p0.x + scrolling.x,
+                          canvas_p0.y + scrolling.y); // Lock scrolled origin
+      const ImVec2 mouse_pos_in_canvas(io.MousePos.x - origin.x, io.MousePos.y - origin.y);
 
-    // Add first and second point
-    if (is_hovered && !adding_line && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
-      points.push_back(mouse_pos_in_canvas);
-      points.push_back(mouse_pos_in_canvas);
-      adding_line = true;
-    }
-    if (adding_line) {
-      points.back() = mouse_pos_in_canvas;
-      if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
-        adding_line = false;
-    }
-
-    // Add rectangle
-    if (opt_enable_rect) {
-      if (is_hovered && !addingRect && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
-        rectStart = mouse_pos_in_canvas;
-        addingRect = true;
+      // Add first and second point
+      if (is_hovered && !adding_line && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+        points.push_back(mouse_pos_in_canvas);
+        points.push_back(mouse_pos_in_canvas);
+        adding_line = true;
       }
-      if (addingRect) {
-        rectEnd = mouse_pos_in_canvas;
+      if (adding_line) {
+        points.back() = mouse_pos_in_canvas;
         if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
-          addingRect = false;
+          adding_line = false;
       }
-    }
 
-    // Context menu (under default mouse threshold)
-    ImVec2 drag_delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
-    if (opt_enable_context_menu && drag_delta.x == 0.0f && drag_delta.y == 0.0f)
-      ImGui::OpenPopupOnItemClick("context", ImGuiPopupFlags_MouseButtonRight);
-    if (ImGui::BeginPopup("context")) {
-      if (adding_line)
-        points.resize(points.size() - 2);
-      adding_line = false;
-      if (ImGui::MenuItem("Remove one", NULL, false, points.Size > 0)) {
-        points.resize(points.size() - 2);
+      // Add rectangle
+      if (opt_enable_rect) {
+        if (is_hovered && !addingRect && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+          rectStart = mouse_pos_in_canvas;
+          addingRect = true;
+        }
+        if (addingRect) {
+          rectEnd = mouse_pos_in_canvas;
+          if (!ImGui::IsMouseDown(ImGuiMouseButton_Left))
+            addingRect = false;
+        }
       }
-      if (ImGui::MenuItem("Remove all", NULL, false, points.Size > 0)) {
-        points.clear();
-      }
-      ImGui::EndPopup();
-    }
 
-    // Draw grid, all lines, rectangle in the canvas
-    draw_list->PushClipRect(canvas_p0, canvas_p1, true);
-    // Draw grid
-    if (opt_enable_grid) {
-      const float GRID_STEP = 64.0f;
-      for (float x = fmodf(scrolling.x, GRID_STEP); x < canvas_sz.x; x += GRID_STEP)
-        draw_list->AddLine(ImVec2(canvas_p0.x + x, canvas_p0.y),
-                           ImVec2(canvas_p0.x + x, canvas_p1.y), IM_COL32(200, 200, 200, 40));
-      for (float y = fmodf(scrolling.y, GRID_STEP); y < canvas_sz.y; y += GRID_STEP)
-        draw_list->AddLine(ImVec2(canvas_p0.x, canvas_p0.y + y),
-                           ImVec2(canvas_p1.x, canvas_p0.y + y), IM_COL32(200, 200, 200, 40));
+      contextMenu(opt_enable_context_menu);
+
+      // Draw grid, all lines, rectangle in the canvas
+      draw_list->PushClipRect(canvas_p0, canvas_p1, true);
+      // Draw grid
+      if (opt_enable_grid) {
+        const float GRID_STEP = 64.0f;
+        for (float x = fmodf(scrolling.x, GRID_STEP); x < canvas_sz.x; x += GRID_STEP)
+          draw_list->AddLine(ImVec2(canvas_p0.x + x, canvas_p0.y),
+                             ImVec2(canvas_p0.x + x, canvas_p1.y), IM_COL32(200, 200, 200, 40));
+        for (float y = fmodf(scrolling.y, GRID_STEP); y < canvas_sz.y; y += GRID_STEP)
+          draw_list->AddLine(ImVec2(canvas_p0.x, canvas_p0.y + y),
+                             ImVec2(canvas_p1.x, canvas_p0.y + y), IM_COL32(200, 200, 200, 40));
+      }
+      // Draw all lines
+      for (int n = 0; n < points.Size; n += 2)
+        draw_list->AddLine(ImVec2(origin.x + points[n].x, origin.y + points[n].y),
+                           ImVec2(origin.x + points[n + 1].x, origin.y + points[n + 1].y),
+                           IM_COL32(255, 255, 0, 255), 2.0f);
+      // Draw rectangle
+      if (opt_enable_rect)
+        draw_list->AddRect(ImVec2(origin.x + rectStart.x, origin.y + rectStart.y),
+                           ImVec2(origin.x + rectEnd.x, origin.y + rectEnd.y),
+                           IM_COL32(255, 255, 0, 255), 0.0f, 0, 2.0f);
+      draw_list->PopClipRect();
+      ImGui::End();
     }
-    // Draw all lines
-    for (int n = 0; n < points.Size; n += 2)
-      draw_list->AddLine(ImVec2(origin.x + points[n].x, origin.y + points[n].y),
-                         ImVec2(origin.x + points[n + 1].x, origin.y + points[n + 1].y),
-                         IM_COL32(255, 255, 0, 255), 2.0f);
-    // Draw rectangle
-    if (opt_enable_rect)
-      draw_list->AddRect(ImVec2(origin.x + rectStart.x, origin.y + rectStart.y),
-                         ImVec2(origin.x + rectEnd.x, origin.y + rectEnd.y),
-                         IM_COL32(255, 255, 0, 255), 0.0f, 0, 2.0f);
-    draw_list->PopClipRect();
-  };
+  } else
+    imProc->stopSetupThread();
 }
+
+*/
 
 void GUI::showImProc() {
-  // show most recent frame or repeat previous frame if no new frame available
-  dear::Begin("Processed Image Capture", &guiConf.startImProc) && [this]() {
-    procFrames = imProc->getProcFrames();
-    int idx = 0;
-    for (auto &frame : procFrames) {
-      if (!frame.empty()) {
-        procGUIFrames[idx] = frame;
-        updateTexture(procGUIFrames[idx]);
+  if (guiConf.startImProc) {
+    imProc->startProcThread();
+    for (int idx = 0; idx < toml::find<int>(conf["improc"], "numChans"); ++idx) {
+      std::string windowName = "Processed Frame " + std::to_string(idx);
+      if (ImGui::Begin(windowName.c_str(), &guiConf.startImProc)) {
+        procGUIFrames[idx] = imProc->getProcFrame(idx);
+        (procGUIFrames[idx].empty)
+            ? ImGui::Text("Empty frame %d", idx)
+            : ImGui::Image((void *)(intptr_t)procGUIFrames[idx].texture,
+                           ImVec2(procGUIFrames[idx].width, procGUIFrames[idx].height));
+        ImGui::End();
       }
-      (procGUIFrames[idx].width > 0 && procGUIFrames[idx].height > 0)
-          ? ImGui::Image((void *)(intptr_t)procGUIFrames[idx].texture,
-                         ImVec2(procGUIFrames[idx].width, procGUIFrames[idx].height))
-          : ImGui::Text("Empty frame %d", idx);
-      idx++;
     }
-  };
+  } else
+    imProc->stopProcThread();
 }
 
-ImGuiWrapperReturnType GUI::render() {
-  dear::Begin("Menu") && [this]() {
-    ImGui::Text("Instructions: TODO");
-    ImGui::Text("Help (this might be a button?)");
-    dear::MainMenuBar() && [this]() {
-      dear::Menu("File") && [this]() { needToQuit = ImGui::MenuItem("Quit"); };
-      dear::Menu("Setup") && [this]() {
-        ImGui::MenuItem("Image Capture", nullptr, &guiConf.startImCap);
-        ImGui::MenuItem("Image Processing", nullptr, &guiConf.setupImProc);
-      };
-      dear::Menu("Debug") &&
-          [this]() { ImGui::MenuItem("Show Demo Window", nullptr, &guiConf.showDebug); };
-    };
-  };
+std::optional<int> GUI::render() {
+  setWindowFullscreen();
 
-  if (guiConf.startImCap) {
-    if (!imCap->started())
-      imCap->startCaptureThread();
-    showRawImCap();
-  } else if (imCap->started())
-    imCap->stopCaptureThread();
+  ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+  ImGui::Begin("DockSpace", nullptr, dockSpaceFlags); // not guaranteed to return true
+  ImGui::PopStyleVar();
+  ImGui::PopStyleVar(2);
 
-  if (guiConf.setupImProc) {
-    if (!imProc->startedSetup())
-      imProc->startSetupThread();
-    showImProcSetup();
-  } else if (imProc->startedSetup())
-    imProc->stopSetupThread();
+  // Submit the DockSpace
+  ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+  ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockNodeFlags);
 
-  if (guiConf.startImProc) {
-    if (!imProc->started())
-      imProc->startProcThread();
-    showImProc();
-  } else if (imProc->started())
-      imProc->stopProcThread();
+  if (ImGui::BeginMenuBar()) {
+    if (ImGui::BeginMenu("File")) {
+      needToQuit = ImGui::MenuItem("Quit");
+      ImGui::EndMenu();
+    }
+    if (ImGui::BeginMenu("Setup")) {
+      ImGui::MenuItem("Image Capture", nullptr, &guiConf.startImCap);
+      ImGui::MenuItem("Image Processing", nullptr, &guiConf.startImProc);
+      ImGui::EndMenu();
+    }
+    if (ImGui::BeginMenu("Debug")) {
+      ImGui::MenuItem("Show Demo Window", nullptr, &guiConf.showDebug);
+      ImGui::EndMenu();
+    }
+    ImGui::EndMenuBar();
+  }
 
-  if (guiConf.showDebug)
-    ImGui::ShowDemoWindow(&guiConf.showDebug);
+  ImGui::End();
+
+  showRawImCap();
+  showImProc();
+  ImGui::ShowDemoWindow(&guiConf.showDebug);
 
   if (needToQuit)
     return 0;
@@ -228,4 +220,23 @@ ImGuiWrapperReturnType GUI::render() {
 void GUI::startGUIThread() {
   guiThread = std::thread(&GUI::imguiMain, this);
   guiThread.join();
+}
+
+void GUI::contextMenu(bool enable) {
+  // Context menu (under default mouse threshold)
+  ImVec2 drag_delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
+  if (enable && drag_delta.x == 0.0f && drag_delta.y == 0.0f)
+    ImGui::OpenPopupOnItemClick("context", ImGuiPopupFlags_MouseButtonRight);
+  if (ImGui::BeginPopup("context")) {
+    if (adding_line)
+      points.resize(points.size() - 2);
+    adding_line = false;
+    if (ImGui::MenuItem("Remove one", NULL, false, points.Size > 0)) {
+      points.resize(points.size() - 2);
+    }
+    if (ImGui::MenuItem("Remove all", NULL, false, points.Size > 0)) {
+      points.clear();
+    }
+    ImGui::EndPopup();
+  }
 }

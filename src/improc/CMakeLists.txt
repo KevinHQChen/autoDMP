@@ -2,7 +2,7 @@
 set(HEADER_LIST "../../include/improc/improc.hpp")
 
 # Make an automatic library - will be static or dynamic based on user setting
-add_library(improc improc.cpp ${HEADER_LIST})     # target is created
+add_library(improc improc.cpp improc_helpers.cpp ${HEADER_LIST})     # target is created
 
 
 target_link_libraries(improc

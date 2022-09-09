@@ -4,15 +4,15 @@ set(HEADER_LIST "../../include/gui/gui.hpp")
 # Make an automatic library - will be static or dynamic based on user setting
 add_library(gui gui.cpp imgui_helpers.cpp ${HEADER_LIST})   # target is created
 
-include(FetchContent)
+# include(FetchContent)
 # FetchContent_Declare(_imguiwrap URL https://github.com/kfsone/imguiwrap/archive/refs/tags/v1.2.2.tar.gz)
-FetchContent_Declare(_imguiwrap GIT_REPOSITORY https://github.com/KevinHQChen/imguiwrap.git
-  GIT_TAG origin/main)
-FetchContent_MakeAvailable(_imguiwrap)
-message("imguiwrap vars: ${imguiwrap_SOURCE_DIR}")
-include_directories(${imguiwrap_SOURCE_DIR})
+# FetchContent_Declare(_imguiwrap GIT_REPOSITORY https://github.com/KevinHQChen/imguiwrap.git
+#   GIT_TAG origin/main)
+# FetchContent_MakeAvailable(_imguiwrap)
+# message("imguiwrap vars: ${imguiwrap_SOURCE_DIR}")
+# include_directories(${imguiwrap_SOURCE_DIR})
 
-# find_package(imgui CONFIG REQUIRED)
+find_package(imgui CONFIG REQUIRED)
 # find_package(SDL2 CONFIG REQUIRED)
 
 find_package(OpenGL REQUIRED)
@@ -45,8 +45,8 @@ target_link_libraries(
   gui
   PUBLIC util
   PUBLIC imcap
-  PUBLIC imguiwrap
-  # PUBLIC imgui::imgui
+  # PUBLIC imguiwrap
+  PUBLIC imgui::imgui
   # PRIVATE SDL2::SDL2 SDL2::SDL2main SDL2::SDL2-static
   PRIVATE ${OPENGL_opengl_LIBRARY}
   # PRIVATE ${OPENGL_glu_LIBRARY}

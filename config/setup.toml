@@ -6,7 +6,7 @@ clearColor = [0.45, 0.55, 0.6, 1.0]     # [x, y, z, w]
 enableVsync = 1
 keyboardNav = true
 startDark = false
-fontSize = 36.0
+fontSize = 18.0
 scale = 2.0
 fontPath = "/root/.local/share/fonts/JetBrainsMono-1.0.2/ttf/JetBrainsMono-Medium.ttf"
 
@@ -17,7 +17,7 @@ showDebug = false
 
 [cam]
 # select camera source [string: "Webcam"/"File"/"Andor"]
-source      = "Andor"
+source      = "Webcam"
 # if source = "File", the selected video file is used [string]
 file        = ""
 
@@ -73,6 +73,8 @@ TimeStampClockFrequency     = 0
 [improc]
 # enable/disable image processing [bool]
 enabled     = false
+# path for channel/template config data
+path    = "/autoDMP/config/improc/"
 # source for droplet interface templates [string: "fromVideo"/"fromFile"]
 tmplSrc     = "fromVideo"
 # select template matching threshold: pxIntensity/255 (8-bit) [double]

@@ -31,8 +31,8 @@
     {
       "name": "imgui",
       "default-features": false,
-      "$feature-description": "Platform/Renderer backends",
-      "features": ["sdl2-binding", "opengl3-binding", "glfw-binding"]
+      "$feature-description": "Platform/Renderer backends, docking support",
+      "features": ["sdl2-binding", "opengl3-binding", "glfw-binding", "docking-experimental"]
     },
     {
       "name": "fltk",

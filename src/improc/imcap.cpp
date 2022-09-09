@@ -13,10 +13,24 @@ ImCap::~ImCap() {
 }
 
 void ImCap::startCaptureThread() {
-  info("Starting image capture...");
-  startedImCap = true;
-  captureThread = std::thread(&ImCap::start, this);
-  captureThread.detach();
+  if (!started()) {
+    info("Starting image capture...");
+    startedImCap = true;
+    captureThread = std::thread(&ImCap::start, this);
+    captureThread.detach();
+  }
+}
+
+void ImCap::stopCaptureThread() {
+  if(started()) {
+    info("Stopping image capture...");
+    startedImCap = false;
+    if (captureThread.joinable())
+      captureThread.join();
+    cam->stop();
+    rawFrameQueuePtr->clear();
+    preFrameQueuePtr->clear();
+  }
 }
 
 void ImCap::start() {
@@ -35,16 +49,6 @@ void ImCap::start() {
 }
 
 bool ImCap::started() { return startedImCap; }
-
-void ImCap::stopCaptureThread() {
-  info("Stopping image capture...");
-  startedImCap = false;
-  if (captureThread.joinable())
-    captureThread.join();
-  cam->stop();
-  rawFrameQueuePtr->clear();
-  preFrameQueuePtr->clear();
-}
 
 cv::Mat ImCap::getRawFrame() {
   if (!rawFrameQueuePtr->empty())

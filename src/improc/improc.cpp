@@ -15,7 +15,7 @@ ImProc::ImProc(ImCap *imCap)
 }
 
 ImProc::~ImProc() {
-  stopSetupThread();
+  // stopSetupThread();
   stopProcThread();
   for (auto &q : procFrameQueueArr)
     delete q;
@@ -23,71 +23,96 @@ ImProc::~ImProc() {
     delete q;
 }
 
-void ImProc::startSetupThread() {
-  info("Starting image processing setup...");
-  startedImProcSetup = true;
-  imCap->clearPreFrameQueue();
-  setupThread = std::thread(&ImProc::startSetup, this);
-  setupThread.detach();
+// load channel/template images, bounding boxes from file
+void ImProc::loadConfig(std::string configPath) {
+  // cv::FileStorage chanPoseFile(configPath + "chanPose.yml", cv::FileStorage::READ);
+  // int angle;
+  // cv::Rect BBox;
+  // cv::Rect rotBBox;
+  // for (int i = 0; i < toml::get<int>(conf["improc"]["numChans"]); i++) {
+  //   if (chanPoseFile.isOpened()) {
+  //     chanPoseFile["rotAngle" + std::to_string(i)] >> angle;
+  //     chanPose.rotAngle.push_back(angle);
+  //     chanPoseFile["chanBBox" + std::to_string(i) + "x"] >> BBox.x;
+  //     chanPoseFile["chanBBox" + std::to_string(i) + "y"] >> BBox.y;
+  //     chanPoseFile["chanBBox" + std::to_string(i) + "width"] >> BBox.width;
+  //     chanPoseFile["chanBBox" + std::to_string(i) + "height"] >> BBox.height;
+  //     chanPose.chanBBox.push_back(BBox);
+  //     chanPoseFile["rotChanBBox" + std::to_string(i) + "x"] >> rotBBox.x;
+  //     chanPoseFile["rotChanBBox" + std::to_string(i) + "y"] >> rotBBox.y;
+  //     chanPoseFile["rotChanBBox" + std::to_string(i) + "width"] >> rotBBox.width;
+  //     chanPoseFile["rotChanBBox" + std::to_string(i) + "height"] >> rotBBox.height;
+  //     chanPose.rotChanBBox.push_back(rotBBox);
+  //   }
+  //   currChan = firstImage(chanPose.chanBBox[i]).clone(); // save cropped channel as separate image
+  //   if (chanPose.rotAngle[i] != 0) {
+  //     rotateMat(currChan, currChan, chanPose.rotAngle[i]); // rotate channel to straighten
+  //     chans[i] = currChan(chanPose.rotChanBBox[i])
+  //                    .clone(); // crop straightened channel from angled channel and use this image
+  //                              // to select templates from
+  //   } else
+  //     chans[i] = currChan;
+  // }
+
+  // // load channel bounding boxes
+  // for (auto &chan : chanConf) {
+  //   std::string chanName = toml::find<std::string>(chan.second, "name");
+  //   std::vector<int> chanPoseVec = toml::find<std::vector<int>>(chan.second, "pose");
+  //   cv::Rect chanPose(chanPoseVec[0], chanPoseVec[1], chanPoseVec[2], chanPoseVec[3]);
+  //   chanPose[chanName] = chanPose;
+  // }
 }
-
-void ImProc::stopSetupThread() {
-  info("Stopping image processing setup...");
-  startedImProcSetup = false;
-  if (setupThread.joinable())
-    setupThread.join();
-  imCap->clearPreFrameQueue();
-}
-
-void ImProc::startSetup() {
-  while(true) {
-  if (readFromFile)
-    // TODO read channel/template config from file
-  if (writeToFile)
-    // TODO write channel/template config to file
-  }
-
-  if (toml::get<std::string>(imProcConf["tmplSrc"]) == "fromFile") {
-  } else {
-    // TODO grab template from user-selected frame
-  }
-}
-
-bool ImProc::startedSetup() { return startedImProcSetup; }
 
 void ImProc::startProcThread() {
-  info("Starting image processing...");
-  startedImProc = true;
-  imCap->clearPreFrameQueue();
-  procThread = std::thread(&ImProc::start, this);
-  procThread.detach();
+  if (!started()) {
+    info("Starting image processing...");
+    startedImProc = true;
+    imCap->clearPreFrameQueue();
+    procThread = std::thread(&ImProc::start, this);
+    procThread.detach();
+  }
 }
 
 void ImProc::stopProcThread() {
-  info("Stopping image processing...");
-  startedImProc = false;
-  if (procThread.joinable())
-    procThread.join();
-  imCap->clearPreFrameQueue();
-  for (auto &q : procFrameQueueArr)
-    q->clear();
-  for (auto &q : tempResultQueueArr)
-    q->clear();
+  if (started()) {
+    info("Stopping image processing...");
+    startedImProc = false;
+    if (procThread.joinable())
+      procThread.join();
+    imCap->clearPreFrameQueue();
+    this->clearProcFrameQueues();
+    this->clearTempFrameQueues();
+  }
 }
 
 void ImProc::start() {
-  startedImProc = true;
-  while (startedImProc) {
-    continue;
-    // TODO implement image processing
-    // for (auto &q : procFrameQueueArr) {
-    //   if (q->size() > 0) {
-    //     cv::Mat frame = q->pop();
-    //     cv::Mat result;
-    //     cv::cvtColor(frame, result, cv::COLOR_BGR2GRAY);
-    //     tempResultQueueArr[q->getId()]->push(result);
-    //   }
-    // }
+  ChannelPose currPose;
+  while (started()) {
+    currPose = chanPose;
+    preFrame = imCap->getPreFrame();
+    // if(toml::get<std::string>(conf["cam"]["source"]) == "Webcam") preFrame.convertTo(preFrame, CV_8UC1, 255.0/65535);
+    if (!preFrame.empty()) {
+      info("currPose bbox: {}", currPose.bbox);
+      tempFrame = preFrame(currPose.bbox);
+      int idx = 0;
+      for (auto &q : procFrameQueueArr) {
+        // use currPose to crop preFrame
+        info("currPose chanBBox: {}", currPose.chanBBox[idx]);
+        tempPreFrame = tempFrame(currPose.chanBBox[idx]);
+        if (currPose.rotAngle[idx] != 0) {
+          rotateMat(tempPreFrame, tempProcFrame, currPose.rotAngle[idx]);
+          tempPreFrame = tempProcFrame(currPose.rotChanBBox[idx]);
+        }
+        tempProcFrame = tempPreFrame;
+        // TODO do template matching here
+        // info("tempPreFrame size: {}", tempPreFrame.size());
+        // info("tempProcFrame size: {}", tempProcFrame.size());
+        // info("currPose rotChanBBox: {}", currPose.rotChanBBox[idx]);
+        //
+        q->push(tempProcFrame);
+        idx++;
+      }
+    }
   }
 }
 
@@ -100,10 +125,18 @@ std::vector<cv::Mat> ImProc::getTempFrames() {
   return tempFrames;
 }
 
-std::vector<cv::Mat> ImProc::getProcFrames() {
-  std::vector<cv::Mat> procFrames;
+cv::Mat ImProc::getProcFrame(int idx) {
+  if (!procFrameQueueArr[idx]->empty())
+    return procFrameQueueArr[idx]->get();
+  return cv::Mat();
+}
+
+void ImProc::clearTempFrameQueues() {
+  for (auto &q : tempResultQueueArr)
+    q->clear();
+}
+
+void ImProc::clearProcFrameQueues() {
   for (auto &q : procFrameQueueArr)
-    if (!q->empty())
-      procFrames.push_back(q->get());
-  return procFrames;
+    q->clear();
 }
