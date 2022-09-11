@@ -56,8 +56,6 @@ struct GUIFrame {
   }
 };
 
-
-
 class GUI {
   ordered_value conf;
   guiConfig guiConf;
@@ -84,10 +82,6 @@ class GUI {
   ImGuiWindowFlags imProcSetupFlags = 0;
   bool needToQuit{false};
 
-  // for template matching
-  ChannelPose chanPose;
-  cv::Mat chans[4], firstChan, currChan;
-  cv::Rect firstChanBBox, firstRotChanBBox, templateBBox;
   // template matching interactions
   ImVector<ImVec2> points;
   ImVec2 canvas_p0, canvas_p1, canvas_sz;
@@ -115,11 +109,10 @@ public:
   int imguiMain();
 
   void showRawImCap();
-  void showImProcSetup();
   void showImProc();
+  void showImProcSetup();
 
   void contextMenu(bool enable);
 
   std::thread guiThread;
 };
-

@@ -75,13 +75,11 @@ TimeStampClockFrequency     = 0
 enabled     = false
 # path for channel/template config data
 path    = "/autoDMP/config/improc/"
-# source for droplet interface templates [string: "fromVideo"/"fromFile"]
-tmplSrc     = "fromVideo"
+# source for channel bounding boxes and droplet interface templates [string: "fromVideo"/"fromFile"]
+confSrc = "fromFile"
 # select template matching threshold: pxIntensity/255 (8-bit) [double]
 # 0.5 - 0.85 is a good range
 tmplThres   = 0.75
-# source for channel bounding boxes [string: "fromVideo"/"fromFile"]
-chanSrc     = "fromVideo"
 # number of channels to observe for improc
 numChans    = 3
 

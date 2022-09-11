@@ -141,10 +141,10 @@ void updateTexture(GUIFrame &frame) {
   GLenum imgDataType;
   if (frame.mat.type() == CV_8UC1) {
     imgDataType = GL_UNSIGNED_BYTE;
-    info("Image is CV_8UC1");
+    // info("Image is CV_8UC1");
   } else if (frame.mat.type() == CV_16UC1) {
     imgDataType = GL_UNSIGNED_SHORT;
-    info("Image is CV_16UC1");
+    // info("Image is CV_16UC1");
   } else {
     error("Unsupported image data type");
     return;
@@ -178,12 +178,12 @@ void updateTexture(GUIFrame &frame) {
 }
 
 void setWindowFullscreen() {
-    // set window to fullscreen
-    const ImGuiViewport *viewport = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(viewport->WorkPos);
-    ImGui::SetNextWindowSize(viewport->WorkSize);
+  // set window to fullscreen
+  const ImGuiViewport *viewport = ImGui::GetMainViewport();
+  ImGui::SetNextWindowPos(viewport->WorkPos);
+  ImGui::SetNextWindowSize(viewport->WorkSize);
 
-    ImGui::SetNextWindowViewport(viewport->ID);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+  ImGui::SetNextWindowViewport(viewport->ID);
+  ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+  ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 }

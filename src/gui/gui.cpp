@@ -10,7 +10,10 @@ GUI::GUI()
   // TODO may want to make GUI, ImCap, ImProc, Supervisor, etc. singletons
 }
 
-GUI::~GUI() { delete imProc; delete imCap; }
+GUI::~GUI() {
+  delete imProc;
+  delete imCap;
+}
 
 void GUI::showRawImCap() {
   if (guiConf.startImCap) {
@@ -18,11 +21,11 @@ void GUI::showRawImCap() {
 
     // setWindowFullscreen();
 
-    if(ImGui::Begin("Raw Image Capture", &guiConf.startImCap, imCapFlags)) {
+    if (ImGui::Begin("Raw Image Capture", &guiConf.startImCap, imCapFlags)) {
       rawFrame = imCap->getRawFrame();
-      (rawFrame.empty)
-        ? ImGui::Text("No image available")
-        : ImGui::Image((void *)(intptr_t)rawFrame.texture, ImVec2(rawFrame.width, rawFrame.height));
+      (rawFrame.empty) ? ImGui::Text("No image available")
+                       : ImGui::Image((void *)(intptr_t)rawFrame.texture,
+                                      ImVec2(rawFrame.width, rawFrame.height));
       ImGui::End();
     }
   } else
@@ -30,7 +33,6 @@ void GUI::showRawImCap() {
 }
 
 /*
-
 void GUI::showImProcSetup() {
   // TODO load template from file
   if(toml::get<std::string>(conf["improc"]["tmplSrc"]) == "fromFile") {
@@ -155,13 +157,12 @@ void GUI::showImProcSetup() {
   } else
     imProc->stopSetupThread();
 }
-
 */
 
 void GUI::showImProc() {
   if (guiConf.startImProc) {
     imProc->startProcThread();
-    for (int idx = 0; idx < toml::find<int>(conf["improc"], "numChans"); ++idx) {
+    for (int idx = 0; idx < toml::get<int>(conf["improc"]["numChans"]); ++idx) {
       std::string windowName = "Processed Frame " + std::to_string(idx);
       if (ImGui::Begin(windowName.c_str(), &guiConf.startImProc)) {
         procGUIFrames[idx] = imProc->getProcFrame(idx);
@@ -172,8 +173,64 @@ void GUI::showImProc() {
         ImGui::End();
       }
     }
+    showImProcSetup();
   } else
     imProc->stopProcThread();
+}
+
+void GUI::showImProcSetup() {
+  if (ImGui::Begin("ImProc Setup", &guiConf.startImProc)) {
+
+    // update junction
+    int junc[2] = {imProc->impConf.getJunction().x, imProc->impConf.getJunction().y};
+    ImGui::SliderInt("junction.x", &junc[0], 0, 1000);
+    ImGui::SliderInt("junction.y", &junc[1], 0, 1000);
+    imProc->impConf.setJunction(cv::Point(junc[0], junc[1]));
+
+    // update bbox
+    int bbox[4] = {imProc->impConf.getBBox().x, imProc->impConf.getBBox().y,
+                   imProc->impConf.getBBox().width,
+                   imProc->impConf.getBBox().height}; // x, y, width, height
+    ImGui::SliderInt("BBox.x", &bbox[0], 0, 1000);
+    ImGui::SliderInt("BBox.y", &bbox[1], 0, 1000);
+    ImGui::SliderInt("BBox.width", &bbox[2], 0, 1000);
+    ImGui::SliderInt("BBox.height", &bbox[3], 0, 1000);
+    imProc->impConf.setBBox(cv::Rect(bbox[0], bbox[1], bbox[2], bbox[3]));
+
+    // update chanWidth
+    int chanWidth = imProc->impConf.getChanWidth();
+    ImGui::SliderInt("Channel Width", &chanWidth, 0, 1000);
+    imProc->impConf.setChanWidth(chanWidth);
+
+    // update rotAngles
+    std::vector<int> rotAngles = imProc->impConf.getRotAngle();
+    for (int idx = 0; idx < toml::find<int>(conf["improc"], "numChans"); ++idx) {
+      std::string chanWinName = "Channel " + std::to_string(idx);
+      if (ImGui::CollapsingHeader(chanWinName.c_str())) {
+        std::string rotWinName = "Rot Angle " + std::to_string(idx);
+        ImGui::SliderInt(rotWinName.c_str(), &rotAngles[idx], -180, 180);
+      }
+    }
+    imProc->impConf.setRotAngle(rotAngles);
+
+    // use bbox, junction, chanWidth, rotAngle to update each channel's bboxes
+    std::vector<cv::Rect> chanBBoxes = imProc->impConf.getChanBBox();
+    chanBBoxes[0] = cv::Rect(junc[0], junc[1], bbox[2] / 2, bbox[3] / 2);
+    chanBBoxes[1] = cv::Rect(0, junc[1], bbox[2] / 2, bbox[3] / 2);
+    chanBBoxes[2] = cv::Rect(junc[0] - chanWidth / 2, 0, chanWidth, bbox[3] / 2);
+    imProc->impConf.setChanBBox(chanBBoxes);
+    std::vector<cv::Rect> rotChanBBoxes = imProc->impConf.getRotChanBBox();
+    rotChanBBoxes[0] = cv::Rect(bbox[3] / 4.0 * 1.414, 0, chanWidth, bbox[3] / 2.0 * 1.414);
+    rotChanBBoxes[1] = cv::Rect(bbox[3] / 4.0 * 1.414, 0, chanWidth, bbox[3] / 2.0 * 1.414);
+    rotChanBBoxes[2] = cv::Rect(0, 0, 0, 0);
+    imProc->impConf.setRotChanBBox(rotChanBBoxes);
+
+    // save to file
+    if (ImGui::Button("Save to file"))
+      imProc->saveConfig();
+
+    ImGui::End();
+  }
 }
 
 std::optional<int> GUI::render() {
@@ -183,11 +240,10 @@ std::optional<int> GUI::render() {
   ImGui::Begin("DockSpace", nullptr, dockSpaceFlags); // not guaranteed to return true
   ImGui::PopStyleVar();
   ImGui::PopStyleVar(2);
-
   // Submit the DockSpace
   ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
   ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockNodeFlags);
-
+  // Add menu to DockSpace
   if (ImGui::BeginMenuBar()) {
     if (ImGui::BeginMenu("File")) {
       needToQuit = ImGui::MenuItem("Quit");
@@ -204,13 +260,12 @@ std::optional<int> GUI::render() {
     }
     ImGui::EndMenuBar();
   }
-
   ImGui::End();
 
   showRawImCap();
   showImProc();
-  ImGui::ShowDemoWindow(&guiConf.showDebug);
-
+  if (guiConf.showDebug)
+    ImGui::ShowDemoWindow(&guiConf.showDebug);
   if (needToQuit)
     return 0;
 

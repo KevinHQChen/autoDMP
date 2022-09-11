@@ -22,7 +22,7 @@ void ImCap::startCaptureThread() {
 }
 
 void ImCap::stopCaptureThread() {
-  if(started()) {
+  if (started()) {
     info("Stopping image capture...");
     startedImCap = false;
     if (captureThread.joinable())

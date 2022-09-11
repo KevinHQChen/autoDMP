@@ -1,5 +1,6 @@
 # Image processing library for autoDMP
-set(HEADER_LIST "../../include/improc/improc.hpp")
+set(HEADER_LIST "../../include/improc/improc.hpp"
+    "../../include/improc/improc.config.hpp")
 
 # Make an automatic library - will be static or dynamic based on user setting
 add_library(improc improc.cpp improc_helpers.cpp ${HEADER_LIST})     # target is created
