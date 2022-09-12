@@ -6,7 +6,7 @@ static void glfw_error_callback(int error, const char *description) {
 }
 
 // imgui_main initializes an ImGui openGL/glfw backend and then runs
-// the passed std::function<std::optional<int>()> repeatedly until the std::optional it
+// the passed std::function<std::optional<int>()> is called repeatedly until the std::optional it
 // returns has a value, which is then returned as the exit code.
 int GUI::imguiMain() {
   // Setup window

@@ -5,14 +5,14 @@ height = 1080
 clearColor = [0.45, 0.55, 0.6, 1.0]     # [x, y, z, w]
 enableVsync = 1
 keyboardNav = true
-startDark = false
+startDark = true
 fontSize = 18.0
 scale = 2.0
 fontPath = "/root/.local/share/fonts/JetBrainsMono-1.0.2/ttf/JetBrainsMono-Medium.ttf"
 
 startImCap = false
-setupImProc = false
 startImProc = false
+startImProcSetup = false
 showDebug = false
 
 [cam]
@@ -71,8 +71,6 @@ TimeStampClock              = 0
 TimeStampClockFrequency     = 0
 
 [improc]
-# enable/disable image processing [bool]
-enabled     = false
 # path for channel/template config data
 path    = "/autoDMP/config/improc/"
 # source for channel bounding boxes and droplet interface templates [string: "fromVideo"/"fromFile"]

@@ -173,63 +173,101 @@ void GUI::showImProc() {
         ImGui::End();
       }
     }
-    showImProcSetup();
+
+    if (ImGui::Begin("Proc Image Capture", &guiConf.startImProc)) {
+      preFrame = imProc->getProcFrame();
+      (preFrame.empty) ? ImGui::Text("No image available")
+                       : ImGui::Image((void *)(intptr_t)preFrame.texture,
+                                      ImVec2(preFrame.width, preFrame.height));
+      ImGui::End();
+    }
   } else
     imProc->stopProcThread();
 }
 
 void GUI::showImProcSetup() {
-  if (ImGui::Begin("ImProc Setup", &guiConf.startImProc)) {
+  imProc->setSetupStatus(guiConf.startImProcSetup);
+  if (guiConf.startImProcSetup) {
+    if (ImGui::Begin("ImProc Setup", &guiConf.startImProcSetup)) {
+      // update junction
+      int junc[2] = {imProc->impConf.getJunction().x, imProc->impConf.getJunction().y};
+      ImGui::SliderInt("junction.x", &junc[0], 0, 1000);
+      ImGui::SliderInt("junction.y", &junc[1], 0, 1000);
+      imProc->impConf.setJunction(cv::Point(junc[0], junc[1]));
 
-    // update junction
-    int junc[2] = {imProc->impConf.getJunction().x, imProc->impConf.getJunction().y};
-    ImGui::SliderInt("junction.x", &junc[0], 0, 1000);
-    ImGui::SliderInt("junction.y", &junc[1], 0, 1000);
-    imProc->impConf.setJunction(cv::Point(junc[0], junc[1]));
+      // update bbox
+      int bbox[4] = {imProc->impConf.getBBox().x, imProc->impConf.getBBox().y,
+                     imProc->impConf.getBBox().width,
+                     imProc->impConf.getBBox().height}; // x, y, width, height
+      ImGui::SliderInt("BBox.x", &bbox[0], 0, 1000);
+      ImGui::SliderInt("BBox.y", &bbox[1], 0, 1000);
+      ImGui::SliderInt("BBox.width", &bbox[2], 0, 1000);
+      ImGui::SliderInt("BBox.height", &bbox[3], 0, 1000);
+      imProc->impConf.setBBox(cv::Rect(bbox[0], bbox[1], bbox[2], bbox[3]));
 
-    // update bbox
-    int bbox[4] = {imProc->impConf.getBBox().x, imProc->impConf.getBBox().y,
-                   imProc->impConf.getBBox().width,
-                   imProc->impConf.getBBox().height}; // x, y, width, height
-    ImGui::SliderInt("BBox.x", &bbox[0], 0, 1000);
-    ImGui::SliderInt("BBox.y", &bbox[1], 0, 1000);
-    ImGui::SliderInt("BBox.width", &bbox[2], 0, 1000);
-    ImGui::SliderInt("BBox.height", &bbox[3], 0, 1000);
-    imProc->impConf.setBBox(cv::Rect(bbox[0], bbox[1], bbox[2], bbox[3]));
+      // update chanWidth
+      int chanWidth = imProc->impConf.getChanWidth();
+      ImGui::SliderInt("Channel Width", &chanWidth, 0, 1000);
+      imProc->impConf.setChanWidth(chanWidth);
 
-    // update chanWidth
-    int chanWidth = imProc->impConf.getChanWidth();
-    ImGui::SliderInt("Channel Width", &chanWidth, 0, 1000);
-    imProc->impConf.setChanWidth(chanWidth);
-
-    // update rotAngles
-    std::vector<int> rotAngles = imProc->impConf.getRotAngle();
-    for (int idx = 0; idx < toml::find<int>(conf["improc"], "numChans"); ++idx) {
-      std::string chanWinName = "Channel " + std::to_string(idx);
-      if (ImGui::CollapsingHeader(chanWinName.c_str())) {
-        std::string rotWinName = "Rot Angle " + std::to_string(idx);
-        ImGui::SliderInt(rotWinName.c_str(), &rotAngles[idx], -180, 180);
+      // update rotAngles
+      std::vector<int> rotAngles = imProc->impConf.getRotAngle();
+      for (int idx = 0; idx < toml::find<int>(conf["improc"], "numChans"); ++idx) {
+        std::string chanWinName = "Channel " + std::to_string(idx);
+        if (ImGui::CollapsingHeader(chanWinName.c_str())) {
+          std::string rotWinName = "Rot Angle " + std::to_string(idx);
+          ImGui::SliderInt(rotWinName.c_str(), &rotAngles[idx], -180, 180);
+        }
       }
+      imProc->impConf.setRotAngle(rotAngles);
+
+      // update chanBBox, rotChanBBox (using bbox, junction, chanWidth, rotAngle)
+      std::vector<cv::Rect> chanBBoxes = imProc->impConf.getChanBBox();
+      chanBBoxes[0] = cv::Rect(junc[0], junc[1], bbox[2] / 2, bbox[3] / 2);
+      chanBBoxes[1] = cv::Rect(0, junc[1], bbox[2] / 2, bbox[3] / 2);
+      chanBBoxes[2] = cv::Rect(junc[0] - chanWidth / 2, 0, chanWidth, bbox[3] / 2);
+      imProc->impConf.setChanBBox(chanBBoxes);
+      std::vector<cv::Rect> rotChanBBoxes = imProc->impConf.getRotChanBBox();
+      rotChanBBoxes[0] = cv::Rect(bbox[3] / 4.0 * 1.414, 0, chanWidth, bbox[3] / 2.0 * 1.414);
+      rotChanBBoxes[1] = cv::Rect(bbox[3] / 4.0 * 1.414, 0, chanWidth, bbox[3] / 2.0 * 1.414);
+      rotChanBBoxes[2] = cv::Rect(0, 0, 0, 0);
+      imProc->impConf.setRotChanBBox(rotChanBBoxes);
+
+      // update tmplBBox
+      int tmplBBox[4] = {imProc->impConf.getTmplBBox().x, imProc->impConf.getTmplBBox().y,
+                         imProc->impConf.getTmplBBox().width,
+                         imProc->impConf.getTmplBBox().height}; // x, y, width, height
+      ImGui::SliderInt("TmplBBox.x", &tmplBBox[0], 0, 1000);
+      ImGui::SliderInt("TmplBBox.y", &tmplBBox[1], 0, 1000);
+      ImGui::SliderInt("TmplBBox.width", &tmplBBox[2], 0, 1000);
+      ImGui::SliderInt("TmplBBox.height", &tmplBBox[3], 0, 1000);
+      imProc->impConf.setTmplBBox(cv::Rect(tmplBBox[0], tmplBBox[1], tmplBBox[2], tmplBBox[3]));
+
+      // update tmplThres
+      float tmplThres = imProc->tmplThres;
+      ImGui::SliderFloat("Tmpl Thres", &tmplThres, 0.0f, 1.0f, "ratio = %.3f");
+      imProc->tmplThres = tmplThres;
+
+      // show tmplImg
+      std::array<cv::Mat, NUM_TEMPLATES> tmplImg = imProc->impConf.getTmplImg();
+      for (int idx = 0; idx < NUM_TEMPLATES; ++idx) {
+        tmplGUIFrames[idx] = tmplImg[idx];
+        (tmplGUIFrames[idx].empty)
+            ? ImGui::Text("Empty tmpl %d", idx)
+            : ImGui::Image((void *)(intptr_t)tmplGUIFrames[idx].texture,
+                           ImVec2(tmplGUIFrames[idx].width, tmplGUIFrames[idx].height));
+      }
+
+      // load from/save to file
+      if (ImGui::Button("Load from file"))
+        imProc->loadConfig();
+      if (ImGui::Button("Save to file"))
+        imProc->saveConfig();
+      if (ImGui::Button("Quit ImProc Setup"))
+        guiConf.startImProcSetup = false;
+
+      ImGui::End();
     }
-    imProc->impConf.setRotAngle(rotAngles);
-
-    // use bbox, junction, chanWidth, rotAngle to update each channel's bboxes
-    std::vector<cv::Rect> chanBBoxes = imProc->impConf.getChanBBox();
-    chanBBoxes[0] = cv::Rect(junc[0], junc[1], bbox[2] / 2, bbox[3] / 2);
-    chanBBoxes[1] = cv::Rect(0, junc[1], bbox[2] / 2, bbox[3] / 2);
-    chanBBoxes[2] = cv::Rect(junc[0] - chanWidth / 2, 0, chanWidth, bbox[3] / 2);
-    imProc->impConf.setChanBBox(chanBBoxes);
-    std::vector<cv::Rect> rotChanBBoxes = imProc->impConf.getRotChanBBox();
-    rotChanBBoxes[0] = cv::Rect(bbox[3] / 4.0 * 1.414, 0, chanWidth, bbox[3] / 2.0 * 1.414);
-    rotChanBBoxes[1] = cv::Rect(bbox[3] / 4.0 * 1.414, 0, chanWidth, bbox[3] / 2.0 * 1.414);
-    rotChanBBoxes[2] = cv::Rect(0, 0, 0, 0);
-    imProc->impConf.setRotChanBBox(rotChanBBoxes);
-
-    // save to file
-    if (ImGui::Button("Save to file"))
-      imProc->saveConfig();
-
-    ImGui::End();
   }
 }
 
@@ -250,8 +288,9 @@ std::optional<int> GUI::render() {
       ImGui::EndMenu();
     }
     if (ImGui::BeginMenu("Setup")) {
-      ImGui::MenuItem("Image Capture", nullptr, &guiConf.startImCap);
-      ImGui::MenuItem("Image Processing", nullptr, &guiConf.startImProc);
+      ImGui::MenuItem("Start Image Capture", nullptr, &guiConf.startImCap);
+      ImGui::MenuItem("Setup Image Processing", nullptr, &guiConf.startImProcSetup);
+      ImGui::MenuItem("Start Image Processing", nullptr, &guiConf.startImProc);
       ImGui::EndMenu();
     }
     if (ImGui::BeginMenu("Debug")) {
@@ -263,6 +302,7 @@ std::optional<int> GUI::render() {
   ImGui::End();
 
   showRawImCap();
+  showImProcSetup();
   showImProc();
   if (guiConf.showDebug)
     ImGui::ShowDemoWindow(&guiConf.showDebug);

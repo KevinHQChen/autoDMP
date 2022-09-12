@@ -96,10 +96,9 @@ class GUI {
   // for showing raw/processed frames
   GUIFrame rawFrame, preFrame;
   GUIFrame procGUIFrames[3];
+  std::array<GUIFrame, NUM_TEMPLATES> tmplGUIFrames;
   std::vector<cv::Mat> procFrames;
   std::vector<int> procWidths, procHeights;
-
-  std::vector<QueueFPS<cv::Point> *> procDataQueues;
 
 public:
   GUI();
