@@ -81,19 +81,26 @@ void ImProc::start() {
     preFrame = imCap->getPreFrame();
     try {
       if (!preFrame.empty()) {
+        auto startTime = high_resolution_clock::now();
         // grab most recent raw frame
         tempFrame = preFrame(impConf.getBBox());
-        cv::rectangle(tempFrame, cv::Point(impConf.getBBox().x, impConf.getBBox().y),
-                      cv::Point(impConf.getBBox().x + impConf.getBBox().width,
-                                impConf.getBBox().y + impConf.getBBox().height),
-                      cv::Scalar(0, 255, 0), 2, 8, 0);
         for (int ch = 0; ch < numChans; ++ch) {
           // use chanPose to crop preFrame
           tempPreFrame = tempFrame(impConf.getChanBBox()[ch]);
           if (impConf.getRotAngle()[ch] != 0) {
+            // assume tempPreFrame is square
+            cv::RotatedRect rr = cv::RotatedRect(
+                cv::Point2f(tempPreFrame.cols / 2, tempPreFrame.rows / 2),
+                cv::Size2f(impConf.getRotChanBBox()[ch].width, impConf.getRotChanBBox()[ch].height),
+                impConf.getRotAngle()[ch]);
+            cv::Point2f vertices[4];
+            rr.points(vertices);
+            for (int i = 0; i < 4; ++i)
+              cv::line(tempPreFrame, vertices[i], vertices[(i + 1) % 4], cv::Scalar::all(0), 1);
             rotateMat(tempPreFrame, tempProcFrame, impConf.getRotAngle()[ch]);
             tempPreFrame = tempProcFrame(impConf.getRotChanBBox()[ch]);
-          }
+          } else
+            cv::rectangle(tempFrame, impConf.getChanBBox()[ch], cv::Scalar::all(0));
           tempProcFrame = tempPreFrame;
 
           // if setup is currently active, use tmplBBox to update tmplImg
@@ -132,14 +139,17 @@ void ImProc::start() {
 
           // push processed frame to queue for display
           // tempResultQueueArr[ch]->push(tempResultFrame[i]);
-          procFrameQueueArr[ch]->push(tempProcFrame.clone());
+          procFrameQueueArr[ch]->push(tempProcFrame);
 
           // debug info
           // info("tempPreFrame size: {}", tempPreFrame.size());
           // info("tempProcFrame size: {}", tempProcFrame.size());
           // info("currPose rotChanBBox: {}", currPose.rotChanBBox[idx]);
         } // iterate over all channels
-        procFrameQueuePtr->push(preFrame.clone());
+        procFrameQueuePtr->push(tempFrame);
+        auto stopTime = high_resolution_clock::now();
+        auto duration = duration_cast<milliseconds>(stopTime - startTime);
+        info("imProc duration: {}", duration.count());
       }
     } catch (cv::Exception &e) {
       error("Message: {}", e.what());

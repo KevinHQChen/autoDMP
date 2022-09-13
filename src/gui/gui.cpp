@@ -189,12 +189,6 @@ void GUI::showImProcSetup() {
   imProc->setSetupStatus(guiConf.startImProcSetup);
   if (guiConf.startImProcSetup) {
     if (ImGui::Begin("ImProc Setup", &guiConf.startImProcSetup)) {
-      // update junction
-      int junc[2] = {imProc->impConf.getJunction().x, imProc->impConf.getJunction().y};
-      ImGui::SliderInt("junction.x", &junc[0], 0, 1000);
-      ImGui::SliderInt("junction.y", &junc[1], 0, 1000);
-      imProc->impConf.setJunction(cv::Point(junc[0], junc[1]));
-
       // update bbox
       int bbox[4] = {imProc->impConf.getBBox().x, imProc->impConf.getBBox().y,
                      imProc->impConf.getBBox().width,
@@ -205,9 +199,15 @@ void GUI::showImProcSetup() {
       ImGui::SliderInt("BBox.height", &bbox[3], 0, 1000);
       imProc->impConf.setBBox(cv::Rect(bbox[0], bbox[1], bbox[2], bbox[3]));
 
+      // update junction
+      int junc[2] = {imProc->impConf.getJunction().x, imProc->impConf.getJunction().y};
+      junc[0] = bbox[2] / 2;
+      ImGui::SliderInt("junction.y", &junc[1], 0, 1000);
+      imProc->impConf.setJunction(cv::Point(junc[0], junc[1]));
+
       // update chanWidth
       int chanWidth = imProc->impConf.getChanWidth();
-      ImGui::SliderInt("Channel Width", &chanWidth, 0, 1000);
+      ImGui::SliderInt("Channel Width", &chanWidth, 0, 100);
       imProc->impConf.setChanWidth(chanWidth);
 
       // update rotAngles
@@ -223,13 +223,15 @@ void GUI::showImProcSetup() {
 
       // update chanBBox, rotChanBBox (using bbox, junction, chanWidth, rotAngle)
       std::vector<cv::Rect> chanBBoxes = imProc->impConf.getChanBBox();
-      chanBBoxes[0] = cv::Rect(junc[0], junc[1], bbox[2] / 2, bbox[3] / 2);
-      chanBBoxes[1] = cv::Rect(0, junc[1], bbox[2] / 2, bbox[3] / 2);
-      chanBBoxes[2] = cv::Rect(junc[0] - chanWidth / 2, 0, chanWidth, bbox[3] / 2);
+      chanBBoxes[0] = cv::Rect(junc[0], junc[1], bbox[2] / 2, bbox[2] / 2);
+      chanBBoxes[1] = cv::Rect(0, junc[1], bbox[2] / 2, bbox[2] / 2);
+      chanBBoxes[2] = cv::Rect(junc[0] - chanWidth / 2, 0, chanWidth, junc[1]);
       imProc->impConf.setChanBBox(chanBBoxes);
       std::vector<cv::Rect> rotChanBBoxes = imProc->impConf.getRotChanBBox();
-      rotChanBBoxes[0] = cv::Rect(bbox[3] / 4.0 * 1.414, 0, chanWidth, bbox[3] / 2.0 * 1.414);
-      rotChanBBoxes[1] = cv::Rect(bbox[3] / 4.0 * 1.414, 0, chanWidth, bbox[3] / 2.0 * 1.414);
+      rotChanBBoxes[0] = cv::Rect(bbox[2] / 2.0 * 1.414 / 2.0 - chanWidth / 2.0, 0, chanWidth,
+                                  bbox[2] / 2.0 * 1.414);
+      rotChanBBoxes[1] = cv::Rect(bbox[2] / 2.0 * 1.414 / 2.0 - chanWidth / 2.0, 0, chanWidth,
+                                  bbox[2] / 2.0 * 1.414);
       rotChanBBoxes[2] = cv::Rect(0, 0, 0, 0);
       imProc->impConf.setRotChanBBox(rotChanBBoxes);
 
@@ -237,10 +239,10 @@ void GUI::showImProcSetup() {
       int tmplBBox[4] = {imProc->impConf.getTmplBBox().x, imProc->impConf.getTmplBBox().y,
                          imProc->impConf.getTmplBBox().width,
                          imProc->impConf.getTmplBBox().height}; // x, y, width, height
-      ImGui::SliderInt("TmplBBox.x", &tmplBBox[0], 0, 1000);
+      ImGui::SliderInt("TmplBBox.x", &tmplBBox[0], 0, 100);
       ImGui::SliderInt("TmplBBox.y", &tmplBBox[1], 0, 1000);
-      ImGui::SliderInt("TmplBBox.width", &tmplBBox[2], 0, 1000);
-      ImGui::SliderInt("TmplBBox.height", &tmplBBox[3], 0, 1000);
+      ImGui::SliderInt("TmplBBox.width", &tmplBBox[2], 0, 100);
+      ImGui::SliderInt("TmplBBox.height", &tmplBBox[3], 0, 100);
       imProc->impConf.setTmplBBox(cv::Rect(tmplBBox[0], tmplBBox[1], tmplBBox[2], tmplBBox[3]));
 
       // update tmplThres

@@ -1,25 +1,25 @@
 rotAngle = [135,-135,0]
-chanWidth = 100
-junction = {y=200,x=200}
-bbox = {height=400,width=600,y=0,x=0}
-tmplBBox = {height=55,width=55,y=156,x=5}
+chanWidth = 39
+junction = {y=227,x=160}
+bbox = {height=402,width=320,y=51,x=164}
+tmplBBox = {height=30,width=30,y=0,x=0}
 
 chanBBox = [
-{height=200,width=300,y=200,x=200},
-{height=200,width=300,y=200,x=0},
-{height=200,width=100,y=0,x=150},
+{height=160,width=160,y=227,x=160},
+{height=160,width=160,y=227,x=0},
+{height=227,width=39,y=0,x=141},
 ]
 
 [[rotChanBBox]]
-height = 282
-width = 100
+height = 226
+width = 39
 y = 0
-x = 141
+x = 93
 [[rotChanBBox]]
-height = 282
-width = 100
+height = 226
+width = 39
 y = 0
-x = 141
+x = 93
 [[rotChanBBox]]
 height = 0
 width = 0

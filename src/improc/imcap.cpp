@@ -39,12 +39,18 @@ void ImCap::start() {
   // (pretty sure) if timerInterval is less than 1000ms, only 1 buffer (i.e .40 frames) is needed
   cam->start((int)(100 / 1000)); // timerInterval of 100ms
   while (startedImCap) {
+    // auto startTime = high_resolution_clock::now();
     imCapSuccess = cam->process(currImg);
     if (imCapSuccess) {
       rawFrameQueuePtr->push(currImg.clone());
+      if (toml::get<std::string>(conf["cam"]["source"]) == "Andor")
+        currImg.convertTo(currImg, CV_8UC1, 255.0 / 65535);
       preFrameQueuePtr->push(currImg.clone());
     } else
-      error("cannot read image");
+      continue; // error("cannot read image");
+    // auto stopTime = high_resolution_clock::now();
+    // auto duration = duration_cast<milliseconds>(stopTime - startTime);
+    // info("imCap duration: {}", duration.count());
   }
 }
 

@@ -295,7 +295,7 @@ bool Cam::process(cv::Mat &image) {
     // (0 timeout causes AT_WaitBuffer to hang quite often, setting to 15ms
     // helps a lot)
     info("zyla process wait buffer returns ");
-    returnCode = AT_WaitBuffer(handle, &pointer, &size, 15);
+    returnCode = AT_WaitBuffer(handle, &pointer, &size, 20);
     info(returnCode);
     if (returnCode != 0)
       return false;
