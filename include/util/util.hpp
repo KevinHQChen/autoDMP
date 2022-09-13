@@ -99,6 +99,7 @@ struct ffstream {
 
 template <class T> ffstream &operator<<(ffstream &st, T val) {
   st.fileStream << val;
+  st.fileStream.flush(); // "commits" current buffer to file (in case close() is not called)
   return st;
 };
 

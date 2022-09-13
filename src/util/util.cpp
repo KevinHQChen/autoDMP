@@ -12,7 +12,11 @@ ffstream::ffstream(std::string filename) {
   // filename.append(now.toString("yyyy_MM_dd_HH_mm_ss"));
   // filename.append(".txt");
   fileStream.open(filename);
+  if (!fileStream.is_open()) {
+    error("Could not open file");
+  }
   fileStream << filename << "\n";
+  fileStream.flush(); // "commits" current buffer to file (in case close() is not called)
 }
 
 ffstream::~ffstream() { fileStream.close(); }
