@@ -165,6 +165,10 @@ void updateTexture(GUIFrame &frame) {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   // upload pixels into texture
   glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+  glPixelStorei(
+      GL_UNPACK_ALIGNMENT,
+      1); // https://stackoverflow.com/a/45486871
+          // (https://www.khronos.org/opengl/wiki/Common_Mistakes#Texture_upload_and_pixel_reads)
   glTexImage2D(GL_TEXTURE_2D, // texture type
                0,             // pyramid level (for mip-mapping), 0 is the top level
                GL_RGB,        // internal color format to convert to
