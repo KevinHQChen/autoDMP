@@ -123,7 +123,7 @@ void saveData(std::string fileName, Eigen::MatrixXd matrix);
 Eigen::MatrixXd openData(std::string fileToOpen);
 
 // create a generic type queue class template for storing frames
-template <typename T> class QueueFPS : public std::queue<T> {
+template <typename T> class QueueFPS : public std::queue<std::shared_ptr<T>> {
 public:
   // constructor:
   // chrono uses the concepts of timepoints and durations
@@ -135,9 +135,9 @@ public:
   QueueFPS(std::string fileName)
       : counter(0), out(fileName), startTime(std::chrono::steady_clock::now()) {}
 
-  void push(const T &entry) {
+  void push(const std::shared_ptr<T> &entry) {
     std::lock_guard<std::mutex> lockGuard(mutex);
-    std::queue<T>::push(entry);
+    std::queue<std::shared_ptr<T>>::push(entry);
     out << std::fixed << std::setprecision(3);
     out << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() -
                                                                  startTime)
@@ -155,8 +155,13 @@ public:
 
   T get() {
     std::lock_guard<std::mutex> lockGuard(mutex);
-    T entry = this->front();
+    auto entry_sp = this->front();
+    T entry = *(this->front());
+    info("refcount before pop: {}", entry_sp.use_count());
     this->pop();
+    info("refcount after pop: {}", entry_sp.use_count());
+    entry_sp.reset();
+    info("refcount after reset: {}", entry_sp.use_count());
     return entry;
   }
 

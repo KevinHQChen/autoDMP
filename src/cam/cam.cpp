@@ -232,7 +232,7 @@ void Cam::start(const int &Ts) {
       // each index of buffers*[] is a uc pointer
       // so for each index, we'll point it to a newly allocated space
       // that holds a single image divided into uc-sized chunks
-      buffers[i] = new unsigned char[bufferSize + 8]; // add 7 to allow data alignment
+      buffers[i] = new unsigned char[bufferSize + 7]; // add 7 to allow data alignment
       // this magic somehow aligns it to 64-bit
       alignedBuffers[i] = reinterpret_cast<unsigned char *>(
           (reinterpret_cast<unsigned long long>(buffers[i % queueLength]) + 7) & ~7);
@@ -262,6 +262,8 @@ void Cam::start(const int &Ts) {
          imageSizeBytes, frameRate, imageWidth, imageLeft, imageHeight, imageTop, imageStride,
          queueLength);
   } else if (toml::get<std::string>(camConf["source"]) == "Webcam")
+    imageWidth = offlineCam->get(cv::CAP_PROP_FRAME_WIDTH);
+    imageHeight = offlineCam->get(cv::CAP_PROP_FRAME_HEIGHT);
     offlineCam->set(cv::CAP_PROP_FPS, frameRate);
 }
 
@@ -283,43 +285,45 @@ void Cam::stop() {
   }
 }
 
-bool Cam::process(cv::Mat &image) {
+bool Cam::process(std::shared_ptr<cv::Mat> &image) {
   std::lock_guard<std::mutex> lockGuard(mutex);
   if (toml::get<std::string>(camConf["source"]) == "Andor") {
     // grab buffer
-    unsigned char *pointer;
-    int size;
+    unsigned char *imageData;
+    int imageSize;
 
     // put calling thread to sleep until timeout elapses or an image becomes
     // available (if timeout equals 0, only get existing frames without waiting)
-    // (0 timeout causes AT_WaitBuffer to hang quite often, setting to 15ms
-    // helps a lot)
+    // (btw 0 timeout causes AT_WaitBuffer to hang quite often on Windows)
     info("zyla process wait buffer returns ");
-    returnCode = AT_WaitBuffer(handle, &pointer, &size, 20);
+    // check if frame is available, if so store its address in imageData pointer, and size in imageSize
+    returnCode = AT_WaitBuffer(handle, &imageData, &imageSize, AT_INFINITE);
     info(returnCode);
-    if (returnCode != 0)
+    if (returnCode != AT_SUCCESS)
       return false;
 
-    // frame is available, so store its address in pointer, size in size, and
-    // timeout in ms re-queue circular buffer
+    // re-queue circular buffer
     returnCode = AT_QueueBuffer(handle, alignedBuffers[accumNumFrames % queueLength], bufferSize);
     // std::cerr << "re-queue returns " << returnCode << "\n";
     accumNumFrames++;
     info("accumNumFrames: {}", accumNumFrames);
     // clean up buffer
-    image = cv::Mat(imageHeight, imageWidth, CV_16UC1);
-    returnCode = AT_ConvertBuffer(pointer, reinterpret_cast<unsigned char *>(image.data),
+    // image = std::make_shared<cv::Mat>(imageHeight, imageWidth, CV_16UC1);
+    returnCode = AT_ConvertBuffer(imageData, &image->at<unsigned char>(0, 0),
                                   imageWidth, imageHeight, imageStride, imageEncode, L"Mono16");
     info("convert returns {}", returnCode);
-    if (returnCode == 0)
+    if (returnCode == AT_SUCCESS)
       return true;
   } else {
     if (!offlineCam->read(rawImage)) {
       error("cannot read frame from video stream");
       return false;
     }
-    cv::cvtColor(rawImage, image, cv::COLOR_RGB2GRAY);
+    cv::cvtColor(rawImage, *image, cv::COLOR_RGB2GRAY);
     // std::this_thread::sleep_for(milliseconds(6));
     return true;
   }
 }
+
+AT_64 Cam::getImgWidth() { return imageWidth; }
+AT_64 Cam::getImgHeight() { return imageHeight; }

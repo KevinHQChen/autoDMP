@@ -7,7 +7,8 @@ class ImCap {
   ordered_value conf;
   Cam *cam;
   QueueFPS<cv::Mat> *rawFrameQueuePtr, *preFrameQueuePtr;
-  cv::Mat currImg{0, 0, CV_16UC1};
+  // cv::Mat currImg; //{0, 0, CV_16UC1};
+  std::shared_ptr<cv::Mat> currImg;
   bool imCapSuccess;
   std::atomic<bool> startedImCap{false};
   std::thread captureThread;

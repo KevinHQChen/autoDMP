@@ -128,7 +128,7 @@ void ImProc::start() {
 
           if (currMaxLoc.has_value()) {
             // save timestamp and maxLoc to file
-            procDataQArr[ch]->push(*currMaxLoc);
+            // procDataQArr[ch]->push(*currMaxLoc);
             procDataQArr[ch]->out << currMaxLoc->x << ", " << currMaxLoc->y << "\n";
             // draw tmpl match for each channel
             cv::rectangle(tempProcFrame, *currMaxLoc,
@@ -139,14 +139,14 @@ void ImProc::start() {
 
           // push processed frame to queue for display
           // tempResultQueueArr[ch]->push(tempResultFrame[i]);
-          procFrameQueueArr[ch]->push(tempProcFrame);
+          // procFrameQueueArr[ch]->push(tempProcFrame);
 
           // debug info
           // info("tempPreFrame size: {}", tempPreFrame.size());
           // info("tempProcFrame size: {}", tempProcFrame.size());
           // info("currPose rotChanBBox: {}", currPose.rotChanBBox[idx]);
         } // iterate over all channels
-        procFrameQueuePtr->push(tempFrame);
+        // procFrameQueuePtr->push(tempFrame);
         auto stopTime = high_resolution_clock::now();
         auto duration = duration_cast<milliseconds>(stopTime - startTime);
         info("imProc duration: {}", duration.count());
