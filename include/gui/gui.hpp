@@ -113,5 +113,8 @@ public:
 
   void contextMenu(bool enable);
 
+  void testthread();
+  void testthreadfunc();
   std::thread guiThread;
+  std::thread testThread;
 };

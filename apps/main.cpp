@@ -7,8 +7,26 @@
 
 // NOLINTNEXTLINE(bugprone-exception-escape)
 int main(int, const char **) {
-  GUI *gui = new GUI();
-  gui->startGUIThread();
+  cv::namedWindow("Display window");
+
+  // GUI *gui = new GUI();
+  ImCap *imCap = new ImCap();
+  imCap->startCaptureThread();
+
+  while (true) {
+    cv::Mat frame = imCap->getRawFrame();
+    if (!frame.empty())
+      cv::imshow("Display window", frame);
+
+    if ((char)cv::waitKey(1) != -1) {
+      cv::destroyAllWindows();
+      break;
+    }
+  }
+
+  imCap->stopCaptureThread();
+
+  // gui->startGUIThread();
   // ordered_value conf = toml::parse<toml::discard_comments,
   // tsl::ordered_map>("config/setup.toml"); Cam *cam = new Cam(0, conf); cv::Mat currentImage =
   // cv::Mat(0, 0, CV_16UC1); cv::namedWindow("Display window"); bool imCapSuccess; char key;

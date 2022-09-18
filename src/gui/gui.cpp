@@ -21,13 +21,13 @@ void GUI::showRawImCap() {
 
     // setWindowFullscreen();
 
-    if (ImGui::Begin("Raw Image Capture", &guiConf.startImCap, imCapFlags)) {
-      rawFrame = imCap->getRawFrame();
-      (rawFrame.empty) ? ImGui::Text("No image available")
-                       : ImGui::Image((void *)(intptr_t)rawFrame.texture,
-                                      ImVec2(rawFrame.width, rawFrame.height));
-      ImGui::End();
-    }
+    // if (ImGui::Begin("Raw Image Capture", &guiConf.startImCap, imCapFlags)) {
+    //   rawFrame = imCap->getRawFrame();
+    //   (rawFrame.empty) ? ImGui::Text("No image available")
+    //                    : ImGui::Image((void *)(intptr_t)rawFrame.texture,
+    //                                   ImVec2(rawFrame.width, rawFrame.height));
+    //   ImGui::End();
+    // }
   } else
     imCap->stopCaptureThread();
 }
@@ -314,9 +314,29 @@ std::optional<int> GUI::render() {
   return {};
 }
 
+void GUI::testthread() {
+  testThread = std::thread(&GUI::testthreadfunc, this);
+  testThread.detach();
+}
+
+void GUI::testthreadfunc() {
+  cv::namedWindow("Display window");
+  while (true) {
+    cv::imshow("Display window", imCap->getRawFrame());
+    if ((char)cv::waitKey(1) != -1) {
+      cv::destroyAllWindows();
+      break;
+    }
+  }
+}
+
+
 void GUI::startGUIThread() {
-  guiThread = std::thread(&GUI::imguiMain, this);
-  guiThread.join();
+  // guiThread = std::thread(&GUI::imguiMain, this);
+  // if (guiThread.joinable())
+  //   guiThread.join();
+  if (testThread.joinable())
+    testThread.join();
 }
 
 void GUI::contextMenu(bool enable) {
