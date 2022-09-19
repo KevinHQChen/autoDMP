@@ -309,7 +309,7 @@ bool Cam::process(cv::Mat &image) {
     info("accumNumFrames: {}", accumNumFrames);
     // clean up buffer
     image = cv::Mat(imageHeight, imageWidth, CV_16UC1);
-    returnCode = AT_ConvertBuffer(imageData, image.at<unsigned char>(0, 0),
+    returnCode = AT_ConvertBuffer(imageData, &image.at<unsigned char>(0, 0),
                                   imageWidth, imageHeight, imageStride, imageEncode, L"Mono16");
     info("convert returns {}", returnCode);
     if (returnCode == AT_SUCCESS)
