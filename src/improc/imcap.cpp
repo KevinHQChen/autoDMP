@@ -42,10 +42,10 @@ void ImCap::start() {
     // auto startTime = high_resolution_clock::now();
     imCapSuccess = cam->process(currImg);
     if (imCapSuccess) {
-      rawFrameQueuePtr->push(currImg);
+      rawFrameQueuePtr->push(currImg.clone());
       if (toml::get<std::string>(conf["cam"]["source"]) == "Andor")
         currImg.convertTo(currImg, CV_8UC1, 255.0 / 65535);
-      preFrameQueuePtr->push(currImg);
+      preFrameQueuePtr->push(currImg.clone());
     } else
       continue; // error("cannot read image");
     // auto stopTime = high_resolution_clock::now();

@@ -130,19 +130,19 @@ int GUI::imguiMain() {
   return exitCode.value_or(0);
 }
 
-void updateTexture(GUIFrame &frame) {
+void GUIFrame::updateTexture() {
   // mimic opencv grayscale image in opengl by making each color channel the same
-  if (frame.mat.empty()) {
+  if (mat.empty()) {
     error("Image is empty");
     return;
   }
 
   // get image data type
   GLenum imgDataType;
-  if (frame.mat.type() == CV_8UC1) {
+  if (mat.type() == CV_8UC1) {
     imgDataType = GL_UNSIGNED_BYTE;
     // info("Image is CV_8UC1");
-  } else if (frame.mat.type() == CV_16UC1) {
+  } else if (mat.type() == CV_16UC1) {
     imgDataType = GL_UNSIGNED_SHORT;
     // info("Image is CV_16UC1");
   } else {
@@ -151,20 +151,20 @@ void updateTexture(GUIFrame &frame) {
   }
 
   cv::Mat tmp;
-  cv::merge(std::vector<cv::Mat>{frame.mat, frame.mat, frame.mat}, tmp);
+  cv::merge(std::vector<cv::Mat>{mat, mat, mat}, tmp);
 
-  if (frame.texture == 0) {
+  if (texture == 0) {
     // update texture
     // glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
     // create opengl texture identifier
-    glGenTextures(1, &frame.texture);
-    glBindTexture(GL_TEXTURE_2D, frame.texture);
-    // setup filtering parameters for display
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glGenTextures(1, &texture);
   }
+  glBindTexture(GL_TEXTURE_2D, texture);
+  // setup filtering parameters for display
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   // upload pixels into texture
   glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
   glPixelStorei(

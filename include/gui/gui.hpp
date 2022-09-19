@@ -27,10 +27,6 @@
 
 void setWindowFullscreen();
 
-struct GUIFrame;
-
-void updateTexture(GUIFrame &frame);
-
 struct GUIFrame {
   cv::Mat mat;
   int width;
@@ -38,12 +34,14 @@ struct GUIFrame {
   bool empty;
   GLuint texture{0};
 
+  void updateTexture();
+
   GUIFrame &operator=(const cv::Mat &matInstance) {
     // grab most recent non-empty frame
     mat = matInstance;
     if (!mat.empty()) {
       empty = false;
-      updateTexture(*this);
+      updateTexture();
       width = mat.cols;
       height = mat.rows;
       // or repeat previous frame if no new frame available

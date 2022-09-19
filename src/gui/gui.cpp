@@ -168,7 +168,7 @@ void GUI::showImProc() {
         procGUIFrames[idx] = imProc->getProcFrame(idx);
         (procGUIFrames[idx].empty)
             ? ImGui::Text("Empty frame %d", idx)
-            : ImGui::Image((void *)(intptr_t)procGUIFrames[idx].texture,
+            : ImGui::Image((ImTextureID)procGUIFrames[idx].texture,
                            ImVec2(procGUIFrames[idx].width, procGUIFrames[idx].height));
         ImGui::End();
       }
@@ -177,7 +177,7 @@ void GUI::showImProc() {
     if (ImGui::Begin("Proc Image Capture", &guiConf.startImProc)) {
       preFrame = imProc->getProcFrame();
       (preFrame.empty) ? ImGui::Text("No image available")
-                       : ImGui::Image((void *)(intptr_t)preFrame.texture,
+                       : ImGui::Image((ImTextureID)preFrame.texture,
                                       ImVec2(preFrame.width, preFrame.height));
       ImGui::End();
     }
