@@ -153,16 +153,18 @@ void updateTexture(GUIFrame &frame) {
   cv::Mat tmp;
   cv::merge(std::vector<cv::Mat>{frame.mat, frame.mat, frame.mat}, tmp);
 
-  // update texture
-  // glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-  // create opengl texture identifier
-  glGenTextures(1, &frame.texture);
-  glBindTexture(GL_TEXTURE_2D, frame.texture);
-  // setup filtering parameters for display
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  if (frame.texture == 0) {
+    // update texture
+    // glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    // create opengl texture identifier
+    glGenTextures(1, &frame.texture);
+    glBindTexture(GL_TEXTURE_2D, frame.texture);
+    // setup filtering parameters for display
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  }
   // upload pixels into texture
   glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
   glPixelStorei(
@@ -178,7 +180,7 @@ void updateTexture(GUIFrame &frame) {
                GL_BGR,             // input image format
                imgDataType, // image data type (https://www.khronos.org/opengl/wiki/OpenGL_Type)
                tmp.ptr());  // pointer to data
-  glGenerateMipmap(GL_TEXTURE_2D);
+  // glGenerateMipmap(GL_TEXTURE_2D);
 }
 
 void setWindowFullscreen() {

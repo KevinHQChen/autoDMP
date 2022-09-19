@@ -36,7 +36,7 @@ struct GUIFrame {
   int width;
   int height;
   bool empty;
-  GLuint texture;
+  GLuint texture{0};
 
   GUIFrame &operator=(const cv::Mat &matInstance) {
     // grab most recent non-empty frame
@@ -113,8 +113,5 @@ public:
 
   void contextMenu(bool enable);
 
-  void testthread();
-  void testthreadfunc();
   std::thread guiThread;
-  std::thread testThread;
 };

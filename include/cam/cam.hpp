@@ -31,7 +31,7 @@ public:
 
   void start(const int &Ts); // void singleAcq(cv::Mat &image);
   void stop();
-  bool process(std::shared_ptr<cv::Mat> &image);
+  bool process(cv::Mat &image);
   AT_64 getImgWidth();
   AT_64 getImgHeight();
   AT_H handle;

@@ -285,7 +285,7 @@ void Cam::stop() {
   }
 }
 
-bool Cam::process(std::shared_ptr<cv::Mat> &image) {
+bool Cam::process(cv::Mat &image) {
   std::lock_guard<std::mutex> lockGuard(mutex);
   if (toml::get<std::string>(camConf["source"]) == "Andor") {
     // grab buffer
@@ -308,8 +308,8 @@ bool Cam::process(std::shared_ptr<cv::Mat> &image) {
     accumNumFrames++;
     info("accumNumFrames: {}", accumNumFrames);
     // clean up buffer
-    // image = std::make_shared<cv::Mat>(imageHeight, imageWidth, CV_16UC1);
-    returnCode = AT_ConvertBuffer(imageData, &image->at<unsigned char>(0, 0),
+    image = cv::Mat(imageHeight, imageWidth, CV_16UC1);
+    returnCode = AT_ConvertBuffer(imageData, image.at<unsigned char>(0, 0),
                                   imageWidth, imageHeight, imageStride, imageEncode, L"Mono16");
     info("convert returns {}", returnCode);
     if (returnCode == AT_SUCCESS)
@@ -319,7 +319,7 @@ bool Cam::process(std::shared_ptr<cv::Mat> &image) {
       error("cannot read frame from video stream");
       return false;
     }
-    cv::cvtColor(rawImage, *image, cv::COLOR_RGB2GRAY);
+    cv::cvtColor(rawImage, image, cv::COLOR_RGB2GRAY);
     // std::this_thread::sleep_for(milliseconds(6));
     return true;
   }
