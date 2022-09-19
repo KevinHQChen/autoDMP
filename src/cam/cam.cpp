@@ -261,10 +261,11 @@ void Cam::start(const int &Ts) {
          "Queue Length: {}\n",
          imageSizeBytes, frameRate, imageWidth, imageLeft, imageHeight, imageTop, imageStride,
          queueLength);
-  } else if (toml::get<std::string>(camConf["source"]) == "Webcam")
+  } else if (toml::get<std::string>(camConf["source"]) == "Webcam") {
     imageWidth = offlineCam->get(cv::CAP_PROP_FRAME_WIDTH);
     imageHeight = offlineCam->get(cv::CAP_PROP_FRAME_HEIGHT);
     offlineCam->set(cv::CAP_PROP_FPS, frameRate);
+  }
 }
 
 void Cam::stop() {
