@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ctrl/state/state.h"
+#include "ctrl/state/state.hpp"
 
-class State0 : State {
+class State0 : public State {
   static Model model;
   static Eigen::MatrixXd yref_traj;
   double yref;

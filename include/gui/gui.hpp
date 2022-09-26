@@ -21,6 +21,7 @@
 
 #include "improc/imcap.hpp"
 #include "improc/improc.hpp"
+#include "ctrl/supervisor.hpp"
 #include "util/util.hpp"
 
 #include <cstdio>
@@ -60,7 +61,7 @@ class GUI {
 
   ImCap *imCap = nullptr;
   ImProc *imProc = nullptr;
-  // Supervisor *supervisor = nullptr;
+  Supervisor *supervisor = nullptr;
 
   GLFWwindow *window;
   std::optional<std::pair<int, int>> newSize{};

@@ -182,6 +182,11 @@ cv::Mat ImProc::getProcFrame() {
   return cv::Mat();
 }
 
+cv::Point ImProc::getProcData(int idx) {
+  if (!procDataQArr[idx]->empty())
+    return procDataQArr[idx]->get();
+  return cv::Point();
+}
 
 void ImProc::clearTempFrameQueues() {
   for (auto &q : tempResultQueueArr)

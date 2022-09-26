@@ -4,6 +4,11 @@
 
 class Supervisor; // forward declaration
 
+struct StateData {
+  Eigen::Matrix currPos;
+  Eigen::Matrix u, usat;
+};
+
 class State {
 protected:
   Supervisor *sv_;

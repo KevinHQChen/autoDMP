@@ -2,9 +2,8 @@
 
 GUI::GUI()
     : conf(toml::parse<toml::discard_comments, tsl::ordered_map>("config/setup.toml")),
-      guiConf(toml::find<guiConfig>(conf, "gui")), imCap(new ImCap()), imProc(new ImProc(imCap))
-// , supervisor(new Supervisor())
-{
+      guiConf(toml::find<guiConfig>(conf, "gui")), imCap(new ImCap()), imProc(new ImProc(imCap)),
+      supervisor(new Supervisor(imProc)) {
   info("Config type: {}", type_name<decltype(guiConf)>());
   info("Parsed config: {}", toml::find(conf, "gui"));
   // TODO may want to make GUI, ImCap, ImProc, Supervisor, etc. singletons

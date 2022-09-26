@@ -60,6 +60,7 @@ public:
   std::vector<cv::Mat> getTempFrames();
   cv::Mat getProcFrame(int idx);
   cv::Mat getProcFrame();
+  cv::Point getProcData(int idx);
   void clearTempFrameQueues();
   void clearProcFrameQueues();
 };
