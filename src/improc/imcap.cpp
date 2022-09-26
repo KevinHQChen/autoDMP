@@ -2,8 +2,9 @@
 
 ImCap::ImCap()
     : conf(toml::parse<toml::discard_comments, tsl::ordered_map>("config/setup.toml")),
-      cam(new Cam(0, conf)), rawFrameQueuePtr(new QueueFPS<cv::Mat>("rawFramesQueue.txt")),
-      preFrameQueuePtr(new QueueFPS<cv::Mat>("preFramesQueue.txt")) {}
+      dataPath(toml::get<std::string>(conf["postproc"]["rawDataPath"])), cam(new Cam(0, conf)),
+      rawFrameQueuePtr(new QueueFPS<cv::Mat>(dataPath + "rawFramesQueue.txt")),
+      preFrameQueuePtr(new QueueFPS<cv::Mat>(dataPath + "preFramesQueue.txt")) {}
 
 ImCap::~ImCap() {
   stopCaptureThread();

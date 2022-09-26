@@ -15,7 +15,7 @@ void rotateMat(cv::Mat &src, cv::Mat &dst, double angle);
 
 class ImProc {
   ordered_value conf;
-  std::string confPath;
+  std::string confPath, dataPath;
   int numChans;
   ImCap *imCap = nullptr;
   QueueFPS<cv::Mat> *procFrameQueuePtr;

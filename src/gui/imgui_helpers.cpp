@@ -153,6 +153,7 @@ void GUIFrame::updateTexture() {
   cv::Mat tmp;
   cv::merge(std::vector<cv::Mat>{mat, mat, mat}, tmp);
 
+  // https://github.com/ocornut/imgui/issues/4628
   if (texture == 0) {
     // update texture
     // glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);

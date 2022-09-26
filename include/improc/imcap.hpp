@@ -5,6 +5,7 @@
 
 class ImCap {
   ordered_value conf;
+  std::string dataPath;
   Cam *cam;
   QueueFPS<cv::Mat> *rawFrameQueuePtr, *preFrameQueuePtr;
   cv::Mat currImg{0, 0, CV_16UC1};

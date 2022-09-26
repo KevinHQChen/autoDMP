@@ -2,18 +2,19 @@
 
 ImProc::ImProc(ImCap *imCap)
     : conf(toml::parse<toml::discard_comments, tsl::ordered_map>("config/setup.toml")),
-      confPath(toml::get<std::string>(conf["improc"]["path"])),
+      confPath(toml::get<std::string>(conf["improc"]["confPath"])),
+      dataPath(toml::get<std::string>(conf["postproc"]["procDataPath"])),
       numChans(toml::get<int>(conf["improc"]["numChans"])), imCap(imCap),
-      procFrameQueuePtr(new QueueFPS<cv::Mat>("procFramesQueue.txt")),
-      tempResultQueueArr({new QueueFPS<cv::Mat>("tempResultsQueue1.txt"),
-                          new QueueFPS<cv::Mat>("tempResultsQueue2.txt"),
-                          new QueueFPS<cv::Mat>("tempResultsQueue3.txt")}),
-      procFrameQueueArr({new QueueFPS<cv::Mat>("procFramesQueue1.txt"),
-                         new QueueFPS<cv::Mat>("procFramesQueue2.txt"),
-                         new QueueFPS<cv::Mat>("procFramesQueue3.txt")}),
-      procDataQArr({new QueueFPS<cv::Point>("procDataQueue1.txt"),
-                    new QueueFPS<cv::Point>("procDataQueue2.txt"),
-                    new QueueFPS<cv::Point>("procDataQueue3.txt")}) {
+      procFrameQueuePtr(new QueueFPS<cv::Mat>(dataPath + "procFramesQueue.txt")),
+      tempResultQueueArr({new QueueFPS<cv::Mat>(dataPath + "tempResultsQueue1.txt"),
+                          new QueueFPS<cv::Mat>(dataPath + "tempResultsQueue2.txt"),
+                          new QueueFPS<cv::Mat>(dataPath + "tempResultsQueue3.txt")}),
+      procFrameQueueArr({new QueueFPS<cv::Mat>(dataPath + "procFramesQueue1.txt"),
+                         new QueueFPS<cv::Mat>(dataPath + "procFramesQueue2.txt"),
+                         new QueueFPS<cv::Mat>(dataPath + "procFramesQueue3.txt")}),
+      procDataQArr({new QueueFPS<cv::Point>(dataPath + "procDataQueue1.txt"),
+                    new QueueFPS<cv::Point>(dataPath + "procDataQueue2.txt"),
+                    new QueueFPS<cv::Point>(dataPath + "procDataQueue3.txt")}) {
   for (int ch = 0; ch < numChans; ch++)
     procDataQArr[ch]->out << "time (ms), maxLoc.x (px), maxLoc.y (px)\n";
 

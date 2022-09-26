@@ -72,7 +72,7 @@ TimeStampClockFrequency     = 0
 
 [improc]
 # path for channel/template config data
-path    = "/autoDMP/config/improc/"
+confPath    = "/autoDMP/config/improc/"
 # source for channel bounding boxes and droplet interface templates [string: "fromVideo"/"fromFile"]
 confSrc = "fromFile"
 # select template matching threshold: pxIntensity/255 (8-bit) [double]
@@ -88,6 +88,8 @@ status      = "disabled"
 dryRun      = true
 
 [postproc]
-path        = "/autoDMP/data/"
-saveRaw     = false
-saveProc    = true
+# path for improc data
+rawDataPath     = "/autoDMP/data/imcap/"
+procDataPath    = "/autoDMP/data/improc/"
+saveRaw         = false
+saveProc        = true
