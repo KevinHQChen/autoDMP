@@ -1,7 +1,10 @@
 #include "ctrl/supervisor.hpp" // ensures supervisor.hpp compiles in isolation
 #include "ctrl/state/state0.hpp"
 
-Supervisor::Supervisor(ImProc *imProc) : imProc(imProc), currState_(new State0(this)) {}
+Supervisor::Supervisor(ImProc *imProc)
+    : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")),
+      dataPath(toml::get<std::string>(conf["ctrl"]["dataPath"])),
+      currState_(new State0(this)), imProc(imProc) {}
 
 Supervisor::~Supervisor() {
     delete currState_;
@@ -31,38 +34,39 @@ void Supervisor::stopThread() {
 }
 
 void Supervisor::start() {
-    while (started()) {
-      // detect & update current state from imProc measurements
-      currState
+  while (started()) {
+    if (currState_->measurementAvailable()) {
+      // events are pushed to a FIFO event queue by GUI
+      // get the first event in the queue and pop it
+      if (currEvent_ == nullptr && !eventQueue_->empty())
+          currEvent_ = eventQueue_->get();
 
-      // hold droplets in current state while checking for transition events from event queue
-      if (eventQueue.size() > 0) {
-        Event *event = eventQueue.front();
-        eventQueue.pop();
-        State->handleEvent(event);
-        delete event;
-      } else {
-        hold();
-      }
+      // call the current state's trajectory generation function corresponding to the event
+      // (e.g. generate, merge, etc)
+      if (currEvent_ != nullptr)
+        currState_->handleEvent(currEvent_);
 
+      currState_->updateMeasurement();
 
-
-      if(procDataAvail()) {
-          // events are pushed to a FIFO event queue by GUI
-          // get the first event in the queue and pop it
-          event = eventQueue.get();
-          // call the current state's trajectory generation function corresponding to the event (e.g. hold, generate, merge, etc)
-          currentTraj = generateTraj(event);
-          // call the current state's step function to generate optimal control signals at current time step
-          controlSignals = step();
-          setPump(controlSignals);
-      }
+      // call the current state's step function to generate optimal control signals at current time
+      // step
+      controlSignals = step();
+      setPump(controlSignals);
     }
+  }
 }
 
 bool Supervisor::started() {
   return startedCtrl;
 }
+
+template <typename T> void Supervisor::updateState() {
+    delete currState_;
+    currState_ = new T(this);
+}
+
+
+
 
 Eigen::Matrix<int16_t, 3, 1> Supervisor::getCtrlData() {
     if (!ctrlDataQueuePtr->empty())

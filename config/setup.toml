@@ -82,10 +82,12 @@ tmplThres   = 0.75
 numChans    = 3
 
 [ctrl]
+# path for control data
+dataPath    = "/autoDMP/data/ctrl/"
 # status of supervisory controller [string: "disabled"/"sysID"/enabled"]
-status      = "disabled"
+status          = "disabled"
 # perform all steps but don't send control signal to pump [bool]
-dryRun      = true
+dryRun          = true
 
 [postproc]
 # path for improc data

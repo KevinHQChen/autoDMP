@@ -20,7 +20,6 @@ class ImProc {
   ImCap *imCap = nullptr;
   QueueFPS<cv::Mat> *procFrameQueuePtr;
   std::vector<QueueFPS<cv::Mat> *> tempResultQueueArr, procFrameQueueArr;
-  std::vector<QueueFPS<cv::Point> *> procDataQArr;
   std::vector<int> compParams;
 
   cv::Mat preFrame{0, 0, CV_16UC1}, tempFrame{0, 0, CV_16UC1}, tempPreFrame{0, 0, CV_16UC1},
@@ -42,6 +41,7 @@ class ImProc {
 
 public:
   ImProcConfig impConf;
+  std::vector<QueueFPS<cv::Point> *> procDataQArr;
 
   ImProc(ImCap *imCap);
   ~ImProc();
@@ -63,4 +63,5 @@ public:
   cv::Point getProcData(int idx);
   void clearTempFrameQueues();
   void clearProcFrameQueues();
+  void clearProcDataQueues();
 };

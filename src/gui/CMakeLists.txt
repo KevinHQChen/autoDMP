@@ -1,8 +1,9 @@
 # GUI library for autoDMP
-set(HEADER_LIST "../../include/gui/gui.hpp")
+set(HEADER_LIST "../../include/gui/gui.hpp"
+    "../../include/gui/guiframe.hpp")
 
 # Make an automatic library - will be static or dynamic based on user setting
-add_library(gui gui.cpp imgui_helpers.cpp ${HEADER_LIST})   # target is created
+add_library(gui gui.cpp ${HEADER_LIST})   # target is created
 
 # include(FetchContent)
 # FetchContent_Declare(_imguiwrap URL https://github.com/kfsone/imguiwrap/archive/refs/tags/v1.2.2.tar.gz)

@@ -23,37 +23,11 @@
 #include "improc/improc.hpp"
 #include "ctrl/supervisor.hpp"
 #include "util/util.hpp"
+#include "gui/guiframe.hpp"
 
 #include <cstdio>
 
 void setWindowFullscreen();
-
-struct GUIFrame {
-  cv::Mat mat;
-  int width;
-  int height;
-  bool empty;
-  GLuint texture{0};
-
-  void updateTexture();
-
-  GUIFrame &operator=(const cv::Mat &matInstance) {
-    // grab most recent non-empty frame
-    mat = matInstance;
-    if (!mat.empty()) {
-      empty = false;
-      updateTexture();
-      width = mat.cols;
-      height = mat.rows;
-      // or repeat previous frame if no new frame available
-    } else if (width > 0 && height > 0)
-      empty = false;
-    else
-      empty = true;
-
-    return *this; // this is apparently inferred by compiler? still works without it
-  }
-};
 
 class GUI {
   ordered_value conf;

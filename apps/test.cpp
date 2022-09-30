@@ -39,22 +39,34 @@ int main(int argc, char *argv[]) {
 
   Eigen::VectorXd a, b, c;
   a.resize(3);
-  b.resize(4);
-  // c.resize(5);
+  b.resize(3);
+  c.resize(5);
   a << 1, 2, 3;
-  b << 1, 2, 3, 4;
-  // c << 1, 2, 3, 4, 5;
+  b << 1, 2, 4;
+  c << 1, 2, 3, 4, 5;
 
   c(0) = a(0);
   c(1) = a(1);
   c(2) = a(2);
   a = b;
-  std::cout << a << "\n";
-  std::cout << c << "\n";
-  // a = c;
-  // c = a;
-  // std::cout << a << "\n";
-  // std::cout << c << "\n";
+  info("a: {}", a);
+  info("c: {}", c);
+
+  info("slice of c: {}", c(b.array(), Eigen::all));
+
+
+  Eigen::MatrixXd dynamicMatrix;// = Eigen::Matrix<double, 3, 3>({1,2,3},{4,5,6},{7,8,9});
+  dynamicMatrix.resize(3, 3);
+  dynamicMatrix << 1, 2, 3,
+                   4, 5, 6,
+                   7, 8, 9;
+  info("dynamicMatrix:\n{}", dynamicMatrix);
+
+  Eigen::Matrix<double, 3, 3> fixedMatrix = dynamicMatrix;
+  info("fixedMatrix:\n{}", fixedMatrix);
+
+  Eigen::Matrix<int, 3, 1> selectedChs = Eigen::Matrix<int, 3, 1>(1,2,3);
+  info("selectedChs:\n{}", selectedChs);
   return 0;
 }
 

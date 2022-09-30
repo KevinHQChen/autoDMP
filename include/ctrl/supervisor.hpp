@@ -3,16 +3,17 @@
 #include "util/util.hpp"
 #include "improc/improc.hpp"
 
+struct Event;
 struct StateData;
 class State; // forward declaration
 
 class Supervisor {
   ordered_value conf;
   std::string dataPath;
-  ImProc *imProc = nullptr;
 
-  State *currState_;
+  State *currState_ = nullptr;
   StateData *currStateData_;
+  QueueFPS<Event *> *eventQueue_;
   QueueFPS<Eigen::Matrix<int16_t, 3, 1>> *ctrlDataQueuePtr;
 
   std::atomic<bool> startedCtrl{false};
@@ -22,8 +23,13 @@ class Supervisor {
   void start();
 
 public:
+  Event *currEvent_ = nullptr;
+  ImProc *imProc = nullptr;
+
   Supervisor(ImProc *imProc);
   ~Supervisor();
+
+  std::string getDataPath() const { return dataPath; }
 
   void startThread();
   void stopThread();
@@ -43,8 +49,5 @@ public:
   void merge();
   void split();
 
-  template <typename T> void updateState() {
-    delete currState_;
-    currState_ = new T(this);
-  }
+  template <typename T> void updateState();
 };

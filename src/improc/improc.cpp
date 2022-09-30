@@ -1,7 +1,7 @@
 #include "improc/improc.hpp"
 
 ImProc::ImProc(ImCap *imCap)
-    : conf(toml::parse<toml::discard_comments, tsl::ordered_map>("config/setup.toml")),
+    : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")),
       confPath(toml::get<std::string>(conf["improc"]["confPath"])),
       dataPath(toml::get<std::string>(conf["postproc"]["procDataPath"])),
       numChans(toml::get<int>(conf["improc"]["numChans"])), imCap(imCap),
@@ -195,5 +195,10 @@ void ImProc::clearTempFrameQueues() {
 
 void ImProc::clearProcFrameQueues() {
   for (auto &q : procFrameQueueArr)
+    q->clear();
+}
+
+void ImProc::clearProcDataQueues() {
+  for (auto &q : procDataQArr)
     q->clear();
 }

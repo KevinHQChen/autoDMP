@@ -33,7 +33,10 @@
 
 using namespace spdlog;
 using namespace std::chrono;
+using Vector1d = Eigen::Matrix<double, 1, 1>;
 using ordered_value = toml::basic_value<toml::discard_comments, tsl::ordered_map, std::vector>;
+
+#define TOML11_PARSE_IN_ORDER(...) toml::parse<toml::discard_comments, tsl::ordered_map>(__VA_ARGS__)
 
 // print variable type in human-readable format
 // usage (): info("var type: {}", type_name<decltype(var)>());

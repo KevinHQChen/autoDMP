@@ -2,12 +2,13 @@
 
 #include "util/util.hpp"
 
-class Supervisor; // forward declaration
-
-struct StateData {
-  Eigen::Matrix currPos;
-  Eigen::Matrix u, usat;
+struct Event {
+  int srcState, destState;
+  Eigen::Vector3d destPos; // as % of channel length
+  Eigen::Vector3d vel; // as px/second
 };
+
+class Supervisor; // forward declaration
 
 class State {
 protected:
@@ -16,6 +17,11 @@ protected:
 public:
   State(Supervisor *sv);
   virtual ~State();
+
+  virtual bool measurementAvailable() = 0;
+  virtual void updateMeasurement() = 0;
+
+  virtual void handleEvent(Event *event) = 0;
 
   virtual Eigen::Matrix<int16_t, 3, 1> step() = 0; // pure virtual - makes State an abstract class
 };
