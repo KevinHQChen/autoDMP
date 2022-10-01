@@ -148,8 +148,23 @@ void GUI::showCtrl() {
   if (guiConf.startCtrlSetup) {
     if (ImGui::Begin("Ctrl Setup", &guiConf.startCtrlSetup)) {
       // TODO display eventQueue
+      ImGui::Text("Event Queue");
+      ImGui::Separator();
+      // for (int i = 0; i < supervisor->eventQueue_->size(); ++i) {
+      //   ImGui::Text("Event: %s", event.c_str());
+      // }
 
       // TODO display current event
+      ImGui::Text("Current Event");
+      ImGui::Separator();
+      ImGui::Text("Source State: %d", supervisor->currEvent_->srcState);
+      ImGui::Text("Destination State: %d", supervisor->currEvent_->destState);
+      ImGui::Text("Destination Position (ch0): %f", supervisor->currEvent_->destPos(0));
+      ImGui::Text("Destination Position (ch1): %f", supervisor->currEvent_->destPos(1));
+      ImGui::Text("Destination Position (ch2): %f", supervisor->currEvent_->destPos(2));
+      ImGui::Text("Velocity (ch0): %f", supervisor->currEvent_->vel(0));
+      ImGui::Text("Velocity (ch1): %f", supervisor->currEvent_->vel(1));
+      ImGui::Text("Velocity (ch2): %f", supervisor->currEvent_->vel(2));
 
       // TODO add buttons, textboxes, sliders to add/remove events
       int srcState = 0, destState = 0, pos[3] = {0, 0, 0}, vel[3] = {0, 0, 0};

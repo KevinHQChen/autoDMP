@@ -38,30 +38,29 @@ State1::~State1() {
 
 // check for new measurements on selected channels
 bool State1::measurementAvailable() {
-  measAvail = true;
-  trueMeasAvail = true;
+  bool tmpMeasAvail = true;
   for (int i = 0; i != ch.rows(); ++i) {
-    trueMeasAvail &= !sv_->imProc->procDataQArr[ch(i)]->empty();
-    measAvail &=
+    trueMeasAvail[ch(i)] = !sv_->imProc->procDataQArr[ch(i)]->empty();
+    measAvail[ch(i)] =
         duration_cast<milliseconds>(steady_clock::now() - prevCtrlTime[ch(i)]).count() >= 25;
+
+    if (obsv[ch(i)] || (!obsv[ch(i)] && trueMeasAvail[ch(i)])) {
+      tmpMeasAvail &= trueMeasAvail[ch(i)];
+      if (!stateTransitionCondition)
+        obsv[ch(i)] = true;
+    }
+    else
+      tmpMeasAvail &= measAvail[ch(i)];
   }
 
-  if (trueMeasAvail)
-    openLoop = false;
-  else if (stateTransitionCondition)
-    openLoop = true;
-
-  if (openLoop)
-    return measAvail;
-  else
-    return trueMeasAvail;
+  return tmpMeasAvail;
 }
 
 // update instantaneous trajectory vectors
 void State1::updateMeasurement() {
   for (int i = 0; i != ch.rows(); ++i) {
     // update measurement vectors dy, y
-    if (trueMeasAvail)
+    if (trueMeasAvail[ch(i)])
       dy(ch(i)) = sv_->imProc->procDataQArr[ch(i)]->get().y - yref(ch(i));
     else
       dy(ch(i)) = dyhat(ch(i));
@@ -80,8 +79,8 @@ void State1::updateMeasurement() {
 }
 
 void State1::handleEvent(Event *event) {
-  if (event->srcState != 0) {
-    info("Invalid event! source state should be 0, but is actually {}", event->srcState);
+  if (event->srcState != 1) {
+    info("Invalid event! source state should be 1, but is actually {}", event->srcState);
     delete sv_->currEvent_;
     sv_->currEvent_ = nullptr;
     return;
@@ -107,15 +106,55 @@ void State1::handleEvent(Event *event) {
     destReached &= std::abs(yref(ch(i)) - yDest(ch(i))) < event->vel(ch(i)) * 25e-3;
   }
 
-  if ((event->destState == 2) && (yref(0) > 0.9 * yrefScale(0)))
-
+  // remain in State 1
+  //   |__|        |__|
+  //   |  |   =>   |  |
+  //  /_/\ \      /_/\ \
+  // / /  \ \    / /  \ \.
+  if (event->destState == 1) {
     if (destReached) {
       yref = yDest;
       delete sv_->currEvent_;
       sv_->currEvent_ = nullptr;
-      if (event->destState == 1)
-        sv_->updateState<State1>();
     }
+  }
+
+  // transition to State 0
+  //   |__|        |  |
+  //   |  |   =>   |  |
+  //  /_/\ \      / /\_\
+  // / /  \ \    / /  \ \.
+  if (event->destState == 0) {
+    if (yref(1) > 0.9 * yrefScale(1) && yref(2) > 0.9 * yrefScale(2) && obsv[1] && obsv[2]) {
+      obsv[1] = false;
+      obsv[2] = false;
+      sv_->imProc->clearProcDataQueues();
+      stateTransitionCondition = true;
+    }
+    if (!obsv[1] && !obsv[2] && !sv_->imProc->procDataQArr[0]->empty()) {
+      delete sv_->currEvent_;
+      sv_->currEvent_ = nullptr;
+      sv_->updateState<State0>();
+    }
+  }
+
+  // transition to State 2
+  //   |__|        |__|
+  //   |  |   =>   |  |
+  //  /_/\ \      / /\_\
+  // / /  \ \    / /  \ \.
+  if (event->destState == 2) {
+    if (yref(1) > 0.9 * yrefScale(1) && obsv[1]) {
+      obsv[1] = false;
+      sv_->imProc->clearProcDataQueues();
+      stateTransitionCondition = true;
+    }
+    if (!obsv[1] && !sv_->imProc->procDataQArr[0]->empty()) {
+      delete sv_->currEvent_;
+      sv_->currEvent_ = nullptr;
+      // sv_->updateState<State2>();
+    }
+  }
 }
 
 Eigen::Matrix<int16_t, 3, 1> State1::step() {

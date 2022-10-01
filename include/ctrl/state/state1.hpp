@@ -3,6 +3,7 @@
 #include "ctrl/state/state.hpp"
 
 class State1 : public State {
+public:
   // system matrices
   Vector2ui ch;
   Eigen::Matrix2d Ad, Ad_, Bd, Cd, Cd_, CdInv, K1, K2, Qw, Rv;
@@ -19,12 +20,12 @@ class State1 : public State {
   Eigen::Vector3d dy, dyref;
   Eigen::Vector3d yhat, dxhat, dyhat, ytilde;
 
-  bool firstMeasAvail[1] = {false};
-  bool measAvail, trueMeasAvail;
-  bool openLoop = true;
+  bool firstMeasAvail[3] = {false, false, false};
+  bool measAvail[3] = {true, true, true};
+  bool trueMeasAvail[3] = {true, true, true};
+  bool obsv[3] = {false, false, false};
   bool stateTransitionCondition = false;
 
-public:
   State1(Supervisor *supervisor);
   ~State1();
 

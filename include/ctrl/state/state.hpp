@@ -2,6 +2,34 @@
 
 #include "util/util.hpp"
 
+// pump layout
+//   top-down view
+//     P3      P4
+//     oil     water
+//     | ch2   | ch1
+//      \     /
+//        \ /
+//         |
+//         | ch3
+//         |
+//        / \
+//      /     \
+//     |       |
+//     P2      P1
+//     outlet  outlet
+
+//   camera view
+//      outlet
+//      P1 + P2
+//         |
+//         | ch3
+//         |
+//        / \
+//      /     \
+//     | ch2   | ch1
+//     oil     water
+//     P3      P4
+
 struct Event;
 class Supervisor; // forward declaration
 

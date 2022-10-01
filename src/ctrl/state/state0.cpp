@@ -37,30 +37,29 @@ State0::~State0() {
 
 // check for new measurements on selected channels
 bool State0::measurementAvailable() {
-  measAvail = true;
-  trueMeasAvail = true;
+  bool tmpMeasAvail = true;
   for (int i = 0; i != ch.rows(); ++i) {
-    trueMeasAvail &= !sv_->imProc->procDataQArr[ch(i)]->empty();
-    measAvail &=
+    trueMeasAvail[ch(i)] = !sv_->imProc->procDataQArr[ch(i)]->empty();
+    measAvail[ch(i)] =
         duration_cast<milliseconds>(steady_clock::now() - prevCtrlTime[ch(i)]).count() >= 25;
+
+    if (obsv[ch(i)] || (!obsv[ch(i)] && trueMeasAvail[ch(i)])) {
+      tmpMeasAvail &= trueMeasAvail[ch(i)];
+      if (!stateTransitionCondition)
+        obsv[ch(i)] = true;
+    }
+    else
+      tmpMeasAvail &= measAvail[ch(i)];
   }
 
-  if (trueMeasAvail)
-    openLoop = false;
-  else if (stateTransitionCondition)
-    openLoop = true;
-
-  if (openLoop)
-    return measAvail;
-  else
-    return trueMeasAvail;
+  return tmpMeasAvail;
 }
 
 // update instantaneous trajectory vectors
 void State0::updateMeasurement() {
   for (int i = 0; i != ch.rows(); ++i) {
     // update measurement vectors dy, y
-    if (trueMeasAvail)
+    if (trueMeasAvail[ch(i)])
       dy(ch(i)) = sv_->imProc->procDataQArr[ch(i)]->get().y - yref(ch(i));
     else
       dy(ch(i)) = dyhat(ch(i));
@@ -107,6 +106,10 @@ void State0::handleEvent(Event *event) {
   }
 
   // remain in State 0
+  //   |  |        |  |
+  //   |  |   =>   |  |
+  //  / /\_\      / /\_\
+  // / /  \ \    / /  \ \.
   if (event->destState == 0) {
     if (destReached) {
       yref = yDest;
@@ -116,15 +119,18 @@ void State0::handleEvent(Event *event) {
   }
 
   // transition to State 1
-  // if approaching junction and measurements are available in relevant channels
+  //   |  |        |__|
+  //   |  |   =>   |  |
+  //  / /\_\      /_/\ \
+  // / /  \ \    / /  \ \.
   if (event->destState == 1) {
-    if (yref(0) > 0.9 * yrefScale(0) && !stateTransitionCondition) {
-      stateTransitionCondition = true;
+    if (yref(0) > 0.9 * yrefScale(0) && obsv[0]) {
+      obsv[0] = false;
       sv_->imProc->clearProcDataQueues();
+      stateTransitionCondition = true;
     }
-    if (stateTransitionCondition && !sv_->imProc->procDataQArr[1]->empty() &&
+    if (!obsv[0] && !sv_->imProc->procDataQArr[1]->empty() &&
         !sv_->imProc->procDataQArr[2]->empty()) {
-      yref = yDest;
       delete sv_->currEvent_;
       sv_->currEvent_ = nullptr;
       sv_->updateState<State1>();
