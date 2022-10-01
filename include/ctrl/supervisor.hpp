@@ -1,15 +1,15 @@
 #pragma once
 
-#include "util/util.hpp"
 #include "improc/improc.hpp"
+#include "util/util.hpp"
 
 struct Event {
   int srcState, destState;
   Eigen::Vector3d destPos; // as % of channel length
-  Eigen::Vector3d vel; // as px/second
+  Eigen::Vector3d vel;     // as px/second
 
-  Event(int srcState, int destState, Eigen::Vector3d destPos, Eigen::Vector3d vel) :
-    srcState(srcState), destState(destState), destPos(destPos), vel(vel) {}
+  Event(int srcState, int destState, Eigen::Vector3d destPos, Eigen::Vector3d vel)
+      : srcState(srcState), destState(destState), destPos(destPos), vel(vel) {}
 };
 
 struct StateData;
@@ -17,7 +17,7 @@ class State; // forward declaration
 
 class Supervisor {
   ordered_value conf;
-  std::string dataPath;
+  std::string dataPath, confPath;
 
   State *currState_ = nullptr;
   StateData *currStateData_;
@@ -46,7 +46,7 @@ public:
   template <typename T> void updateState();
 
   std::string getDataPath() const { return dataPath; }
+  std::string getConfPath() const { return confPath; }
   StateData getCurrStateData();
   void clearCtrlDataQueue();
-
 };

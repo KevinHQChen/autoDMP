@@ -11,7 +11,7 @@ class State1 : public State {
 
   // instantaneous trajectory vectors
   Eigen::Vector3d du, u, usat, uref; // control signal vectors
-  Eigen::Vector3d z0, z; // integral error: z = int (r - y) dt
+  Eigen::Vector3d z0, z;             // integral error: z = int (r - y) dt
   time_point<steady_clock> initTime, prevCtrlTime[3];
   duration<double> dt[3];
   Eigen::Vector3d yrefScale;

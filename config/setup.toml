@@ -85,6 +85,7 @@ numChans    = 3
 
 [ctrl]
 # path for control data
+confPath    = "/autoDMP/config/ctrl/"
 dataPath    = "/autoDMP/data/ctrl/"
 # status of supervisory controller [string: "disabled"/"sysID"/enabled"]
 status          = "disabled"

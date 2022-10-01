@@ -1,20 +1,20 @@
-#include "ctrl/supervisor.hpp"
-#include "ctrl/state/state.hpp"
 #include "ctrl/state/state0.hpp"
+#include "ctrl/state/state.hpp"
 #include "ctrl/state/state1.hpp"
+#include "ctrl/supervisor.hpp"
 
 State0::State0(Supervisor *sv)
     : State(sv), ch(Vector1ui(0)),
       // system matrices
-      Ad(openData(sv->getDataPath() + "state0/Ad.txt")),
-      Ad_(openData(sv->getDataPath() + "state0/Ad_.txt")),
-      Bd(openData(sv->getDataPath() + "state0/Bd.txt")),
-      Cd(openData(sv->getDataPath() + "state0/Cd.txt")),
-      Cd_(openData(sv->getDataPath() + "state0/Cd_.txt")), CdInv(Cd.inverse()),
-      K1(openData(sv->getDataPath() + "state0/K1.txt")),
-      K2(openData(sv->getDataPath() + "state0/K2.txt")),
-      Qw(openData(sv->getDataPath() + "state0/Qw.txt")),
-      Rv(openData(sv->getDataPath() + "state0/Rv.txt")), P0(Vector1d::Identity(1, 1)), P(P0),
+      Ad(openData(sv->getConfPath() + "state0/Ad.txt")),
+      Ad_(openData(sv->getConfPath() + "state0/Ad_.txt")),
+      Bd(openData(sv->getConfPath() + "state0/Bd.txt")),
+      Cd(openData(sv->getConfPath() + "state0/Cd.txt")),
+      Cd_(openData(sv->getConfPath() + "state0/Cd_.txt")), CdInv(Cd.inverse()),
+      K1(openData(sv->getConfPath() + "state0/K1.txt")),
+      K2(openData(sv->getConfPath() + "state0/K2.txt")),
+      Qw(openData(sv->getConfPath() + "state0/Qw.txt")),
+      Rv(openData(sv->getConfPath() + "state0/Rv.txt")), P0(Vector1d::Identity(1, 1)), P(P0),
 
       // initial conditions
       du(Eigen::Vector3d::Zero()), uref(Eigen::Vector3d(60, 40, 60)),
@@ -26,13 +26,13 @@ State0::State0(Supervisor *sv)
       yref0(Eigen::Vector3d(1, 0, 0)), yref((yref0.array() * yrefScale.array()).matrix()),
       dyref(yref - yref0),
 
-      dxhat(Eigen::Vector3d::Zero()), dyhat(Cd * dxhat) {
+      dxhat(Eigen::Vector3d::Zero()), dyhat(Eigen::Vector3d::Zero()) {
   // clear all improc queues
   sv_->imProc->clearProcDataQueues();
 }
 
 State0::~State0() {
-    // clean up any resources used by current state here
+  // clean up any resources used by current state here
 }
 
 // check for new measurements on selected channels
@@ -54,7 +54,6 @@ bool State0::measurementAvailable() {
     return measAvail;
   else
     return trueMeasAvail;
-
 }
 
 // update instantaneous trajectory vectors
@@ -138,27 +137,31 @@ Eigen::Matrix<int16_t, 3, 1> State0::step() {
   // Kalman observer
   // prediction
   // dxhat = dxhat_prev - dxref, Cd*dxref = dyref
-  dxhat = Ad * dxhat(ch.array(), Eigen::all) + Bd * du(ch.array(), Eigen::all) - CdInv * dyref(ch.array(), Eigen::all);
+  dxhat(ch.array(), Eigen::all) = Ad * dxhat(ch.array(), Eigen::all) +
+                                  Bd * du(ch.array(), Eigen::all) -
+                                  CdInv * dyref(ch.array(), Eigen::all);
   P = Ad * P * Ad_ + Qw;
   // correction
   temp = Cd * P * Cd_ + Rv;
   tempInv = temp.inverse();
   Ko = P * Cd_ * tempInv;
-  dyhat = Cd * dxhat;
-  dxhat = dxhat + Ko * (dy - dyhat);
+  dyhat(ch.array(), Eigen::all) = Cd * dxhat(ch.array(), Eigen::all);
+  dxhat(ch.array(), Eigen::all) = dxhat(ch.array(), Eigen::all) +
+                                  Ko * (dy(ch.array(), Eigen::all) - dyhat(ch.array(), Eigen::all));
 
   // apply updated control signals (with saturation limits) to pump
   // LQI control law
-  du(ch.array(), Eigen::all) = -K1 * dxhat - K2 * z;
+  du(ch.array(), Eigen::all) = -K1 * dxhat(ch.array(), Eigen::all) - K2 * z(ch.array(), Eigen::all);
   u = uref + du;
 
   // apply saturation (+/- 20)
   for (int i = 0; i != du.rows(); ++i) {
-    if (du(i) < -20) du(i) = -20;
-    else if (du(i) > 20) du(i) = 20;
+    if (du(i) < -20)
+      du(i) = -20;
+    else if (du(i) > 20)
+      du(i) = 20;
   }
   usat = uref + du;
 
   return usat.cast<int16_t>();
-
 }

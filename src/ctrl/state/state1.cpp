@@ -1,20 +1,20 @@
-#include "ctrl/supervisor.hpp"
+#include "ctrl/state/state1.hpp"
 #include "ctrl/state/state.hpp"
 #include "ctrl/state/state0.hpp"
-#include "ctrl/state/state1.hpp"
+#include "ctrl/supervisor.hpp"
 
 State1::State1(Supervisor *sv)
     : State(sv), ch(Vector2ui(1, 2)),
       // system matrices
-      Ad(openData(sv->getDataPath() + "state1/Ad.txt")),
-      Ad_(openData(sv->getDataPath() + "state1/Ad_.txt")),
-      Bd(openData(sv->getDataPath() + "state1/Bd.txt")),
-      Cd(openData(sv->getDataPath() + "state1/Cd.txt")),
-      Cd_(openData(sv->getDataPath() + "state1/Cd_.txt")), CdInv(Cd.inverse()),
-      K1(openData(sv->getDataPath() + "state1/K1.txt")),
-      K2(openData(sv->getDataPath() + "state1/K2.txt")),
-      Qw(openData(sv->getDataPath() + "state1/Qw.txt")),
-      Rv(openData(sv->getDataPath() + "state1/Rv.txt")), P0(Eigen::Matrix2d::Identity(2, 2)), P(P0),
+      Ad(openData(sv->getConfPath() + "state1/Ad.txt")),
+      Ad_(openData(sv->getConfPath() + "state1/Ad_.txt")),
+      Bd(openData(sv->getConfPath() + "state1/Bd.txt")),
+      Cd(openData(sv->getConfPath() + "state1/Cd.txt")),
+      Cd_(openData(sv->getConfPath() + "state1/Cd_.txt")), CdInv(Cd.inverse()),
+      K1(openData(sv->getConfPath() + "state1/K1.txt")),
+      K2(openData(sv->getConfPath() + "state1/K2.txt")),
+      Qw(openData(sv->getConfPath() + "state1/Qw.txt")),
+      Rv(openData(sv->getConfPath() + "state1/Rv.txt")), P0(Eigen::Matrix2d::Identity(2, 2)), P(P0),
 
       // initial conditions
       du(Eigen::Vector3d::Zero()), uref(Eigen::Vector3d(65, 45, 65)),
@@ -22,7 +22,8 @@ State1::State1(Supervisor *sv)
       z0(Eigen::Vector3d::Zero()), z(z0),
       initTime(steady_clock::now()), prevCtrlTime{initTime, initTime, initTime}, dt{0s, 0s, 0s},
 
-      yrefScale(Eigen::Vector3d(0, sv->imProc->impConf.getChanBBox()[1].height, sv->imProc->impConf.getChanBBox()[2].height)),
+      yrefScale(Eigen::Vector3d(0, sv->imProc->impConf.getChanBBox()[1].height,
+                                sv->imProc->impConf.getChanBBox()[2].height)),
       yref0(Eigen::Vector3d(0, 1, 1)), yref((yref0.array() * yrefScale.array()).matrix()),
       dyref(yref - yref0),
 
@@ -32,7 +33,7 @@ State1::State1(Supervisor *sv)
 }
 
 State1::~State1() {
-    // clean up any resources used by current state here
+  // clean up any resources used by current state here
 }
 
 // check for new measurements on selected channels
@@ -54,7 +55,6 @@ bool State1::measurementAvailable() {
     return measAvail;
   else
     return trueMeasAvail;
-
 }
 
 // update instantaneous trajectory vectors
@@ -109,14 +109,13 @@ void State1::handleEvent(Event *event) {
 
   if ((event->destState == 2) && (yref(0) > 0.9 * yrefScale(0)))
 
-
-  if (destReached) {
-    yref = yDest;
-    delete sv_->currEvent_;
-    sv_->currEvent_ = nullptr;
-    if (event->destState == 1)
-      sv_->updateState<State1>();
-  }
+    if (destReached) {
+      yref = yDest;
+      delete sv_->currEvent_;
+      sv_->currEvent_ = nullptr;
+      if (event->destState == 1)
+        sv_->updateState<State1>();
+    }
 }
 
 Eigen::Matrix<int16_t, 3, 1> State1::step() {
@@ -143,11 +142,12 @@ Eigen::Matrix<int16_t, 3, 1> State1::step() {
 
   // apply saturation (+/- 20)
   for (int i = 0; i != du.rows(); ++i) {
-    if (du(i) < -20) du(i) = -20;
-    else if (du(i) > 20) du(i) = 20;
+    if (du(i) < -20)
+      du(i) = -20;
+    else if (du(i) > 20)
+      du(i) = 20;
   }
   usat = uref + du;
 
   return usat.cast<int16_t>();
-
 }

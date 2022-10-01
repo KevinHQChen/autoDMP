@@ -54,18 +54,15 @@ int main(int argc, char *argv[]) {
 
   info("slice of c: {}", c(b.array(), Eigen::all));
 
-
-  Eigen::MatrixXd dynamicMatrix;// = Eigen::Matrix<double, 3, 3>({1,2,3},{4,5,6},{7,8,9});
+  Eigen::MatrixXd dynamicMatrix; // = Eigen::Matrix<double, 3, 3>({1,2,3},{4,5,6},{7,8,9});
   dynamicMatrix.resize(3, 3);
-  dynamicMatrix << 1, 2, 3,
-                   4, 5, 6,
-                   7, 8, 9;
+  dynamicMatrix << 1, 2, 3, 4, 5, 6, 7, 8, 9;
   info("dynamicMatrix:\n{}", dynamicMatrix);
 
   Eigen::Matrix<double, 3, 3> fixedMatrix = dynamicMatrix;
   info("fixedMatrix:\n{}", fixedMatrix);
 
-  Eigen::Matrix<int, 3, 1> selectedChs = Eigen::Matrix<int, 3, 1>(1,2,3);
+  Eigen::Matrix<int, 3, 1> selectedChs = Eigen::Matrix<int, 3, 1>(1, 2, 3);
   info("selectedChs:\n{}", selectedChs);
   return 0;
 }

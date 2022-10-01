@@ -297,7 +297,8 @@ bool Cam::process(cv::Mat &image) {
     // available (if timeout equals 0, only get existing frames without waiting)
     // (btw 0 timeout causes AT_WaitBuffer to hang quite often on Windows)
     info("zyla process wait buffer returns ");
-    // check if frame is available, if so store its address in imageData pointer, and size in imageSize
+    // check if frame is available, if so store its address in imageData pointer, and size in
+    // imageSize
     returnCode = AT_WaitBuffer(handle, &imageData, &imageSize, AT_INFINITE);
     info(returnCode);
     if (returnCode != AT_SUCCESS)
@@ -310,8 +311,8 @@ bool Cam::process(cv::Mat &image) {
     info("accumNumFrames: {}", accumNumFrames);
     // clean up buffer
     image = cv::Mat(imageHeight, imageWidth, CV_16UC1);
-    returnCode = AT_ConvertBuffer(imageData, &image.at<unsigned char>(0, 0),
-                                  imageWidth, imageHeight, imageStride, imageEncode, L"Mono16");
+    returnCode = AT_ConvertBuffer(imageData, &image.at<unsigned char>(0, 0), imageWidth,
+                                  imageHeight, imageStride, imageEncode, L"Mono16");
     info("convert returns {}", returnCode);
     if (returnCode == AT_SUCCESS)
       return true;

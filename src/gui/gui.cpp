@@ -21,9 +21,9 @@ void GUI::showRawImCap() {
 
     if (ImGui::Begin("Raw Image Capture", &guiConf.startImCap, imCapFlags)) {
       rawFrame = imCap->getRawFrame();
-      (rawFrame.empty) ? ImGui::Text("No image available")
-                       : ImGui::Image((ImTextureID)rawFrame.texture,
-                                      ImVec2(rawFrame.width, rawFrame.height));
+      (rawFrame.empty)
+          ? ImGui::Text("No image available")
+          : ImGui::Image((ImTextureID)rawFrame.texture, ImVec2(rawFrame.width, rawFrame.height));
       ImGui::End();
     }
   } else
@@ -47,9 +47,9 @@ void GUI::showImProc() {
 
     if (ImGui::Begin("Proc Image Capture", &guiConf.startImProc)) {
       preFrame = imProc->getProcFrame();
-      (preFrame.empty) ? ImGui::Text("No image available")
-                       : ImGui::Image((ImTextureID)preFrame.texture,
-                                      ImVec2(preFrame.width, preFrame.height));
+      (preFrame.empty)
+          ? ImGui::Text("No image available")
+          : ImGui::Image((ImTextureID)preFrame.texture, ImVec2(preFrame.width, preFrame.height));
       ImGui::End();
     }
   } else
