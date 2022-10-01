@@ -3,7 +3,15 @@
 #include "util/util.hpp"
 #include "improc/improc.hpp"
 
-struct Event;
+struct Event {
+  int srcState, destState;
+  Eigen::Vector3d destPos; // as % of channel length
+  Eigen::Vector3d vel; // as px/second
+
+  Event(int srcState, int destState, Eigen::Vector3d destPos, Eigen::Vector3d vel) :
+    srcState(srcState), destState(destState), destPos(destPos), vel(vel) {}
+};
+
 struct StateData;
 class State; // forward declaration
 
@@ -13,8 +21,7 @@ class Supervisor {
 
   State *currState_ = nullptr;
   StateData *currStateData_;
-  QueueFPS<Event *> *eventQueue_;
-  QueueFPS<Eigen::Matrix<int16_t, 3, 1>> *ctrlDataQueuePtr;
+  // QueueFPS<Eigen::Matrix<int16_t, 3, 1>> *ctrlDataQueuePtr;
 
   std::atomic<bool> startedCtrl{false};
   std::thread ctrlThread;
@@ -24,30 +31,22 @@ class Supervisor {
 
 public:
   Event *currEvent_ = nullptr;
+  QueueFPS<Event *> *eventQueue_;
   ImProc *imProc = nullptr;
 
   Supervisor(ImProc *imProc);
   ~Supervisor();
 
-  std::string getDataPath() const { return dataPath; }
-
   void startThread();
   void stopThread();
   bool started();
 
+  void addEvent(int srcState, int destState, Eigen::Vector3d pos, Eigen::Vector3d vel);
+
+  template <typename T> void updateState();
+
+  std::string getDataPath() const { return dataPath; }
   StateData getCurrStateData();
   void clearCtrlDataQueue();
 
-  bool procDataAvail();
-  Eigen::Matrix<int16_t, 3, 1> step();
-
-  template <typename T> T getPos() {}
-
-  // events
-  void hold();
-  void generate();
-  void merge();
-  void split();
-
-  template <typename T> void updateState();
 };

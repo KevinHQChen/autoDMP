@@ -3,11 +3,14 @@
 
 Supervisor::Supervisor(ImProc *imProc)
     : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")),
-      dataPath(toml::get<std::string>(conf["ctrl"]["dataPath"])),
-      currState_(new State0(this)), imProc(imProc) {}
+      dataPath(toml::get<std::string>(conf["ctrl"]["dataPath"])), currState_(new State0(this)),
+      currEvent_(new Event(0, 0, Eigen::Vector3d(0.5, 0, 0), Eigen::Vector3d(10, 0, 0))),
+      eventQueue_(new QueueFPS<Event *>(dataPath + "eventQueue.txt")), imProc(imProc) {}
 
 Supervisor::~Supervisor() {
-    delete currState_;
+  delete eventQueue_;
+  delete currEvent_;
+  delete currState_;
 }
 
 void Supervisor::startThread() {
@@ -16,6 +19,7 @@ void Supervisor::startThread() {
     startedCtrl = true;
     imProc->clearProcFrameQueues();
     imProc->clearTempFrameQueues();
+    imProc->clearProcDataQueues();
     ctrlThread = std::thread(&Supervisor::start, this);
     ctrlThread.detach();
   }
@@ -29,7 +33,8 @@ void Supervisor::stopThread() {
       ctrlThread.join();
     imProc->clearProcFrameQueues();
     imProc->clearTempFrameQueues();
-    this->clearCtrlDataQueue();
+    imProc->clearProcDataQueues();
+    // this->clearCtrlDataQueue();
   }
 }
 
@@ -42,16 +47,13 @@ void Supervisor::start() {
           currEvent_ = eventQueue_->get();
 
       // call the current state's trajectory generation function corresponding to the event
-      // (e.g. generate, merge, etc)
       if (currEvent_ != nullptr)
         currState_->handleEvent(currEvent_);
 
       currState_->updateMeasurement();
 
-      // call the current state's step function to generate optimal control signals at current time
-      // step
-      controlSignals = step();
-      setPump(controlSignals);
+      // generate optimal control signals at current time step
+      setPump(currState_->step());
     }
   }
 }
@@ -60,69 +62,17 @@ bool Supervisor::started() {
   return startedCtrl;
 }
 
+void Supervisor::addEvent(int srcState, int destState, Eigen::Vector3d pos, Eigen::Vector3d vel) {
+  eventQueue_->push(new Event(srcState, destState, pos, vel));
+}
+
 template <typename T> void Supervisor::updateState() {
     delete currState_;
     currState_ = new T(this);
 }
 
-
-
-
-Eigen::Matrix<int16_t, 3, 1> Supervisor::getCtrlData() {
-    if (!ctrlDataQueuePtr->empty())
-        return ctrlDataQueuePtr->get();
-    return Eigen::Matrix<int16_t, 3, 1>::Zero();
-}
-
-bool Supervisor::procDataAvail() {
-    // TODO
-    bool procDataAvail = !ProcDataQueue.empty();
-    if(procDataAvail)
-        currPos = ProcDataQueue->get();
-    else if (25ms has passed)
-        currPos = ProcDataQueue->get();
-    else
-        procDataAvail = false;
-
-    return procDataAvail;
-}
-
-void Supervisor::step() {
-    usat = currState_->step();
-}
-
-void Supervisor::hold() {
-    usat = currState_->hold();
-}
-
-
-
-// state0
-class State0 : BaseState {
-
-    public:
-        step() {
-            return BaseState->step(Model model, Trajectory traj);
-        }
-};
-
-
-// state1
-
-
-
-// state2
-
-// main
-int main() {
-    Supervisor *supervisor = new Supervisor();
-
-    while (true) {
-        if(Supervisor->procDataAvail()) {
-            controlSignals = Supervisor->step();
-            setPump(controlSignals);
-        }
-    }
-
-    delete supervisor;
-}
+// Eigen::Matrix<int16_t, 3, 1> Supervisor::getCtrlData() {
+//     if (!ctrlDataQueuePtr->empty())
+//         return ctrlDataQueuePtr->get();
+//     return Eigen::Matrix<int16_t, 3, 1>::Zero();
+// }

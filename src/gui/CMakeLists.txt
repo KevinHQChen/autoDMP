@@ -46,6 +46,7 @@ target_link_libraries(
   gui
   PUBLIC util
   PUBLIC imcap
+  PUBLIC ctrl
   # PUBLIC imguiwrap
   PUBLIC imgui::imgui
   # PRIVATE SDL2::SDL2 SDL2::SDL2main SDL2::SDL2-static

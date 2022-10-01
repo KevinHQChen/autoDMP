@@ -2,12 +2,12 @@
 
 #include "ctrl/state/state.hpp"
 
-class State0 : public State {
+class State1 : public State {
   // system matrices
-  Vector1ui ch;
-  Vector1d Ad, Ad_, Bd, Cd, Cd_, CdInv, K1, K2, Qw, Rv;
+  Vector2ui ch;
+  Eigen::Matrix2d Ad, Ad_, Bd, Cd, Cd_, CdInv, K1, K2, Qw, Rv;
   // dynamic (changes based on observer estimation error)
-  Vector1d P0, P, Ko, temp, tempInv;
+  Eigen::Matrix2d P0, P, Ko, temp, tempInv;
 
   // instantaneous trajectory vectors
   Eigen::Vector3d du, u, usat, uref; // control signal vectors
@@ -25,8 +25,8 @@ class State0 : public State {
   bool stateTransitionCondition = false;
 
 public:
-  State0(Supervisor *supervisor);
-  ~State0();
+  State1(Supervisor *supervisor);
+  ~State1();
 
   virtual bool measurementAvailable() override;
   virtual void updateMeasurement() override;

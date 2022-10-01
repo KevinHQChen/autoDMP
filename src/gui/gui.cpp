@@ -1,4 +1,5 @@
 #include "gui/gui.hpp"
+#include "ctrl/state/state.hpp"
 
 GUI::GUI()
     : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")), guiConf(toml::find<guiConfig>(conf, "gui")),
@@ -143,6 +144,45 @@ void GUI::showImProcSetup() {
   }
 }
 
+void GUI::showCtrl() {
+  if (guiConf.startCtrlSetup) {
+    if (ImGui::Begin("Ctrl Setup", &guiConf.startCtrlSetup)) {
+      // TODO display eventQueue
+
+      // TODO display current event
+
+      // TODO add buttons, textboxes, sliders to add/remove events
+      int srcState = 0, destState = 0, pos[3] = {0, 0, 0}, vel[3] = {0, 0, 0};
+      ImGui::SliderInt("Desired Position", &pos[0], 0, 100);
+      ImGui::SliderInt("Desired Position", &pos[1], 0, 100);
+      ImGui::SliderInt("Desired Position", &pos[2], 0, 100);
+      ImGui::SliderInt("Desired Velocity", &vel[0], 0, 100);
+      ImGui::SliderInt("Desired Velocity", &vel[1], 0, 100);
+      ImGui::SliderInt("Desired Velocity", &vel[2], 0, 100);
+      Eigen::Vector3d posVec((double)pos[0], (double)pos[1], (double)pos[2]);
+      Eigen::Vector3d velVec((double)vel[0], (double)vel[1], (double)vel[2]);
+      ImGui::SliderInt("Source State", &srcState, 0, 2);
+      ImGui::SliderInt("Destination State", &destState, 0, 2);
+
+      if (ImGui::Button("Add Event"))
+        supervisor->addEvent(srcState, destState, posVec, velVec);
+
+      // TODO add button to start/stop controller
+      if (ImGui::Button("Start Controller"))
+        guiConf.startCtrl = true;
+      if (ImGui::Button("Stop Controller"))
+        guiConf.startCtrl = false;
+
+      ImGui::End();
+    }
+  }
+
+  if (guiConf.startCtrl)
+    supervisor->startThread();
+  else
+    supervisor->stopThread();
+}
+
 std::optional<int> GUI::render() {
   setWindowFullscreen();
 
@@ -163,6 +203,7 @@ std::optional<int> GUI::render() {
       ImGui::MenuItem("Start Image Capture", nullptr, &guiConf.startImCap);
       ImGui::MenuItem("Setup Image Processing", nullptr, &guiConf.startImProcSetup);
       ImGui::MenuItem("Start Image Processing", nullptr, &guiConf.startImProc);
+      ImGui::MenuItem("Start Controller Setup", nullptr, &guiConf.startCtrlSetup);
       ImGui::EndMenu();
     }
     if (ImGui::BeginMenu("Debug")) {
@@ -176,6 +217,7 @@ std::optional<int> GUI::render() {
   showRawImCap();
   showImProcSetup();
   showImProc();
+  showCtrl();
   if (guiConf.showDebug)
     ImGui::ShowDemoWindow(&guiConf.showDebug);
   if (needToQuit)

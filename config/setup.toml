@@ -13,6 +13,8 @@ fontPath = "/root/.local/share/fonts/JetBrainsMono-1.0.2/ttf/JetBrainsMono-Mediu
 startImCap = false
 startImProc = false
 startImProcSetup = false
+startCtrl = false
+startCtrlSetup = false
 showDebug = false
 
 [cam]

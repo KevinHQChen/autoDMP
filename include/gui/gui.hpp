@@ -83,6 +83,7 @@ public:
   void showRawImCap();
   void showImProc();
   void showImProcSetup();
+  void showCtrl();
 
   void contextMenu(bool enable);
 

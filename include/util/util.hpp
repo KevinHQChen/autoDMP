@@ -34,6 +34,9 @@
 using namespace spdlog;
 using namespace std::chrono;
 using Vector1d = Eigen::Matrix<double, 1, 1>;
+using Vector1ui = Eigen::Matrix<unsigned int, 1, 1>;
+using Vector2ui = Eigen::Matrix<unsigned int, 2, 1>;
+
 using ordered_value = toml::basic_value<toml::discard_comments, tsl::ordered_map, std::vector>;
 
 #define TOML11_PARSE_IN_ORDER(...) toml::parse<toml::discard_comments, tsl::ordered_map>(__VA_ARGS__)
@@ -74,6 +77,8 @@ struct guiConfig {
   bool startImCap;
   bool startImProc;
   bool startImProcSetup;
+  bool startCtrl;
+  bool startCtrlSetup;
   bool showDebug;
 
   void from_toml(const ordered_value &v) {
@@ -90,6 +95,8 @@ struct guiConfig {
     startImCap = toml::find<bool>(v, "startImCap");
     startImProc = toml::find<bool>(v, "startImProc");
     startImProcSetup = toml::find<bool>(v, "startImProcSetup");
+    startCtrl = toml::find<bool>(v, "startCtrl");
+    startCtrlSetup = toml::find<bool>(v, "startCtrlSetup");
     showDebug = toml::find<bool>(v, "showDebug");
   }
 };

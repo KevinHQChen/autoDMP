@@ -2,12 +2,7 @@
 
 #include "util/util.hpp"
 
-struct Event {
-  int srcState, destState;
-  Eigen::Vector3d destPos; // as % of channel length
-  Eigen::Vector3d vel; // as px/second
-};
-
+struct Event;
 class Supervisor; // forward declaration
 
 class State {
