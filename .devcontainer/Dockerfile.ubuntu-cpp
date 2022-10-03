@@ -82,7 +82,7 @@ RUN apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y --no-install-recommends \
     software-properties-common wget apt-utils file zip unzip pkg-config \
     openssh-client gpg-agent socat rsync \
-    make ninja-build autoconf git \
+    make ninja-build git \
     python3 python3-pip \
     yaru-theme-gtk yaru-theme-sound yaru-theme-gnome-shell yaru-theme-icon yaru-theme-unity
 
