@@ -125,6 +125,11 @@ RUN apt-get install -y --no-install-recommends \
 # additional dependencies for opencv
     nasm libgtk2.0-dev bison gperf
 
+# get fonts
+RUN wget -P ~/.local/share/fonts/ https://www.1001fonts.com/download/jetbrains-mono.zip \
+    && unzip ~/.local/share/fonts/jetbrains-mono.zip -d ~/.local/share/fonts/ \
+    && rm ~/.local/share/fonts/jetbrains-mono.zip
+
 #### prepare project
 RUN --mount=type=ssh git clone git@github.com:KevinHQChen/autoDMP.git
 ARG GIT_EMAIL

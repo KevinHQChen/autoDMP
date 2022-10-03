@@ -154,7 +154,7 @@ void GUI::showCtrl() {
       //   ImGui::Text("Event: %s", event.c_str());
       // }
 
-      // TODO display current event
+      // display current event
       ImGui::Text("Current Event");
       ImGui::Separator();
       ImGui::Text("Source State: %d", supervisor->currEvent_->srcState);
