@@ -49,10 +49,6 @@ RUN apt-get update \
     libtool-bin libssl-dev \
     # dev tools
     python3-pip python3-venv meld gitk tree \
-    # for org-download
-    xclip \
-    # for generating sheet music and midi (lilypond)
-    lilypond \
     # pdf stuff
     imagemagick \
     # for llvm
@@ -60,11 +56,6 @@ RUN apt-get update \
     # convenience
     firefox \
     && rm -rf /var/lib/apt/lists/*
-RUN pip install cmake-language-server \
-    # for a custom python venv for plotting in emacs (modify pyvenv.cfg file if --user doesn't work: https://linoxide.com/how-to-create-python-virtual-environment-on-ubuntu-20-04/)
-    && cd ~ && python3 -m venv matplotlib_env \
-    && pip install numpy --user \
-    && pip install matplotlib --user
 
 # for converting from pdf to png
 # ghostscript <9.24 has a vulnerability related to imagemagick, so convert was disabled
