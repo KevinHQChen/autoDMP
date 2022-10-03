@@ -1,0 +1,100 @@
+[gui]
+windowTitle = "autoDMP"
+width = 1920
+height = 1080
+clearColor = [0.45, 0.55, 0.6, 1.0]     # [x, y, z, w]
+enableVsync = 1
+keyboardNav = true
+startDark = true
+fontSize = 18.0
+scale = 2.0
+fontPath = "/root/.local/share/fonts/JetBrainsMono-1.0.2/ttf/JetBrainsMono-Medium.ttf"
+
+startImCap = false
+startImProc = false
+startImProcSetup = false
+startCtrl = false
+startCtrlSetup = false
+showDebug = false
+
+[cam]
+# select camera source [string: "Webcam"/"File"/"Andor"]
+source      = "Webcam"
+# if source = "File", the selected video file is used [string]
+file        = ""
+
+[andor]
+[andor.bool]                                    # Andor uses int as AT_BOOL, so we'll do the same (i.e. 1 = true, 0 = false)
+Overlap                     = 0                 # link framerate to exposure
+StaticBlemishCorrection     = 1                 # FPGA noisy pixels
+FastAOIFrameRateEnable      = 1                 # increase fps for small AOI
+FullAOIControl              = 1                 # arbitrary selection
+# AlternatingReadoutDirection = 1                 # sensor direction
+# RollingShutterGlobalClear   = 0                 # faster clear
+# ScanSpeedControlEnable      = 0                 # allow change line row scan
+SensorCooling               = 1
+MetadataEnable              = 0
+MetadataTimestamp           = 0
+MetadataFrameinfo           = 0
+[andor.float]
+ExposureTime                = 0.004     # seconds
+FrameRate                   = 40.0      # Hz
+ReadoutTime                 = 0.0
+RowReadTime                 = 0.0
+LineScanSpeed               = 0.0
+TargetSensorTemperature     = 0.0
+SensorTemperature           = 0.0
+[andor.enum]
+TriggerMode                 = "Internal"        # trigger shutter
+CycleMode                   = "Continuous"      # fix or continuous sequence
+ElectronicShutteringMode    = "Rolling"         # rolling or global
+PixelReadoutRate            = "280 MHz"
+TemperatureStatus           = "Stabilized"
+# SensorReadoutMode           = "Bottom Up Sequential"
+SimplePreAmpGainControl     = "16-bit (low noise & high well capacity)"
+PixelEncoding               = "Mono16"      # Single channel 16-bit
+BitDepth                    = "16 Bit"
+# AOI (area of interest) settings start
+# AOILayout                   = "Image"           # Kinetic, TDI, Multitrack
+AOIBinning                  = "2x2"             # binning, intensity vs resolution
+[andor.int]
+# AOIHBin                     = 2                 # horizontal binning
+AOIWidth                    = 888 # 1776/2      # units in superpixels (540 superpixels * 2 pixels/superpixel)
+AOILeft                     = 1                 # units in sensor pixels
+# AOIVBin                     = 2                 # vertical binning
+AOIHeight                   = 1760              # units in superpixels
+AOITop                      = 1                 # units in sensor pixels
+AOIStride                   = 1776 # 1776/2*2   # row size (AOIWidth) in bytes (1080 pixels * 2 bytes/pixel)
+# AOI (area of interest) settings end
+FrameCount                  = 1         # number of images to acquire in each sequence
+Accumulatecount             = 1         # number of images to sum as one
+ImageSizeBytes              = 0
+TimeStampClock              = 0
+TimeStampClockFrequency     = 0
+
+[improc]
+# path for channel/template config data
+confPath    = "/autoDMP/config/improc/"
+# source for channel bounding boxes and droplet interface templates [string: "fromVideo"/"fromFile"]
+confSrc = "fromFile"
+# select template matching threshold: pxIntensity/255 (8-bit) [double]
+# 0.5 - 0.85 is a good range
+tmplThres   = 0.75
+# number of channels to observe for improc
+numChans    = 3
+
+[ctrl]
+# path for control data
+confPath    = "/autoDMP/config/ctrl/"
+dataPath    = "/autoDMP/data/ctrl/"
+# status of supervisory controller [string: "disabled"/"sysID"/enabled"]
+status          = "disabled"
+# perform all steps but don't send control signal to pump [bool]
+dryRun          = true
+
+[postproc]
+# path for improc data
+rawDataPath     = "/autoDMP/data/imcap/"
+procDataPath    = "/autoDMP/data/improc/"
+saveRaw         = false
+saveProc        = true

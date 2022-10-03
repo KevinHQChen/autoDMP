@@ -1,0 +1,28 @@
+rotAngle = [135,-135,0]
+chanWidth = 39
+junction = {y=566,x=209}
+bbox = {height=880,width=418,y=0,x=16}
+tmplBBox = {height=20,width=20,y=211,x=10}
+
+chanBBox = [
+{height=209,width=209,y=566,x=209},
+{height=209,width=209,y=566,x=0},
+{height=566,width=39,y=0,x=190},
+]
+
+[[rotChanBBox]]
+height = 295
+width = 39
+y = 0
+x = 128
+[[rotChanBBox]]
+height = 295
+width = 39
+y = 0
+x = 128
+[[rotChanBBox]]
+height = 0
+width = 0
+y = 0
+x = 0
+

@@ -24,7 +24,7 @@ FetchContent_Declare(_project_options URL https://github.com/aminya/project_opti
 FetchContent_MakeAvailable(_project_options)
 include(${_project_options_SOURCE_DIR}/Index.cmake)
 
-# # Setup vcpkg - should be called before defining project()
+# Setup vcpkg - should be called before defining project()
 run_vcpkg()
 
 # Set the project name and language
@@ -120,20 +120,21 @@ add_subdirectory(configured_files)
 
 # Adding src directories:
 add_subdirectory(src)
+add_subdirectory(apps)
 
 # Adding the tests:
-option(ENABLE_TESTING "Enable the tests" ${PROJECT_IS_TOP_LEVEL})
-if(ENABLE_TESTING)
-  enable_testing()
-  message(AUTHOR_WARNING "Building Tests. Be sure to check out test/constexpr_tests.cpp for constexpr testing")
-  add_subdirectory(test)
-endif()
+# option(ENABLE_TESTING "Enable the tests" ${PROJECT_IS_TOP_LEVEL})
+# if(ENABLE_TESTING)
+#   enable_testing()
+#   message(AUTHOR_WARNING "Building Tests. Be sure to check out test/constexpr_tests.cpp for constexpr testing")
+#   add_subdirectory(test)
+# endif()
 
-option(ENABLE_FUZZING "Enable the fuzz tests" OFF)
-if(ENABLE_FUZZING)
-  message(AUTHOR_WARNING "Building Fuzz Tests, using fuzzing sanitizer https://www.llvm.org/docs/LibFuzzer.html")
-  add_subdirectory(fuzz_test)
-endif()
+# option(ENABLE_FUZZING "Enable the fuzz tests" OFF)
+# if(ENABLE_FUZZING)
+#   message(AUTHOR_WARNING "Building Fuzz Tests, using fuzzing sanitizer https://www.llvm.org/docs/LibFuzzer.html")
+#   add_subdirectory(fuzz_test)
+# endif()
 
 if(CMAKE_SKIP_INSTALL_RULES)
   return()
@@ -144,6 +145,7 @@ endif()
 # Add other targets that you want installed here, be default we just package the one executable
 # we know we want to ship
 package_project(TARGETS intro project_options project_warnings)
+# package_project(TARGETS testapp project_options project_warnings)
 
 # Experience shows that explicit package naming can help make it easier to sort
 # out potential ABI related issues before they start, while helping you

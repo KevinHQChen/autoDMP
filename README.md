@@ -9,3 +9,7 @@
 
 - download and install docker, add current user to docker group so we don't need sudo.
 - ensure buildx is used (docker buildx install).
+
+- TODO: add further documentation
+
+- hello

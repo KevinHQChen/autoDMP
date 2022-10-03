@@ -7,6 +7,9 @@ conan-cache/
 .cache/
 coverage.xml
 
+# Generated data
+data/
+
 # User specific settings
 CMakeUserPresets.json
 
