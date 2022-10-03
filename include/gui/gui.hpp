@@ -100,7 +100,7 @@ class GUI {
 
   // real time plotting
   ImPlotAxisFlags implotFlags = ImPlotAxisFlags_NoTickLabels;
-  float guiTime{0.0f}, history{10.0f};
+  float guiTime{0.0f}, history{30.0f};
   ScrollingBuffer u0, u1, u2, y0, y1, y2, yref0, yref1, yref2;
 
   // template matching interactions
