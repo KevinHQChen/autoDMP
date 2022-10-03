@@ -2,8 +2,9 @@ ARG VARIANT
 FROM ${VARIANT}
 
 WORKDIR "/"
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
+
+RUN apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y --no-install-recommends \
     # common tools
     make pkg-config wget curl tar unzip \
     # X server dependencies for cpp GUI libs
