@@ -4,9 +4,10 @@
 Supervisor::Supervisor(ImProc *imProc)
     : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")),
       dataPath(toml::get<std::string>(conf["ctrl"]["dataPath"])),
-      confPath(toml::get<std::string>(conf["ctrl"]["confPath"])), currState_(new State0(this)),
+      confPath(toml::get<std::string>(conf["ctrl"]["confPath"])), imProc(imProc),
+      currState_(new State0(this)),
       currEvent_(new Event(0, 0, Eigen::Vector3d(0.5, 0, 0), Eigen::Vector3d(10, 0, 0))),
-      eventQueue_(new QueueFPS<Event *>(dataPath + "eventQueue.txt")), imProc(imProc) {}
+      eventQueue_(new QueueFPS<Event *>(dataPath + "eventQueue.txt")) {}
 
 Supervisor::~Supervisor() {
   delete eventQueue_;
@@ -54,7 +55,8 @@ void Supervisor::start() {
       currState_->updateMeasurement();
 
       // generate optimal control signals at current time step
-      setPump(currState_->step());
+      info(currState_->step());
+      // setPump(currState_->step());
     }
   }
 }
@@ -63,11 +65,6 @@ bool Supervisor::started() { return startedCtrl; }
 
 void Supervisor::addEvent(int srcState, int destState, Eigen::Vector3d pos, Eigen::Vector3d vel) {
   eventQueue_->push(new Event(srcState, destState, pos, vel));
-}
-
-template <typename T> void Supervisor::updateState() {
-  delete currState_;
-  currState_ = new T(this);
 }
 
 // Eigen::Matrix<int16_t, 3, 1> Supervisor::getCtrlData() {

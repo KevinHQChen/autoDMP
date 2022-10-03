@@ -4,7 +4,11 @@
 #include "ctrl/supervisor.hpp"
 
 State1::State1(Supervisor *sv)
-    : State(sv), ch(Vector2ui(1, 2)),
+    : State(sv, Eigen::Vector3d(65, 45, 65),
+            Eigen::Vector3d(0, sv->imProc->impConf.getChanBBox()[1].height,
+                            sv->imProc->impConf.getChanBBox()[2].height),
+            Eigen::Vector3d(0, 1, 1)),
+      ch(Vector2ui(1, 2)),
       // system matrices
       Ad(openData(sv->getConfPath() + "state1/Ad.txt")),
       Ad_(openData(sv->getConfPath() + "state1/Ad_.txt")),
@@ -14,20 +18,8 @@ State1::State1(Supervisor *sv)
       K1(openData(sv->getConfPath() + "state1/K1.txt")),
       K2(openData(sv->getConfPath() + "state1/K2.txt")),
       Qw(openData(sv->getConfPath() + "state1/Qw.txt")),
-      Rv(openData(sv->getConfPath() + "state1/Rv.txt")), P0(Eigen::Matrix2d::Identity(2, 2)), P(P0),
-
-      // initial conditions
-      du(Eigen::Vector3d::Zero()), uref(Eigen::Vector3d(65, 45, 65)),
-
-      z0(Eigen::Vector3d::Zero()), z(z0),
-      initTime(steady_clock::now()), prevCtrlTime{initTime, initTime, initTime}, dt{0s, 0s, 0s},
-
-      yrefScale(Eigen::Vector3d(0, sv->imProc->impConf.getChanBBox()[1].height,
-                                sv->imProc->impConf.getChanBBox()[2].height)),
-      yref0(Eigen::Vector3d(0, 1, 1)), yref((yref0.array() * yrefScale.array()).matrix()),
-      dyref(yref - yref0),
-
-      dxhat(Eigen::Vector3d::Zero()), dyhat(Eigen::Vector3d::Zero()) {
+      Rv(openData(sv->getConfPath() + "state1/Rv.txt")), P0(Eigen::Matrix2d::Identity(2, 2)),
+      P(P0) {
   // clear all improc queues
   sv_->imProc->clearProcDataQueues();
 }
@@ -38,30 +30,29 @@ State1::~State1() {
 
 // check for new measurements on selected channels
 bool State1::measurementAvailable() {
-  measAvail = true;
-  trueMeasAvail = true;
+  bool tmpMeasAvail = true;
   for (int i = 0; i != ch.rows(); ++i) {
-    trueMeasAvail &= !sv_->imProc->procDataQArr[ch(i)]->empty();
-    measAvail &=
+    trueMeasAvail[ch(i)] = !sv_->imProc->procDataQArr[ch(i)]->empty();
+    measAvail[ch(i)] =
         duration_cast<milliseconds>(steady_clock::now() - prevCtrlTime[ch(i)]).count() >= 25;
+
+    if (obsv[ch(i)] || (!obsv[ch(i)] && trueMeasAvail[ch(i)])) {
+      tmpMeasAvail &= trueMeasAvail[ch(i)];
+      if (!stateTransitionCondition)
+        obsv[ch(i)] = true;
+    }
+    else
+      tmpMeasAvail &= measAvail[ch(i)];
   }
 
-  if (trueMeasAvail)
-    openLoop = false;
-  else if (stateTransitionCondition)
-    openLoop = true;
-
-  if (openLoop)
-    return measAvail;
-  else
-    return trueMeasAvail;
+  return tmpMeasAvail;
 }
 
 // update instantaneous trajectory vectors
 void State1::updateMeasurement() {
   for (int i = 0; i != ch.rows(); ++i) {
     // update measurement vectors dy, y
-    if (trueMeasAvail)
+    if (trueMeasAvail[ch(i)])
       dy(ch(i)) = sv_->imProc->procDataQArr[ch(i)]->get().y - yref(ch(i));
     else
       dy(ch(i)) = dyhat(ch(i));
@@ -80,8 +71,8 @@ void State1::updateMeasurement() {
 }
 
 void State1::handleEvent(Event *event) {
-  if (event->srcState != 0) {
-    info("Invalid event! source state should be 0, but is actually {}", event->srcState);
+  if (event->srcState != 1) {
+    info("Invalid event! source state should be 1, but is actually {}", event->srcState);
     delete sv_->currEvent_;
     sv_->currEvent_ = nullptr;
     return;
@@ -107,15 +98,55 @@ void State1::handleEvent(Event *event) {
     destReached &= std::abs(yref(ch(i)) - yDest(ch(i))) < event->vel(ch(i)) * 25e-3;
   }
 
-  if ((event->destState == 2) && (yref(0) > 0.9 * yrefScale(0)))
-
+  // remain in State 1
+  //   |__|        |__|
+  //   |  |   =>   |  |
+  //  /_/\ \      /_/\ \
+  // / /  \ \    / /  \ \.
+  if (event->destState == 1) {
     if (destReached) {
       yref = yDest;
       delete sv_->currEvent_;
       sv_->currEvent_ = nullptr;
-      if (event->destState == 1)
-        sv_->updateState<State1>();
     }
+  }
+
+  // transition to State 0
+  //   |__|        |  |
+  //   |  |   =>   |  |
+  //  /_/\ \      / /\_\
+  // / /  \ \    / /  \ \.
+  if (event->destState == 0) {
+    if (yref(1) > 0.9 * yrefScale(1) && yref(2) > 0.9 * yrefScale(2) && obsv[1] && obsv[2]) {
+      obsv[1] = false;
+      obsv[2] = false;
+      sv_->imProc->clearProcDataQueues();
+      stateTransitionCondition = true;
+    }
+    if (!obsv[1] && !obsv[2] && !sv_->imProc->procDataQArr[0]->empty()) {
+      delete sv_->currEvent_;
+      sv_->currEvent_ = nullptr;
+      sv_->updateState<State0>();
+    }
+  }
+
+  // transition to State 2
+  //   |__|        |__|
+  //   |  |   =>   |  |
+  //  /_/\ \      / /\_\
+  // / /  \ \    / /  \ \.
+  if (event->destState == 2) {
+    if (yref(1) > 0.9 * yrefScale(1) && obsv[1]) {
+      obsv[1] = false;
+      sv_->imProc->clearProcDataQueues();
+      stateTransitionCondition = true;
+    }
+    if (!obsv[1] && !sv_->imProc->procDataQArr[0]->empty()) {
+      delete sv_->currEvent_;
+      sv_->currEvent_ = nullptr;
+      // sv_->updateState<State2>();
+    }
+  }
 }
 
 Eigen::Matrix<int16_t, 3, 1> State1::step() {

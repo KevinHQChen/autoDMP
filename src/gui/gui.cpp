@@ -148,8 +148,23 @@ void GUI::showCtrl() {
   if (guiConf.startCtrlSetup) {
     if (ImGui::Begin("Ctrl Setup", &guiConf.startCtrlSetup)) {
       // TODO display eventQueue
+      ImGui::Text("Event Queue");
+      ImGui::Separator();
+      // for (int i = 0; i < supervisor->eventQueue_->size(); ++i) {
+      //   ImGui::Text("Event: %s", event.c_str());
+      // }
 
-      // TODO display current event
+      // display current event
+      ImGui::Text("Current Event");
+      ImGui::Separator();
+      ImGui::Text("Source State: %d", supervisor->currEvent_->srcState);
+      ImGui::Text("Destination State: %d", supervisor->currEvent_->destState);
+      ImGui::Text("Destination Position (ch0): %f", supervisor->currEvent_->destPos(0));
+      ImGui::Text("Destination Position (ch1): %f", supervisor->currEvent_->destPos(1));
+      ImGui::Text("Destination Position (ch2): %f", supervisor->currEvent_->destPos(2));
+      ImGui::Text("Velocity (ch0): %f", supervisor->currEvent_->vel(0));
+      ImGui::Text("Velocity (ch1): %f", supervisor->currEvent_->vel(1));
+      ImGui::Text("Velocity (ch2): %f", supervisor->currEvent_->vel(2));
 
       // TODO add buttons, textboxes, sliders to add/remove events
       int srcState = 0, destState = 0, pos[3] = {0, 0, 0}, vel[3] = {0, 0, 0};
@@ -172,6 +187,56 @@ void GUI::showCtrl() {
         guiConf.startCtrl = true;
       if (ImGui::Button("Stop Controller"))
         guiConf.startCtrl = false;
+
+      ImGui::End();
+    }
+  }
+
+  if (guiConf.startCtrl) {
+    if (ImGui::Begin("Ctrl Data", &guiConf.startCtrl)) {
+      guiTime += ImGui::GetIO().DeltaTime;
+      u0.AddPoint(guiTime, supervisor->currState_->u(0));
+      u1.AddPoint(guiTime, supervisor->currState_->u(1));
+      u2.AddPoint(guiTime, supervisor->currState_->u(2));
+      y0.AddPoint(guiTime, supervisor->currState_->y(0));
+      y1.AddPoint(guiTime, supervisor->currState_->y(1));
+      y2.AddPoint(guiTime, supervisor->currState_->y(2));
+      yref0.AddPoint(guiTime, supervisor->currState_->yref(0));
+      yref1.AddPoint(guiTime, supervisor->currState_->yref(1));
+      yref2.AddPoint(guiTime, supervisor->currState_->yref(2));
+
+      ImGui::SliderFloat("History", &history, 1, 30, "%.1f s");
+      if (ImPlot::BeginPlot("##Control Output", ImVec2(-1, 150))) {
+        ImPlot::SetupAxes(NULL, NULL, implotFlags, implotFlags);
+        ImPlot::SetupAxisLimits(ImAxis_X1, guiTime - history, guiTime, ImGuiCond_Always);
+        ImPlot::SetupAxisLimits(ImAxis_Y1, 0, 250);
+        ImPlot::PlotLine("u0", &u0.Data[0].x, &u0.Data[0].y, u0.Data.size(), u0.Offset,
+                         2 * sizeof(float));
+        ImPlot::PlotLine("u1", &u1.Data[0].x, &u1.Data[0].y, u1.Data.size(), u1.Offset,
+                         2 * sizeof(float));
+        ImPlot::PlotLine("u2", &u2.Data[0].x, &u2.Data[0].y, u2.Data.size(), u2.Offset,
+                         2 * sizeof(float));
+        ImPlot::EndPlot();
+      }
+
+      if (ImPlot::BeginPlot("##Measurement", ImVec2(-1, 150))) {
+        ImPlot::SetupAxes(NULL, NULL, implotFlags, implotFlags);
+        ImPlot::SetupAxisLimits(ImAxis_X1, guiTime - history, guiTime, ImGuiCond_Always);
+        ImPlot::SetupAxisLimits(ImAxis_Y1, -1000, 1000);
+        ImPlot::PlotLine("y0", &y0.Data[0].x, &y0.Data[0].y, y0.Data.size(), y0.Offset,
+                         2 * sizeof(float));
+        ImPlot::PlotLine("y1", &y1.Data[0].x, &y1.Data[0].y, y1.Data.size(), y1.Offset,
+                         2 * sizeof(float));
+        ImPlot::PlotLine("y2", &y2.Data[0].x, &y2.Data[0].y, y2.Data.size(), y2.Offset,
+                         2 * sizeof(float));
+        ImPlot::PlotLine("yref0", &yref0.Data[0].x, &yref0.Data[0].y, yref0.Data.size(),
+                         yref0.Offset, 2 * sizeof(float));
+        ImPlot::PlotLine("yref1", &yref1.Data[0].x, &yref1.Data[0].y, yref1.Data.size(),
+                         yref1.Offset, 2 * sizeof(float));
+        ImPlot::PlotLine("yref2", &yref2.Data[0].x, &yref2.Data[0].y, yref2.Data.size(),
+                         yref2.Offset, 2 * sizeof(float));
+        ImPlot::EndPlot();
+      }
 
       ImGui::End();
     }
@@ -218,8 +283,10 @@ std::optional<int> GUI::render() {
   showImProcSetup();
   showImProc();
   showCtrl();
-  if (guiConf.showDebug)
+  if (guiConf.showDebug) {
     ImGui::ShowDemoWindow(&guiConf.showDebug);
+    ImPlot::ShowDemoWindow(&guiConf.showDebug);
+  }
   if (needToQuit)
     return 0;
 
@@ -285,6 +352,7 @@ int GUI::imguiMain() {
   // Setup Dear ImGui context
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
+  ImPlot::CreateContext();
   ImGuiIO &io = ImGui::GetIO();
   (void)io;
   if (guiConf.keyboardNav)
@@ -354,6 +422,7 @@ int GUI::imguiMain() {
   // Cleanup
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplGlfw_Shutdown();
+  ImPlot::DestroyContext();
   ImGui::DestroyContext();
 
   glfwDestroyWindow(window);

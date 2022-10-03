@@ -19,7 +19,6 @@ class Supervisor {
   ordered_value conf;
   std::string dataPath, confPath;
 
-  State *currState_ = nullptr;
   StateData *currStateData_;
   // QueueFPS<Eigen::Matrix<int16_t, 3, 1>> *ctrlDataQueuePtr;
 
@@ -30,9 +29,10 @@ class Supervisor {
   void start();
 
 public:
+  ImProc *imProc = nullptr;
+  State *currState_ = nullptr;
   Event *currEvent_ = nullptr;
   QueueFPS<Event *> *eventQueue_;
-  ImProc *imProc = nullptr;
 
   Supervisor(ImProc *imProc);
   ~Supervisor();
@@ -43,7 +43,11 @@ public:
 
   void addEvent(int srcState, int destState, Eigen::Vector3d pos, Eigen::Vector3d vel);
 
-  template <typename T> void updateState();
+  // tmpl methods must be defined in headers (https://stackoverflow.com/a/10632266)
+  template <typename T> void updateState() {
+    delete currState_;
+    currState_ = new T(this);
+  }
 
   std::string getDataPath() const { return dataPath; }
   std::string getConfPath() const { return confPath; }

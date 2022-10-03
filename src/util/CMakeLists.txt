@@ -19,12 +19,12 @@ else()
     message("Couldn't find OpenCV")
 endif()
 
-find_package(Boost REQUIRED COMPONENTS program_options)
-if (${Boost_FOUND})
-    include_directories( ${Boost_INCLUDE_DIR} )
-else()
-    message("Couldn't find Boost")
-endif()
+# find_package(Boost REQUIRED COMPONENTS program_options)
+# if (${Boost_FOUND})
+#     include_directories( ${Boost_INCLUDE_DIR} )
+# else()
+#     message("Couldn't find Boost")
+# endif()
 
 target_include_directories(util
   PRIVATE "${CMAKE_BINARY_DIR}/configured_files/include"
@@ -39,12 +39,12 @@ target_link_libraries(
   PRIVATE toml11::toml11
   PRIVATE tsl::ordered_map
   PUBLIC ${OpenCV_LIBS}
-  PUBLIC Boost::program_options
+  # PUBLIC Boost::program_options
 )
 
 # We need this directory, and users of our library will need it too
 target_include_directories(util
     PUBLIC ../../include
     PUBLIC ${OpenCV_INCLUDE_DIRS}
-    PUBLIC ${Boost_INCLUDE_DIR}
+    # PUBLIC ${Boost_INCLUDE_DIR}
 )
