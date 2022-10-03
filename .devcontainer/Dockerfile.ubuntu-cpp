@@ -12,7 +12,7 @@ RUN apt-get update \
     nasm \
     # install dependencies of snap emacs 27.2 (current snap version of emacs)
     # (ref: https://github.com/hubisan/emacs-wsl)
-    autoconf automake bsd-mailx dbus-x11 debhelper dpkg-dev \
+    autoconf automake dbus-x11 debhelper dpkg-dev \
     libacl1-dev libasound2-dev libdbus-1-dev libgif-dev libgnutls28-dev libgpm-dev \
     libgtk-3-dev libjansson-dev libjpeg-dev liblcms2-dev liblockfile-dev libm17n-dev \
     libncurses5-dev liboss4-salsa2 libotf-dev libpng-dev librsvg2-dev \
