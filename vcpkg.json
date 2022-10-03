@@ -35,8 +35,7 @@
       "features": ["sdl2-binding", "opengl3-binding", "glfw-binding", "docking-experimental"]
     },
     {
-      "name": "fltk",
-      "version>=": "1.3.8"
+      "name": "implot"
     },
     {
       "name": "catch2",

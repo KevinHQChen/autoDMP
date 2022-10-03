@@ -14,6 +14,7 @@ add_library(gui gui.cpp ${HEADER_LIST})   # target is created
 # include_directories(${imguiwrap_SOURCE_DIR})
 
 find_package(imgui CONFIG REQUIRED)
+find_package(implot CONFIG REQUIRED)
 # find_package(SDL2 CONFIG REQUIRED)
 
 find_package(OpenGL REQUIRED)
@@ -49,6 +50,7 @@ target_link_libraries(
   PUBLIC ctrl
   # PUBLIC imguiwrap
   PUBLIC imgui::imgui
+  PRIVATE implot::implot
   # PRIVATE SDL2::SDL2 SDL2::SDL2main SDL2::SDL2-static
   PRIVATE ${OPENGL_opengl_LIBRARY}
   # PRIVATE ${OPENGL_glu_LIBRARY}

@@ -4,7 +4,10 @@
 #include "ctrl/supervisor.hpp"
 
 State0::State0(Supervisor *sv)
-    : State(sv), ch(Vector1ui(0)),
+    : State(sv, Eigen::Vector3d(60, 40, 60),
+            Eigen::Vector3d(sv->imProc->impConf.getChanBBox()[0].height, 0, 0),
+            Eigen::Vector3d(1, 0, 0)),
+      ch(Vector1ui(0)),
       // system matrices
       Ad(openData(sv->getConfPath() + "state0/Ad.txt")),
       Ad_(openData(sv->getConfPath() + "state0/Ad_.txt")),
@@ -14,19 +17,7 @@ State0::State0(Supervisor *sv)
       K1(openData(sv->getConfPath() + "state0/K1.txt")),
       K2(openData(sv->getConfPath() + "state0/K2.txt")),
       Qw(openData(sv->getConfPath() + "state0/Qw.txt")),
-      Rv(openData(sv->getConfPath() + "state0/Rv.txt")), P0(Vector1d::Identity(1, 1)), P(P0),
-
-      // initial conditions
-      du(Eigen::Vector3d::Zero()), uref(Eigen::Vector3d(60, 40, 60)),
-
-      z0(Eigen::Vector3d::Zero()), z(z0),
-      initTime(steady_clock::now()), prevCtrlTime{initTime, initTime, initTime}, dt{0s, 0s, 0s},
-
-      yrefScale(Eigen::Vector3d(sv->imProc->impConf.getChanBBox()[0].height, 0, 0)),
-      yref0(Eigen::Vector3d(1, 0, 0)), yref((yref0.array() * yrefScale.array()).matrix()),
-      dyref(yref - yref0),
-
-      dxhat(Eigen::Vector3d::Zero()), dyhat(Eigen::Vector3d::Zero()) {
+      Rv(openData(sv->getConfPath() + "state0/Rv.txt")), P0(Vector1d::Identity(1, 1)), P(P0) {
   // clear all improc queues
   sv_->imProc->clearProcDataQueues();
 }

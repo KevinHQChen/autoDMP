@@ -4,7 +4,11 @@
 #include "ctrl/supervisor.hpp"
 
 State1::State1(Supervisor *sv)
-    : State(sv), ch(Vector2ui(1, 2)),
+    : State(sv, Eigen::Vector3d(65, 45, 65),
+            Eigen::Vector3d(0, sv->imProc->impConf.getChanBBox()[1].height,
+                            sv->imProc->impConf.getChanBBox()[2].height),
+            Eigen::Vector3d(0, 1, 1)),
+      ch(Vector2ui(1, 2)),
       // system matrices
       Ad(openData(sv->getConfPath() + "state1/Ad.txt")),
       Ad_(openData(sv->getConfPath() + "state1/Ad_.txt")),
@@ -14,20 +18,8 @@ State1::State1(Supervisor *sv)
       K1(openData(sv->getConfPath() + "state1/K1.txt")),
       K2(openData(sv->getConfPath() + "state1/K2.txt")),
       Qw(openData(sv->getConfPath() + "state1/Qw.txt")),
-      Rv(openData(sv->getConfPath() + "state1/Rv.txt")), P0(Eigen::Matrix2d::Identity(2, 2)), P(P0),
-
-      // initial conditions
-      du(Eigen::Vector3d::Zero()), uref(Eigen::Vector3d(65, 45, 65)),
-
-      z0(Eigen::Vector3d::Zero()), z(z0),
-      initTime(steady_clock::now()), prevCtrlTime{initTime, initTime, initTime}, dt{0s, 0s, 0s},
-
-      yrefScale(Eigen::Vector3d(0, sv->imProc->impConf.getChanBBox()[1].height,
-                                sv->imProc->impConf.getChanBBox()[2].height)),
-      yref0(Eigen::Vector3d(0, 1, 1)), yref((yref0.array() * yrefScale.array()).matrix()),
-      dyref(yref - yref0),
-
-      dxhat(Eigen::Vector3d::Zero()), dyhat(Eigen::Vector3d::Zero()) {
+      Rv(openData(sv->getConfPath() + "state1/Rv.txt")), P0(Eigen::Matrix2d::Identity(2, 2)),
+      P(P0) {
   // clear all improc queues
   sv_->imProc->clearProcDataQueues();
 }
