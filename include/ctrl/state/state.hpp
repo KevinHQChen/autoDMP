@@ -49,7 +49,7 @@ public:
   Eigen::Vector3d z0{Eigen::Vector3d::Zero()}, z{z0};
   time_point<steady_clock> initTime{steady_clock::now()};
   time_point<steady_clock> prevCtrlTime[3] = {initTime, initTime, initTime};
-  duration<double> dt[3] = {0s, 0s, 0s};
+  duration<double> dt[3] = {0s, 0s, 0s}; // this somehow defaults to milliseconds
   // state/output vectors
   Eigen::Vector3d yrefScale;
   Eigen::Vector3d y, yref0, yref;
@@ -62,7 +62,7 @@ public:
   bool obsv[3] = {false, false, false};
   bool stateTransitionCondition = false;
 
-  State(Supervisor *sv, Eigen::Vector3d uref, Eigen::Vector3d yrefScale, Eigen::Vector3d yref0);
+  State(Supervisor *sv, Eigen::Vector3d uref, Eigen::Vector3d yrefScale);
   virtual ~State();
 
   virtual bool measurementAvailable() = 0;

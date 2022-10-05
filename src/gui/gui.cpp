@@ -157,14 +157,36 @@ void GUI::showCtrl() {
       // display current event
       ImGui::Text("Current Event");
       ImGui::Separator();
-      ImGui::Text("Source State: %d", supervisor->currEvent_->srcState);
-      ImGui::Text("Destination State: %d", supervisor->currEvent_->destState);
-      ImGui::Text("Destination Position (ch0): %f", supervisor->currEvent_->destPos(0));
-      ImGui::Text("Destination Position (ch1): %f", supervisor->currEvent_->destPos(1));
-      ImGui::Text("Destination Position (ch2): %f", supervisor->currEvent_->destPos(2));
-      ImGui::Text("Velocity (ch0): %f", supervisor->currEvent_->vel(0));
-      ImGui::Text("Velocity (ch1): %f", supervisor->currEvent_->vel(1));
-      ImGui::Text("Velocity (ch2): %f", supervisor->currEvent_->vel(2));
+      if (supervisor->currEvent_ != nullptr) {
+        ImGui::Text("Source State: %d", supervisor->currEvent_->srcState);
+        ImGui::Text("Destination State: %d", supervisor->currEvent_->destState);
+        ImGui::Text("Destination Position (ch0): %f", supervisor->currEvent_->destPos(0));
+        ImGui::Text("Destination Position (ch1): %f", supervisor->currEvent_->destPos(1));
+        ImGui::Text("Destination Position (ch2): %f", supervisor->currEvent_->destPos(2));
+        ImGui::Text("Velocity (ch0): %f", supervisor->currEvent_->vel(0));
+        ImGui::Text("Velocity (ch1): %f", supervisor->currEvent_->vel(1));
+        ImGui::Text("Velocity (ch2): %f", supervisor->currEvent_->vel(2));
+      } else {
+        ImGui::Text("No current event");
+      }
+      ImGui::Separator();
+
+      // display current state
+      ImGui::Text("Current State");
+      ImGui::Separator();
+      if (supervisor->currState_ != nullptr) {
+        ImGui::Text("uref (ch0): %f", supervisor->currState_->uref(0));
+        ImGui::Text("uref (ch1): %f", supervisor->currState_->uref(1));
+        ImGui::Text("uref (ch2): %f", supervisor->currState_->uref(2));
+        ImGui::Text("yrefScale (ch0): %f", supervisor->currState_->yrefScale(0));
+        ImGui::Text("yrefScale (ch1): %f", supervisor->currState_->yrefScale(1));
+        ImGui::Text("yrefScale (ch2): %f", supervisor->currState_->yrefScale(2));
+        ImGui::Text("Observing ch0: %d", supervisor->currState_->obsv[0]);
+        ImGui::Text("Observing ch1: %d", supervisor->currState_->obsv[1]);
+        ImGui::Text("Observing ch2: %d", supervisor->currState_->obsv[2]);
+      } else {
+        ImGui::Text("No current state");
+      }
 
       // TODO add buttons, textboxes, sliders to add/remove events
       int srcState = 0, destState = 0, pos[3] = {0, 0, 0}, vel[3] = {0, 0, 0};

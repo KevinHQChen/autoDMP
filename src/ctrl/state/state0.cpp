@@ -5,8 +5,7 @@
 
 State0::State0(Supervisor *sv)
     : State(sv, Eigen::Vector3d(60, 40, 60),
-            Eigen::Vector3d(sv->imProc->impConf.getChanBBox()[0].height, 0, 0),
-            Eigen::Vector3d(1, 0, 0)),
+            Eigen::Vector3d(sv->imProc->impConf.getChanBBox()[0].height, 0, 0)),
       ch(Vector1ui(0)),
       // system matrices
       Ad(openData(sv->getConfPath() + "state0/Ad.txt")),
@@ -80,7 +79,6 @@ void State0::handleEvent(Event *event) {
   bool destReached = true;
 
   // generate next waypoint if destination is not reached
-  // TODO figure out what units dt is measured in (is it milliseconds or seconds?)
   for (int i = 0; i != ch.rows(); ++i) {
     if (!firstMeasAvail[ch(i)]) {
       if (y(ch(i)) < yDest(ch(i)))
@@ -89,9 +87,9 @@ void State0::handleEvent(Event *event) {
         yref(ch(i)) = y(ch(i)) - event->vel(ch(i)) * 25e-3;
     } else {
       if (y(ch(i)) < yDest(ch(i)))
-        yref(ch(i)) = y(ch(i)) + event->vel(ch(i)) * dt[ch(i)].count() * 1e-3;
+        yref(ch(i)) = y(ch(i)) + event->vel(ch(i)) * dt[ch(i)].count();
       else if (y(ch(i)) > yDest(ch(i)))
-        yref(ch(i)) = y(ch(i)) - event->vel(ch(i)) * dt[ch(i)].count() * 1e-3;
+        yref(ch(i)) = y(ch(i)) - event->vel(ch(i)) * dt[ch(i)].count();
     }
     destReached &= std::abs(yref(ch(i)) - yDest(ch(i))) < event->vel(ch(i)) * 25e-3;
   }

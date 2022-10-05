@@ -1,9 +1,9 @@
 #include "ctrl/state/state.hpp"
 
-State::State(Supervisor *sv, Eigen::Vector3d uref, Eigen::Vector3d yrefScale, Eigen::Vector3d yref0)
-    : sv_(sv), uref(uref), yrefScale(yrefScale), yref0(yref0) {
+State::State(Supervisor *sv, Eigen::Vector3d uref, Eigen::Vector3d yrefScale)
+    : sv_(sv), uref(uref), yrefScale(yrefScale), yref0(yrefScale) {
   yref = (yref0.array() * yrefScale.array()).matrix();
-  dyref = yref - yref0;
+  dyref = Eigen::Vector3d::Zero();
 }
 
 State::~State() {
