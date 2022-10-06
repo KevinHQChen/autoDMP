@@ -76,24 +76,27 @@ void State1::handleEvent(Event *event) {
     sv_->currEvent_ = nullptr;
     return;
   }
-
-  Eigen::Vector3d yDest = (event->destPos.array() * yrefScale.array()).matrix();
+  if (!startEvent) {
+    yDest = (event->destPos.array() * yrefScale.array()).matrix();
+    startEvent = true;
+    yref = y;
+  }
   bool destReached = true;
 
   // generate next waypoint if destination is not reached
   for (int i = 0; i != ch.rows(); ++i) {
-    if (!firstMeasAvail[ch(i)]) {
-      if (y(ch(i)) < yDest(ch(i)))
-        yref(ch(i)) = y(ch(i)) + event->vel(ch(i)) * 25e-3;
-      else if (y(ch(i)) > yDest(ch(i)))
-        yref(ch(i)) = y(ch(i)) - event->vel(ch(i)) * 25e-3;
-    } else {
-      if (y(ch(i)) < yDest(ch(i)))
-        yref(ch(i)) = y(ch(i)) + event->vel(ch(i)) * dt[ch(i)].count();
-      else if (y(ch(i)) > yDest(ch(i)))
-        yref(ch(i)) = y(ch(i)) - event->vel(ch(i)) * dt[ch(i)].count();
+    if (y(ch(i)) < yDest(ch(i)))
+      dyref(ch(i)) = event->vel(ch(i)) * dt[ch(i)].count();
+    else if (y(ch(i)) > yDest(ch(i)))
+      dyref(ch(i)) = -event->vel(ch(i)) * dt[ch(i)].count();
+    yref(ch(i)) += dyref(ch(i));
+
+    if (std::abs(yref(ch(i)) - yDest(ch(i))) < event->vel(ch(i)) * 50e-3) {
+      dyref(ch(i)) = 0;
+      yref(ch(i)) = yDest(ch(i));
     }
-    destReached &= std::abs(yref(ch(i)) - yDest(ch(i))) < event->vel(ch(i)) * 25e-3;
+
+    destReached &= std::abs(y(ch(i)) - yDest(ch(i))) < event->vel(ch(i)) * 25e-3;
   }
 
   // remain in State 1
@@ -104,6 +107,8 @@ void State1::handleEvent(Event *event) {
   if (event->destState == 1) {
     if (destReached) {
       yref = yDest;
+      startEvent = false;
+      // z = Eigen::Vector3d::Zero();
       delete sv_->currEvent_;
       sv_->currEvent_ = nullptr;
     }

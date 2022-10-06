@@ -74,7 +74,6 @@ void State0::handleEvent(Event *event) {
     sv_->currEvent_ = nullptr;
     return;
   }
-
   if (!startEvent) {
     yDest = (event->destPos.array() * yrefScale.array()).matrix();
     startEvent = true;
