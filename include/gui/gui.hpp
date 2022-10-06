@@ -101,7 +101,12 @@ class GUI {
   // real time plotting
   ImPlotAxisFlags implotFlags = ImPlotAxisFlags_NoTickLabels;
   float guiTime{0.0f}, history{30.0f};
-  ScrollingBuffer u0, u1, u2, y0, y1, y2, yref0, yref1, yref2;
+  ScrollingBuffer u0, u1, u2, du0, du1, du2;
+  ScrollingBuffer y0, y1, y2, yref0, yref1, yref2;
+  ScrollingBuffer dxhat0, dxhat1, dxhat2, z0, z1, z2;
+
+  // supervisor state machine stuff
+  int srcState = 0, destState = 0, pos[3] = {0, 0, 0}, vel[3] = {0, 0, 0};
 
   // template matching interactions
   ImVector<ImVec2> points;

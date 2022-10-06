@@ -15,6 +15,7 @@ startImProc = false
 startImProcSetup = false
 startCtrl = false
 startCtrlSetup = false
+pauseCtrlDataViz = false
 showDebug = false
 
 [cam]

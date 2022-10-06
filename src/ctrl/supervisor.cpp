@@ -43,6 +43,8 @@ void Supervisor::stopThread() {
 void Supervisor::start() {
   while (started()) {
     if (currState_->measurementAvailable()) {
+      currState_->updateMeasurement();
+
       // events are pushed to a FIFO event queue by GUI
       // get the first event in the queue and pop it
       if (currEvent_ == nullptr && !eventQueue_->empty())
@@ -51,8 +53,6 @@ void Supervisor::start() {
       // call the current state's trajectory generation function corresponding to the event
       if (currEvent_ != nullptr)
         currState_->handleEvent(currEvent_);
-
-      currState_->updateMeasurement();
 
       // generate optimal control signals at current time step
       info(currState_->step());

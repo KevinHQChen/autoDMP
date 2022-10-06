@@ -80,6 +80,7 @@ struct guiConfig {
   bool startImProcSetup;
   bool startCtrl;
   bool startCtrlSetup;
+  bool pauseCtrlDataViz;
   bool showDebug;
 
   void from_toml(const ordered_value &v) {
@@ -98,6 +99,7 @@ struct guiConfig {
     startImProcSetup = toml::find<bool>(v, "startImProcSetup");
     startCtrl = toml::find<bool>(v, "startCtrl");
     startCtrlSetup = toml::find<bool>(v, "startCtrlSetup");
+    pauseCtrlDataViz = toml::find<bool>(v, "pauseCtrlDataViz");
     showDebug = toml::find<bool>(v, "showDebug");
   }
 };

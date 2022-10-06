@@ -156,7 +156,6 @@ void GUI::showCtrl() {
 
       // display current event
       ImGui::Text("Current Event");
-      ImGui::Separator();
       if (supervisor->currEvent_ != nullptr) {
         ImGui::Text("Source State: %d", supervisor->currEvent_->srcState);
         ImGui::Text("Destination State: %d", supervisor->currEvent_->destState);
@@ -173,7 +172,6 @@ void GUI::showCtrl() {
 
       // display current state
       ImGui::Text("Current State");
-      ImGui::Separator();
       if (supervisor->currState_ != nullptr) {
         ImGui::Text("uref (ch0): %f", supervisor->currState_->uref(0));
         ImGui::Text("uref (ch1): %f", supervisor->currState_->uref(1));
@@ -187,15 +185,16 @@ void GUI::showCtrl() {
       } else {
         ImGui::Text("No current state");
       }
+      ImGui::Separator();
 
+      ImGui::Text("Add Event");
       // TODO add buttons, textboxes, sliders to add/remove events
-      int srcState = 0, destState = 0, pos[3] = {0, 0, 0}, vel[3] = {0, 0, 0};
-      ImGui::SliderInt("Desired Position", &pos[0], 0, 100);
-      ImGui::SliderInt("Desired Position", &pos[1], 0, 100);
-      ImGui::SliderInt("Desired Position", &pos[2], 0, 100);
-      ImGui::SliderInt("Desired Velocity", &vel[0], 0, 100);
-      ImGui::SliderInt("Desired Velocity", &vel[1], 0, 100);
-      ImGui::SliderInt("Desired Velocity", &vel[2], 0, 100);
+      ImGui::SliderInt("Desired Position (ch0)", &pos[0], 0, 100);
+      ImGui::SliderInt("Desired Position (ch1)", &pos[1], 0, 100);
+      ImGui::SliderInt("Desired Position (ch2)", &pos[2], 0, 100);
+      ImGui::SliderInt("Desired Velocity (ch0)", &vel[0], 0, 100);
+      ImGui::SliderInt("Desired Velocity (ch1)", &vel[1], 0, 100);
+      ImGui::SliderInt("Desired Velocity (ch2)", &vel[2], 0, 100);
       Eigen::Vector3d posVec((double)pos[0], (double)pos[1], (double)pos[2]);
       Eigen::Vector3d velVec((double)vel[0], (double)vel[1], (double)vel[2]);
       ImGui::SliderInt("Source State", &srcState, 0, 2);
@@ -203,12 +202,17 @@ void GUI::showCtrl() {
 
       if (ImGui::Button("Add Event"))
         supervisor->addEvent(srcState, destState, posVec, velVec);
+      ImGui::Separator();
 
       // TODO add button to start/stop controller
       if (ImGui::Button("Start Controller"))
         guiConf.startCtrl = true;
       if (ImGui::Button("Stop Controller"))
         guiConf.startCtrl = false;
+      if (ImGui::Button("Start Data Display"))
+        guiConf.pauseCtrlDataViz = false;
+      if (ImGui::Button("Pause Data Display"))
+        guiConf.pauseCtrlDataViz = true;
 
       ImGui::End();
     }
@@ -216,20 +220,32 @@ void GUI::showCtrl() {
 
   if (guiConf.startCtrl) {
     if (ImGui::Begin("Ctrl Data", &guiConf.startCtrl)) {
-      guiTime += ImGui::GetIO().DeltaTime;
-      u0.AddPoint(guiTime, supervisor->currState_->u(0));
-      u1.AddPoint(guiTime, supervisor->currState_->u(1));
-      u2.AddPoint(guiTime, supervisor->currState_->u(2));
-      y0.AddPoint(guiTime, supervisor->currState_->y(0));
-      y1.AddPoint(guiTime, supervisor->currState_->y(1));
-      y2.AddPoint(guiTime, supervisor->currState_->y(2));
-      yref0.AddPoint(guiTime, supervisor->currState_->yref(0));
-      yref1.AddPoint(guiTime, supervisor->currState_->yref(1));
-      yref2.AddPoint(guiTime, supervisor->currState_->yref(2));
+      if (!guiConf.pauseCtrlDataViz) {
+        guiTime += ImGui::GetIO().DeltaTime;
+        u0.AddPoint(guiTime, supervisor->currState_->u(0));
+        u1.AddPoint(guiTime, supervisor->currState_->u(1));
+        u2.AddPoint(guiTime, supervisor->currState_->u(2));
+        du0.AddPoint(guiTime, supervisor->currState_->du(0));
+        du1.AddPoint(guiTime, supervisor->currState_->du(1));
+        du2.AddPoint(guiTime, supervisor->currState_->du(2));
+        y0.AddPoint(guiTime, supervisor->currState_->y(0));
+        y1.AddPoint(guiTime, supervisor->currState_->y(1));
+        y2.AddPoint(guiTime, supervisor->currState_->y(2));
+        yref0.AddPoint(guiTime, supervisor->currState_->yref(0));
+        yref1.AddPoint(guiTime, supervisor->currState_->yref(1));
+        yref2.AddPoint(guiTime, supervisor->currState_->yref(2));
+        dxhat0.AddPoint(guiTime, supervisor->currState_->dxhat(0));
+        dxhat1.AddPoint(guiTime, supervisor->currState_->dxhat(1));
+        dxhat2.AddPoint(guiTime, supervisor->currState_->dxhat(2));
+        z0.AddPoint(guiTime, supervisor->currState_->z(0));
+        z1.AddPoint(guiTime, supervisor->currState_->z(1));
+        z2.AddPoint(guiTime, supervisor->currState_->z(2));
+      }
 
       ImGui::SliderFloat("History", &history, 1, 30, "%.1f s");
-      if (ImPlot::BeginPlot("##Control Output", ImVec2(-1, 150))) {
-        ImPlot::SetupAxes(NULL, NULL, implotFlags, implotFlags);
+
+      if (ImPlot::BeginPlot("##Control Output", ImVec2(-1, 300))) {
+        ImPlot::SetupAxes("time (s)", "voltage (V)"); //, implotFlags, implotFlags);
         ImPlot::SetupAxisLimits(ImAxis_X1, guiTime - history, guiTime, ImGuiCond_Always);
         ImPlot::SetupAxisLimits(ImAxis_Y1, 0, 250);
         ImPlot::PlotLine("u0", &u0.Data[0].x, &u0.Data[0].y, u0.Data.size(), u0.Offset,
@@ -238,11 +254,17 @@ void GUI::showCtrl() {
                          2 * sizeof(float));
         ImPlot::PlotLine("u2", &u2.Data[0].x, &u2.Data[0].y, u2.Data.size(), u2.Offset,
                          2 * sizeof(float));
+        ImPlot::PlotLine("du0", &du0.Data[0].x, &du0.Data[0].y, du0.Data.size(), du0.Offset,
+                         2 * sizeof(float));
+        ImPlot::PlotLine("du1", &du1.Data[0].x, &du1.Data[0].y, du1.Data.size(), du1.Offset,
+                         2 * sizeof(float));
+        ImPlot::PlotLine("du2", &du2.Data[0].x, &du2.Data[0].y, du2.Data.size(), du2.Offset,
+                         2 * sizeof(float));
         ImPlot::EndPlot();
       }
 
-      if (ImPlot::BeginPlot("##Measurement", ImVec2(-1, 150))) {
-        ImPlot::SetupAxes(NULL, NULL, implotFlags, implotFlags);
+      if (ImPlot::BeginPlot("##Measurement", ImVec2(-1, 300))) {
+        ImPlot::SetupAxes("time (s)", "position (px)"); //, implotFlags, implotFlags);
         ImPlot::SetupAxisLimits(ImAxis_X1, guiTime - history, guiTime, ImGuiCond_Always);
         ImPlot::SetupAxisLimits(ImAxis_Y1, -1000, 1000);
         ImPlot::PlotLine("y0", &y0.Data[0].x, &y0.Data[0].y, y0.Data.size(), y0.Offset,
@@ -257,6 +279,25 @@ void GUI::showCtrl() {
                          yref1.Offset, 2 * sizeof(float));
         ImPlot::PlotLine("yref2", &yref2.Data[0].x, &yref2.Data[0].y, yref2.Data.size(),
                          yref2.Offset, 2 * sizeof(float));
+        ImPlot::EndPlot();
+      }
+
+      if (ImPlot::BeginPlot("##State Error, Integral Error", ImVec2(-1, 300))) {
+        ImPlot::SetupAxes("time (s)", "error (px)"); //, implotFlags, implotFlags);
+        ImPlot::SetupAxisLimits(ImAxis_X1, guiTime - history, guiTime, ImGuiCond_Always);
+        ImPlot::SetupAxisLimits(ImAxis_Y1, -1000, 1000);
+        ImPlot::PlotLine("dxhat0", &dxhat0.Data[0].x, &dxhat0.Data[0].y, dxhat0.Data.size(),
+                         dxhat0.Offset, 2 * sizeof(float));
+        ImPlot::PlotLine("dxhat1", &dxhat1.Data[0].x, &dxhat1.Data[0].y, dxhat1.Data.size(),
+                         dxhat1.Offset, 2 * sizeof(float));
+        ImPlot::PlotLine("dxhat2", &dxhat2.Data[0].x, &dxhat2.Data[0].y, dxhat2.Data.size(),
+                         dxhat2.Offset, 2 * sizeof(float));
+        ImPlot::PlotLine("z0", &z0.Data[0].x, &z0.Data[0].y, z0.Data.size(), z0.Offset,
+                         2 * sizeof(float));
+        ImPlot::PlotLine("z1", &z1.Data[0].x, &z1.Data[0].y, z1.Data.size(), z1.Offset,
+                         2 * sizeof(float));
+        ImPlot::PlotLine("z2", &z2.Data[0].x, &z2.Data[0].y, z2.Data.size(), z2.Offset,
+                         2 * sizeof(float));
         ImPlot::EndPlot();
       }
 

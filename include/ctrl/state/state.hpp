@@ -55,12 +55,14 @@ public:
   Eigen::Vector3d y, yref0, yref;
   Eigen::Vector3d dy, dyref;
   Eigen::Vector3d yhat, dxhat{Eigen::Vector3d::Zero()}, dyhat{Eigen::Vector3d::Zero()}, ytilde;
+  Eigen::Vector3d yDest;
 
   bool firstMeasAvail[3] = {false, false, false};
   bool measAvail[3] = {true, true, true};
   bool trueMeasAvail[3] = {true, true, true};
   bool obsv[3] = {false, false, false};
   bool stateTransitionCondition = false;
+  bool startEvent = false;
 
   State(Supervisor *sv, Eigen::Vector3d uref, Eigen::Vector3d yrefScale);
   virtual ~State();
