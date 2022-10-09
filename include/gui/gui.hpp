@@ -70,6 +70,13 @@ struct RollingBuffer {
     }
 };
 
+struct GUIEvent {
+  int srcState = 0;
+  int destState = 0;
+  int pos[3] = {0, 0, 0};
+  int vel[3] = {0, 0, 0};
+};
+
 void setWindowFullscreen();
 
 class GUI {
@@ -106,7 +113,8 @@ class GUI {
   ScrollingBuffer dxhat0, dxhat1, dxhat2, z0, z1, z2;
 
   // supervisor state machine stuff
-  int srcState = 0, destState = 0, pos[3] = {0, 0, 0}, vel[3] = {0, 0, 0};
+  GUIEvent currEvent;
+  std::deque<GUIEvent> eventQueue;
 
   // template matching interactions
   ImVector<ImVec2> points;

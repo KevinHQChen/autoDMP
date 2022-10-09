@@ -147,12 +147,44 @@ void GUI::showImProcSetup() {
 void GUI::showCtrl() {
   if (guiConf.startCtrlSetup) {
     if (ImGui::Begin("Ctrl Setup", &guiConf.startCtrlSetup)) {
-      // TODO display eventQueue
-      ImGui::Text("Event Queue");
+      // buttons, textboxes, sliders to add/remove events
+      ImGui::Text("Add Event");
+      ImGui::SliderInt("Target Position (ch0)", &currEvent.pos[0], 0, 100);
+      ImGui::SliderInt("Target Position (ch1)", &currEvent.pos[1], 0, 100);
+      ImGui::SliderInt("Target Position (ch2)", &currEvent.pos[2], 0, 100);
+      Eigen::Vector3d posVec((double)currEvent.pos[0], (double)currEvent.pos[1],
+                             (double)currEvent.pos[2]);
+      ImGui::SliderInt("Target Velocity (ch0)", &currEvent.vel[0], 0, 100);
+      ImGui::SliderInt("Target Velocity (ch1)", &currEvent.vel[1], 0, 100);
+      ImGui::SliderInt("Target Velocity (ch2)", &currEvent.vel[2], 0, 100);
+      Eigen::Vector3d velVec((double)currEvent.vel[0], (double)currEvent.vel[1],
+                             (double)currEvent.vel[2]);
+      ImGui::SliderInt("Source State", &currEvent.srcState, 0, 2);
+      ImGui::SliderInt("Destination State", &currEvent.destState, 0, 2);
+      if (ImGui::Button("Add Event")) {
+        supervisor->addEvent(currEvent.srcState, currEvent.destState, posVec, velVec);
+        eventQueue.push_back(currEvent);
+      }
       ImGui::Separator();
-      // for (int i = 0; i < supervisor->eventQueue_->size(); ++i) {
-      //   ImGui::Text("Event: %s", event.c_str());
-      // }
+
+      // display eventQueue
+      ImGui::Text("Event Queue");
+      for (int i = 0; i < eventQueue.size() - supervisor->eventQueue_->size(); ++i)
+        eventQueue.pop_front();
+      int eventNum = 0;
+      for (auto &event : eventQueue) {
+        ImGui::Text("Event %d", eventNum);
+        ImGui::Text("Source State: %d", event.srcState);
+        ImGui::Text("Destination State: %d", event.destState);
+        ImGui::Text("Target Position (ch0): %d", event.pos[0]);
+        ImGui::Text("Target Position (ch1): %d", event.pos[1]);
+        ImGui::Text("Target Position (ch2): %d", event.pos[2]);
+        ImGui::Text("Target Velocity (ch0): %d", event.vel[0]);
+        ImGui::Text("Target Velocity (ch1): %d", event.vel[1]);
+        ImGui::Text("Target Velocity (ch2): %d", event.vel[2]);
+        ImGui::Separator();
+        ++eventNum;
+      }
 
       // display current event
       ImGui::Text("Current Event");
@@ -185,23 +217,6 @@ void GUI::showCtrl() {
       } else {
         ImGui::Text("No current state");
       }
-      ImGui::Separator();
-
-      ImGui::Text("Add Event");
-      // TODO add buttons, textboxes, sliders to add/remove events
-      ImGui::SliderInt("Desired Position (ch0)", &pos[0], 0, 100);
-      ImGui::SliderInt("Desired Position (ch1)", &pos[1], 0, 100);
-      ImGui::SliderInt("Desired Position (ch2)", &pos[2], 0, 100);
-      ImGui::SliderInt("Desired Velocity (ch0)", &vel[0], 0, 100);
-      ImGui::SliderInt("Desired Velocity (ch1)", &vel[1], 0, 100);
-      ImGui::SliderInt("Desired Velocity (ch2)", &vel[2], 0, 100);
-      Eigen::Vector3d posVec((double)pos[0], (double)pos[1], (double)pos[2]);
-      Eigen::Vector3d velVec((double)vel[0], (double)vel[1], (double)vel[2]);
-      ImGui::SliderInt("Source State", &srcState, 0, 2);
-      ImGui::SliderInt("Destination State", &destState, 0, 2);
-
-      if (ImGui::Button("Add Event"))
-        supervisor->addEvent(srcState, destState, posVec, velVec);
       ImGui::Separator();
 
       // TODO add button to start/stop controller
