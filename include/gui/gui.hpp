@@ -75,6 +75,19 @@ struct GUIEvent {
   int destState = 0;
   int pos[3] = {0, 0, 0};
   int vel[3] = {0, 0, 0};
+  int *data[4];
+  inline static const std::string props[4] = {"Source State", "Destination State", "Target Position (ch0-2)", "Target Velocity (ch0-2)"};
+
+  inline static const int min[4] = {0, 0, 0, 0};
+  inline static const int max[4] = {3, 3, 100, 20};
+
+  GUIEvent() {
+    int i = 0;
+    data[i++] = &srcState;
+    data[i++] = &destState;
+    data[i++] = pos;
+    data[i++] = vel;
+  }
 };
 
 void setWindowFullscreen();
@@ -112,9 +125,12 @@ class GUI {
   ScrollingBuffer y0, y1, y2, yref0, yref1, yref2;
   ScrollingBuffer dxhat0, dxhat1, dxhat2, z0, z1, z2;
 
-  // supervisor state machine stuff
+  // supervisor state machine stuff (displaying/modifying events, states)
+  ImGuiTableFlags tableFlags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg | ImGuiTableFlags_NoBordersInBody;
+
   GUIEvent currEvent;
-  std::deque<GUIEvent> eventQueue;
+  static constexpr auto off_c = &GUIEvent::srcState;
+  std::deque<GUIEvent> guiEventQueue;
 
   // template matching interactions
   ImVector<ImVec2> points;

@@ -147,60 +147,113 @@ void GUI::showImProcSetup() {
 void GUI::showCtrl() {
   if (guiConf.startCtrlSetup) {
     if (ImGui::Begin("Ctrl Setup", &guiConf.startCtrlSetup)) {
-      // buttons, textboxes, sliders to add/remove events
-      ImGui::Text("Add Event");
-      ImGui::SliderInt("Target Position (ch0)", &currEvent.pos[0], 0, 100);
-      ImGui::SliderInt("Target Position (ch1)", &currEvent.pos[1], 0, 100);
-      ImGui::SliderInt("Target Position (ch2)", &currEvent.pos[2], 0, 100);
-      Eigen::Vector3d posVec((double)currEvent.pos[0], (double)currEvent.pos[1],
-                             (double)currEvent.pos[2]);
-      ImGui::SliderInt("Target Velocity (ch0)", &currEvent.vel[0], 0, 100);
-      ImGui::SliderInt("Target Velocity (ch1)", &currEvent.vel[1], 0, 100);
-      ImGui::SliderInt("Target Velocity (ch2)", &currEvent.vel[2], 0, 100);
-      Eigen::Vector3d velVec((double)currEvent.vel[0], (double)currEvent.vel[1],
-                             (double)currEvent.vel[2]);
-      ImGui::SliderInt("Source State", &currEvent.srcState, 0, 2);
-      ImGui::SliderInt("Destination State", &currEvent.destState, 0, 2);
-      if (ImGui::Button("Add Event")) {
-        supervisor->addEvent(currEvent.srcState, currEvent.destState, posVec, velVec);
-        eventQueue.push_back(currEvent);
-      }
-      ImGui::Separator();
+      // disable tree node indentation
+      ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.0f);
 
-      // display eventQueue
-      ImGui::Text("Event Queue");
-      for (int i = 0; i < eventQueue.size() - supervisor->eventQueue_->size(); ++i)
-        eventQueue.pop_front();
-      int eventNum = 0;
-      for (auto &event : eventQueue) {
-        ImGui::Text("Event %d", eventNum);
-        ImGui::Text("Source State: %d", event.srcState);
-        ImGui::Text("Destination State: %d", event.destState);
-        ImGui::Text("Target Position (ch0): %d", event.pos[0]);
-        ImGui::Text("Target Position (ch1): %d", event.pos[1]);
-        ImGui::Text("Target Position (ch2): %d", event.pos[2]);
-        ImGui::Text("Target Velocity (ch0): %d", event.vel[0]);
-        ImGui::Text("Target Velocity (ch1): %d", event.vel[1]);
-        ImGui::Text("Target Velocity (ch2): %d", event.vel[2]);
-        ImGui::Separator();
-        ++eventNum;
+      if (ImGui::TreeNode("Add Event")) {
+        if (ImGui::BeginTable("eventTable", 2, tableFlags)) {
+          ImGui::TableSetupColumn("Property");
+          ImGui::TableSetupColumn("Value");
+          ImGui::TableHeadersRow();
+
+          for (int row = 0; row < 4; ++row) {
+            ImGui::TableNextRow();
+            if (row == 0) {
+              // Setup ItemWidth once (more efficient)
+              ImGui::TableSetColumnIndex(1);
+              ImGui::PushItemWidth(-FLT_MIN); // Right-aligned
+            }
+
+            // Draw our contents
+            ImGui::PushID(row);
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("%s", GUIEvent::props[row].c_str());
+            ImGui::TableSetColumnIndex(1);
+            if (row < 2)
+              ImGui::SliderInt(GUIEvent::props[row].c_str(), currEvent.data[row],
+                               GUIEvent::min[row], GUIEvent::max[row]);
+            else
+              ImGui::SliderInt3(GUIEvent::props[row].c_str(), currEvent.data[row],
+                                GUIEvent::min[row], GUIEvent::max[row]);
+            ImGui::PopID();
+          }
+          ImGui::EndTable();
+        }
+
+        Eigen::Vector3d posVec((double)currEvent.pos[0], (double)currEvent.pos[1],
+                               (double)currEvent.pos[2]);
+        Eigen::Vector3d velVec((double)currEvent.vel[0], (double)currEvent.vel[1],
+                               (double)currEvent.vel[2]);
+        if (ImGui::Button("Add Event")) {
+          supervisor->addEvent(currEvent.srcState, currEvent.destState, posVec, velVec);
+          guiEventQueue.push_back(currEvent);
+        }
+        ImGui::TreePop();
       }
 
-      // display current event
-      ImGui::Text("Current Event");
-      if (supervisor->currEvent_ != nullptr) {
-        ImGui::Text("Source State: %d", supervisor->currEvent_->srcState);
-        ImGui::Text("Destination State: %d", supervisor->currEvent_->destState);
-        ImGui::Text("Destination Position (ch0): %f", supervisor->currEvent_->destPos(0));
-        ImGui::Text("Destination Position (ch1): %f", supervisor->currEvent_->destPos(1));
-        ImGui::Text("Destination Position (ch2): %f", supervisor->currEvent_->destPos(2));
-        ImGui::Text("Velocity (ch0): %f", supervisor->currEvent_->vel(0));
-        ImGui::Text("Velocity (ch1): %f", supervisor->currEvent_->vel(1));
-        ImGui::Text("Velocity (ch2): %f", supervisor->currEvent_->vel(2));
-      } else {
-        ImGui::Text("No current event");
+      if (ImGui::TreeNode("Event Queue")) {
+        // sync gui event queue with supervisor
+        for (int i = 0; i < guiEventQueue.size() - supervisor->eventQueue_->size(); ++i)
+          guiEventQueue.pop_front();
+
+        if (ImGui::BeginTable("eventQueueTable", 5, tableFlags)) {
+          ImGui::TableSetupColumn("#");
+          ImGui::TableSetupColumn("Src State");
+          ImGui::TableSetupColumn("Dest State");
+          ImGui::TableSetupColumn("Target Pos");
+          ImGui::TableSetupColumn("Target Vel");
+          ImGui::TableHeadersRow();
+
+          int eventNum = 0;
+          for (auto &event : guiEventQueue) {
+            ImGui::TableNextRow();
+            ImGui::PushID(eventNum);
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("%d", eventNum);
+            ImGui::TableSetColumnIndex(1);
+            ImGui::Text("%d", event.srcState);
+            ImGui::TableSetColumnIndex(2);
+            ImGui::Text("%d", event.destState);
+            ImGui::TableSetColumnIndex(3);
+            ImGui::Text("(%d, %d, %d)", event.pos[0], event.pos[1], event.pos[2]);
+            ImGui::TableSetColumnIndex(4);
+            ImGui::Text("(%d, %d, %d)", event.vel[0], event.vel[1], event.vel[2]);
+            ImGui::PopID();
+            ++eventNum;
+          }
+          ImGui::EndTable();
+        }
+        ImGui::TreePop();
       }
-      ImGui::Separator();
+
+      if (ImGui::TreeNode("Supervisor Status")) {
+        ImGui::Text("Current Event");
+        if (ImGui::BeginTable("currEventTable", 4, tableFlags)) {
+          ImGui::TableSetupColumn("Src State");
+          ImGui::TableSetupColumn("Dest State");
+          ImGui::TableSetupColumn("Target Pos");
+          ImGui::TableSetupColumn("Target Vel");
+          ImGui::TableHeadersRow();
+
+          if (supervisor->currEvent_ != nullptr) {
+            ImGui::TableNextRow();
+            ImGui::PushID(0);
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("%d", supervisor->currEvent_->srcState);
+            ImGui::TableSetColumnIndex(1);
+            ImGui::Text("%d", supervisor->currEvent_->destState);
+            ImGui::TableSetColumnIndex(2);
+            ImGui::Text("(%f, %f, %f)", supervisor->currEvent_->destPos[0],
+                        supervisor->currEvent_->destPos[1], supervisor->currEvent_->destPos[2]);
+            ImGui::TableSetColumnIndex(3);
+            ImGui::Text("(%f, %f, %f)", supervisor->currEvent_->vel[0],
+                        supervisor->currEvent_->vel[1], supervisor->currEvent_->vel[2]);
+            ImGui::PopID();
+          }
+          ImGui::EndTable();
+        }
+        ImGui::TreePop();
+      }
 
       // display current state
       ImGui::Text("Current State");
@@ -219,7 +272,7 @@ void GUI::showCtrl() {
       }
       ImGui::Separator();
 
-      // TODO add button to start/stop controller
+      // add button to start/stop controller
       if (ImGui::Button("Start Controller"))
         guiConf.startCtrl = true;
       if (ImGui::Button("Stop Controller"))

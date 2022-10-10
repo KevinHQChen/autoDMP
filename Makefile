@@ -5,10 +5,10 @@
 help:	## Show help.
 	@grep -hE '^[A-Za-z0-9_ \-]*?:.*##.*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-configure:	## Configure the build.
+configure:	## Configure the build (Debug by default).
 	make debug_config
 
-build:	## Build the project.
+build:	## Build the project (Debug by default).
 	make debug
 
 docker-build:	## Build ubuntu-cpp:prebuild image (build tools).
@@ -30,11 +30,13 @@ docker-run:	## Run ubuntu-cpp:latest container from current image.
 debug_config:
 	cmake -S . -B ./build -G "Ninja Multi-Config" -DCMAKE_BUILD_TYPE:STRING=Debug -DENABLE_DEVELOPER_MODE:BOOL=OFF -DOPT_ENABLE_COVERAGE:BOOL=ON
 
-debug:
+debug: debug_config
 	cmake --build ./build --config Debug
 
-release:
+release_config:
 	cmake -S ./ -B ./build -G "Ninja Multi-Config" -DCMAKE_BUILD_TYPE:STRING=Release -DFEATURE_TESTS:BOOL=OFF -DENABLE_DEVELOPER_MODE:BOOL=OFF -DOPT_ENABLE_COVERAGE:BOOL=ON
+
+release: release_config
 	cmake --build ./build --config Release
 
 test:
