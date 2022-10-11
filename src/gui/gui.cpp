@@ -150,6 +150,17 @@ void GUI::showCtrl() {
       // disable tree node indentation
       ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.0f);
 
+      openAction = -1;
+      if (ImGui::Button("Open all"))
+        openAction = 1;
+      ImGui::SameLine();
+      if (ImGui::Button("Close all"))
+        openAction = 0;
+      ImGui::SameLine();
+      ImGui::Separator();
+
+      if (openAction != -1)
+        ImGui::SetNextItemOpen(openAction != 0);
       if (ImGui::TreeNode("Add Event")) {
         if (ImGui::BeginTable("eventTable", 2, tableFlags)) {
           ImGui::TableSetupColumn("Property");
@@ -180,8 +191,8 @@ void GUI::showCtrl() {
           ImGui::EndTable();
         }
 
-        Eigen::Vector3d posVec((double)currEvent.pos[0], (double)currEvent.pos[1],
-                               (double)currEvent.pos[2]);
+        Eigen::Vector3d posVec((double)currEvent.pos[0]/100.0, (double)currEvent.pos[1]/100.0,
+                               (double)currEvent.pos[2]/100.0);
         Eigen::Vector3d velVec((double)currEvent.vel[0], (double)currEvent.vel[1],
                                (double)currEvent.vel[2]);
         if (ImGui::Button("Add Event")) {
@@ -190,7 +201,10 @@ void GUI::showCtrl() {
         }
         ImGui::TreePop();
       }
+      ImGui::Separator();
 
+      if (openAction != -1)
+        ImGui::SetNextItemOpen(openAction != 0);
       if (ImGui::TreeNode("Event Queue")) {
         // sync gui event queue with supervisor
         for (int i = 0; i < guiEventQueue.size() - supervisor->eventQueue_->size(); ++i)
@@ -225,7 +239,10 @@ void GUI::showCtrl() {
         }
         ImGui::TreePop();
       }
+      ImGui::Separator();
 
+      if (openAction != -1)
+        ImGui::SetNextItemOpen(openAction != 0);
       if (ImGui::TreeNode("Supervisor Status")) {
         ImGui::Text("Current Event");
         if (ImGui::BeginTable("currEventTable", 4, tableFlags)) {
@@ -252,35 +269,65 @@ void GUI::showCtrl() {
           }
           ImGui::EndTable();
         }
-        ImGui::TreePop();
-      }
+        ImGui::Separator();
 
-      // display current state
-      ImGui::Text("Current State");
-      if (supervisor->currState_ != nullptr) {
-        ImGui::Text("uref (ch0): %f", supervisor->currState_->uref(0));
-        ImGui::Text("uref (ch1): %f", supervisor->currState_->uref(1));
-        ImGui::Text("uref (ch2): %f", supervisor->currState_->uref(2));
-        ImGui::Text("yrefScale (ch0): %f", supervisor->currState_->yrefScale(0));
-        ImGui::Text("yrefScale (ch1): %f", supervisor->currState_->yrefScale(1));
-        ImGui::Text("yrefScale (ch2): %f", supervisor->currState_->yrefScale(2));
-        ImGui::Text("Observing ch0: %d", supervisor->currState_->obsv[0]);
-        ImGui::Text("Observing ch1: %d", supervisor->currState_->obsv[1]);
-        ImGui::Text("Observing ch2: %d", supervisor->currState_->obsv[2]);
-      } else {
-        ImGui::Text("No current state");
+        ImGui::Text("Current State");
+        if (ImGui::BeginTable("currStateTable", 4, tableFlags)) {
+          ImGui::TableSetupColumn("Vector");
+          ImGui::TableSetupColumn("ch0");
+          ImGui::TableSetupColumn("ch1");
+          ImGui::TableSetupColumn("ch2");
+          ImGui::TableHeadersRow();
+
+          if (supervisor->currState_ != nullptr) {
+            ImGui::TableNextRow();
+            ImGui::PushID(0);
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("u_ref");
+            for (int i = 0; i < 3; ++i) {
+              ImGui::TableSetColumnIndex(i+1);
+              ImGui::Text("%f", supervisor->currState_->uref(i));
+            }
+            ImGui::PopID();
+            ImGui::TableNextRow();
+            ImGui::PushID(1);
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("y_refScale");
+            for (int i = 0; i < 3; ++i) {
+              ImGui::TableSetColumnIndex(i+1);
+              ImGui::Text("%f", supervisor->currState_->yrefScale(i));
+            }
+            ImGui::PopID();
+            ImGui::TableNextRow();
+            ImGui::PushID(2);
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("observing channel");
+            for (int i = 0; i < 3; ++i) {
+              ImGui::TableSetColumnIndex(i+1);
+              ImGui::Text("%d", supervisor->currState_->obsv[i]);
+            }
+            ImGui::PopID();
+          }
+          ImGui::EndTable();
+        }
+        ImGui::TreePop();
       }
       ImGui::Separator();
 
       // add button to start/stop controller
-      if (ImGui::Button("Start Controller"))
-        guiConf.startCtrl = true;
-      if (ImGui::Button("Stop Controller"))
-        guiConf.startCtrl = false;
-      if (ImGui::Button("Start Data Display"))
-        guiConf.pauseCtrlDataViz = false;
-      if (ImGui::Button("Pause Data Display"))
-        guiConf.pauseCtrlDataViz = true;
+      if (!guiConf.startCtrl)
+        if (ImGui::Button("Start Controller"))
+          guiConf.startCtrl = true;
+      if (guiConf.startCtrl)
+        if (ImGui::Button("Stop Controller"))
+          guiConf.startCtrl = false;
+
+      if (!guiConf.pauseCtrlDataViz)
+        if (ImGui::Button("Pause Data Display"))
+          guiConf.pauseCtrlDataViz = true;
+      if (guiConf.pauseCtrlDataViz)
+        if (ImGui::Button("Start Data Display"))
+          guiConf.pauseCtrlDataViz = false;
 
       ImGui::End();
     }
