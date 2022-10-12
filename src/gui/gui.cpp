@@ -174,9 +174,6 @@ void GUI::showCtrl() {
               ImGui::TableSetColumnIndex(1);
               ImGui::PushItemWidth(-FLT_MIN); // Right-aligned
             }
-
-            // Draw our contents
-            ImGui::PushID(row);
             ImGui::TableSetColumnIndex(0);
             ImGui::Text("%s", GUIEvent::props[row].c_str());
             ImGui::TableSetColumnIndex(1);
@@ -186,13 +183,12 @@ void GUI::showCtrl() {
             else
               ImGui::SliderInt3(GUIEvent::props[row].c_str(), currEvent.data[row],
                                 GUIEvent::min[row], GUIEvent::max[row]);
-            ImGui::PopID();
           }
           ImGui::EndTable();
         }
 
-        Eigen::Vector3d posVec((double)currEvent.pos[0]/100.0, (double)currEvent.pos[1]/100.0,
-                               (double)currEvent.pos[2]/100.0);
+        Eigen::Vector3d posVec((double)currEvent.pos[0] / 100.0, (double)currEvent.pos[1] / 100.0,
+                               (double)currEvent.pos[2] / 100.0);
         Eigen::Vector3d velVec((double)currEvent.vel[0], (double)currEvent.vel[1],
                                (double)currEvent.vel[2]);
         if (ImGui::Button("Add Event")) {
@@ -212,16 +208,13 @@ void GUI::showCtrl() {
 
         if (ImGui::BeginTable("eventQueueTable", 5, tableFlags)) {
           ImGui::TableSetupColumn("#");
-          ImGui::TableSetupColumn("Src State");
-          ImGui::TableSetupColumn("Dest State");
-          ImGui::TableSetupColumn("Target Pos");
-          ImGui::TableSetupColumn("Target Vel");
+          for (int col = 0; col < 4; ++col)
+            ImGui::TableSetupColumn(GUIEvent::props[col].c_str());
           ImGui::TableHeadersRow();
 
           int eventNum = 0;
           for (auto &event : guiEventQueue) {
             ImGui::TableNextRow();
-            ImGui::PushID(eventNum);
             ImGui::TableSetColumnIndex(0);
             ImGui::Text("%d", eventNum);
             ImGui::TableSetColumnIndex(1);
@@ -232,7 +225,6 @@ void GUI::showCtrl() {
             ImGui::Text("(%d, %d, %d)", event.pos[0], event.pos[1], event.pos[2]);
             ImGui::TableSetColumnIndex(4);
             ImGui::Text("(%d, %d, %d)", event.vel[0], event.vel[1], event.vel[2]);
-            ImGui::PopID();
             ++eventNum;
           }
           ImGui::EndTable();
@@ -246,26 +238,23 @@ void GUI::showCtrl() {
       if (ImGui::TreeNode("Supervisor Status")) {
         ImGui::Text("Current Event");
         if (ImGui::BeginTable("currEventTable", 4, tableFlags)) {
-          ImGui::TableSetupColumn("Src State");
-          ImGui::TableSetupColumn("Dest State");
-          ImGui::TableSetupColumn("Target Pos");
-          ImGui::TableSetupColumn("Target Vel");
+          for (int col = 0; col < 4; ++col)
+            ImGui::TableSetupColumn(GUIEvent::props[col].c_str());
           ImGui::TableHeadersRow();
 
           if (supervisor->currEvent_ != nullptr) {
             ImGui::TableNextRow();
-            ImGui::PushID(0);
             ImGui::TableSetColumnIndex(0);
             ImGui::Text("%d", supervisor->currEvent_->srcState);
             ImGui::TableSetColumnIndex(1);
             ImGui::Text("%d", supervisor->currEvent_->destState);
             ImGui::TableSetColumnIndex(2);
-            ImGui::Text("(%f, %f, %f)", supervisor->currEvent_->destPos[0],
-                        supervisor->currEvent_->destPos[1], supervisor->currEvent_->destPos[2]);
+            ImGui::Text("(%d, %d, %d)", (int)(supervisor->currEvent_->destPos[0] * 100),
+                        (int)(supervisor->currEvent_->destPos[1] * 100),
+                        (int)(supervisor->currEvent_->destPos[2] * 100));
             ImGui::TableSetColumnIndex(3);
-            ImGui::Text("(%f, %f, %f)", supervisor->currEvent_->vel[0],
-                        supervisor->currEvent_->vel[1], supervisor->currEvent_->vel[2]);
-            ImGui::PopID();
+            ImGui::Text("(%d, %d, %d)", (int)supervisor->currEvent_->vel[0],
+                        (int)supervisor->currEvent_->vel[1], (int)supervisor->currEvent_->vel[2]);
           }
           ImGui::EndTable();
         }
@@ -280,33 +269,14 @@ void GUI::showCtrl() {
           ImGui::TableHeadersRow();
 
           if (supervisor->currState_ != nullptr) {
-            ImGui::TableNextRow();
-            ImGui::PushID(0);
-            ImGui::TableSetColumnIndex(0);
-            ImGui::Text("u_ref");
-            for (int i = 0; i < 3; ++i) {
-              ImGui::TableSetColumnIndex(i+1);
-              ImGui::Text("%f", supervisor->currState_->uref(i));
-            }
-            ImGui::PopID();
-            ImGui::TableNextRow();
-            ImGui::PushID(1);
-            ImGui::TableSetColumnIndex(0);
-            ImGui::Text("y_refScale");
-            for (int i = 0; i < 3; ++i) {
-              ImGui::TableSetColumnIndex(i+1);
-              ImGui::Text("%f", supervisor->currState_->yrefScale(i));
-            }
-            ImGui::PopID();
-            ImGui::TableNextRow();
-            ImGui::PushID(2);
-            ImGui::TableSetColumnIndex(0);
-            ImGui::Text("observing channel");
-            for (int i = 0; i < 3; ++i) {
-              ImGui::TableSetColumnIndex(i+1);
-              ImGui::Text("%d", supervisor->currState_->obsv[i]);
-            }
-            ImGui::PopID();
+            displayVector3d("u", supervisor->currState_->u);
+            displayVector3d("u_sat", supervisor->currState_->usat);
+            displayVector3d("u_ref", supervisor->currState_->uref);
+            displayVector3d("y", supervisor->currState_->y);
+            displayVector3d("y_ref", supervisor->currState_->yref);
+            displayVector3d("y_refScale", supervisor->currState_->yrefScale);
+            displayArray3b("obsv", supervisor->currState_->obsv,
+                           "Boolean vector of observed channels");
           }
           ImGui::EndTable();
         }
@@ -765,3 +735,12 @@ void GUI::showImProcSetup() {
     imProc->stopSetupThread();
 }
 */
+inline void displayArray3b(const char *arrName, bool arr[3], char *helpText) {
+  ImGui::TableNextRow();
+  ImGui::TableSetColumnIndex(0);
+  ImGui::Text("%s", arrName);
+  for (int i = 0; i < 3; ++i) {
+    ImGui::TableSetColumnIndex(i + 1);
+    ImGui::Text("%d", arr[i]);
+  }
+}

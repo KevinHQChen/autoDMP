@@ -37,8 +37,7 @@ bool State0::measurementAvailable() {
       tmpMeasAvail &= trueMeasAvail[ch(i)];
       if (!stateTransitionCondition)
         obsv[ch(i)] = true;
-    }
-    else
+    } else
       tmpMeasAvail &= measAvail[ch(i)];
   }
 
@@ -118,14 +117,17 @@ void State0::handleEvent(Event *event) {
   //  / /\_\      /_/\ \
   // / /  \ \    / /  \ \.
   if (event->destState == 1) {
+    // ch0 is 90% to junction and we're observing ch0
     if (yref(0) > 0.9 * yrefScale(0) && obsv[0]) {
       obsv[0] = false;
       sv_->imProc->clearProcDataQueues();
       stateTransitionCondition = true;
     }
-    if (!obsv[0] && !sv_->imProc->procDataQArr[1]->empty() &&
-        !sv_->imProc->procDataQArr[2]->empty()) {
-      startEvent = false;
+    // we're in sim mode and ch0 is 95% to junction
+    // or ch1 & ch2 are observable and we're not observing ch0
+    if ((yref(0) > 0.95 * yrefScale(0) && toml::get<bool>(sv_->conf["ctrl"]["simMode"])) ||
+        (!obsv[0] && !sv_->imProc->procDataQArr[1]->empty() &&
+         !sv_->imProc->procDataQArr[2]->empty())) {
       delete sv_->currEvent_;
       sv_->currEvent_ = nullptr;
       sv_->updateState<State1>();

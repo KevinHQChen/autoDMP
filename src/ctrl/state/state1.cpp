@@ -39,8 +39,7 @@ bool State1::measurementAvailable() {
       tmpMeasAvail &= trueMeasAvail[ch(i)];
       if (!stateTransitionCondition)
         obsv[ch(i)] = true;
-    }
-    else
+    } else
       tmpMeasAvail &= measAvail[ch(i)];
   }
 
@@ -120,13 +119,18 @@ void State1::handleEvent(Event *event) {
   //  /_/\ \      / /\_\
   // / /  \ \    / /  \ \.
   if (event->destState == 0) {
+    // ch1 & ch2 are 90% to junction and we're observing ch1 & ch2
     if (yref(1) > 0.9 * yrefScale(1) && yref(2) > 0.9 * yrefScale(2) && obsv[1] && obsv[2]) {
       obsv[1] = false;
       obsv[2] = false;
       sv_->imProc->clearProcDataQueues();
       stateTransitionCondition = true;
     }
-    if (!obsv[1] && !obsv[2] && !sv_->imProc->procDataQArr[0]->empty()) {
+    // we're in sim mode and ch1 & ch2 are 95% to junction
+    // or ch0 is observable and we stopped observing ch1 & ch2
+    if ((yref(1) > 0.95 * yrefScale(1) && yref(2) > 0.95 * yrefScale(2) &&
+         toml::get<bool>(sv_->conf["ctrl"]["simMode"])) ||
+        (!obsv[1] && !obsv[2] && !sv_->imProc->procDataQArr[0]->empty())) {
       delete sv_->currEvent_;
       sv_->currEvent_ = nullptr;
       sv_->updateState<State0>();
@@ -139,12 +143,17 @@ void State1::handleEvent(Event *event) {
   //  /_/\ \      / /\_\
   // / /  \ \    / /  \ \.
   if (event->destState == 2) {
-    if (yref(1) > 0.9 * yrefScale(1) && obsv[1]) {
+    // ch1 is 90% to junction and we're observing ch1
+    if (yref(1) > 0.9 * yrefScale(1) && yref(2) > 0.9 * yrefScale(2) && obsv[1]) {
       obsv[1] = false;
       sv_->imProc->clearProcDataQueues();
       stateTransitionCondition = true;
     }
-    if (!obsv[1] && !sv_->imProc->procDataQArr[0]->empty()) {
+    // we're in sim mode and ch1 is 95% to junction
+    // or ch0 & ch2 are observable and we're not observing ch1
+    if ((yref(1) > 0.95 * yrefScale(1) && toml::get<bool>(sv_->conf["ctrl"]["simMode"])) ||
+        (!obsv[1] && !sv_->imProc->procDataQArr[0]->empty() &&
+         !sv_->imProc->procDataQArr[1]->empty())) {
       delete sv_->currEvent_;
       sv_->currEvent_ = nullptr;
       // sv_->updateState<State2>();

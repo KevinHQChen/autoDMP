@@ -30,44 +30,44 @@
 
 // utility structure for realtime plot
 struct ScrollingBuffer {
-    int MaxSize;
-    int Offset;
-    ImVector<ImVec2> Data;
-    ScrollingBuffer(int max_size = 2000) {
-        MaxSize = max_size;
-        Offset  = 0;
-        Data.reserve(MaxSize);
+  int MaxSize;
+  int Offset;
+  ImVector<ImVec2> Data;
+  ScrollingBuffer(int max_size = 2000) {
+    MaxSize = max_size;
+    Offset = 0;
+    Data.reserve(MaxSize);
+  }
+  void AddPoint(float x, float y) {
+    if (Data.size() < MaxSize)
+      Data.push_back(ImVec2(x, y));
+    else {
+      Data[Offset] = ImVec2(x, y);
+      Offset = (Offset + 1) % MaxSize;
     }
-    void AddPoint(float x, float y) {
-        if (Data.size() < MaxSize)
-            Data.push_back(ImVec2(x,y));
-        else {
-            Data[Offset] = ImVec2(x,y);
-            Offset =  (Offset + 1) % MaxSize;
-        }
+  }
+  void Erase() {
+    if (Data.size() > 0) {
+      Data.shrink(0);
+      Offset = 0;
     }
-    void Erase() {
-        if (Data.size() > 0) {
-            Data.shrink(0);
-            Offset  = 0;
-        }
-    }
+  }
 };
 
 // utility structure for realtime plot
 struct RollingBuffer {
-    float Span;
-    ImVector<ImVec2> Data;
-    RollingBuffer() {
-        Span = 10.0f;
-        Data.reserve(2000);
-    }
-    void AddPoint(float x, float y) {
-        float xmod = fmodf(x, Span);
-        if (!Data.empty() && xmod < Data.back().x)
-            Data.shrink(0);
-        Data.push_back(ImVec2(xmod, y));
-    }
+  float Span;
+  ImVector<ImVec2> Data;
+  RollingBuffer() {
+    Span = 10.0f;
+    Data.reserve(2000);
+  }
+  void AddPoint(float x, float y) {
+    float xmod = fmodf(x, Span);
+    if (!Data.empty() && xmod < Data.back().x)
+      Data.shrink(0);
+    Data.push_back(ImVec2(xmod, y));
+  }
 };
 
 struct GUIEvent {
@@ -76,7 +76,8 @@ struct GUIEvent {
   int pos[3] = {0, 0, 0};
   int vel[3] = {0, 0, 0};
   int *data[4];
-  inline static const std::string props[4] = {"Source State", "Destination State", "Target Position (ch0-2)", "Target Velocity (ch0-2)"};
+  inline static const std::string props[4] = {"Src State", "Dest State", "Target Pos (ch0-2) [%]",
+                                              "Target Vel (ch0-2) [px/s]"};
   inline static const int min[4] = {0, 0, 0, 0};
   inline static const int max[4] = {3, 3, 100, 20};
 
@@ -90,6 +91,39 @@ struct GUIEvent {
 };
 
 void setWindowFullscreen();
+
+inline void HelpMarker(const char *desc) {
+  ImGui::TextDisabled("(?)");
+  if (ImGui::IsItemHovered()) {
+    ImGui::BeginTooltip();
+    ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+    ImGui::TextUnformatted(desc);
+    ImGui::PopTextWrapPos();
+    ImGui::EndTooltip();
+  }
+}
+
+inline void displayVector3d(const char *vecName, Eigen::Vector3d vec) {
+  ImGui::TableNextRow();
+  ImGui::TableSetColumnIndex(0);
+  ImGui::Text("%s", vecName);
+  for (int i = 0; i < 3; ++i) {
+    ImGui::TableSetColumnIndex(i + 1);
+    ImGui::Text("%f", vec(i));
+  }
+}
+
+inline void displayArray3b(const char *arrName, bool arr[3], const char *helpText = "") {
+  ImGui::TableNextRow();
+  ImGui::TableSetColumnIndex(0);
+  ImGui::Text("%s", arrName);
+  ImGui::SameLine();
+  HelpMarker(helpText);
+  for (int i = 0; i < 3; ++i) {
+    ImGui::TableSetColumnIndex(i + 1);
+    ImGui::Text("%d", arr[i]);
+  }
+}
 
 class GUI {
   ordered_value conf;
@@ -125,7 +159,9 @@ class GUI {
   ScrollingBuffer dxhat0, dxhat1, dxhat2, z0, z1, z2;
 
   // displaying/modifying events, states
-  ImGuiTableFlags tableFlags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg | ImGuiTableFlags_NoBordersInBody;
+  ImGuiTableFlags tableFlags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH |
+                               ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg |
+                               ImGuiTableFlags_NoBordersInBody;
   GUIEvent currEvent;
   std::deque<GUIEvent> guiEventQueue;
   int openAction = -1;

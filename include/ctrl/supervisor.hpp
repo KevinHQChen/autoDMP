@@ -16,8 +16,6 @@ struct StateData;
 class State; // forward declaration
 
 class Supervisor {
-  ordered_value conf;
-  std::string dataPath, confPath;
 
   StateData *currStateData_;
   // QueueFPS<Eigen::Matrix<int16_t, 3, 1>> *ctrlDataQueuePtr;
@@ -29,6 +27,9 @@ class Supervisor {
   void start();
 
 public:
+  ordered_value conf;
+  std::string dataPath, confPath;
+
   ImProc *imProc = nullptr;
   State *currState_ = nullptr;
   Event *currEvent_ = nullptr;

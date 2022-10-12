@@ -92,6 +92,7 @@ dataPath    = "/autoDMP/data/ctrl/"
 status          = "disabled"
 # perform all steps but don't send control signal to pump [bool]
 dryRun          = true
+simMode         = true
 
 [postproc]
 # path for improc data
