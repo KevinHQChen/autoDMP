@@ -195,6 +195,8 @@ public:
   void showImProc();
   void showImProcSetup();
   void showCtrl();
+  void showCtrlSetup();
+  void showSysID();
 
   void contextMenu(bool enable);
 

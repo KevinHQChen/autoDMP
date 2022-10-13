@@ -38,6 +38,9 @@
       "name": "implot"
     },
     {
+      "name": "nativefiledialog"
+    },
+    {
       "name": "catch2",
       "version>=": "2.13.8"
     },

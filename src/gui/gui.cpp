@@ -144,7 +144,7 @@ void GUI::showImProcSetup() {
   }
 }
 
-void GUI::showCtrl() {
+void GUI::showCtrlSetup() {
   if (guiConf.startCtrlSetup) {
     if (ImGui::Begin("Ctrl Setup", &guiConf.startCtrlSetup)) {
       // disable tree node indentation
@@ -284,7 +284,13 @@ void GUI::showCtrl() {
       }
       ImGui::Separator();
 
-      // add button to start/stop controller
+      if (!guiConf.startSysID)
+        if (ImGui::Button("Start System ID"))
+          guiConf.startSysID = true;
+      if (guiConf.startSysID)
+        if (ImGui::Button("Stop System ID"))
+          guiConf.startSysID = false;
+
       if (!guiConf.startCtrl)
         if (ImGui::Button("Start Controller"))
           guiConf.startCtrl = true;
@@ -302,7 +308,20 @@ void GUI::showCtrl() {
       ImGui::End();
     }
   }
+}
 
+void GUI::showSysID() {
+  if (guiConf.startSysID) {
+    if (ImGui::Begin("SysID Setup", &guiConf.startSysID)) {
+      // setup excitation signal
+      // button to read excitation signal from file
+      // select min/max values for excitation signal
+      // select channels
+      // preview plot of excitation signal
+  }
+}
+
+void GUI::showCtrl() {
   if (guiConf.startCtrl) {
     if (ImGui::Begin("Ctrl Data", &guiConf.startCtrl)) {
       if (!guiConf.pauseCtrlDataViz) {
@@ -430,6 +449,7 @@ std::optional<int> GUI::render() {
   showRawImCap();
   showImProcSetup();
   showImProc();
+  showCtrlSetup();
   showCtrl();
   if (guiConf.showDebug) {
     ImGui::ShowDemoWindow(&guiConf.showDebug);

@@ -23,6 +23,7 @@
 #include <Eigen/Dense>
 
 // #include <CLI/CLI.hpp>
+// #include <nfd.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <spdlog/spdlog.h>
@@ -80,6 +81,7 @@ struct guiConfig {
   bool startImProcSetup;
   bool startCtrl;
   bool startCtrlSetup;
+  bool startSysID;
   bool pauseCtrlDataViz;
   bool showDebug;
 
@@ -99,6 +101,7 @@ struct guiConfig {
     startImProcSetup = toml::find<bool>(v, "startImProcSetup");
     startCtrl = toml::find<bool>(v, "startCtrl");
     startCtrlSetup = toml::find<bool>(v, "startCtrlSetup");
+    startSysID = toml::find<bool>(v, "startSysID");
     pauseCtrlDataViz = toml::find<bool>(v, "pauseCtrlDataViz");
     showDebug = toml::find<bool>(v, "showDebug");
   }

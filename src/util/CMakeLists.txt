@@ -4,6 +4,7 @@ set(HEADER_LIST "../../include/util/util.hpp")
 # Make an automatic library - will be static or dynamic based on user setting
 add_library(util util.cpp ${HEADER_LIST})   # target is created
 
+find_package(unofficial-nativefiledialog CONFIG REQUIRED)
 find_package(fmt CONFIG)
 find_package(spdlog CONFIG)
 find_package(CLI11 CONFIG REQUIRED)
@@ -34,6 +35,7 @@ target_link_libraries(
   util
   PUBLIC project_options project_warnings
   PRIVATE CLI11::CLI11
+  PRIVATE unofficial::nativefiledialog::nfd
   PRIVATE fmt::fmt fmt::fmt-header-only
   PRIVATE spdlog::spdlog spdlog::spdlog_header_only
   PRIVATE toml11::toml11
