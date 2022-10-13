@@ -131,7 +131,7 @@ class GUI {
 
   ImCap *imCap = nullptr;
   ImProc *imProc = nullptr;
-  Supervisor *supervisor = nullptr;
+  Supervisor *sv = nullptr;
 
   GLFWwindow *window;
   std::optional<std::pair<int, int>> newSize{};
@@ -196,6 +196,7 @@ public:
   void showImProcSetup();
   void showCtrl();
   void showCtrlSetup();
+  void showSysIDSetup();
   void showSysID();
 
   void contextMenu(bool enable);

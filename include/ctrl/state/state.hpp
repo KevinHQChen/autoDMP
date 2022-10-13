@@ -64,6 +64,9 @@ public:
   bool stateTransitionCondition = false;
   bool startEvent = false;
 
+  // sysID specific
+  int stp = 0;
+
   State(Supervisor *sv, Eigen::Vector3d uref, Eigen::Vector3d yrefScale);
   virtual ~State();
 

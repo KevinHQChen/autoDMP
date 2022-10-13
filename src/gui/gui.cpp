@@ -3,14 +3,14 @@
 
 GUI::GUI()
     : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")), guiConf(toml::find<guiConfig>(conf, "gui")),
-      imCap(new ImCap()), imProc(new ImProc(imCap)), supervisor(new Supervisor(imProc)) {
+      imCap(new ImCap()), imProc(new ImProc(imCap)), sv(new Supervisor(imProc)) {
   info("Config type: {}", type_name<decltype(guiConf)>());
   info("Parsed config: {}", toml::find(conf, "gui"));
   // TODO may want to make GUI, ImCap, ImProc, Supervisor, etc. singletons
 }
 
 GUI::~GUI() {
-  delete supervisor;
+  delete sv;
   delete imProc;
   delete imCap;
 }
@@ -192,7 +192,7 @@ void GUI::showCtrlSetup() {
         Eigen::Vector3d velVec((double)currEvent.vel[0], (double)currEvent.vel[1],
                                (double)currEvent.vel[2]);
         if (ImGui::Button("Add Event")) {
-          supervisor->addEvent(currEvent.srcState, currEvent.destState, posVec, velVec);
+          sv->addEvent(currEvent.srcState, currEvent.destState, posVec, velVec);
           guiEventQueue.push_back(currEvent);
         }
         ImGui::TreePop();
@@ -203,7 +203,7 @@ void GUI::showCtrlSetup() {
         ImGui::SetNextItemOpen(openAction != 0);
       if (ImGui::TreeNode("Event Queue")) {
         // sync gui event queue with supervisor
-        for (int i = 0; i < guiEventQueue.size() - supervisor->eventQueue_->size(); ++i)
+        for (int i = 0; i < guiEventQueue.size() - sv->eventQueue_->size(); ++i)
           guiEventQueue.pop_front();
 
         if (ImGui::BeginTable("eventQueueTable", 5, tableFlags)) {
@@ -242,19 +242,19 @@ void GUI::showCtrlSetup() {
             ImGui::TableSetupColumn(GUIEvent::props[col].c_str());
           ImGui::TableHeadersRow();
 
-          if (supervisor->currEvent_ != nullptr) {
+          if (sv->currEvent_ != nullptr) {
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0);
-            ImGui::Text("%d", supervisor->currEvent_->srcState);
+            ImGui::Text("%d", sv->currEvent_->srcState);
             ImGui::TableSetColumnIndex(1);
-            ImGui::Text("%d", supervisor->currEvent_->destState);
+            ImGui::Text("%d", sv->currEvent_->destState);
             ImGui::TableSetColumnIndex(2);
-            ImGui::Text("(%d, %d, %d)", (int)(supervisor->currEvent_->destPos[0] * 100),
-                        (int)(supervisor->currEvent_->destPos[1] * 100),
-                        (int)(supervisor->currEvent_->destPos[2] * 100));
+            ImGui::Text("(%d, %d, %d)", (int)(sv->currEvent_->destPos[0] * 100),
+                        (int)(sv->currEvent_->destPos[1] * 100),
+                        (int)(sv->currEvent_->destPos[2] * 100));
             ImGui::TableSetColumnIndex(3);
-            ImGui::Text("(%d, %d, %d)", (int)supervisor->currEvent_->vel[0],
-                        (int)supervisor->currEvent_->vel[1], (int)supervisor->currEvent_->vel[2]);
+            ImGui::Text("(%d, %d, %d)", (int)sv->currEvent_->vel[0], (int)sv->currEvent_->vel[1],
+                        (int)sv->currEvent_->vel[2]);
           }
           ImGui::EndTable();
         }
@@ -268,15 +268,14 @@ void GUI::showCtrlSetup() {
           ImGui::TableSetupColumn("ch2");
           ImGui::TableHeadersRow();
 
-          if (supervisor->currState_ != nullptr) {
-            displayVector3d("u", supervisor->currState_->u);
-            displayVector3d("u_sat", supervisor->currState_->usat);
-            displayVector3d("u_ref", supervisor->currState_->uref);
-            displayVector3d("y", supervisor->currState_->y);
-            displayVector3d("y_ref", supervisor->currState_->yref);
-            displayVector3d("y_refScale", supervisor->currState_->yrefScale);
-            displayArray3b("obsv", supervisor->currState_->obsv,
-                           "Boolean vector of observed channels");
+          if (sv->currState_ != nullptr) {
+            displayVector3d("u", sv->currState_->u);
+            displayVector3d("u_sat", sv->currState_->usat);
+            displayVector3d("u_ref", sv->currState_->uref);
+            displayVector3d("y", sv->currState_->y);
+            displayVector3d("y_ref", sv->currState_->yref);
+            displayVector3d("y_refScale", sv->currState_->yrefScale);
+            displayArray3b("obsv", sv->currState_->obsv, "Boolean vector of observed channels");
           }
           ImGui::EndTable();
         }
@@ -284,12 +283,12 @@ void GUI::showCtrlSetup() {
       }
       ImGui::Separator();
 
-      if (!guiConf.startSysID)
-        if (ImGui::Button("Start System ID"))
-          guiConf.startSysID = true;
-      if (guiConf.startSysID)
-        if (ImGui::Button("Stop System ID"))
-          guiConf.startSysID = false;
+      if (!guiConf.startSysIDSetup)
+        if (ImGui::Button("Start System ID Setup"))
+          guiConf.startSysIDSetup = true;
+      if (guiConf.startSysIDSetup)
+        if (ImGui::Button("Stop System ID Setup"))
+          guiConf.startSysIDSetup = false;
 
       if (!guiConf.startCtrl)
         if (ImGui::Button("Start Controller"))
@@ -310,40 +309,150 @@ void GUI::showCtrlSetup() {
   }
 }
 
+void GUI::showSysIDSetup() {
+  if (guiConf.startSysIDSetup) {
+    if (ImGui::Begin("SysID Setup", &guiConf.startSysIDSetup)) {
+      ImGui::Text("Add Excitation Signal");
+      if (!sv->gotPrbs) {
+        sv->prbs = openData(sv->getConfPath() + "sysid/prbs.csv");
+        sv->prbs_ = sv->prbs.transpose();
+        sv->scaledPrbs = sv->prbs_;
+        sv->gotPrbs = true;
+      }
+
+      // select channels and order
+      for (int n = 0; n < IM_ARRAYSIZE(sv->prbsRows); ++n) {
+        ImGui::PushID(n);
+        if (n != 0)
+          ImGui::SameLine();
+        // Each button is clickable, a drag source and a drag target
+        if (ImGui::Button(sv->prbsRows[n], ImVec2(60, 60))) {
+          sv->prbsRows[n] = "";
+          sv->prbs_.col(n).setZero();
+        }
+        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
+          // Set payload to carry the index of our item (could be anything)
+          ImGui::SetDragDropPayload("rowIndexPayload", &n, sizeof(int));
+          // Display preview
+          ImGui::Text("Swap %s", sv->prbsRows[n]);
+          ImGui::EndDragDropSource();
+        }
+        if (ImGui::BeginDragDropTarget()) {
+          if (const ImGuiPayload *rowIdxPayload = ImGui::AcceptDragDropPayload("rowIndexPayload")) {
+            IM_ASSERT(rowIdxPayload->DataSize == sizeof(int));
+            int newRowIdx = *(const int *)rowIdxPayload->Data;
+            const char *tmp = sv->prbsRows[n];
+            sv->prbsRows[n] = sv->prbsRows[newRowIdx];
+            sv->prbsRows[newRowIdx] = tmp;
+            sv->prbs_.col(n).swap(sv->prbs_.col(newRowIdx));
+          }
+          ImGui::EndDragDropTarget();
+        }
+        ImGui::PopID();
+      }
+      if (ImGui::Button("Reset excitation signal")) {
+        sv->prbsRows[0] = "row0", sv->prbsRows[1] = "row1", sv->prbsRows[2] = "row2";
+        sv->prbs_ = sv->prbs.transpose();
+      }
+
+      ImGui::SliderFloat3("prbs scale", sv->prbsScale, 1.0f, 15.0f);
+      sv->scaledPrbs.col(0) = sv->prbsScale[0] * sv->prbs_.col(0);
+      sv->scaledPrbs.col(1) = sv->prbsScale[1] * sv->prbs_.col(1);
+      sv->scaledPrbs.col(2) = sv->prbsScale[2] * sv->prbs_.col(2);
+
+      if (ImPlot::BeginPlot("##prbs", ImVec2(-1, 300))) {
+        ImPlot::SetupAxes("time (s)", "du (V)");
+        ImPlot::PlotStairs("du0", sv->scaledPrbs.col(0).data(), sv->prbs_.rows(), 0.025);
+        ImPlot::PlotStairs("du1", sv->scaledPrbs.col(1).data(), sv->prbs_.rows(), 0.025);
+        ImPlot::PlotStairs("du2", sv->scaledPrbs.col(2).data(), sv->prbs_.rows(), 0.025);
+        ImPlot::EndPlot();
+      }
+      ImGui::Separator();
+      ImGui::SliderFloat3("uref", sv->prbsUrefArr, 0.0f, 100.0f);
+      sv->prbsUref = Eigen::Vector3d(sv->prbsUrefArr[0], sv->prbsUrefArr[1], sv->prbsUrefArr[2]);
+      ImGui::Separator();
+
+      if(!guiConf.startSysID)
+        if (ImGui::Button("Send excitation signal"))
+          guiConf.startSysID = true;
+      if (guiConf.startSysID)
+        if (ImGui::Button("Stop excitation signal"))
+          guiConf.startSysID = false;
+
+      ImGui::End();
+    }
+  }
+}
+
 void GUI::showSysID() {
   if (guiConf.startSysID) {
-    if (ImGui::Begin("SysID Setup", &guiConf.startSysID)) {
-      // setup excitation signal
-      // button to read excitation signal from file
-      // select min/max values for excitation signal
-      // select channels
-      // preview plot of excitation signal
-  }
+    sv->startSysIDThread();
+    if (ImGui::Begin("SysID", &guiConf.startSysID)) {
+      guiTime += ImGui::GetIO().DeltaTime;
+      u0.AddPoint(guiTime, sv->currState_->u(0));
+      u1.AddPoint(guiTime, sv->currState_->u(1));
+      u2.AddPoint(guiTime, sv->currState_->u(2));
+      y0.AddPoint(guiTime, sv->currState_->y(0));
+      y1.AddPoint(guiTime, sv->currState_->y(1));
+      y2.AddPoint(guiTime, sv->currState_->y(2));
+
+      ImGui::SliderFloat("History", &history, 1, 30, "%.1f s");
+
+      if (ImPlot::BeginPlot("Control Input", ImVec2(-1, 300))) {
+        ImPlot::SetupAxes("time (s)", "voltage (V)"); //, implotFlags, implotFlags);
+        ImPlot::SetupAxisLimits(ImAxis_X1, guiTime - history, guiTime, ImGuiCond_Always);
+        ImPlot::SetupAxisLimits(ImAxis_Y1, 0, 250);
+        ImPlot::PlotLine("u0", &u0.Data[0].x, &u0.Data[0].y, u0.Data.size(), u0.Offset,
+                         2 * sizeof(float));
+        ImPlot::PlotLine("u1", &u1.Data[0].x, &u1.Data[0].y, u1.Data.size(), u1.Offset,
+                         2 * sizeof(float));
+        ImPlot::PlotLine("u2", &u2.Data[0].x, &u2.Data[0].y, u2.Data.size(), u2.Offset,
+                         2 * sizeof(float));
+        ImPlot::EndPlot();
+      }
+
+      if (ImPlot::BeginPlot("Measured Output", ImVec2(-1, 300))) {
+        ImPlot::SetupAxes("time (s)", "position (px)"); //, implotFlags, implotFlags);
+        ImPlot::SetupAxisLimits(ImAxis_X1, guiTime - history, guiTime, ImGuiCond_Always);
+        ImPlot::SetupAxisLimits(ImAxis_Y1, -1000, 1000);
+        ImPlot::PlotLine("y0", &y0.Data[0].x, &y0.Data[0].y, y0.Data.size(), y0.Offset,
+                         2 * sizeof(float));
+        ImPlot::PlotLine("y1", &y1.Data[0].x, &y1.Data[0].y, y1.Data.size(), y1.Offset,
+                         2 * sizeof(float));
+        ImPlot::PlotLine("y2", &y2.Data[0].x, &y2.Data[0].y, y2.Data.size(), y2.Offset,
+                         2 * sizeof(float));
+        ImPlot::EndPlot();
+      }
+      ImGui::End();
+    }
+  } else
+    sv->stopSysIDThread();
 }
 
 void GUI::showCtrl() {
   if (guiConf.startCtrl) {
+    sv->startThread();
     if (ImGui::Begin("Ctrl Data", &guiConf.startCtrl)) {
       if (!guiConf.pauseCtrlDataViz) {
         guiTime += ImGui::GetIO().DeltaTime;
-        u0.AddPoint(guiTime, supervisor->currState_->u(0));
-        u1.AddPoint(guiTime, supervisor->currState_->u(1));
-        u2.AddPoint(guiTime, supervisor->currState_->u(2));
-        du0.AddPoint(guiTime, supervisor->currState_->du(0));
-        du1.AddPoint(guiTime, supervisor->currState_->du(1));
-        du2.AddPoint(guiTime, supervisor->currState_->du(2));
-        y0.AddPoint(guiTime, supervisor->currState_->y(0));
-        y1.AddPoint(guiTime, supervisor->currState_->y(1));
-        y2.AddPoint(guiTime, supervisor->currState_->y(2));
-        yref0.AddPoint(guiTime, supervisor->currState_->yref(0));
-        yref1.AddPoint(guiTime, supervisor->currState_->yref(1));
-        yref2.AddPoint(guiTime, supervisor->currState_->yref(2));
-        dxhat0.AddPoint(guiTime, supervisor->currState_->dxhat(0));
-        dxhat1.AddPoint(guiTime, supervisor->currState_->dxhat(1));
-        dxhat2.AddPoint(guiTime, supervisor->currState_->dxhat(2));
-        z0.AddPoint(guiTime, supervisor->currState_->z(0));
-        z1.AddPoint(guiTime, supervisor->currState_->z(1));
-        z2.AddPoint(guiTime, supervisor->currState_->z(2));
+        u0.AddPoint(guiTime, sv->currState_->u(0));
+        u1.AddPoint(guiTime, sv->currState_->u(1));
+        u2.AddPoint(guiTime, sv->currState_->u(2));
+        du0.AddPoint(guiTime, sv->currState_->du(0));
+        du1.AddPoint(guiTime, sv->currState_->du(1));
+        du2.AddPoint(guiTime, sv->currState_->du(2));
+        y0.AddPoint(guiTime, sv->currState_->y(0));
+        y1.AddPoint(guiTime, sv->currState_->y(1));
+        y2.AddPoint(guiTime, sv->currState_->y(2));
+        yref0.AddPoint(guiTime, sv->currState_->yref(0));
+        yref1.AddPoint(guiTime, sv->currState_->yref(1));
+        yref2.AddPoint(guiTime, sv->currState_->yref(2));
+        dxhat0.AddPoint(guiTime, sv->currState_->dxhat(0));
+        dxhat1.AddPoint(guiTime, sv->currState_->dxhat(1));
+        dxhat2.AddPoint(guiTime, sv->currState_->dxhat(2));
+        z0.AddPoint(guiTime, sv->currState_->z(0));
+        z1.AddPoint(guiTime, sv->currState_->z(1));
+        z2.AddPoint(guiTime, sv->currState_->z(2));
       }
 
       ImGui::SliderFloat("History", &history, 1, 30, "%.1f s");
@@ -407,12 +516,8 @@ void GUI::showCtrl() {
 
       ImGui::End();
     }
-  }
-
-  if (guiConf.startCtrl)
-    supervisor->startThread();
-  else
-    supervisor->stopThread();
+  } else
+    sv->stopThread();
 }
 
 std::optional<int> GUI::render() {
@@ -451,6 +556,8 @@ std::optional<int> GUI::render() {
   showImProc();
   showCtrlSetup();
   showCtrl();
+  showSysIDSetup();
+  showSysID();
   if (guiConf.showDebug) {
     ImGui::ShowDemoWindow(&guiConf.showDebug);
     ImPlot::ShowDemoWindow(&guiConf.showDebug);
@@ -755,12 +862,3 @@ void GUI::showImProcSetup() {
     imProc->stopSetupThread();
 }
 */
-inline void displayArray3b(const char *arrName, bool arr[3], char *helpText) {
-  ImGui::TableNextRow();
-  ImGui::TableSetColumnIndex(0);
-  ImGui::Text("%s", arrName);
-  for (int i = 0; i < 3; ++i) {
-    ImGui::TableSetColumnIndex(i + 1);
-    ImGui::Text("%d", arr[i]);
-  }
-}

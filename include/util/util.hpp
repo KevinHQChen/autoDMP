@@ -82,6 +82,7 @@ struct guiConfig {
   bool startCtrl;
   bool startCtrlSetup;
   bool startSysID;
+  bool startSysIDSetup;
   bool pauseCtrlDataViz;
   bool showDebug;
 
@@ -102,6 +103,7 @@ struct guiConfig {
     startCtrl = toml::find<bool>(v, "startCtrl");
     startCtrlSetup = toml::find<bool>(v, "startCtrlSetup");
     startSysID = toml::find<bool>(v, "startSysID");
+    startSysIDSetup = toml::find<bool>(v, "startSysIDSetup");
     pauseCtrlDataViz = toml::find<bool>(v, "pauseCtrlDataViz");
     showDebug = toml::find<bool>(v, "showDebug");
   }

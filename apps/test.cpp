@@ -64,6 +64,11 @@ int main(int argc, char *argv[]) {
 
   Eigen::Matrix<int, 3, 1> selectedChs = Eigen::Matrix<int, 3, 1>(1, 2, 3);
   info("selectedChs:\n{}", selectedChs);
+
+  Eigen::VectorXi prbsOrder = Eigen::Vector3i(0, 1, 2);
+
+
+
   return 0;
 }
 

@@ -18,13 +18,13 @@ class State; // forward declaration
 class Supervisor {
 
   StateData *currStateData_;
-  // QueueFPS<Eigen::Matrix<int16_t, 3, 1>> *ctrlDataQueuePtr;
 
-  std::atomic<bool> startedCtrl{false};
-  std::thread ctrlThread;
+  std::atomic<bool> startedCtrl{false}, startedSysIDFlag{false};
+  std::thread ctrlThread, sysIDThread;
 
-  // Called within ctrlThread context
+  // Called within thread context
   void start();
+  void startSysID();
 
 public:
   ordered_value conf;
@@ -34,13 +34,24 @@ public:
   State *currState_ = nullptr;
   Event *currEvent_ = nullptr;
   QueueFPS<Event *> *eventQueue_;
+  QueueFPS<int> *ctrlDataQueuePtr;
+
+  bool gotPrbs = false;
+  Eigen::MatrixXd prbs, prbs_, scaledPrbs;
+  float prbsScale[3] = {1, 1, 1};
+  const char *prbsRows[3] = {"row0", "row1", "row2"};
+  float prbsUrefArr[3] = {60, 40, 60}; // default to state0 uref
+  Eigen::Vector3d prbsUref = Eigen::Vector3d::Zero();
 
   Supervisor(ImProc *imProc);
   ~Supervisor();
 
   void startThread();
   void stopThread();
+  void startSysIDThread();
+  void stopSysIDThread();
   bool started();
+  bool startedSysID();
 
   void addEvent(int srcState, int destState, Eigen::Vector3d pos, Eigen::Vector3d vel);
 

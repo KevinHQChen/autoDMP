@@ -16,6 +16,7 @@ startImProcSetup = false
 startCtrl = false
 startCtrlSetup = false
 startSysID = false
+startSysIDSetup = false
 pauseCtrlDataViz = false
 showDebug = false
 
