@@ -1,6 +1,7 @@
 #pragma once
 
 #include "improc/improc.hpp"
+#include "pump/pump.hpp"
 #include "util/util.hpp"
 
 struct Event {
@@ -30,6 +31,7 @@ public:
   ordered_value conf;
   std::string dataPath, confPath;
 
+  Pump *pump = nullptr;
   ImProc *imProc = nullptr;
   State *currState_ = nullptr;
   Event *currEvent_ = nullptr;
@@ -43,7 +45,7 @@ public:
   float prbsUrefArr[3] = {60, 40, 60}; // default to state0 uref
   Eigen::Vector3d prbsUref = Eigen::Vector3d::Zero();
 
-  Supervisor(ImProc *imProc);
+  Supervisor(ImProc *imProc, Pump *pump);
   ~Supervisor();
 
   void startThread();

@@ -3,7 +3,8 @@
 
 GUI::GUI()
     : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")), guiConf(toml::find<guiConfig>(conf, "gui")),
-      imCap(new ImCap()), imProc(new ImProc(imCap)), pump(new Pump()), sv(new Supervisor(imProc, pump)) {
+      imCap(new ImCap()), imProc(new ImProc(imCap)), pump(new Pump()),
+      sv(new Supervisor(imProc, pump)) {
   info("Config type: {}", type_name<decltype(guiConf)>());
   info("Parsed config: {}", toml::find(conf, "gui"));
   // TODO may want to make GUI, ImCap, ImProc, Supervisor, etc. singletons
@@ -380,7 +381,7 @@ void GUI::showSysIDSetup() {
       sv->prbsUref = Eigen::Vector3d(sv->prbsUrefArr[0], sv->prbsUrefArr[1], sv->prbsUrefArr[2]);
       ImGui::Separator();
 
-      if(!guiConf.startSysID)
+      if (!guiConf.startSysID)
         if (ImGui::Button("Send excitation signal"))
           guiConf.startSysID = true;
       if (guiConf.startSysID)
@@ -673,12 +674,11 @@ void GUI::plotVector3d(const char *plotName, const char *xAx, const char *yAx, d
     ImPlot::SetupAxisLimits(ImAxis_X1, guiTime - history, guiTime, ImGuiCond_Always);
     ImPlot::SetupAxisLimits(ImAxis_Y1, yMin, yMax);
     for (auto &vec : vecs)
-      ImPlot::PlotLine(vec.second.c_str(), &vec.first->Data[0].x, &vec.first->Data[0].y, vec.first->Data.size(), vec.first->Offset, 2 * sizeof(float));
+      ImPlot::PlotLine(vec.second.c_str(), &vec.first->Data[0].x, &vec.first->Data[0].y,
+                       vec.first->Data.size(), vec.first->Offset, 2 * sizeof(float));
     ImPlot::EndPlot();
   }
 }
-
-
 
 /*
 void GUI::showImProcSetup() {

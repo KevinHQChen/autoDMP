@@ -2,10 +2,10 @@
 #include "ctrl/state/state0.hpp"
 #include "ctrl/state/sysidstate.hpp"
 
-Supervisor::Supervisor(ImProc *imProc)
+Supervisor::Supervisor(ImProc *imProc, Pump *pump)
     : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")),
       dataPath(toml::get<std::string>(conf["ctrl"]["dataPath"])),
-      confPath(toml::get<std::string>(conf["ctrl"]["confPath"])), imProc(imProc),
+      confPath(toml::get<std::string>(conf["ctrl"]["confPath"])), pump(pump), imProc(imProc),
       currState_(new State0(this)),
       currEvent_(new Event(0, 0, Eigen::Vector3d(0.5, 0, 0), Eigen::Vector3d(10, 0, 0))),
       eventQueue_(new QueueFPS<Event *>(dataPath + "eventQueue.txt")),

@@ -67,8 +67,6 @@ int main(int argc, char *argv[]) {
 
   Eigen::VectorXi prbsOrder = Eigen::Vector3i(0, 1, 2);
 
-
-
   return 0;
 }
 

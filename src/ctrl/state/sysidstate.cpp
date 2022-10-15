@@ -2,8 +2,7 @@
 #include "ctrl/supervisor.hpp"
 
 SysIDState::SysIDState(Supervisor *sv, Eigen::Vector3d uref)
-    : State(sv, uref,
-            Eigen::Vector3d(0, 0, 0)) {
+    : State(sv, uref, Eigen::Vector3d(0, 0, 0)) {
   // clear all improc queues
   sv_->imProc->clearProcDataQueues();
 }
@@ -50,8 +49,8 @@ void SysIDState::updateMeasurement() {
 void SysIDState::handleEvent(Event *event) { return; }
 
 Eigen::Matrix<int16_t, 3, 1> SysIDState::step() {
-    u = uref + du;
-    sv_->ctrlDataQueuePtr->out << u(0) << ", " << u(1) << ", " << u(2) << ", ";
-    sv_->ctrlDataQueuePtr->out << y(0) << ", " << y(1) << ", " << y(2) << "\n";
-    return u.cast<int16_t>();
+  u = uref + du;
+  sv_->ctrlDataQueuePtr->out << u(0) << ", " << u(1) << ", " << u(2) << ", ";
+  sv_->ctrlDataQueuePtr->out << y(0) << ", " << y(1) << ", " << y(2) << "\n";
+  return u.cast<int16_t>();
 }

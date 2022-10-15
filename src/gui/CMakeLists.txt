@@ -45,8 +45,9 @@ endif()
 
 target_link_libraries(
   gui
-  PUBLIC util
-  PUBLIC imcap
+  # PUBLIC util # why don't we need this?
+  # PUBLIC imcap # why don't we need this?
+  PUBLIC pump
   PUBLIC ctrl
   # PUBLIC imguiwrap
   PUBLIC imgui::imgui

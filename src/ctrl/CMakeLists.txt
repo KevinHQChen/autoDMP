@@ -12,7 +12,7 @@ add_library(ctrl supervisor.cpp state/sysidstate.cpp
 target_link_libraries(
   ctrl
   PUBLIC util
-  PUBLIC improc
+  # PUBLIC improc # why don't we need this?
 )
 
 # We need this directory, and users of our library will need it too

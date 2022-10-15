@@ -24,6 +24,7 @@
 #include "gui/guiframe.hpp"
 #include "improc/imcap.hpp"
 #include "improc/improc.hpp"
+#include "pump/pump.hpp"
 #include "util/util.hpp"
 
 #include <cstdio>
@@ -115,6 +116,7 @@ class GUI {
 
   ImCap *imCap = nullptr;
   ImProc *imProc = nullptr;
+  Pump *pump = nullptr;
   Supervisor *sv = nullptr;
 
   GLFWwindow *window;
@@ -157,7 +159,7 @@ class GUI {
       std::make_pair(&dxhat2, "dxhat2"), std::make_pair(&z0, "z0"),
       std::make_pair(&z1, "z1"),         std::make_pair(&z2, "z2")};
   void plotVector3d(const char *plotName, const char *xAx, const char *yAx, double yMin,
-                         double yMax, std::vector<std::pair<ScrollingBuffer *, std::string>> &vecs);
+                    double yMax, std::vector<std::pair<ScrollingBuffer *, std::string>> &vecs);
 
   // displaying/modifying events, states
   ImGuiTableFlags tableFlags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH |

@@ -1,5 +1,6 @@
 add_subdirectory(util)
 add_subdirectory(cam)
 add_subdirectory(improc)
-add_subdirectory(gui)
+add_subdirectory(pump)
 add_subdirectory(ctrl)
+add_subdirectory(gui)
