@@ -82,49 +82,16 @@ void Supervisor::stopSysIDThread() {
     startedSysIDFlag = false;
     if (sysIDThread.joinable())
       sysIDThread.join();
+    updateState<State0>();
   }
 }
 
 void Supervisor::startSysID() {
   while (startedSysID()) {
-    // check if measurement is available
-    bool measAvail = true, simMeasAvail = true, trueMeasAvail = true;
-    for (int i = 0; i < 3; ++i) {
-      if (std::strcmp(prbsRows[i], "") != 0) {
-        simMeasAvail &=
-            duration_cast<milliseconds>(steady_clock::now() - currState_->prevCtrlTime[i])
-                .count() >= 25;
-        trueMeasAvail &= !imProc->procDataQArr[i]->empty();
-      }
-    }
-    if (toml::get<bool>(conf["ctrl"]["simMode"]))
-      measAvail = simMeasAvail;
-    else
-      measAvail = trueMeasAvail;
-
-    // update measurement and send excitation signal
-    if (measAvail) {
-      // update du each time measurement is available
-      if (currState_->stp < scaledPrbs.rows()) {
-        currState_->du = scaledPrbs.row(currState_->stp);
-        currState_->stp++;
-      } else
-        currState_->du = Eigen::Vector3d::Zero();
-      // update y
-      for (int i = 0; i < 3; ++i) {
-        if (std::strcmp(prbsRows[i], "") != 0) {
-          if (trueMeasAvail)
-            currState_->y(i) = imProc->procDataQArr[i]->get().y;
-          else
-            currState_->y(i) = 100 + (std::rand() % (300 - 100 + 1));
-          currState_->prevCtrlTime[i] = steady_clock::now();
-        }
-      }
-      // send excitation signal
-      currState_->u = currState_->uref + currState_->du;
-      // setPump(currState_->u.cast<int16_t>());
-
-      // TODO save ctrl data to file
+    if (currState_->measurementAvailable()) {
+      currState_->updateMeasurement();
+      info(currState_->step());
+      // setPump(currState_->step());
     }
   }
 }

@@ -44,7 +44,7 @@ protected:
 public:
   // instantaneous trajectory vectors
   // control signal vectors
-  Eigen::Vector3d du{Eigen::Vector3d::Zero()}, u, usat, uref;
+  Eigen::Vector3d du{Eigen::Vector3d::Zero()}, uref, u, usat;
   // integral error vectors: z = int (r - y) dt
   Eigen::Vector3d z0{Eigen::Vector3d::Zero()}, z{z0};
   time_point<steady_clock> initTime{steady_clock::now()};
@@ -52,7 +52,7 @@ public:
   duration<double> dt[3] = {0s, 0s, 0s}; // this somehow defaults to milliseconds
   // state/output vectors
   Eigen::Vector3d yrefScale;
-  Eigen::Vector3d y, yref0, yref;
+  Eigen::Vector3d y{Eigen::Vector3d::Zero()}, yref0, yref;
   Eigen::Vector3d dy, dyref;
   Eigen::Vector3d yhat, dxhat{Eigen::Vector3d::Zero()}, dyhat{Eigen::Vector3d::Zero()}, ytilde;
   Eigen::Vector3d yDest;

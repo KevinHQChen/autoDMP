@@ -54,22 +54,6 @@ struct ScrollingBuffer {
   }
 };
 
-// utility structure for realtime plot
-struct RollingBuffer {
-  float Span;
-  ImVector<ImVec2> Data;
-  RollingBuffer() {
-    Span = 10.0f;
-    Data.reserve(2000);
-  }
-  void AddPoint(float x, float y) {
-    float xmod = fmodf(x, Span);
-    if (!Data.empty() && xmod < Data.back().x)
-      Data.shrink(0);
-    Data.push_back(ImVec2(xmod, y));
-  }
-};
-
 struct GUIEvent {
   int srcState = 0;
   int destState = 0;
@@ -157,6 +141,23 @@ class GUI {
   ScrollingBuffer u0, u1, u2, du0, du1, du2;
   ScrollingBuffer y0, y1, y2, yref0, yref1, yref2;
   ScrollingBuffer dxhat0, dxhat1, dxhat2, z0, z1, z2;
+  std::vector<std::pair<ScrollingBuffer *, std::string>> sysidCtrlVecs{
+      std::make_pair(&u0, "u0"), std::make_pair(&u1, "u1"), std::make_pair(&u2, "u2")};
+  std::vector<std::pair<ScrollingBuffer *, std::string>> sysidMeasVecs{
+      std::make_pair(&y0, "y0"), std::make_pair(&y1, "y1"), std::make_pair(&y2, "y2")};
+  std::vector<std::pair<ScrollingBuffer *, std::string>> ctrlVecs{
+      std::make_pair(&u0, "u0"),   std::make_pair(&u1, "u1"),   std::make_pair(&u2, "u2"),
+      std::make_pair(&du0, "du0"), std::make_pair(&du1, "du1"), std::make_pair(&du2, "du2")};
+  std::vector<std::pair<ScrollingBuffer *, std::string>> measVecs{
+      std::make_pair(&y0, "y0"),       std::make_pair(&y1, "y1"),
+      std::make_pair(&y2, "y2"),       std::make_pair(&yref0, "yref0"),
+      std::make_pair(&yref1, "yref1"), std::make_pair(&yref2, "yref2")};
+  std::vector<std::pair<ScrollingBuffer *, std::string>> errorVecs{
+      std::make_pair(&dxhat0, "dxhat0"), std::make_pair(&dxhat1, "dxhat1"),
+      std::make_pair(&dxhat2, "dxhat2"), std::make_pair(&z0, "z0"),
+      std::make_pair(&z1, "z1"),         std::make_pair(&z2, "z2")};
+  void plotVector3d(const char *plotName, const char *xAx, const char *yAx, double yMin,
+                         double yMax, std::vector<std::pair<ScrollingBuffer *, std::string>> &vecs);
 
   // displaying/modifying events, states
   ImGuiTableFlags tableFlags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH |

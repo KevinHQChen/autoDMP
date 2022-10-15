@@ -3,7 +3,7 @@
 
 GUI::GUI()
     : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")), guiConf(toml::find<guiConfig>(conf, "gui")),
-      imCap(new ImCap()), imProc(new ImProc(imCap)), sv(new Supervisor(imProc)) {
+      imCap(new ImCap()), imProc(new ImProc(imCap)), pump(new Pump()), sv(new Supervisor(imProc, pump)) {
   info("Config type: {}", type_name<decltype(guiConf)>());
   info("Parsed config: {}", toml::find(conf, "gui"));
   // TODO may want to make GUI, ImCap, ImProc, Supervisor, etc. singletons
@@ -11,6 +11,7 @@ GUI::GUI()
 
 GUI::~GUI() {
   delete sv;
+  delete pump;
   delete imProc;
   delete imCap;
 }
@@ -303,6 +304,13 @@ void GUI::showCtrlSetup() {
       if (guiConf.pauseCtrlDataViz)
         if (ImGui::Button("Start Data Display"))
           guiConf.pauseCtrlDataViz = false;
+      if (ImGui::Button("Erase Data")) {
+        guiTime = 0;
+        for (auto &vec :
+             std::vector<ScrollingBuffer>{u0, u1, u2, du0, du1, du2, y0, y1, y2, yref0, yref1,
+                                          yref2, dxhat0, dxhat1, dxhat2, z0, z1, z2})
+          vec.Erase();
+      }
 
       ImGui::End();
     }
@@ -398,31 +406,8 @@ void GUI::showSysID() {
 
       ImGui::SliderFloat("History", &history, 1, 30, "%.1f s");
 
-      if (ImPlot::BeginPlot("Control Input", ImVec2(-1, 300))) {
-        ImPlot::SetupAxes("time (s)", "voltage (V)"); //, implotFlags, implotFlags);
-        ImPlot::SetupAxisLimits(ImAxis_X1, guiTime - history, guiTime, ImGuiCond_Always);
-        ImPlot::SetupAxisLimits(ImAxis_Y1, 0, 250);
-        ImPlot::PlotLine("u0", &u0.Data[0].x, &u0.Data[0].y, u0.Data.size(), u0.Offset,
-                         2 * sizeof(float));
-        ImPlot::PlotLine("u1", &u1.Data[0].x, &u1.Data[0].y, u1.Data.size(), u1.Offset,
-                         2 * sizeof(float));
-        ImPlot::PlotLine("u2", &u2.Data[0].x, &u2.Data[0].y, u2.Data.size(), u2.Offset,
-                         2 * sizeof(float));
-        ImPlot::EndPlot();
-      }
-
-      if (ImPlot::BeginPlot("Measured Output", ImVec2(-1, 300))) {
-        ImPlot::SetupAxes("time (s)", "position (px)"); //, implotFlags, implotFlags);
-        ImPlot::SetupAxisLimits(ImAxis_X1, guiTime - history, guiTime, ImGuiCond_Always);
-        ImPlot::SetupAxisLimits(ImAxis_Y1, -1000, 1000);
-        ImPlot::PlotLine("y0", &y0.Data[0].x, &y0.Data[0].y, y0.Data.size(), y0.Offset,
-                         2 * sizeof(float));
-        ImPlot::PlotLine("y1", &y1.Data[0].x, &y1.Data[0].y, y1.Data.size(), y1.Offset,
-                         2 * sizeof(float));
-        ImPlot::PlotLine("y2", &y2.Data[0].x, &y2.Data[0].y, y2.Data.size(), y2.Offset,
-                         2 * sizeof(float));
-        ImPlot::EndPlot();
-      }
+      plotVector3d("##Control Input", "time (s)", "voltage (V)", 0, 250, sysidCtrlVecs);
+      plotVector3d("##Measured Output", "time (s)", "position (px)", -500, 500, sysidMeasVecs);
       ImGui::End();
     }
   } else
@@ -456,64 +441,9 @@ void GUI::showCtrl() {
       }
 
       ImGui::SliderFloat("History", &history, 1, 30, "%.1f s");
-
-      if (ImPlot::BeginPlot("##Control Output", ImVec2(-1, 300))) {
-        ImPlot::SetupAxes("time (s)", "voltage (V)"); //, implotFlags, implotFlags);
-        ImPlot::SetupAxisLimits(ImAxis_X1, guiTime - history, guiTime, ImGuiCond_Always);
-        ImPlot::SetupAxisLimits(ImAxis_Y1, 0, 250);
-        ImPlot::PlotLine("u0", &u0.Data[0].x, &u0.Data[0].y, u0.Data.size(), u0.Offset,
-                         2 * sizeof(float));
-        ImPlot::PlotLine("u1", &u1.Data[0].x, &u1.Data[0].y, u1.Data.size(), u1.Offset,
-                         2 * sizeof(float));
-        ImPlot::PlotLine("u2", &u2.Data[0].x, &u2.Data[0].y, u2.Data.size(), u2.Offset,
-                         2 * sizeof(float));
-        ImPlot::PlotLine("du0", &du0.Data[0].x, &du0.Data[0].y, du0.Data.size(), du0.Offset,
-                         2 * sizeof(float));
-        ImPlot::PlotLine("du1", &du1.Data[0].x, &du1.Data[0].y, du1.Data.size(), du1.Offset,
-                         2 * sizeof(float));
-        ImPlot::PlotLine("du2", &du2.Data[0].x, &du2.Data[0].y, du2.Data.size(), du2.Offset,
-                         2 * sizeof(float));
-        ImPlot::EndPlot();
-      }
-
-      if (ImPlot::BeginPlot("##Measurement", ImVec2(-1, 300))) {
-        ImPlot::SetupAxes("time (s)", "position (px)"); //, implotFlags, implotFlags);
-        ImPlot::SetupAxisLimits(ImAxis_X1, guiTime - history, guiTime, ImGuiCond_Always);
-        ImPlot::SetupAxisLimits(ImAxis_Y1, -1000, 1000);
-        ImPlot::PlotLine("y0", &y0.Data[0].x, &y0.Data[0].y, y0.Data.size(), y0.Offset,
-                         2 * sizeof(float));
-        ImPlot::PlotLine("y1", &y1.Data[0].x, &y1.Data[0].y, y1.Data.size(), y1.Offset,
-                         2 * sizeof(float));
-        ImPlot::PlotLine("y2", &y2.Data[0].x, &y2.Data[0].y, y2.Data.size(), y2.Offset,
-                         2 * sizeof(float));
-        ImPlot::PlotLine("yref0", &yref0.Data[0].x, &yref0.Data[0].y, yref0.Data.size(),
-                         yref0.Offset, 2 * sizeof(float));
-        ImPlot::PlotLine("yref1", &yref1.Data[0].x, &yref1.Data[0].y, yref1.Data.size(),
-                         yref1.Offset, 2 * sizeof(float));
-        ImPlot::PlotLine("yref2", &yref2.Data[0].x, &yref2.Data[0].y, yref2.Data.size(),
-                         yref2.Offset, 2 * sizeof(float));
-        ImPlot::EndPlot();
-      }
-
-      if (ImPlot::BeginPlot("##State Error, Integral Error", ImVec2(-1, 300))) {
-        ImPlot::SetupAxes("time (s)", "error (px)"); //, implotFlags, implotFlags);
-        ImPlot::SetupAxisLimits(ImAxis_X1, guiTime - history, guiTime, ImGuiCond_Always);
-        ImPlot::SetupAxisLimits(ImAxis_Y1, -1000, 1000);
-        ImPlot::PlotLine("dxhat0", &dxhat0.Data[0].x, &dxhat0.Data[0].y, dxhat0.Data.size(),
-                         dxhat0.Offset, 2 * sizeof(float));
-        ImPlot::PlotLine("dxhat1", &dxhat1.Data[0].x, &dxhat1.Data[0].y, dxhat1.Data.size(),
-                         dxhat1.Offset, 2 * sizeof(float));
-        ImPlot::PlotLine("dxhat2", &dxhat2.Data[0].x, &dxhat2.Data[0].y, dxhat2.Data.size(),
-                         dxhat2.Offset, 2 * sizeof(float));
-        ImPlot::PlotLine("z0", &z0.Data[0].x, &z0.Data[0].y, z0.Data.size(), z0.Offset,
-                         2 * sizeof(float));
-        ImPlot::PlotLine("z1", &z1.Data[0].x, &z1.Data[0].y, z1.Data.size(), z1.Offset,
-                         2 * sizeof(float));
-        ImPlot::PlotLine("z2", &z2.Data[0].x, &z2.Data[0].y, z2.Data.size(), z2.Offset,
-                         2 * sizeof(float));
-        ImPlot::EndPlot();
-      }
-
+      plotVector3d("##Control Input", "time (s)", "voltage (V)", 0, 250, ctrlVecs);
+      plotVector3d("##Measured Output", "time (s)", "position (px)", -500, 500, measVecs);
+      plotVector3d("##State Error, Integral Error", "time (s)", "error (px)", -500, 500, errorVecs);
       ImGui::End();
     }
   } else
@@ -735,6 +665,20 @@ void setWindowFullscreen() {
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
   ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 }
+
+void GUI::plotVector3d(const char *plotName, const char *xAx, const char *yAx, double yMin,
+                       double yMax, std::vector<std::pair<ScrollingBuffer *, std::string>> &vecs) {
+  if (ImPlot::BeginPlot(plotName, ImVec2(-1, 300))) {
+    ImPlot::SetupAxes(xAx, yAx); //, implotFlags, implotFlags);
+    ImPlot::SetupAxisLimits(ImAxis_X1, guiTime - history, guiTime, ImGuiCond_Always);
+    ImPlot::SetupAxisLimits(ImAxis_Y1, yMin, yMax);
+    for (auto &vec : vecs)
+      ImPlot::PlotLine(vec.second.c_str(), &vec.first->Data[0].x, &vec.first->Data[0].y, vec.first->Data.size(), vec.first->Offset, 2 * sizeof(float));
+    ImPlot::EndPlot();
+  }
+}
+
+
 
 /*
 void GUI::showImProcSetup() {

@@ -43,6 +43,9 @@ using ordered_value = toml::basic_value<toml::discard_comments, tsl::ordered_map
 #define TOML11_PARSE_IN_ORDER(...)                                                                 \
   toml::parse<toml::discard_comments, tsl::ordered_map>(__VA_ARGS__)
 
+#define stringify(s) #s
+
+
 // print variable type in human-readable format
 // usage (): info("var type: {}", type_name<decltype(var)>());
 template <typename T> constexpr auto type_name() {

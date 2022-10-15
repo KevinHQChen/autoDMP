@@ -4,6 +4,7 @@
 
 class SysIDState : public State {
 public:
+  bool simMeasAvail_ = true, trueMeasAvail_ = true;
   SysIDState(Supervisor *sv, Eigen::Vector3d uref);
   ~SysIDState();
 
