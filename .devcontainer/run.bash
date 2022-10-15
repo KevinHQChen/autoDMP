@@ -22,6 +22,7 @@ docker run \
     --volume "/dev/video0:/dev/video0" \
     --volume "/dev/video1:/dev/video1" \
     --volume "/dev/bus/usb:/dev/bus/usb" \
+    --volume "/dev/ttyACM0:/dev/ttyACM0" \
     -p 8080:80 \
     -it \
     --privileged \
