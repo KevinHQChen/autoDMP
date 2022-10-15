@@ -146,6 +146,33 @@ void GUI::showImProcSetup() {
   }
 }
 
+void GUI::showPumpSetup() {
+  if (guiConf.startPumpSetup) {
+    if (ImGui::Begin("Pump Setup", &guiConf.startPumpSetup)) {
+      pump->prevPumpVoltages = pump->pumpVoltages;
+      pump->prevFreq = pump->freq;
+      for (int i = 0; i < 4; ++i) {
+        ImGui::PushID(i);
+        ImGui::VSliderInt("##pump", ImVec2(36, 200), &pump->pumpVoltages[i], 0, 250);
+        if (ImGui::IsItemActive() || ImGui::IsItemHovered())
+          ImGui::SetTooltip("%d", pump->pumpVoltages[i]);
+        ImGui::PopID();
+        ImGui::SameLine();
+
+        if (pump->prevPumpVoltages[i] != pump->pumpVoltages[i])
+          pump->setVoltage(i + 1, (int16_t)pump->pumpVoltages[i]);
+      }
+
+      ImGui::VSliderInt("Freq", ImVec2(36, 200), &pump->freq, 0, 800);
+
+      if (pump->prevFreq != pump->freq)
+        pump->setFreq(pump->freq);
+
+      ImGui::End();
+    }
+  }
+}
+
 void GUI::showCtrlSetup() {
   if (guiConf.startCtrlSetup) {
     if (ImGui::Begin("Ctrl Setup", &guiConf.startCtrlSetup)) {
@@ -471,6 +498,7 @@ std::optional<int> GUI::render() {
       ImGui::MenuItem("Start Image Capture", nullptr, &guiConf.startImCap);
       ImGui::MenuItem("Setup Image Processing", nullptr, &guiConf.startImProcSetup);
       ImGui::MenuItem("Start Image Processing", nullptr, &guiConf.startImProc);
+      ImGui::MenuItem("Start Pump Setup", nullptr, &guiConf.startPumpSetup);
       ImGui::MenuItem("Start Controller Setup", nullptr, &guiConf.startCtrlSetup);
       ImGui::EndMenu();
     }
@@ -485,6 +513,7 @@ std::optional<int> GUI::render() {
   showRawImCap();
   showImProcSetup();
   showImProc();
+  showPumpSetup();
   showCtrlSetup();
   showCtrl();
   showSysIDSetup();

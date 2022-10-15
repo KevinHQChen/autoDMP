@@ -79,6 +79,7 @@ struct guiConfig {
   bool startImCap;
   bool startImProc;
   bool startImProcSetup;
+  bool startPumpSetup;
   bool startCtrl;
   bool startCtrlSetup;
   bool startSysID;
@@ -100,6 +101,7 @@ struct guiConfig {
     startImCap = toml::find<bool>(v, "startImCap");
     startImProc = toml::find<bool>(v, "startImProc");
     startImProcSetup = toml::find<bool>(v, "startImProcSetup");
+    startPumpSetup = toml::find<bool>(v, "startPumpSetup");
     startCtrl = toml::find<bool>(v, "startCtrl");
     startCtrlSetup = toml::find<bool>(v, "startCtrlSetup");
     startSysID = toml::find<bool>(v, "startSysID");

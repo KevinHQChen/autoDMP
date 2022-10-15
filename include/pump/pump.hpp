@@ -17,11 +17,15 @@
 
 class Pump {
 public:
+  // pump state
+  std::vector<int> pumpVoltages{0, 0, 0, 0}, prevPumpVoltages{0, 0, 0, 0};
+  int freq{0}, prevFreq{0};
+
   Pump();
   ~Pump();
 
   void setVoltage(unsigned int chanIdx, int16_t voltage);
-  void setFreq(unsigned int freq);
+  void setFreq(int freq);
   void sendCmd(std::string cmd, int len);
   void sendSigs(Eigen::Matrix<int16_t, 3, 1> u);
 

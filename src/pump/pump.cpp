@@ -46,7 +46,7 @@ Pump::Pump() {
 #if USEPIEZOPUMP == TRUE
   // open serial port and check for errors (refer to:
   // https://blog.mbedded.ninja/programming/operating-systems/linux/linux-serial-ports-using-c-cpp/#overview)
-  serialPort = open("/dev/ttyUSB0", O_RDWR);
+  serialPort = open("/dev/ttyACM0", O_RDWR);
   if (serialPort < 0)
     error("Error {} opening {}: {}", errno, ttyname(serialPort), strerror(errno));
 
@@ -98,6 +98,8 @@ Pump::Pump() {
   // Save tty settings, also checking for error
   if (tcsetattr(serialPort, TCSANOW, &tty) != 0)
     error("Error {} from tcsetattr: {}", errno, strerror(errno));
+
+  info("Pump serial port {} successfully configured", ttyname(serialPort));
 #endif
 }
 
@@ -119,6 +121,7 @@ Pump::~Pump() {
   // 	mOut << "Error turning off pumps.\n";
   // else
   // 	pumpFOut << "Pumps off.\n";
+  info("Closing pump serial port {}", ttyname(serialPort));
   close(serialPort);
 #endif
 }
@@ -127,33 +130,30 @@ void Pump::setVoltage(unsigned int chanIdx, int16_t voltage) {
   // send raw pressure as ascii chars
   std::string presCommand = "P" + std::to_string(chanIdx) + "V" + std::to_string(voltage) + "\r\n";
 
-  // pumpFOut << "Setting voltage...\n";
-
   sendCmd(presCommand, 4);
-  // if(std::strcmp("OK\r\n", readData) != 0) {
-  // mOut << "Error setting voltage.\n";
-  // // mOut << "length of readData: " << (sizeof(readData)/sizeof(*readData)) << "\n";
-  // }
-  // else
-  // pumpFOut << "Set voltage to " << voltage << ". \n";
+
+  if(std::strncmp("OK", readData, 2) != 0)
+    error("Error setting pump {} to {} V.", chanIdx, voltage);
+  else
+    info("Pump {} set to {} V.", chanIdx, voltage);
 }
 
-void Pump::setFreq(unsigned int freq) {
+void Pump::setFreq(int freq) {
   std::string freqCommand = "F" + std::to_string(freq) + "\r\n";
 
-  info("Setting pump freq...");
   sendCmd(freqCommand, 4);
 
-  if (std::strcmp("OK\r\n", readData) != 0)
+  if(std::strncmp("OK", readData, 2) != 0)
     error("Error setting pump freq.");
   else
     info("Set pump freq to {} Hz.", freq);
 }
 
 void Pump::sendCmd(std::string cmd, int len) {
+  delete readData;
+  readData = new char[len];
   if (write(serialPort, cmd.c_str(), cmd.length()) != cmd.length())
     error("Error {} from write: {}", errno, strerror(errno));
-
   if (read(serialPort, readData, len) != len)
     error("Error {} from read: {}", errno, strerror(errno));
 

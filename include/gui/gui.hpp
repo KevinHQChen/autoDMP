@@ -195,10 +195,11 @@ public:
   int imguiMain();
 
   void showRawImCap();
-  void showImProc();
   void showImProcSetup();
-  void showCtrl();
+  void showImProc();
+  void showPumpSetup();
   void showCtrlSetup();
+  void showCtrl();
   void showSysIDSetup();
   void showSysID();
 

@@ -9,4 +9,5 @@
 int main(int, const char **) {
   GUI *gui = new GUI();
   gui->startGUIThread();
+  delete gui;
 }

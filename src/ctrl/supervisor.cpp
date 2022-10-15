@@ -24,6 +24,8 @@ void Supervisor::startThread() {
     imProc->clearProcFrameQueues();
     imProc->clearTempFrameQueues();
     imProc->clearProcDataQueues();
+  // if (toml::get<bool>(conf["ctrl"]["simMode"]))
+    pump->setFreq(200);
     ctrlThread = std::thread(&Supervisor::start, this);
     ctrlThread.detach();
   }
@@ -71,6 +73,8 @@ void Supervisor::startSysIDThread() {
     startedSysIDFlag = true;
     delete currState_;
     currState_ = new SysIDState(this, prbsUref);
+  // if (toml::get<bool>(conf["ctrl"]["simMode"]))
+    pump->setFreq(200);
     sysIDThread = std::thread(&Supervisor::startSysID, this);
     sysIDThread.detach();
   }
