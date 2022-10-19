@@ -41,12 +41,12 @@ class ImProc {
 
 public:
   ImProcConfig impConf;
+  std::atomic<double> tmplThres;
   std::vector<QueueFPS<cv::Point> *> procDataQArr;
 
   ImProc(ImCap *imCap);
   ~ImProc();
 
-  std::atomic<double> tmplThres{0.75};
 
   // load/save template images, channel bounding boxes into imProcConfig
   void loadConfig();

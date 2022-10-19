@@ -4,6 +4,7 @@
 
 Supervisor::Supervisor(ImProc *imProc, Pump *pump)
     : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")),
+      simModeActive(toml::get<bool>(conf["ctrl"]["simMode"])),
       dataPath(toml::get<std::string>(conf["ctrl"]["dataPath"])),
       confPath(toml::get<std::string>(conf["ctrl"]["confPath"])), pump(pump), imProc(imProc),
       currState_(new State0(this)),
@@ -24,8 +25,9 @@ void Supervisor::startThread() {
     imProc->clearProcFrameQueues();
     imProc->clearTempFrameQueues();
     imProc->clearProcDataQueues();
-  // if (toml::get<bool>(conf["ctrl"]["simMode"]))
-    pump->setFreq(200);
+    updateState<State0>();
+    if (!simModeActive)
+      pump->setFreq(200);
     ctrlThread = std::thread(&Supervisor::start, this);
     ctrlThread.detach();
   }
@@ -59,10 +61,11 @@ void Supervisor::start() {
         currState_->handleEvent(currEvent_);
 
       // generate optimal control signals at current time step
-      info(currState_->step());
-      // setPump(currState_->step());
-
-      // TODO save ctrl data to file
+      // and save to ctrlDataQueue
+      if (!simModeActive)
+        pump->sendSigs(currState_->step());
+      else
+        info(currState_->step());
     }
   }
 }
@@ -73,8 +76,8 @@ void Supervisor::startSysIDThread() {
     startedSysIDFlag = true;
     delete currState_;
     currState_ = new SysIDState(this, prbsUref);
-  // if (toml::get<bool>(conf["ctrl"]["simMode"]))
-    pump->setFreq(200);
+    if (!simModeActive)
+      pump->setFreq(200);
     sysIDThread = std::thread(&Supervisor::startSysID, this);
     sysIDThread.detach();
   }
@@ -94,8 +97,11 @@ void Supervisor::startSysID() {
   while (startedSysID()) {
     if (currState_->measurementAvailable()) {
       currState_->updateMeasurement();
-      info(currState_->step());
-      // setPump(currState_->step());
+      // send excitation signal to pump and save to ctrlDataQueue
+      if (!simModeActive)
+        pump->sendSigs(currState_->step());
+      else
+        info(currState_->step());
     }
   }
 }

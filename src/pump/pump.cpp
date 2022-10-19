@@ -126,27 +126,90 @@ Pump::~Pump() {
 #endif
 }
 
-void Pump::setVoltage(unsigned int chanIdx, int16_t voltage) {
+void Pump::setVoltage(unsigned int pumpIdx, int16_t voltage) {
+  // check if voltage is different from current voltage
+  if (voltage == prevPumpVoltages[pumpIdx - 1])
+    return;
+
   // send raw pressure as ascii chars
-  std::string presCommand = "P" + std::to_string(chanIdx) + "V" + std::to_string(voltage) + "\r\n";
+  std::string presCommand = "P" + std::to_string(pumpIdx) + "V" + std::to_string(voltage) + "\r\n";
 
   sendCmd(presCommand, 4);
 
-  if(std::strncmp("OK", readData, 2) != 0)
-    error("Error setting pump {} to {} V.", chanIdx, voltage);
-  else
-    info("Pump {} set to {} V.", chanIdx, voltage);
+  if (std::strncmp("OK", readData, 2) != 0)
+    error("Error setting pump {} to {} V.", pumpIdx, voltage);
+  else {
+    pumpVoltages[pumpIdx - 1] = voltage;
+    prevPumpVoltages[pumpIdx - 1] = voltage;
+    info("Pump {} set to {} V.", pumpIdx, voltage);
+  }
 }
 
-void Pump::setFreq(int freq) {
-  std::string freqCommand = "F" + std::to_string(freq) + "\r\n";
+void Pump::setFreq(int freq_) {
+  if (freq_ == prevFreq)
+    return;
+
+  std::string freqCommand = "F" + std::to_string(freq_) + "\r\n";
 
   sendCmd(freqCommand, 4);
 
-  if(std::strncmp("OK", readData, 2) != 0)
+  if (std::strncmp("OK", readData, 2) != 0)
     error("Error setting pump freq.");
+  else {
+    freq = freq_;
+    prevFreq = freq_;
+    info("Set pump freq to {} Hz.", freq_);
+  }
+}
+
+void Pump::enableValve(unsigned int valveIdx) {
+  if (valveOnOff[valveIdx - 1] == true)
+    return;
+
+  std::string valveCommand = "V" + std::to_string(valveIdx) + "ON\r\n";
+
+  sendCmd(valveCommand, 4);
+
+  if (std::strncmp("OK", readData, 2) != 0)
+    error("Error enabling valve {}.", valveIdx);
+  else {
+    valveOnOff[valveIdx - 1] = true;
+    info("Valve {} enabled.", valveIdx);
+  }
+}
+
+void Pump::disableValve(unsigned int valveIdx) {
+  if (valveOnOff[valveIdx - 1] == false)
+    return;
+
+  std::string valveCommand = "V" + std::to_string(valveIdx) + "OFF\r\n";
+  sendCmd(valveCommand, 4);
+  if (std::strncmp("OK", readData, 2) != 0)
+    error("Error disabling valve {}.", valveIdx);
+  else {
+    valveOnOff[valveIdx - 1] = false;
+    info("Valve {} disabled.", valveIdx);
+  }
+}
+
+void Pump::setValve(unsigned int valveIdx, bool state) {
+  if (valveState[valveIdx - 1] == state)
+    return;
+
+  int angle;
+  if (state)
+    angle = 175;
   else
-    info("Set pump freq to {} Hz.", freq);
+    angle = 10;
+
+  std::string valveCommand = "V" + std::to_string(valveIdx) + "A" + std::to_string(angle) + "\r\n";
+  sendCmd(valveCommand, 4);
+  if (std::strncmp("OK", readData, 2) != 0)
+    error("Error setting valve {} to {}.", valveIdx, state ? "ON" : "OFF");
+  else {
+    valveState[valveIdx - 1] = state;
+    info("Valve {} set to {}.", valveIdx, state ? "ON" : "OFF");
+  }
 }
 
 void Pump::sendCmd(std::string cmd, int len) {

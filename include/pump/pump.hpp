@@ -17,15 +17,23 @@
 
 class Pump {
 public:
-  // pump state
+  // pump state (voltages are ints to work with imgui slider)
   std::vector<int> pumpVoltages{0, 0, 0, 0}, prevPumpVoltages{0, 0, 0, 0};
+  std::vector<bool> valveOnOff{false, false, false, false}, prevValveOnOff{false, false, false, false};
+  std::vector<bool> valveState{false, false, false, false}, prevValveState{false, false, false, false};
   int freq{0}, prevFreq{0};
 
   Pump();
   ~Pump();
 
-  void setVoltage(unsigned int chanIdx, int16_t voltage);
+  // pumpIdx, valveIdx are 1-indexed
+  void enablePump(unsigned int pumpIdx);
+  void disablePump(unsigned int pumpIdx);
+  void setVoltage(unsigned int pumpIdx, int16_t voltage);
   void setFreq(int freq);
+  void enableValve(unsigned int valveIdx);
+  void disableValve(unsigned int valveIdx);
+  void setValve(unsigned int pumpIdx, bool state);
   void sendCmd(std::string cmd, int len);
   void sendSigs(Eigen::Matrix<int16_t, 3, 1> u);
 

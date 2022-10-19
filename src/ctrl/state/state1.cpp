@@ -5,7 +5,7 @@
 
 State1::State1(Supervisor *sv)
     : State(sv, Eigen::Vector3d(65, 45, 65),
-            Eigen::Vector3d(0, sv->imProc->impConf.getChanBBox()[1].height,
+            Eigen::Vector3d(0, sv->imProc->impConf.getRotChanBBox()[1].height,
                             sv->imProc->impConf.getChanBBox()[2].height)),
       ch(Vector2ui(1, 2)),
       // system matrices
@@ -95,7 +95,7 @@ void State1::handleEvent(Event *event) {
       yref(ch(i)) = yDest(ch(i));
     }
 
-    destReached &= std::abs(y(ch(i)) - yDest(ch(i))) < event->vel(ch(i)) * 25e-3;
+    destReached &= std::abs(y(ch(i)) - yDest(ch(i))) < 1; //event->vel(ch(i)) * 25e-3;
   }
 
   // remain in State 1
@@ -128,8 +128,7 @@ void State1::handleEvent(Event *event) {
     }
     // we're in sim mode and ch1 & ch2 are 95% to junction
     // or ch0 is observable and we stopped observing ch1 & ch2
-    if ((yref(1) > 0.95 * yrefScale(1) && yref(2) > 0.95 * yrefScale(2) &&
-         toml::get<bool>(sv_->conf["ctrl"]["simMode"])) ||
+    if ((yref(1) > 0.95 * yrefScale(1) && yref(2) > 0.95 * yrefScale(2) && sv_->simModeActive) ||
         (!obsv[1] && !obsv[2] && !sv_->imProc->procDataQArr[0]->empty())) {
       delete sv_->currEvent_;
       sv_->currEvent_ = nullptr;
@@ -151,7 +150,7 @@ void State1::handleEvent(Event *event) {
     }
     // we're in sim mode and ch1 is 95% to junction
     // or ch0 & ch2 are observable and we're not observing ch1
-    if ((yref(1) > 0.95 * yrefScale(1) && toml::get<bool>(sv_->conf["ctrl"]["simMode"])) ||
+    if ((yref(1) > 0.95 * yrefScale(1) && sv_->simModeActive) ||
         (!obsv[1] && !sv_->imProc->procDataQArr[0]->empty() &&
          !sv_->imProc->procDataQArr[1]->empty())) {
       delete sv_->currEvent_;

@@ -29,6 +29,7 @@ class Supervisor {
 
 public:
   ordered_value conf;
+  bool simModeActive;
   std::string dataPath, confPath;
 
   Pump *pump = nullptr;

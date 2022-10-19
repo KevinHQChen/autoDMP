@@ -21,7 +21,7 @@ bool SysIDState::measurementAvailable() {
       trueMeasAvail_ &= !sv_->imProc->procDataQArr[i]->empty();
     }
   }
-  if (toml::get<bool>(sv_->conf["ctrl"]["simMode"]))
+  if (sv_->simModeActive)
     return simMeasAvail_;
   return trueMeasAvail_;
 }

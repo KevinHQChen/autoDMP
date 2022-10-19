@@ -12,6 +12,7 @@ ImProc::ImProc(ImCap *imCap)
       procFrameQueueArr({new QueueFPS<cv::Mat>(dataPath + "procFramesQueue1.txt"),
                          new QueueFPS<cv::Mat>(dataPath + "procFramesQueue2.txt"),
                          new QueueFPS<cv::Mat>(dataPath + "procFramesQueue3.txt")}),
+      tmplThres(toml::get<double>(conf["improc"]["tmplThres"])),
       procDataQArr({new QueueFPS<cv::Point>(dataPath + "procDataQueue1.txt"),
                     new QueueFPS<cv::Point>(dataPath + "procDataQueue2.txt"),
                     new QueueFPS<cv::Point>(dataPath + "procDataQueue3.txt")}) {

@@ -149,24 +149,64 @@ void GUI::showImProcSetup() {
 void GUI::showPumpSetup() {
   if (guiConf.startPumpSetup) {
     if (ImGui::Begin("Pump Setup", &guiConf.startPumpSetup)) {
-      pump->prevPumpVoltages = pump->pumpVoltages;
-      pump->prevFreq = pump->freq;
       for (int i = 0; i < 4; ++i) {
         ImGui::PushID(i);
-        ImGui::VSliderInt("##pump", ImVec2(36, 200), &pump->pumpVoltages[i], 0, 250);
+        ImGui::VSliderInt("##pump", ImVec2(36, 200), &pump->pumpVoltages[i], 0, 250, "%d V");
         if (ImGui::IsItemActive() || ImGui::IsItemHovered())
           ImGui::SetTooltip("%d", pump->pumpVoltages[i]);
         ImGui::PopID();
         ImGui::SameLine();
 
-        if (pump->prevPumpVoltages[i] != pump->pumpVoltages[i])
-          pump->setVoltage(i + 1, (int16_t)pump->pumpVoltages[i]);
+        pump->setVoltage(i + 1, (int16_t)pump->pumpVoltages[i]);
       }
 
-      ImGui::VSliderInt("Freq", ImVec2(36, 200), &pump->freq, 0, 800);
+      ImGui::VSliderInt("##freq", ImVec2(36, 200), &pump->freq, 0, 800, "%d Hz\nFreq");
+      pump->setFreq(pump->freq);
 
-      if (pump->prevFreq != pump->freq)
-        pump->setFreq(pump->freq);
+      for (int i = 0; i < 4; ++i) {
+        if (i != 0)
+          ImGui::SameLine();
+        if (pump->valveOnOff[i]) {
+          std::string tmplabel = "Disable\nValve " + std::to_string(i + 1);
+          if (ImGui::Button(tmplabel.c_str(), ImVec2(36, 0)))
+            pump->disableValve(i + 1);
+        } else {
+          std::string tmplabel = "Enable\nValve " + std::to_string(i + 1);
+          if (ImGui::Button(tmplabel.c_str(), ImVec2(36, 0)))
+            pump->enableValve(i + 1);
+        }
+      }
+
+      for (int i = 0; i < 4; ++i) {
+        if (i != 0)
+          ImGui::SameLine();
+        if (pump->valveState[i]) {
+          std::string tmplabel = "Open\nValve " + std::to_string(i + 1);
+          if (ImGui::Button(tmplabel.c_str(), ImVec2(36, 0)))
+            pump->setValve(i + 1, false);
+        } else {
+          std::string tmplabel = "Close\nValve " + std::to_string(i + 1);
+          if (ImGui::Button(tmplabel.c_str(), ImVec2(36, 0)))
+            pump->setValve(i + 1, true);
+        }
+      }
+
+      if (ImGui::Button("Reset Pump")) {
+        for (int i = 0; i < 4; ++i) {
+          pump->setValve(i + 1, false);
+          pump->pumpVoltages[i] = 0;
+          pump->setVoltage(i + 1, 0);
+        }
+      }
+
+      if (ImGui::Button("Set State0 uref")) {
+        pump->pumpVoltages[0] = 60;
+        pump->pumpVoltages[1] = 60;
+        pump->pumpVoltages[2] = 40;
+        pump->pumpVoltages[3] = 60;
+        for (int i = 0; i < 4; ++i)
+          pump->setVoltage(i + 1, (int16_t)pump->pumpVoltages[i]);
+      }
 
       ImGui::End();
     }
