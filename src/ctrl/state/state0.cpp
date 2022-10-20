@@ -43,7 +43,8 @@ bool State0::measurementAvailable() {
   return tmpMeasAvail;
 }
 
-// update instantaneous trajectory vectors when new measurements are available
+// update instantaneous trajectory vectors
+// (only called when new measurements are available)
 void State0::updateMeasurement() {
   for (int i = 0; i != ch.rows(); ++i) {
     // update measurement vectors dy, y
@@ -68,6 +69,7 @@ void State0::updateMeasurement() {
   }
 }
 
+// (only called when new measurements are available)
 void State0::handleEvent(Event *event) {
   if (event->srcState != 0) {
     info("Invalid event! source state should be 0, but is actually {}", event->srcState);
@@ -139,6 +141,7 @@ void State0::handleEvent(Event *event) {
   }
 }
 
+// (only called when new measurements are available)
 Eigen::Matrix<int16_t, 3, 1> State0::step() {
   // update state x and control signal u based on new measurements
   // Kalman observer

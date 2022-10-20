@@ -113,14 +113,6 @@ Pump::~Pump() {
   // #endif
 
 #if USEPIEZOPUMP == TRUE
-  // std::string pumpsOff = "POFF\r\n";
-
-  // pumpFOut << "Turning off pumps...\n";
-  // sendCmd(pumpsOff, readData, 4);
-  // if(std::strcmp("OK\r\n", readData) != 0)
-  // 	mOut << "Error turning off pumps.\n";
-  // else
-  // 	pumpFOut << "Pumps off.\n";
   info("Closing pump serial port {}", ttyname(serialPort));
   close(serialPort);
 #endif

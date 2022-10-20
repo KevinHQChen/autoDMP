@@ -69,6 +69,12 @@ public:
     currState_ = new T(this, uref_);
   }
 
+  template <typename T> void updateState(Eigen::Vector3d uref_, int prevState) {
+    delete currState_;
+    currState_ = new T(this, prevState, uref_);
+  }
+
+
   std::string getDataPath() const { return dataPath; }
   std::string getConfPath() const { return confPath; }
   StateData getCurrStateData();
