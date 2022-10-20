@@ -3,8 +3,8 @@
 #include "ctrl/state/state0.hpp"
 #include "ctrl/supervisor.hpp"
 
-State1::State1(Supervisor *sv)
-    : State(sv, Eigen::Vector3d(65, 45, 65),
+State1::State1(Supervisor *sv, Eigen::Vector3d uref_)
+    : State(sv, uref_,
             Eigen::Vector3d(0, sv->imProc->impConf.getRotChanBBox()[1].height,
                             sv->imProc->impConf.getChanBBox()[2].height)),
       ch(Vector2ui(1, 2)),
@@ -21,6 +21,7 @@ State1::State1(Supervisor *sv)
       P(P0) {
   // clear all improc queues
   sv_->imProc->clearProcDataQueues();
+  stateTransitionCondition = true;
 }
 
 State1::~State1() {
@@ -35,10 +36,9 @@ bool State1::measurementAvailable() {
     measAvail[ch(i)] =
         duration_cast<milliseconds>(steady_clock::now() - prevCtrlTime[ch(i)]).count() >= 25;
 
-    if (obsv[ch(i)] || (!obsv[ch(i)] && trueMeasAvail[ch(i)])) {
+    if (obsv[ch(i)] || (!obsv[ch(i)] && trueMeasAvail[ch(i)] && !stateTransitionCondition)) {
       tmpMeasAvail &= trueMeasAvail[ch(i)];
-      if (!stateTransitionCondition)
-        obsv[ch(i)] = true;
+      obsv[ch(i)] = true;
     } else
       tmpMeasAvail &= measAvail[ch(i)];
   }
@@ -52,6 +52,10 @@ void State1::updateMeasurement() {
     // update measurement vectors dy, y
     if (trueMeasAvail[ch(i)])
       dy(ch(i)) = sv_->imProc->procDataQArr[ch(i)]->get().y - yref(ch(i));
+    // assume interface is stuck at junction (i.e. yref)
+    else if (stateTransitionCondition)
+      dy(ch(i)) = yref0(ch(i)) - yref(ch(i));
+    // use estimated value from kalman observer
     else
       dy(ch(i)) = dyhat(ch(i));
     y(ch(i)) = dy(ch(i)) + yref(ch(i));
@@ -81,6 +85,7 @@ void State1::handleEvent(Event *event) {
     yref = y;
   }
   bool destReached = true;
+  bool junctionReached = true;
 
   // generate next waypoint if destination is not reached
   for (int i = 0; i != ch.rows(); ++i) {
@@ -96,7 +101,12 @@ void State1::handleEvent(Event *event) {
     }
 
     destReached &= std::abs(y(ch(i)) - yDest(ch(i))) < 1; //event->vel(ch(i)) * 25e-3;
+
+    junctionReached &= y(ch(i)) < 0.85 * yref0(ch(i));
   }
+
+  if (stateTransitionCondition && junctionReached)
+    stateTransitionCondition = false;
 
   // remain in State 1
   //   |__|        |__|
@@ -119,8 +129,8 @@ void State1::handleEvent(Event *event) {
   //  /_/\ \      / /\_\
   // / /  \ \    / /  \ \.
   if (event->destState == 0) {
-    // ch1 & ch2 are 90% to junction and we're observing ch1 & ch2
-    if (yref(1) > 0.9 * yrefScale(1) && yref(2) > 0.9 * yrefScale(2) && obsv[1] && obsv[2]) {
+    // ch1 & ch2 are 85% to junction and we're observing ch1 & ch2
+    if (yref(1) > 0.85 * yrefScale(1) && yref(2) > 0.85 * yrefScale(2) && obsv[1] && obsv[2]) {
       obsv[1] = false;
       obsv[2] = false;
       sv_->imProc->clearProcDataQueues();
@@ -184,10 +194,10 @@ Eigen::Matrix<int16_t, 3, 1> State1::step() {
 
   // apply saturation (+/- 20)
   for (int i = 0; i != du.rows(); ++i) {
-    if (du(i) < -20)
-      du(i) = -20;
-    else if (du(i) > 20)
-      du(i) = 20;
+    if (du(i) < -40)
+      du(i) = -40;
+    else if (du(i) > 40)
+      du(i) = 40;
   }
   usat = uref + du;
 

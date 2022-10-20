@@ -67,7 +67,7 @@ public:
   // sysID specific
   int stp = 0;
 
-  State(Supervisor *sv, Eigen::Vector3d uref, Eigen::Vector3d yrefScale);
+  State(Supervisor *sv, Eigen::Vector3d uref_, Eigen::Vector3d yrefScale);
   virtual ~State();
 
   virtual bool measurementAvailable() = 0;

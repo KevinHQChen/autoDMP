@@ -33,10 +33,9 @@ bool State0::measurementAvailable() {
     measAvail[ch(i)] =
         duration_cast<milliseconds>(steady_clock::now() - prevCtrlTime[ch(i)]).count() >= 25;
 
-    if (obsv[ch(i)] || (!obsv[ch(i)] && trueMeasAvail[ch(i)])) {
+    if (obsv[ch(i)] || (!obsv[ch(i)] && trueMeasAvail[ch(i)] && !stateTransitionCondition)) {
       tmpMeasAvail &= trueMeasAvail[ch(i)];
-      if (!stateTransitionCondition)
-        obsv[ch(i)] = true;
+      obsv[ch(i)] = true;
     } else
       tmpMeasAvail &= measAvail[ch(i)];
   }
@@ -44,12 +43,15 @@ bool State0::measurementAvailable() {
   return tmpMeasAvail;
 }
 
-// update instantaneous trajectory vectors
+// update instantaneous trajectory vectors when new measurements are available
 void State0::updateMeasurement() {
   for (int i = 0; i != ch.rows(); ++i) {
     // update measurement vectors dy, y
     if (trueMeasAvail[ch(i)])
       dy(ch(i)) = sv_->imProc->procDataQArr[ch(i)]->get().y - yref(ch(i));
+    else if (stateTransitionCondition)
+      dy(ch(i)) += dyref(ch(i));
+      // dy(ch(i)) = yrefLast(ch(i)) - yref(ch(i));
     else
       dy(ch(i)) = dyhat(ch(i));
     y(ch(i)) = dy(ch(i)) + yref(ch(i));
@@ -86,17 +88,16 @@ void State0::handleEvent(Event *event) {
       dyref(ch(i)) = event->vel(ch(i)) * dt[ch(i)].count();
     else if (y(ch(i)) > yDest(ch(i)))
       dyref(ch(i)) = -event->vel(ch(i)) * dt[ch(i)].count();
+    if (stateTransitionCondition)
+      dyref(ch(i)) = event->vel(ch(i)) * dt[ch(i)].count();
     yref(ch(i)) += dyref(ch(i));
-
-    if (stateTransitionCondition && !trueMeasAvail[ch(i)])
-      yref(ch(i)) = y(ch(i)) + dyref(ch(i));
 
     if (std::abs(yref(ch(i)) - yDest(ch(i))) < event->vel(ch(i)) * 50e-3) {
       dyref(ch(i)) = 0;
       yref(ch(i)) = yDest(ch(i));
     }
 
-    destReached &= std::abs(y(ch(i)) - yDest(ch(i))) < 1; // event->vel(ch(i)) * 25e-3;
+    destReached &= std::abs(y(ch(i)) - yDest(ch(i))) < 1; //event->vel(ch(i)) * 25e-3;
   }
 
   // remain in State 0
@@ -120,20 +121,20 @@ void State0::handleEvent(Event *event) {
   //  / /\_\      /_/\ \
   // / /  \ \    / /  \ \.
   if (event->destState == 1) {
-    // ch0 is 90% to junction and we're observing ch0
-    if (yref(0) > 0.9 * yrefScale(0) && obsv[0]) {
+    // ch0 is 85% to junction and we're observing ch0
+    if (yref(0) > 0.85 * yrefScale(0) && obsv[0]) {
       obsv[0] = false;
       sv_->imProc->clearProcDataQueues();
       stateTransitionCondition = true;
     }
     // we're in sim mode and ch0 is 95% to junction
-    // or ch1 & ch2 are observable and we're not observing ch0
+    // or ch1 or ch2 are observable and we're not observing ch0
     if ((yref(0) > 0.95 * yrefScale(0) && sv_->simModeActive) ||
-        (!obsv[0] && !sv_->imProc->procDataQArr[1]->empty() &&
-         !sv_->imProc->procDataQArr[2]->empty())) {
+        (!obsv[0] &&
+         (!sv_->imProc->procDataQArr[1]->empty() || !sv_->imProc->procDataQArr[2]->empty()))) {
       delete sv_->currEvent_;
       sv_->currEvent_ = nullptr;
-      sv_->updateState<State1>();
+      sv_->updateState<State1>(usat);
     }
   }
 }
@@ -162,10 +163,10 @@ Eigen::Matrix<int16_t, 3, 1> State0::step() {
 
   // apply saturation (+/- 20)
   for (int i = 0; i != du.rows(); ++i) {
-    if (du(i) < -20)
-      du(i) = -20;
-    else if (du(i) > 20)
-      du(i) = 20;
+    if (du(i) < -40)
+      du(i) = -40;
+    else if (du(i) > 40)
+      du(i) = 40;
   }
   usat = uref + du;
 

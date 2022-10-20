@@ -74,8 +74,7 @@ void Supervisor::startSysIDThread() {
   if (!startedSysID()) {
     info("Starting SysID...");
     startedSysIDFlag = true;
-    delete currState_;
-    currState_ = new SysIDState(this, prbsUref);
+    updateState<SysIDState>(prbsUref);
     if (!simModeActive)
       pump->setFreq(200);
     sysIDThread = std::thread(&Supervisor::startSysID, this);
