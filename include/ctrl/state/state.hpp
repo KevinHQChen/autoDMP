@@ -54,6 +54,14 @@ protected:
   Supervisor *sv_;
 
 public:
+  // system matrices
+  template <int dim>
+  static Eigen::Matrix<double, dim, dim>
+      // constant (for each state)
+      Ad, Ad_, Bd, Cd, Cd_, CdInv, K1, K2, Qw, Rv,
+      // variable (changes based on observer estimation error)
+      P0, P, Ko, temp, tempInv;
+
   // instantaneous trajectory vectors
   // control signal vectors
   Eigen::Vector3d du{Eigen::Vector3d::Zero()}, uref, u, usat;
@@ -79,16 +87,6 @@ public:
   // sysID specific
   int stp = 0;
 
-  template <int dim> static Eigen::Matrix<unsigned int, dim, 1> ch;
-
-  // system matrices
-  template <int dim>
-  static Eigen::Matrix<double, dim, dim>
-      // constant (for each state)
-      Ad, Ad_, Bd, Cd, Cd_, CdInv, K1, K2, Qw, Rv,
-      // variable (changes based on observer estimation error)
-      P0, P, Ko, temp, tempInv;
-
   // from https://stackoverflow.com/a/15484513
   template <typename T, int dim, int newDim>
   Eigen::Matrix<T, newDim, 1> to(Eigen::Matrix<T, dim, 1> p) {
@@ -103,73 +101,52 @@ public:
   virtual ~State();
 
   // check for new measurements on selected channels
-  template <int dim> bool measurementAvailable() {
+  template <int dim> bool measurementAvailable(Eigen::Matrix<unsigned int, dim, 1> ch) {
     bool tmpMeasAvail = true;
-    for (int i = 0; i != ch<dim>.rows(); ++i) {
-      trueMeasAvail[ch<dim>(i)] = !sv_->imProc->procDataQArr[ch<dim>(i)]->empty();
-      measAvail[ch<dim>(i)] =
-          duration_cast<milliseconds>(steady_clock::now() - prevCtrlTime[ch<dim>(i)]).count() >=
-          25;
+    for (int i = 0; i != ch.rows(); ++i) {
+      trueMeasAvail[ch(i)] = !sv_->imProc->procDataQArr[ch(i)]->empty();
+      measAvail[ch(i)] =
+          duration_cast<milliseconds>(steady_clock::now() - prevCtrlTime[ch(i)]).count() >= 25;
 
-      if (obsv[ch<dim>(i)] ||
-          (!obsv[ch<dim>(i)] && trueMeasAvail[ch<dim>(i)] && !stateTransitionCondition)) {
-        tmpMeasAvail &= trueMeasAvail[ch<dim>(i)];
-        obsv[ch<dim>(i)] = true;
+      if (obsv[ch(i)] || (!obsv[ch(i)] && trueMeasAvail[ch(i)] && !stateTransitionCondition)) {
+        tmpMeasAvail &= trueMeasAvail[ch(i)];
+        obsv[ch(i)] = true;
       } else
-        tmpMeasAvail &= measAvail[ch<dim>(i)];
+        tmpMeasAvail &= measAvail[ch(i)];
     }
 
     return tmpMeasAvail;
   }
 
-  // update instantaneous trajectory vectors
-  // (only called when new measurements are available)
-  template <int dim> void updateMeasurement() {
-    for (int i = 0; i != ch<dim>.rows(); ++i) {
-      // update measurement vectors dy, y
-      if (trueMeasAvail[ch<dim>(i)])
-        dy(ch<dim>(i)) = sv_->imProc->procDataQArr[ch<dim>(i)]->get().y - yref(ch<dim>(i));
-      else if (stateTransitionCondition)
-        dy(ch<dim>(i)) += dyref(ch<dim>(i));
-      else
-        dy(ch<dim>(i)) = dyhat(ch<dim>(i));
-      y(ch<dim>(i)) = dy(ch<dim>(i)) + yref(ch<dim>(i));
+  virtual bool measurementAvailable() = 0;
+  virtual void updateMeasurement() = 0;
 
-      // update time step dt for numerical integration
-      if (!firstMeasAvail[ch<dim>(i)])
-        firstMeasAvail[ch<dim>(i)] = true;
-      else // measure the time difference between consecutive measurements
-        dt[ch<dim>(i)] = steady_clock::now() - prevCtrlTime[ch<dim>(i)];
-      prevCtrlTime[ch<dim>(i)] = steady_clock::now();
-
-      // update integral error based on time step for each channel's data
-      z(ch<dim>(i)) += -dy(ch<dim>(i)) * dt[ch<dim>(i)].count();
-    }
-  }
-
-  // (only called when new measurements are available)
+  /*
+   * @brief: generates control signals at each time step (only called when new measurements are
+   * available)
+   */
   template <int dim> Eigen::Matrix<int16_t, 3, 1> step() {
     // update state x and control signal u based on new measurements
     // Kalman observer
     // prediction
     // dxhat = dxhat_prev - dxref, Cd*dxref = dyref
-    dxhat(ch.array(), Eigen::all) = Ad * dxhat(ch.array(), Eigen::all) +
-                                    Bd * du(ch.array(), Eigen::all) -
-                                    CdInv * dyref(ch.array(), Eigen::all);
-    P = Ad * P * Ad_ + Qw;
+    dxhat(ch<dim>.array(), Eigen::all) = Ad<dim> * dxhat(ch<dim>.array(), Eigen::all) +
+                                         Bd<dim> * du(ch<dim>.array(), Eigen::all) -
+                                         CdInv<dim> * dyref(ch<dim>.array(), Eigen::all);
+    P<dim> = Ad<dim> * P<dim> * Ad_<dim> + Qw<dim>;
     // correction
-    temp = Cd * P * Cd_ + Rv;
-    tempInv = temp.inverse();
-    Ko = P * Cd_ * tempInv;
-    dyhat(ch.array(), Eigen::all) = Cd * dxhat(ch.array(), Eigen::all);
-    dxhat(ch.array(), Eigen::all) =
-        dxhat(ch.array(), Eigen::all) +
-        Ko * (dy(ch.array(), Eigen::all) - dyhat(ch.array(), Eigen::all));
+    temp<dim> = Cd<dim> * P<dim> * Cd_<dim> + Rv<dim>;
+    tempInv<dim> = temp<dim>.inverse();
+    Ko<dim> = P<dim> * Cd_<dim> * tempInv<dim>;
+    dyhat(ch<dim>.array(), Eigen::all) = Cd<dim> * dxhat(ch<dim>.array(), Eigen::all);
+    dxhat(ch<dim>.array(), Eigen::all) =
+        dxhat(ch<dim>.array(), Eigen::all) +
+        Ko<dim> * (dy(ch<dim>.array(), Eigen::all) - dyhat(ch<dim>.array(), Eigen::all));
 
     // apply updated control signals (with saturation limits) to pump
     // LQI control law
-    du(ch.array(), Eigen::all) =
-        -K1 * dxhat(ch.array(), Eigen::all) - K2 * z(ch.array(), Eigen::all);
+    du(ch<dim>.array(), Eigen::all) =
+        -K1<dim> * dxhat(ch<dim>.array(), Eigen::all) - K2<dim> * z(ch<dim>.array(), Eigen::all);
     u = uref + du;
 
     // apply saturation (+/- 20)

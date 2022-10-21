@@ -28,50 +28,6 @@ State1::~State1() {
   // clean up any resources used by current state here
 }
 
-// check for new measurements on selected channels
-bool State1::measurementAvailable() {
-  bool tmpMeasAvail = true;
-  for (int i = 0; i != ch.rows(); ++i) {
-    trueMeasAvail[ch(i)] = !sv_->imProc->procDataQArr[ch(i)]->empty();
-    measAvail[ch(i)] =
-        duration_cast<milliseconds>(steady_clock::now() - prevCtrlTime[ch(i)]).count() >= 25;
-
-    if (obsv[ch(i)] || (!obsv[ch(i)] && trueMeasAvail[ch(i)] && !stateTransitionCondition)) {
-      tmpMeasAvail &= trueMeasAvail[ch(i)];
-      obsv[ch(i)] = true;
-    } else
-      tmpMeasAvail &= measAvail[ch(i)];
-  }
-
-  return tmpMeasAvail;
-}
-
-// update instantaneous trajectory vectors
-void State1::updateMeasurement() {
-  for (int i = 0; i != ch.rows(); ++i) {
-    // update measurement vectors dy, y
-    if (trueMeasAvail[ch(i)])
-      dy(ch(i)) = sv_->imProc->procDataQArr[ch(i)]->get().y - yref(ch(i));
-    // assume interface is stuck at junction (i.e. yref)
-    else if (stateTransitionCondition)
-      dy(ch(i)) = yref0(ch(i)) - yref(ch(i));
-    // use estimated value from kalman observer
-    else
-      dy(ch(i)) = dyhat(ch(i));
-    y(ch(i)) = dy(ch(i)) + yref(ch(i));
-
-    // update time step dt for numerical integration
-    if (!firstMeasAvail[ch(i)])
-      firstMeasAvail[ch(i)] = true;
-    else // measure the time difference between consecutive measurements
-      dt[ch(i)] = steady_clock::now() - prevCtrlTime[ch(i)];
-    prevCtrlTime[ch(i)] = steady_clock::now();
-
-    // update integral error based on time step for each channel's data
-    z(ch(i)) += -dy(ch(i)) * dt[ch(i)].count();
-  }
-}
-
 void State1::handleEvent(Event *event) {
   if (event->srcState != 1) {
     info("Invalid event! source state should be 1, but is actually {}", event->srcState);
@@ -168,38 +124,4 @@ void State1::handleEvent(Event *event) {
       // sv_->updateState<State2>();
     }
   }
-}
-
-Eigen::Matrix<int16_t, 3, 1> State1::step() {
-  // update state x and control signal u based on new measurements
-  // Kalman observer
-  // prediction
-  // dxhat = dxhat_prev - dxref, Cd*dxref = dyref
-  dxhat(ch.array(), Eigen::all) = Ad * dxhat(ch.array(), Eigen::all) +
-                                  Bd * du(ch.array(), Eigen::all) -
-                                  CdInv * dyref(ch.array(), Eigen::all);
-  P = Ad * P * Ad_ + Qw;
-  // correction
-  temp = Cd * P * Cd_ + Rv;
-  tempInv = temp.inverse();
-  Ko = P * Cd_ * tempInv;
-  dyhat(ch.array(), Eigen::all) = Cd * dxhat(ch.array(), Eigen::all);
-  dxhat(ch.array(), Eigen::all) = dxhat(ch.array(), Eigen::all) +
-                                  Ko * (dy(ch.array(), Eigen::all) - dyhat(ch.array(), Eigen::all));
-
-  // apply updated control signals (with saturation limits) to pump
-  // LQI control law
-  du(ch.array(), Eigen::all) = -K1 * dxhat(ch.array(), Eigen::all) - K2 * z(ch.array(), Eigen::all);
-  u = uref + du;
-
-  // apply saturation (+/- 20)
-  for (int i = 0; i != du.rows(); ++i) {
-    if (du(i) < -40)
-      du(i) = -40;
-    else if (du(i) > 40)
-      du(i) = 40;
-  }
-  usat = uref + du;
-
-  return usat.cast<int16_t>();
 }
