@@ -74,7 +74,6 @@ public:
     currState_ = new T(this, prevState, uref_);
   }
 
-
   std::string getDataPath() const { return dataPath; }
   std::string getConfPath() const { return confPath; }
   StateData getCurrStateData();

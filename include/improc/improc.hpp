@@ -47,7 +47,6 @@ public:
   ImProc(ImCap *imCap);
   ~ImProc();
 
-
   // load/save template images, channel bounding boxes into imProcConfig
   void loadConfig();
   void saveConfig();

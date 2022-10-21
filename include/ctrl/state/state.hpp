@@ -54,13 +54,15 @@ protected:
   Supervisor *sv_;
 
 public:
-  // system matrices
-  template <int dim>
-  static Eigen::Matrix<double, dim, dim>
-      // constant (for each state)
-      Ad, Ad_, Bd, Cd, Cd_, CdInv, K1, K2, Qw, Rv,
-      // variable (changes based on observer estimation error)
-      P0, P, Ko, temp, tempInv;
+  // from https://stackoverflow.com/a/15484513
+  template <typename T, int dim, int newDim>
+  Eigen::Matrix<T, newDim, 1> to(Eigen::Matrix<T, dim, 1> p) {
+    Eigen::Matrix<int, newDim, 1> newp = Eigen::Matrix<T, newDim, 1>::Zero();
+
+    newp.template head<MIN<dim, newDim>::val>() = p.template head<MIN<dim, newDim>::val>();
+
+    return newp;
+  }
 
   // instantaneous trajectory vectors
   // control signal vectors
@@ -73,7 +75,7 @@ public:
   // state/output vectors
   Eigen::Vector3d yrefScale;
   Eigen::Vector3d y{Eigen::Vector3d::Zero()}, yref0, yref;
-  Eigen::Vector3d dy, dyref;
+  Eigen::Vector3d dy, dyref{Eigen::Vector3d::Zero()};
   Eigen::Vector3d yhat, dxhat{Eigen::Vector3d::Zero()}, dyhat{Eigen::Vector3d::Zero()}, ytilde;
   Eigen::Vector3d yDest;
 
@@ -87,21 +89,33 @@ public:
   // sysID specific
   int stp = 0;
 
-  // from https://stackoverflow.com/a/15484513
-  template <typename T, int dim, int newDim>
-  Eigen::Matrix<T, newDim, 1> to(Eigen::Matrix<T, dim, 1> p) {
-    Eigen::Matrix<int, newDim, 1> newp = Eigen::Matrix<T, newDim, 1>::Zero();
-
-    newp.template head<MIN<dim, newDim>::val>() = p.template head<MIN<dim, newDim>::val>();
-
-    return newp;
-  }
-
   State(Supervisor *sv, Eigen::Vector3d uref_, Eigen::Vector3d yrefScale);
   virtual ~State();
 
+  // provide common interface for member functions using pure virtual methods
+  // (this makes State an abstract class)
+
   // check for new measurements on selected channels
-  template <int dim> bool measurementAvailable(Eigen::Matrix<unsigned int, dim, 1> ch) {
+  virtual bool measurementAvailable() = 0;
+
+  /* @brief: update instantaneous trajectory vectors (only called when new measurements are
+   * available)
+   */
+  virtual void updateMeasurement() = 0;
+
+  /*
+   * @brief: performs the required tasks for state transition corresponding to the received event
+   * @param: event
+   */
+  virtual void handleEvent(Event *event) = 0;
+
+  /*
+   * @brief: generates control signals at each time step (only called when new measurements are
+   * available)
+   */
+  virtual Eigen::Matrix<int16_t, 3, 1> step() = 0;
+
+  template <int dim> bool measurementAvailable(Eigen::Matrix<unsigned int, dim, 1> &ch) {
     bool tmpMeasAvail = true;
     for (int i = 0; i != ch.rows(); ++i) {
       trueMeasAvail[ch(i)] = !sv_->imProc->procDataQArr[ch(i)]->empty();
@@ -118,35 +132,37 @@ public:
     return tmpMeasAvail;
   }
 
-  virtual bool measurementAvailable() = 0;
-  virtual void updateMeasurement() = 0;
-
-  /*
-   * @brief: generates control signals at each time step (only called when new measurements are
-   * available)
-   */
-  template <int dim> Eigen::Matrix<int16_t, 3, 1> step() {
+  template <int dim>
+  Eigen::Matrix<int16_t, 3, 1>
+  step(Eigen::Matrix<unsigned int, dim, 1> &ch, Eigen::Matrix<double, dim, dim> &Ad,
+       Eigen::Matrix<double, dim, dim> &Ad_, Eigen::Matrix<double, dim, dim> &Bd,
+       Eigen::Matrix<double, dim, dim> &Cd, Eigen::Matrix<double, dim, dim> &Cd_,
+       Eigen::Matrix<double, dim, dim> &CdInv, Eigen::Matrix<double, dim, dim> &K1,
+       Eigen::Matrix<double, dim, dim> &K2, Eigen::Matrix<double, dim, dim> &Qw,
+       Eigen::Matrix<double, dim, dim> &Rv, Eigen::Matrix<double, dim, dim> &P,
+       Eigen::Matrix<double, dim, dim> &Ko, Eigen::Matrix<double, dim, dim> &temp,
+       Eigen::Matrix<double, dim, dim> &tempInv) {
     // update state x and control signal u based on new measurements
     // Kalman observer
     // prediction
     // dxhat = dxhat_prev - dxref, Cd*dxref = dyref
-    dxhat(ch<dim>.array(), Eigen::all) = Ad<dim> * dxhat(ch<dim>.array(), Eigen::all) +
-                                         Bd<dim> * du(ch<dim>.array(), Eigen::all) -
-                                         CdInv<dim> * dyref(ch<dim>.array(), Eigen::all);
-    P<dim> = Ad<dim> * P<dim> * Ad_<dim> + Qw<dim>;
+    dxhat(ch.array(), Eigen::all) = Ad * dxhat(ch.array(), Eigen::all) +
+                                    Bd * du(ch.array(), Eigen::all) -
+                                    CdInv * dyref(ch.array(), Eigen::all);
+    P = Ad * P * Ad_ + Qw;
     // correction
-    temp<dim> = Cd<dim> * P<dim> * Cd_<dim> + Rv<dim>;
-    tempInv<dim> = temp<dim>.inverse();
-    Ko<dim> = P<dim> * Cd_<dim> * tempInv<dim>;
-    dyhat(ch<dim>.array(), Eigen::all) = Cd<dim> * dxhat(ch<dim>.array(), Eigen::all);
-    dxhat(ch<dim>.array(), Eigen::all) =
-        dxhat(ch<dim>.array(), Eigen::all) +
-        Ko<dim> * (dy(ch<dim>.array(), Eigen::all) - dyhat(ch<dim>.array(), Eigen::all));
+    temp = Cd * P * Cd_ + Rv;
+    tempInv = temp.inverse();
+    Ko = P * Cd_ * tempInv;
+    dyhat(ch.array(), Eigen::all) = Cd * dxhat(ch.array(), Eigen::all);
+    dxhat(ch.array(), Eigen::all) =
+        dxhat(ch.array(), Eigen::all) +
+        Ko * (dy(ch.array(), Eigen::all) - dyhat(ch.array(), Eigen::all));
 
     // apply updated control signals (with saturation limits) to pump
     // LQI control law
-    du(ch<dim>.array(), Eigen::all) =
-        -K1<dim> * dxhat(ch<dim>.array(), Eigen::all) - K2<dim> * z(ch<dim>.array(), Eigen::all);
+    du(ch.array(), Eigen::all) =
+        -K1 * dxhat(ch.array(), Eigen::all) - K2 * z(ch.array(), Eigen::all);
     u = uref + du;
 
     // apply saturation (+/- 20)
@@ -160,6 +176,4 @@ public:
 
     return usat.cast<int16_t>();
   }
-
-  virtual void handleEvent(Event *event) = 0;
 };

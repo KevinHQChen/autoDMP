@@ -19,8 +19,10 @@ class Pump {
 public:
   // pump state (voltages are ints to work with imgui slider)
   std::vector<int> pumpVoltages{0, 0, 0, 0}, prevPumpVoltages{0, 0, 0, 0};
-  std::vector<bool> valveOnOff{false, false, false, false}, prevValveOnOff{false, false, false, false};
-  std::vector<bool> valveState{false, false, false, false}, prevValveState{false, false, false, false};
+  std::vector<bool> valveOnOff{false, false, false, false},
+      prevValveOnOff{false, false, false, false};
+  std::vector<bool> valveState{false, false, false, false},
+      prevValveState{false, false, false, false};
   int freq{0}, prevFreq{0};
 
   Pump();

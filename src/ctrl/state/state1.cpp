@@ -28,6 +28,31 @@ State1::~State1() {
   // clean up any resources used by current state here
 }
 
+bool State1::measurementAvailable() { return State::measurementAvailable<2>(ch); }
+
+void State1::updateMeasurement() {
+  for (int i = 0; i != ch.rows(); ++i) {
+    // update measurement vectors dy, y
+    if (trueMeasAvail[ch(i)])
+      dy(ch(i)) = sv_->imProc->procDataQArr[ch(i)]->get().y - yref(ch(i));
+    else if (stateTransitionCondition) // assume interface is stuck at junction (i.e. yref)
+      dy(ch(i)) = yref0(ch(i)) - yref(ch(i));
+    else
+      dy(ch(i)) = dyhat(ch(i));
+    y(ch(i)) = dy(ch(i)) + yref(ch(i));
+
+    // update time step dt for numerical integration
+    if (!firstMeasAvail[ch(i)])
+      firstMeasAvail[ch(i)] = true;
+    else // measure the time difference between consecutive measurements
+      dt[ch(i)] = steady_clock::now() - prevCtrlTime[ch(i)];
+    prevCtrlTime[ch(i)] = steady_clock::now();
+
+    // update integral error based on time step for each channel's data
+    z(ch(i)) += -dy(ch(i)) * dt[ch(i)].count();
+  }
+}
+
 void State1::handleEvent(Event *event) {
   if (event->srcState != 1) {
     info("Invalid event! source state should be 1, but is actually {}", event->srcState);
@@ -56,7 +81,7 @@ void State1::handleEvent(Event *event) {
       yref(ch(i)) = yDest(ch(i));
     }
 
-    destReached &= std::abs(y(ch(i)) - yDest(ch(i))) < 1; //event->vel(ch(i)) * 25e-3;
+    destReached &= std::abs(y(ch(i)) - yDest(ch(i))) < 1; // event->vel(ch(i)) * 25e-3;
 
     junctionReached &= y(ch(i)) < 0.85 * yref0(ch(i));
   }
@@ -124,4 +149,8 @@ void State1::handleEvent(Event *event) {
       // sv_->updateState<State2>();
     }
   }
+}
+
+Eigen::Matrix<int16_t, 3, 1> State1::step() {
+  return State::step<2>(ch, Ad, Ad_, Bd, Cd, Cd_, CdInv, K1, K2, Qw, Rv, P, Ko, temp, tempInv);
 }
