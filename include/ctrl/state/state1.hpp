@@ -10,7 +10,7 @@ public:
   // dynamic (changes based on observer estimation error)
   Eigen::Matrix2d P0, P, Ko, temp, tempInv;
 
-  State1(Supervisor *supervisor, Eigen::Vector3d uref_);
+  State1(Supervisor *sv, Eigen::Vector3d uref_);
   ~State1();
 
   virtual bool measurementAvailable() override;

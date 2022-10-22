@@ -30,28 +30,7 @@ State1::~State1() {
 
 bool State1::measurementAvailable() { return State::measurementAvailable<2>(ch); }
 
-void State1::updateMeasurement() {
-  for (int i = 0; i != ch.rows(); ++i) {
-    // update measurement vectors dy, y
-    if (trueMeasAvail[ch(i)])
-      dy(ch(i)) = sv_->imProc->procDataQArr[ch(i)]->get().y - yref(ch(i));
-    else if (stateTransitionCondition) // assume interface is stuck at junction (i.e. yref)
-      dy(ch(i)) = yref0(ch(i)) - yref(ch(i));
-    else
-      dy(ch(i)) = dyhat(ch(i));
-    y(ch(i)) = dy(ch(i)) + yref(ch(i));
-
-    // update time step dt for numerical integration
-    if (!firstMeasAvail[ch(i)])
-      firstMeasAvail[ch(i)] = true;
-    else // measure the time difference between consecutive measurements
-      dt[ch(i)] = steady_clock::now() - prevCtrlTime[ch(i)];
-    prevCtrlTime[ch(i)] = steady_clock::now();
-
-    // update integral error based on time step for each channel's data
-    z(ch(i)) += -dy(ch(i)) * dt[ch(i)].count();
-  }
-}
+void State1::updateMeasurement() { State::updateMeasurement<2>(ch); }
 
 void State1::handleEvent(Event *event) {
   if (event->srcState != 1) {
@@ -83,7 +62,7 @@ void State1::handleEvent(Event *event) {
 
     destReached &= std::abs(y(ch(i)) - yDest(ch(i))) < 1; // event->vel(ch(i)) * 25e-3;
 
-    junctionReached &= y(ch(i)) < 0.85 * yref0(ch(i));
+    junctionReached &= y(ch(i)) < 0.85 * yrefScale(ch(i));
   }
 
   if (stateTransitionCondition && junctionReached)
@@ -110,20 +89,19 @@ void State1::handleEvent(Event *event) {
   //  /_/\ \      / /\_\
   // / /  \ \    / /  \ \.
   if (event->destState == 0) {
-    // ch1 & ch2 are 85% to junction and we're observing ch1 & ch2
-    if (yref(1) > 0.85 * yrefScale(1) && yref(2) > 0.85 * yrefScale(2) && obsv[1] && obsv[2]) {
-      obsv[1] = false;
-      obsv[2] = false;
+    // ch1 & ch2 are 85% to junction
+    if (yref(1) > 0.85 * yrefScale(1) && yref(2) > 0.95 * yrefScale(2) &&
+        !stateTransitionCondition) {
       sv_->imProc->clearProcDataQueues();
       stateTransitionCondition = true;
     }
     // we're in sim mode and ch1 & ch2 are 95% to junction
-    // or ch0 is observable and we stopped observing ch1 & ch2
+    // or ch0 is observable
     if ((yref(1) > 0.95 * yrefScale(1) && yref(2) > 0.95 * yrefScale(2) && sv_->simModeActive) ||
-        (!obsv[1] && !obsv[2] && !sv_->imProc->procDataQArr[0]->empty())) {
+        (stateTransitionCondition && !sv_->imProc->procDataQArr[0]->empty())) {
       delete sv_->currEvent_;
       sv_->currEvent_ = nullptr;
-      sv_->updateState<State0>();
+      sv_->updateState<State0>(usat);
     }
   }
 

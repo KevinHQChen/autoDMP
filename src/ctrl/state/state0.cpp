@@ -19,6 +19,26 @@ State0::State0(Supervisor *sv)
       Rv(openData(sv->getConfPath() + "state0/Rv.txt")), P0(Vector1d::Identity(1, 1)), P(P0) {
   // clear all improc queues
   sv_->imProc->clearProcDataQueues();
+  stateTransitionCondition = true;
+}
+
+State0::State0(Supervisor *sv, Eigen::Vector3d uref_)
+    : State(sv, uref_,
+            Eigen::Vector3d(sv->imProc->impConf.getRotChanBBox()[0].height, 0, 0)),
+      ch(Vector1ui(0)),
+      // system matrices
+      Ad(openData(sv->getConfPath() + "state0/Ad.txt")),
+      Ad_(openData(sv->getConfPath() + "state0/Ad_.txt")),
+      Bd(openData(sv->getConfPath() + "state0/Bd.txt")),
+      Cd(openData(sv->getConfPath() + "state0/Cd.txt")),
+      Cd_(openData(sv->getConfPath() + "state0/Cd_.txt")), CdInv(Cd.inverse()),
+      K1(openData(sv->getConfPath() + "state0/K1.txt")),
+      K2(openData(sv->getConfPath() + "state0/K2.txt")),
+      Qw(openData(sv->getConfPath() + "state0/Qw.txt")),
+      Rv(openData(sv->getConfPath() + "state0/Rv.txt")), P0(Vector1d::Identity(1, 1)), P(P0) {
+  // clear all improc queues
+  sv_->imProc->clearProcDataQueues();
+  stateTransitionCondition = true;
 }
 
 State0::~State0() {
@@ -27,29 +47,7 @@ State0::~State0() {
 
 bool State0::measurementAvailable() { return State::measurementAvailable<1>(ch); }
 
-void State0::updateMeasurement() {
-  for (int i = 0; i != ch.rows(); ++i) {
-    // update measurement vectors dy, y
-    if (trueMeasAvail[ch(i)])
-      dy(ch(i)) = sv_->imProc->procDataQArr[ch(i)]->get().y - yref(ch(i));
-    else if (stateTransitionCondition) // provide constant output disturbance toward
-                                       // junction
-      dy(ch(i)) += dyref(ch(i));
-    else
-      dy(ch(i)) = dyhat(ch(i));
-    y(ch(i)) = dy(ch(i)) + yref(ch(i));
-
-    // update time step dt for numerical integration
-    if (!firstMeasAvail[ch(i)])
-      firstMeasAvail[ch(i)] = true;
-    else // measure the time difference between consecutive measurements
-      dt[ch(i)] = steady_clock::now() - prevCtrlTime[ch(i)];
-    prevCtrlTime[ch(i)] = steady_clock::now();
-
-    // update integral error based on time step for each channel's data
-    z(ch(i)) += -dy(ch(i)) * dt[ch(i)].count();
-  }
-}
+void State0::updateMeasurement() { State::updateMeasurement<1>(ch); }
 
 void State0::handleEvent(Event *event) {
   if (event->srcState != 0) {
@@ -64,6 +62,7 @@ void State0::handleEvent(Event *event) {
     yref = y;
   }
   bool destReached = true;
+  bool junctionReached = true;
 
   // generate next waypoint if destination is not reached
   for (int i = 0; i != ch.rows(); ++i) {
@@ -71,8 +70,6 @@ void State0::handleEvent(Event *event) {
       dyref(ch(i)) = event->vel(ch(i)) * dt[ch(i)].count();
     else if (y(ch(i)) > yDest(ch(i)))
       dyref(ch(i)) = -event->vel(ch(i)) * dt[ch(i)].count();
-    if (stateTransitionCondition)
-      dyref(ch(i)) = event->vel(ch(i)) * dt[ch(i)].count();
     yref(ch(i)) += dyref(ch(i));
 
     if (std::abs(yref(ch(i)) - yDest(ch(i))) < event->vel(ch(i)) * 50e-3) {
@@ -81,7 +78,12 @@ void State0::handleEvent(Event *event) {
     }
 
     destReached &= std::abs(y(ch(i)) - yDest(ch(i))) < 1; // event->vel(ch(i)) * 25e-3;
+
+    junctionReached &= y(ch(i)) < 0.85 * yrefScale(ch(i));
   }
+
+  if (stateTransitionCondition && junctionReached)
+    stateTransitionCondition = false;
 
   // remain in State 0
   //   |  |        |  |
@@ -104,16 +106,15 @@ void State0::handleEvent(Event *event) {
   //  / /\_\      /_/\ \
   // / /  \ \    / /  \ \.
   if (event->destState == 1) {
-    // ch0 is 85% to junction and we're observing ch0
-    if (yref(0) > 0.85 * yrefScale(0) && obsv[0]) {
-      obsv[0] = false;
+    // start state transition when ch0 is 85% to junction
+    if (yref(0) > 0.85 * yrefScale(0) && !stateTransitionCondition) {
       sv_->imProc->clearProcDataQueues();
       stateTransitionCondition = true;
     }
     // we're in sim mode and ch0 is 95% to junction
     // or ch1 or ch2 are observable and we're not observing ch0
     if ((yref(0) > 0.95 * yrefScale(0) && sv_->simModeActive) ||
-        (!obsv[0] &&
+        (stateTransitionCondition &&
          (!sv_->imProc->procDataQArr[1]->empty() || !sv_->imProc->procDataQArr[2]->empty()))) {
       delete sv_->currEvent_;
       sv_->currEvent_ = nullptr;

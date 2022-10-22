@@ -74,7 +74,7 @@ public:
   duration<double> dt[3] = {0s, 0s, 0s}; // this somehow defaults to milliseconds
   // state/output vectors
   Eigen::Vector3d yrefScale;
-  Eigen::Vector3d y{Eigen::Vector3d::Zero()}, yref0, yref;
+  Eigen::Vector3d y{Eigen::Vector3d::Zero()}, yref0, yref, ytrans{Eigen::Vector3d::Zero()};
   Eigen::Vector3d dy, dyref{Eigen::Vector3d::Zero()};
   Eigen::Vector3d yhat, dxhat{Eigen::Vector3d::Zero()}, dyhat{Eigen::Vector3d::Zero()}, ytilde;
   Eigen::Vector3d yDest;
@@ -122,14 +122,40 @@ public:
       measAvail[ch(i)] =
           duration_cast<milliseconds>(steady_clock::now() - prevCtrlTime[ch(i)]).count() >= 25;
 
-      if (obsv[ch(i)] || (!obsv[ch(i)] && trueMeasAvail[ch(i)] && !stateTransitionCondition)) {
-        tmpMeasAvail &= trueMeasAvail[ch(i)];
-        obsv[ch(i)] = true;
-      } else
-        tmpMeasAvail &= measAvail[ch(i)];
+      // only allow true measurements if we're within channel boundaries (35%->85%)
+      // otherwise allow estimated measurements from the observer
+      tmpMeasAvail &=
+          (yref(ch(i)) < 0.85 * yrefScale(ch(i)) && yref(ch(i)) > 0.35 * yrefScale(ch(i)))
+              ? trueMeasAvail[ch(i)]
+              : measAvail[ch(i)];
     }
 
     return tmpMeasAvail;
+  }
+
+  template <int dim> void updateMeasurement(Eigen::Matrix<unsigned int, dim, 1> &ch) {
+    for (int i = 0; i != ch.rows(); ++i) {
+      // update measurement vectors dy, y
+      if (trueMeasAvail[ch(i)])
+        dy(ch(i)) = sv_->imProc->procDataQArr[ch(i)]->get().y - yref(ch(i));
+      else if (stateTransitionCondition) { // assume interface is stuck at junction
+        if (ytrans(ch(i)) < yref(ch(i)))
+          ytrans(ch(i)) = yref(ch(i));
+        dy(ch(i)) = ytrans(ch(i)) - yref(ch(i));
+      } else // use estimated value from kalman observer
+        dy(ch(i)) = dyhat(ch(i));
+      y(ch(i)) = dy(ch(i)) + yref(ch(i));
+
+      // update time step dt for numerical integration
+      if (!firstMeasAvail[ch(i)])
+        firstMeasAvail[ch(i)] = true;
+      else // measure the time difference between consecutive measurements
+        dt[ch(i)] = steady_clock::now() - prevCtrlTime[ch(i)];
+      prevCtrlTime[ch(i)] = steady_clock::now();
+
+      // update integral error based on time step for each channel's data
+      z(ch(i)) += -dy(ch(i)) * dt[ch(i)].count();
+    }
   }
 
   template <int dim>
