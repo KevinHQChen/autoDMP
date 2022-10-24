@@ -10,7 +10,6 @@ public:
   // dynamic (changes based on observer estimation error)
   Vector1d P0, P, Ko, temp, tempInv;
 
-  State0(Supervisor *sv);
   State0(Supervisor *sv, Eigen::Vector3d uref_);
   ~State0();
 

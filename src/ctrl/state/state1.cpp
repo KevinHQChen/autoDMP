@@ -90,7 +90,7 @@ void State1::handleEvent(Event *event) {
   // / /  \ \    / /  \ \.
   if (event->destState == 0) {
     // ch1 & ch2 are 85% to junction
-    if (yref(1) > 0.85 * yrefScale(1) && yref(2) > 0.95 * yrefScale(2) &&
+    if (yref(1) > 0.85 * yrefScale(1) && yref(2) > 0.85 * yrefScale(2) &&
         !stateTransitionCondition) {
       sv_->imProc->clearProcDataQueues();
       stateTransitionCondition = true;

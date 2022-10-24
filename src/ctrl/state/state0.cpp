@@ -3,27 +3,8 @@
 #include "ctrl/state/state1.hpp"
 #include "ctrl/supervisor.hpp"
 
-State0::State0(Supervisor *sv)
-    : State(sv, Eigen::Vector3d(85, 50, 50),
-            Eigen::Vector3d(sv->imProc->impConf.getChanBBox()[0].height, 0, 0)),
-      ch(Vector1ui(0)),
-      // system matrices
-      Ad(openData(sv->getConfPath() + "state0/Ad.txt")),
-      Ad_(openData(sv->getConfPath() + "state0/Ad_.txt")),
-      Bd(openData(sv->getConfPath() + "state0/Bd.txt")),
-      Cd(openData(sv->getConfPath() + "state0/Cd.txt")),
-      Cd_(openData(sv->getConfPath() + "state0/Cd_.txt")), CdInv(Cd.inverse()),
-      K1(openData(sv->getConfPath() + "state0/K1.txt")),
-      K2(openData(sv->getConfPath() + "state0/K2.txt")),
-      Qw(openData(sv->getConfPath() + "state0/Qw.txt")),
-      Rv(openData(sv->getConfPath() + "state0/Rv.txt")), P0(Vector1d::Identity(1, 1)), P(P0) {
-  // clear all improc queues
-  sv_->imProc->clearProcDataQueues();
-  stateTransitionCondition = true;
-}
-
 State0::State0(Supervisor *sv, Eigen::Vector3d uref_)
-    : State(sv, uref_, Eigen::Vector3d(sv->imProc->impConf.getRotChanBBox()[0].height, 0, 0)),
+    : State(sv, uref_, Eigen::Vector3d(sv->imProc->impConf.getChanBBox()[0].height, 0, 0)),
       ch(Vector1ui(0)),
       // system matrices
       Ad(openData(sv->getConfPath() + "state0/Ad.txt")),
@@ -78,7 +59,7 @@ void State0::handleEvent(Event *event) {
 
     destReached &= std::abs(y(ch(i)) - yDest(ch(i))) < 1; // event->vel(ch(i)) * 25e-3;
 
-    junctionReached &= y(ch(i)) < 0.85 * yrefScale(ch(i));
+    junctionReached &= y(ch(i)) < 0.9 * yrefScale(ch(i));
   }
 
   if (stateTransitionCondition && junctionReached)
@@ -105,8 +86,8 @@ void State0::handleEvent(Event *event) {
   //  / /\_\      /_/\ \
   // / /  \ \    / /  \ \.
   if (event->destState == 1) {
-    // start state transition when ch0 is 85% to junction
-    if (yref(0) > 0.85 * yrefScale(0) && !stateTransitionCondition) {
+    // start state transition when ch0 is 90% to junction
+    if (yref(0) > 0.9 * yrefScale(0) && !stateTransitionCondition) {
       sv_->imProc->clearProcDataQueues();
       stateTransitionCondition = true;
     }

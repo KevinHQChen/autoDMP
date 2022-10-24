@@ -189,11 +189,12 @@ public:
     u = uref + du;
 
     // apply saturation (+/- 20)
+    int sat = 30;
     for (int i = 0; i != du.rows(); ++i) {
-      if (du(i) < -20)
-        du(i) = -20;
-      else if (du(i) > 20)
-        du(i) = 20;
+      if (du(i) < -sat)
+        du(i) = -sat;
+      else if (du(i) > sat)
+        du(i) = sat;
     }
     usat = uref + du;
 
