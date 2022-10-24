@@ -35,9 +35,6 @@
 //     u(1)    u(0)
 //     y(1)    y(0)
 
-struct Event;
-class Supervisor; // forward declaration
-
 class State {
   template <bool COND, int A, int B> struct IF {
     enum { val = A };
