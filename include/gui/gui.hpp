@@ -168,6 +168,7 @@ class GUI {
   GUIEvent currEvent;
   std::deque<GUIEvent> guiEventQueue;
   int openAction = -1;
+  bool syncPump1_2 = true;
 
   // template matching interactions
   ImVector<ImVec2> points;

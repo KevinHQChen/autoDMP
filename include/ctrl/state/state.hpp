@@ -6,34 +6,34 @@
 // pump layout
 //   top-down view
 //     P3      P4
-//     oil     water
-//     | ch2   | ch1
+//     oil     outlet
+//     | ch2   | ch3
 //      \     /
 //        \ /
 //         |
-//         | ch3
+//         | ch1
 //         |
 //        / \
 //      /     \
 //     |       |
 //     P2      P1
-//     outlet  outlet
+//     water  water
 
 //   camera view
-//      y(2)
-//      u(2)
-//      outlet
+//      y(0)
+//      u(0)
+//      water
 //      P1 + P2
 //         |
-//         | ch3
+//         | ch1
 //         |
 //        / \
 //      /     \
-//     | ch2   | ch1
-//     oil     water
+//     | ch2   | ch3
+//     oil     outlet
 //     P3      P4
-//     u(1)    u(0)
-//     y(1)    y(0)
+//     u(1)    u(2)
+//     y(1)    y(2)
 
 class State {
   template <bool COND, int A, int B> struct IF {
@@ -190,10 +190,10 @@ public:
 
     // apply saturation (+/- 20)
     for (int i = 0; i != du.rows(); ++i) {
-      if (du(i) < -40)
-        du(i) = -40;
-      else if (du(i) > 40)
-        du(i) = 40;
+      if (du(i) < -20)
+        du(i) = -20;
+      else if (du(i) > 20)
+        du(i) = 20;
     }
     usat = uref + du;
 

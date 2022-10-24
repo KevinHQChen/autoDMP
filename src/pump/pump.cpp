@@ -118,23 +118,29 @@ Pump::~Pump() {
 #endif
 }
 
-void Pump::setVoltage(unsigned int pumpIdx, int16_t voltage) {
+bool Pump::setVoltage(unsigned int pumpIdx, int16_t voltage) {
+  std::lock_guard<std::mutex> lockGuard(mutex);
+  bool ret = true;
   // check if voltage is different from current voltage
   if (voltage == prevPumpVoltages[pumpIdx - 1])
-    return;
+    return true;
 
   // send raw pressure as ascii chars
   std::string presCommand = "P" + std::to_string(pumpIdx) + "V" + std::to_string(voltage) + "\r\n";
 
-  sendCmd(presCommand, 4);
+  bool success = sendCmd(presCommand, 4);
 
-  if (std::strncmp("OK", readData, 2) != 0)
+  if (std::strncmp("OK", readData, 2) != 0 || !success) {
     error("Error setting pump {} to {} V.", pumpIdx, voltage);
-  else {
+    ret = false;
+  } else {
     pumpVoltages[pumpIdx - 1] = voltage;
     prevPumpVoltages[pumpIdx - 1] = voltage;
     info("Pump {} set to {} V.", pumpIdx, voltage);
+    ret = true;
   }
+
+  return ret;
 }
 
 void Pump::setFreq(int freq_) {
@@ -204,22 +210,31 @@ void Pump::setValve(unsigned int valveIdx, bool state) {
   }
 }
 
-void Pump::sendCmd(std::string cmd, int len) {
+bool Pump::sendCmd(std::string cmd, int len) {
+  bool ret = true;
   delete readData;
   readData = new char[len];
-  if (write(serialPort, cmd.c_str(), cmd.length()) != cmd.length())
+  if (write(serialPort, cmd.c_str(), cmd.length()) != cmd.length()) {
     error("Error {} from write: {}", errno, strerror(errno));
-  if (read(serialPort, readData, len) != len)
+    ret = false;
+  }
+  std::this_thread::sleep_for(1ms);
+  // tcdrain(serialPort); // delay for output
+
+  if (read(serialPort, readData, len) != len) {
     error("Error {} from read: {}", errno, strerror(errno));
+    ret = false;
+  }
 
   info("readData: {}", readData);
+
+  return ret;
 }
 
 void Pump::sendSigs(Eigen::Matrix<int16_t, 3, 1> u) {
-  std::lock_guard<std::mutex> lockGuard(mutex);
   // channel -> pump mapping
-  setVoltage(4, u(0)); // ch1 = P4
+  setVoltage(1, u(0)); // ch1 = P1, P2
+  setVoltage(2, u(0)); // ch1 = P1, P2
   setVoltage(3, u(1)); // ch2 = P3
-  setVoltage(2, u(2)); // ch3 = P2, P1
-  setVoltage(1, u(2)); // ch3 = P2, P1
+  setVoltage(4, u(2)); // ch3 = P4
 }

@@ -39,12 +39,12 @@ public:
   QueueFPS<Event *> *eventQueue_;
   QueueFPS<int> *ctrlDataQueuePtr;
 
-  bool gotPrbs = false;
-  Eigen::MatrixXd prbs, prbs_, scaledPrbs;
-  float prbsScale[3] = {1, 1, 1};
-  const char *prbsRows[3] = {"row0", "row1", "row2"};
-  float prbsUrefArr[3] = {60, 40, 60}; // default to state0 uref
-  Eigen::Vector3d prbsUref = Eigen::Vector3d::Zero();
+  const char *sysidCh[3] = {"ch0", "ch1", "ch2"};
+  float sysidDu[3] = {1, 1, 1};
+  unsigned int sysidSamples = 4000;
+  float sysidUrefArr[3] = {85, 50, 50}; // default to state0 uref
+  Eigen::Vector3d sysidUref = Eigen::Vector3d::Zero();
+  float sysidMin = 0.3, sysidMax = 0.7;
 
   Supervisor(ImProc *imProc, Pump *pump);
   ~Supervisor();

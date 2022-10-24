@@ -96,16 +96,15 @@ void GUI::showImProcSetup() {
 
       // update chanBBox, rotChanBBox (using bbox, junction, chanWidth, rotAngle)
       std::vector<cv::Rect> chanBBoxes = imProc->impConf.getChanBBox();
-      chanBBoxes[0] = cv::Rect(junc[0], junc[1], bbox[2] / 2, bbox[2] / 2);
+      chanBBoxes[0] = cv::Rect(junc[0] - chanWidth / 2, 0, chanWidth, junc[1]);
       chanBBoxes[1] = cv::Rect(0, junc[1], bbox[2] / 2, bbox[2] / 2);
-      chanBBoxes[2] = cv::Rect(junc[0] - chanWidth / 2, 0, chanWidth, junc[1]);
+      chanBBoxes[2] = cv::Rect(junc[0], junc[1], bbox[2] / 2, bbox[2] / 2);
       imProc->impConf.setChanBBox(chanBBoxes);
       std::vector<cv::Rect> rotChanBBoxes = imProc->impConf.getRotChanBBox();
-      rotChanBBoxes[0] = cv::Rect(bbox[2] / 2.0 * 1.414 / 2.0 - chanWidth / 2.0, 0, chanWidth,
-                                  bbox[2] / 2.0 * 1.414);
-      rotChanBBoxes[1] = cv::Rect(bbox[2] / 2.0 * 1.414 / 2.0 - chanWidth / 2.0, 0, chanWidth,
-                                  bbox[2] / 2.0 * 1.414);
-      rotChanBBoxes[2] = cv::Rect(0, 0, 0, 0);
+      rotChanBBoxes[0] = cv::Rect(0, 0, 0, 0);
+      for (int i = 1; i < toml::find<int>(conf["improc"], "numChans"); ++i)
+        rotChanBBoxes[i] = cv::Rect(bbox[2] / 2.0 * 1.414 / 2.0 - chanWidth / 2.0, 0, chanWidth,
+                                    bbox[2] / 2.0 * 1.414);
       imProc->impConf.setRotChanBBox(rotChanBBoxes);
 
       // update tmplBBox
@@ -191,6 +190,19 @@ void GUI::showPumpSetup() {
         }
       }
 
+      if (!syncPump1_2) {
+        if (ImGui::Button("Sync Pump 1 & 2"))
+          syncPump1_2 = true;
+      } else {
+        if (ImGui::Button("Unsync Pump 1 & 2"))
+          syncPump1_2 = false;
+      }
+
+      if (syncPump1_2) {
+        pump->pumpVoltages[1] = pump->pumpVoltages[0];
+        pump->setVoltage(2, (int16_t)pump->pumpVoltages[1]);
+      }
+
       if (ImGui::Button("Reset Pump")) {
         for (int i = 0; i < 4; ++i) {
           pump->setValve(i + 1, false);
@@ -200,10 +212,10 @@ void GUI::showPumpSetup() {
       }
 
       if (ImGui::Button("Set State0 uref")) {
-        pump->pumpVoltages[0] = 60;
-        pump->pumpVoltages[1] = 60;
-        pump->pumpVoltages[2] = 40;
-        pump->pumpVoltages[3] = 60;
+        pump->pumpVoltages[0] = 85;
+        pump->pumpVoltages[1] = 85;
+        pump->pumpVoltages[2] = 50;
+        pump->pumpVoltages[3] = 50;
         for (int i = 0; i < 4; ++i)
           pump->setVoltage(i + 1, (int16_t)pump->pumpVoltages[i]);
       }
@@ -388,65 +400,24 @@ void GUI::showCtrlSetup() {
 void GUI::showSysIDSetup() {
   if (guiConf.startSysIDSetup) {
     if (ImGui::Begin("SysID Setup", &guiConf.startSysIDSetup)) {
-      ImGui::Text("Add Excitation Signal");
-      if (!sv->gotPrbs) {
-        sv->prbs = openData(sv->getConfPath() + "sysid/prbs.csv");
-        sv->prbs_ = sv->prbs.transpose();
-        sv->scaledPrbs = sv->prbs_;
-        sv->gotPrbs = true;
-      }
+      ImGui::Text("Configure Excitation Signal");
 
-      // select channels and order
-      for (int n = 0; n < IM_ARRAYSIZE(sv->prbsRows); ++n) {
-        ImGui::PushID(n);
+      for (int n = 0; n < IM_ARRAYSIZE(sv->sysidCh); ++n) {
         if (n != 0)
           ImGui::SameLine();
-        // Each button is clickable, a drag source and a drag target
-        if (ImGui::Button(sv->prbsRows[n], ImVec2(60, 60))) {
-          sv->prbsRows[n] = "";
-          sv->prbs_.col(n).setZero();
+        if (ImGui::Button(sv->sysidCh[n], ImVec2(60, 60))) {
+          sv->sysidCh[n] = "";
+          sv->sysidDu[n] = 0;
         }
-        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
-          // Set payload to carry the index of our item (could be anything)
-          ImGui::SetDragDropPayload("rowIndexPayload", &n, sizeof(int));
-          // Display preview
-          ImGui::Text("Swap %s", sv->prbsRows[n]);
-          ImGui::EndDragDropSource();
-        }
-        if (ImGui::BeginDragDropTarget()) {
-          if (const ImGuiPayload *rowIdxPayload = ImGui::AcceptDragDropPayload("rowIndexPayload")) {
-            IM_ASSERT(rowIdxPayload->DataSize == sizeof(int));
-            int newRowIdx = *(const int *)rowIdxPayload->Data;
-            const char *tmp = sv->prbsRows[n];
-            sv->prbsRows[n] = sv->prbsRows[newRowIdx];
-            sv->prbsRows[newRowIdx] = tmp;
-            sv->prbs_.col(n).swap(sv->prbs_.col(newRowIdx));
-          }
-          ImGui::EndDragDropTarget();
-        }
-        ImGui::PopID();
       }
       if (ImGui::Button("Reset excitation signal")) {
-        sv->prbsRows[0] = "row0", sv->prbsRows[1] = "row1", sv->prbsRows[2] = "row2";
-        sv->prbs_ = sv->prbs.transpose();
+        sv->sysidCh[0] = "ch0", sv->sysidCh[1] = "ch1", sv->sysidCh[2] = "ch2";
+        sv->sysidDu[0] = 1.0f, sv->sysidDu[1] = 1.0f, sv->sysidDu[2] = 1.0f;
       }
-
-      ImGui::SliderFloat3("prbs scale", sv->prbsScale, 1.0f, 15.0f);
-      sv->scaledPrbs.col(0) = sv->prbsScale[0] * sv->prbs_.col(0);
-      sv->scaledPrbs.col(1) = sv->prbsScale[1] * sv->prbs_.col(1);
-      sv->scaledPrbs.col(2) = sv->prbsScale[2] * sv->prbs_.col(2);
-
-      if (ImPlot::BeginPlot("##prbs", ImVec2(-1, 300))) {
-        ImPlot::SetupAxes("time (s)", "du (V)");
-        ImPlot::PlotStairs("du0", sv->scaledPrbs.col(0).data(), sv->prbs_.rows(), 0.025);
-        ImPlot::PlotStairs("du1", sv->scaledPrbs.col(1).data(), sv->prbs_.rows(), 0.025);
-        ImPlot::PlotStairs("du2", sv->scaledPrbs.col(2).data(), sv->prbs_.rows(), 0.025);
-        ImPlot::EndPlot();
-      }
-      ImGui::Separator();
-      ImGui::SliderFloat3("uref", sv->prbsUrefArr, 0.0f, 100.0f);
-      sv->prbsUref = Eigen::Vector3d(sv->prbsUrefArr[0], sv->prbsUrefArr[1], sv->prbsUrefArr[2]);
-      ImGui::Separator();
+      ImGui::SliderFloat3("SysID du scale", sv->sysidDu, 0.0f, 15.0f);
+      ImGui::SliderFloat3("uref", sv->sysidUrefArr, 0.0f, 100.0f);
+      ImGui::SliderFloat("min", &sv->sysidMin, 0.0f, 1.0f);
+      ImGui::SliderFloat("max", &sv->sysidMax, 0.0f, 1.0f);
 
       if (!guiConf.startSysID)
         if (ImGui::Button("Send excitation signal"))
@@ -454,6 +425,8 @@ void GUI::showSysIDSetup() {
       if (guiConf.startSysID)
         if (ImGui::Button("Stop excitation signal"))
           guiConf.startSysID = false;
+      if (ImGui::Button("Clear ctrlDataQueue"))
+        sv->ctrlDataQueuePtr->clearFile();
 
       ImGui::End();
     }
@@ -510,7 +483,7 @@ void GUI::showCtrl() {
 
       ImGui::SliderFloat("History", &history, 1, 30, "%.1f s");
       plotVector3d("##Control Input", "time (s)", "voltage (V)", 0, 250, ctrlVecs);
-      plotVector3d("##Measured Output", "time (s)", "position (px)", -500, 500, measVecs);
+      plotVector3d("##Measured Output", "time (s)", "position (px)", 0, 600, measVecs);
       plotVector3d("##State Error, Integral Error", "time (s)", "error (px)", -500, 500, errorVecs);
       ImGui::End();
     }

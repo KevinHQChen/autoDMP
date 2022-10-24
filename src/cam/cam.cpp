@@ -251,16 +251,16 @@ void Cam::start(const int &Ts) {
     accumNumFrames = 0;
 
     // print camera settings for debug
-    info("Frame Size (bytes): {}\n"
-         "Framerate: {}\n"
-         "ROI width (pixels): {}\n"
-         "ROI left (pixels): {}\n"
-         "ROI height (pixels): {}\n"
-         "ROI top (pixels): {}\n"
-         "ROI Stride (bytes): {}\n"
-         "Queue Length: {}\n",
-         imageSizeBytes, frameRate, imageWidth, imageLeft, imageHeight, imageTop, imageStride,
-         queueLength);
+    // info("Frame Size (bytes): {}\n"
+    //      "Framerate: {}\n"
+    //      "ROI width (pixels): {}\n"
+    //      "ROI left (pixels): {}\n"
+    //      "ROI height (pixels): {}\n"
+    //      "ROI top (pixels): {}\n"
+    //      "ROI Stride (bytes): {}\n"
+    //      "Queue Length: {}\n",
+    //      imageSizeBytes, frameRate, imageWidth, imageLeft, imageHeight, imageTop, imageStride,
+    //      queueLength);
   } else if (toml::get<std::string>(camConf["source"]) == "Webcam") {
     imageWidth = offlineCam->get(cv::CAP_PROP_FRAME_WIDTH);
     imageHeight = offlineCam->get(cv::CAP_PROP_FRAME_HEIGHT);
@@ -296,11 +296,11 @@ bool Cam::process(cv::Mat &image) {
     // put calling thread to sleep until timeout elapses or an image becomes
     // available (if timeout equals 0, only get existing frames without waiting)
     // (btw 0 timeout causes AT_WaitBuffer to hang quite often on Windows)
-    info("zyla process wait buffer returns ");
+    // info("zyla process wait buffer returns ");
     // check if frame is available, if so store its address in imageData pointer, and size in
     // imageSize
     returnCode = AT_WaitBuffer(handle, &imageData, &imageSize, AT_INFINITE);
-    info(returnCode);
+    // info(returnCode);
     if (returnCode != AT_SUCCESS)
       return false;
 
@@ -308,12 +308,12 @@ bool Cam::process(cv::Mat &image) {
     returnCode = AT_QueueBuffer(handle, alignedBuffers[accumNumFrames % queueLength], bufferSize);
     // std::cerr << "re-queue returns " << returnCode << "\n";
     accumNumFrames++;
-    info("accumNumFrames: {}", accumNumFrames);
+    // info("accumNumFrames: {}", accumNumFrames);
     // clean up buffer
     image = cv::Mat(imageHeight, imageWidth, CV_16UC1);
     returnCode = AT_ConvertBuffer(imageData, &image.at<unsigned char>(0, 0), imageWidth,
                                   imageHeight, imageStride, imageEncode, L"Mono16");
-    info("convert returns {}", returnCode);
+    // info("convert returns {}", returnCode);
     if (returnCode == AT_SUCCESS)
       return true;
   } else {

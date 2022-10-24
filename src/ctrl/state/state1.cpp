@@ -6,7 +6,7 @@
 State1::State1(Supervisor *sv, Eigen::Vector3d uref_)
     : State(sv, uref_,
             Eigen::Vector3d(0, sv->imProc->impConf.getRotChanBBox()[1].height,
-                            sv->imProc->impConf.getChanBBox()[2].height)),
+                            sv->imProc->impConf.getRotChanBBox()[2].height)),
       ch(Vector2ui(1, 2)),
       // system matrices
       Ad(openData(sv->getConfPath() + "state1/Ad.txt")),

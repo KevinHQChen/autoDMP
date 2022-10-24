@@ -27,21 +27,21 @@ public:
   std::vector<cv::Rect> rotChanBBox_;
 
   ImProcConfig()
-      : rotAngle_{135, -135, 0}, junction_(cv::Point(200, 200)),
+      : rotAngle_{0, -135, 135}, junction_(cv::Point(200, 200)),
         bbox_(cv::Rect(0, 0, junction_.x * 3, junction_.y * 2)), tmplBBox_(cv::Rect(5, 5, 90, 90)),
         chanWidth_(100) {
     // generate sensible defaults
     for (int i = 0; i < NUM_TEMPLATES; ++i)
       tmplImg_[i] = cv::Mat::zeros(tmplBBox_.size(), CV_8UC1);
-    chanBBox_.push_back(cv::Rect(junction_.x, junction_.y, bbox_.width / 2, bbox_.height / 2));
-    chanBBox_.push_back(cv::Rect(0, junction_.y, bbox_.width / 2, bbox_.height / 2));
     chanBBox_.push_back(cv::Rect(junction_.x - chanWidth_ / 2, 0, chanWidth_, bbox_.height / 2));
+    chanBBox_.push_back(cv::Rect(0, junction_.y, bbox_.width / 2, bbox_.height / 2));
+    chanBBox_.push_back(cv::Rect(junction_.x, junction_.y, bbox_.width / 2, bbox_.height / 2));
 
-    rotChanBBox_.push_back(
-        cv::Rect(bbox_.height / 4.0 * 1.414, 0, chanWidth_, bbox_.height / 2.0 * 1.414));
-    rotChanBBox_.push_back(
-        cv::Rect(bbox_.height / 4.0 * 1.414, 0, chanWidth_, bbox_.height / 2.0 * 1.414));
     rotChanBBox_.push_back(cv::Rect(0, 0, 0, 0));
+    rotChanBBox_.push_back(
+        cv::Rect(bbox_.height / 4.0 * 1.414, 0, chanWidth_, bbox_.height / 2.0 * 1.414));
+    rotChanBBox_.push_back(
+        cv::Rect(bbox_.height / 4.0 * 1.414, 0, chanWidth_, bbox_.height / 2.0 * 1.414));
   }
 
   ImProcConfig(const ImProcConfig &other) {

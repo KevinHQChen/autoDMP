@@ -4,8 +4,8 @@
 #include "ctrl/supervisor.hpp"
 
 State0::State0(Supervisor *sv)
-    : State(sv, Eigen::Vector3d(60, 40, 60),
-            Eigen::Vector3d(sv->imProc->impConf.getRotChanBBox()[0].height, 0, 0)),
+    : State(sv, Eigen::Vector3d(85, 50, 50),
+            Eigen::Vector3d(sv->imProc->impConf.getChanBBox()[0].height, 0, 0)),
       ch(Vector1ui(0)),
       // system matrices
       Ad(openData(sv->getConfPath() + "state0/Ad.txt")),
@@ -23,8 +23,7 @@ State0::State0(Supervisor *sv)
 }
 
 State0::State0(Supervisor *sv, Eigen::Vector3d uref_)
-    : State(sv, uref_,
-            Eigen::Vector3d(sv->imProc->impConf.getRotChanBBox()[0].height, 0, 0)),
+    : State(sv, uref_, Eigen::Vector3d(sv->imProc->impConf.getRotChanBBox()[0].height, 0, 0)),
       ch(Vector1ui(0)),
       // system matrices
       Ad(openData(sv->getConfPath() + "state0/Ad.txt")),

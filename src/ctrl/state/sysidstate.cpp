@@ -1,8 +1,11 @@
 #include "ctrl/state/sysidstate.hpp"
 #include "ctrl/supervisor.hpp"
 
-SysIDState::SysIDState(Supervisor *sv, Eigen::Vector3d uref)
-    : State(sv, uref, Eigen::Vector3d(0, 0, 0)) {
+SysIDState::SysIDState(Supervisor *sv, Eigen::Vector3d uref_)
+    : State(sv, uref_,
+            Eigen::Vector3d(sv->imProc->impConf.getChanBBox()[0].height,
+                            sv->imProc->impConf.getRotChanBBox()[1].height,
+                            sv->imProc->impConf.getRotChanBBox()[2].height)) {
   // clear all improc queues
   sv_->imProc->clearProcDataQueues();
 }
@@ -15,7 +18,7 @@ SysIDState::~SysIDState() {
 bool SysIDState::measurementAvailable() {
   simMeasAvail_ = true, trueMeasAvail_ = true;
   for (int i = 0; i < 3; ++i) {
-    if (std::strcmp(sv_->prbsRows[i], "") != 0) {
+    if (std::strcmp(sv_->sysidCh[i], "") != 0) {
       simMeasAvail_ &=
           duration_cast<milliseconds>(steady_clock::now() - prevCtrlTime[i]).count() >= 25;
       trueMeasAvail_ &= !sv_->imProc->procDataQArr[i]->empty();
@@ -28,22 +31,38 @@ bool SysIDState::measurementAvailable() {
 
 // update instantaneous trajectory vectors
 void SysIDState::updateMeasurement() {
-  // update du each time measurement is available
-  if (stp < sv_->scaledPrbs.rows()) {
-    du = sv_->scaledPrbs.row(stp);
-    stp++;
-  } else
-    du = Eigen::Vector3d::Zero();
-  // update y
   for (int i = 0; i < 3; ++i) {
-    if (std::strcmp(sv_->prbsRows[i], "") != 0) {
+    if (std::strcmp(sv_->sysidCh[i], "") != 0) {
+      // update y
       if (trueMeasAvail_)
         y(i) = sv_->imProc->procDataQArr[i]->get().y;
-      else
-        y(i) = 100 + (std::rand() % (300 - 100 + 1));
+      else // generate random simulated measurement
+        y(i) = 50 + (std::rand() % (600 - 50 + 1));
       prevCtrlTime[i] = steady_clock::now();
+
+      // update du
+      if (stp <= sv_->sysidSamples) {
+        // state1 sysID settings
+        if (stp % 10 == 0) {
+          sv_->sysidMin = (40 + (std::rand() % (60 - 40 + 1))) / 100.0;
+          sv_->sysidMax = sv_->sysidMin + 0.2;
+        }
+
+        // state0 sysID settings
+        // if (stp % 10 == 0) {
+        //   sv_->sysidMin = (20 + (std::rand() % (40 - 20 + 1))) / 100.0;
+        //   sv_->sysidMax = 1 - sv_->sysidMin;
+        // }
+
+        if (y(i) > sv_->sysidMax * yrefScale(i))
+          du(i) = -sv_->sysidDu[i];
+        else if (y(i) < sv_->sysidMin * yrefScale(i))
+          du(i) = sv_->sysidDu[i];
+      } else
+        du(i) = 0;
     }
   }
+  stp++;
 }
 
 void SysIDState::handleEvent(Event *event) { return; }

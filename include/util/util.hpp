@@ -144,6 +144,8 @@ Eigen::MatrixXd openData(std::string fileToOpen);
 
 // create a generic type queue class template for storing frames
 template <typename T> class QueueFPS : public std::queue<T> {
+  std::string fileName;
+
 public:
   // constructor:
   // chrono uses the concepts of timepoints and durations
@@ -153,7 +155,8 @@ public:
   // between 2 timepoints returns a duration for which the number of ticks is
   // given by duration.count()
   QueueFPS(std::string fileName)
-      : counter(0), out(fileName), startTime(std::chrono::steady_clock::now()) {}
+      : counter(0), fileName(fileName), out(fileName), startTime(std::chrono::steady_clock::now()) {
+  }
 
   void push(const T &entry) {
     std::lock_guard<std::mutex> lockGuard(mutex);
@@ -200,6 +203,18 @@ public:
     std::lock_guard<std::mutex> lockGuard(mutex);
     while (!this->empty())
       this->pop();
+  }
+
+  void clearFile() {
+    std::lock_guard<std::mutex> lockGuard(mutex);
+    out.fileStream.close();
+    std::remove(fileName.c_str());
+    out.fileStream.open(fileName);
+    if (!out.fileStream.is_open()) {
+      error("Could not open file");
+    }
+    out.fileStream << fileName << "\n";
+    out.fileStream.flush(); // "commits" current buffer to file (in case close() is not called)
   }
 
   bool empty_() {

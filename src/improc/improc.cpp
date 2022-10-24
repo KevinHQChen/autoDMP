@@ -151,7 +151,7 @@ void ImProc::start() {
         procFrameQueuePtr->push(tempFrame);
         auto stopTime = high_resolution_clock::now();
         auto duration = duration_cast<milliseconds>(stopTime - startTime);
-        info("imProc duration: {}", duration.count());
+        // info("imProc duration: {}", duration.count());
       }
     } catch (cv::Exception &e) {
       error("Message: {}", e.what());

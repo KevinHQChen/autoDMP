@@ -31,7 +31,7 @@ public:
   // pumpIdx, valveIdx are 1-indexed
   void enablePump(unsigned int pumpIdx);
   void disablePump(unsigned int pumpIdx);
-  void setVoltage(unsigned int pumpIdx, int16_t voltage);
+  bool setVoltage(unsigned int pumpIdx, int16_t voltage);
   int getVoltage(unsigned int pumpIdx);
 
   void setFreq(int freq);
@@ -42,7 +42,7 @@ public:
   void setValve(unsigned int pumpIdx, bool state);
   void getValve(unsigned int pumpIdx);
 
-  void sendCmd(std::string cmd, int len);
+  bool sendCmd(std::string cmd, int len);
   void sendSigs(Eigen::Matrix<int16_t, 3, 1> u);
 
 private:
