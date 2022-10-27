@@ -22,6 +22,8 @@ State2::State2(Supervisor *sv, Eigen::Vector3d uref_)
   // clear all improc queues
   sv_->imProc->clearProcDataQueues();
   stateTransitionCondition = true;
+  settled = false;
+  settlingTime = 40; // 40 * 25ms = 1s
 }
 
 State2::~State2() {
@@ -30,7 +32,16 @@ State2::~State2() {
 
 bool State2::measurementAvailable() { return State::measurementAvailable<2>(ch); }
 
-void State2::updateMeasurement() { State::updateMeasurement<2>(ch); }
+void State2::updateMeasurement() {
+  if (!settled) {
+    sv_->imProc->clearProcDataQueues();
+    for (int i = 0; i != ch.rows(); ++i)
+      prevCtrlTime[ch(i)] = steady_clock::now();
+    return;
+  }
+
+  State::updateMeasurement<2>(ch, 0);
+}
 
 void State2::handleEvent(Event *event) {
   if (event->srcState != 2) {
@@ -39,6 +50,10 @@ void State2::handleEvent(Event *event) {
     sv_->currEvent_ = nullptr;
     return;
   }
+
+  if (!settled)
+    return;
+
   if (!startEvent) {
     yDest = (event->destPos.array() * yrefScale.array()).matrix();
     startEvent = true;
@@ -72,7 +87,7 @@ void State2::handleEvent(Event *event) {
   //   |__|        |__|
   //   |  |   =>   |  |
   //  / /\_\      / /\_\
-  // / /  \ \    / /  \ \.
+  // / /  \_\    / /  \_\.
   if (event->destState == 2) {
     if (destReached) {
       yref = yDest;
@@ -82,8 +97,38 @@ void State2::handleEvent(Event *event) {
       sv_->currEvent_ = nullptr;
     }
   }
+
+  // transition to State 1
+  //   |__|        |  |
+  //   |  |   =>   |  |
+  //  / /\_\      /_/\_\
+  // / /  \_\    / /  \ \.
+  if (event->destState == 1) {
+    // ch0 90%, ch2 85% to junction
+    if (yref(0) > 0.9 * yrefScale(0) && yref(2) > 0.85 * yrefScale(2) &&
+        !stateTransitionCondition) {
+      sv_->imProc->clearProcDataQueues();
+      stateTransitionCondition = true;
+    }
+    // we're in sim mode and ch0 & ch2 are 95% to junction
+    // or ch1 is observable
+    if ((yref(0) > 0.95 * yrefScale(1) && yref(2) > 0.95 * yrefScale(2) && sv_->simModeActive) ||
+        (stateTransitionCondition && !sv_->imProc->procDataQArr[1]->empty())) {
+      delete sv_->currEvent_;
+      sv_->currEvent_ = nullptr;
+      sv_->updateState<State1>(usat);
+    }
+  }
 }
 
 Eigen::Matrix<int16_t, 3, 1> State2::step() {
-  return State::step<2>(ch, Ad, Ad_, Bd, Cd, Cd_, CdInv, K1, K2, Qw, Rv, P, Ko, temp, tempInv);
+  if (!settled) {
+    --settlingTime;
+    if (settlingTime == 0) {
+      settled = true;
+      info("State 2 settled");
+    }
+    return uref.cast<int16_t>();
+  } else
+    return State::step<2>(ch, Ad, Ad_, Bd, Cd, Cd_, CdInv, K1, K2, Qw, Rv, P, Ko, temp, tempInv);
 }

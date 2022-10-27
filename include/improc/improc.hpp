@@ -4,9 +4,9 @@
 #include "improc/improc.config.hpp"
 #include "util/util.hpp"
 
-struct pose {
-  int rotation;
-  cv::Point matchLoc;
+struct Pose {
+  int rot;
+  cv::Point loc;
 };
 
 /* Helper functions */
@@ -42,7 +42,7 @@ class ImProc {
 public:
   ImProcConfig impConf;
   std::atomic<double> tmplThres;
-  std::vector<QueueFPS<cv::Point> *> procDataQArr;
+  std::vector<QueueFPS<Pose> *> procDataQArr;
 
   ImProc(ImCap *imCap);
   ~ImProc();

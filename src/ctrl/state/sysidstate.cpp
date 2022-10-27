@@ -35,7 +35,7 @@ void SysIDState::updateMeasurement() {
     if (std::strcmp(sv_->sysidCh[i], "") != 0) {
       // update y
       if (trueMeasAvail_)
-        y(i) = sv_->imProc->procDataQArr[i]->get().y;
+        y(i) = sv_->imProc->procDataQArr[i]->get().loc.y;
       else // generate random simulated measurement
         y(i) = 50 + (std::rand() % (600 - 50 + 1));
       prevCtrlTime[i] = steady_clock::now();

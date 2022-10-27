@@ -27,7 +27,7 @@ State0::~State0() {
 
 bool State0::measurementAvailable() { return State::measurementAvailable<1>(ch); }
 
-void State0::updateMeasurement() { State::updateMeasurement<1>(ch); }
+void State0::updateMeasurement() { State::updateMeasurement<1>(ch, -1); }
 
 void State0::handleEvent(Event *event) {
   if (event->srcState != 0) {
@@ -81,9 +81,9 @@ void State0::handleEvent(Event *event) {
   }
 
   // transition to State 1
-  //   |  |        |__|
+  //   |__|        |  |
   //   |  |   =>   |  |
-  //  / /\_\      /_/\ \
+  //  / /\ \      /_/\_\
   // / /  \ \    / /  \ \.
   if (event->destState == 1) {
     // start state transition when ch0 is 90% to junction

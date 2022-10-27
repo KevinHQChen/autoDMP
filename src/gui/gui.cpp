@@ -3,7 +3,7 @@
 
 GUI::GUI()
     : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")), guiConf(toml::find<guiConfig>(conf, "gui")),
-      imCap(new ImCap()), imProc(new ImProc(imCap)), pump(new Pump()),
+      imCap(new ImCap()), imProc(new ImProc(imCap)), pump(new Pump(toml::get<bool>(conf["ctrl"]["simMode"]))),
       sv(new Supervisor(imProc, pump)) {
   info("Config type: {}", type_name<decltype(guiConf)>());
   info("Parsed config: {}", toml::find(conf, "gui"));

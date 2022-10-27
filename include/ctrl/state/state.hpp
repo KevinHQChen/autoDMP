@@ -130,11 +130,15 @@ public:
     return tmpMeasAvail;
   }
 
-  template <int dim> void updateMeasurement(Eigen::Matrix<unsigned int, dim, 1> &ch) {
+  template <int dim> void updateMeasurement(Eigen::Matrix<unsigned int, dim, 1> &ch, int rot) {
+    Pose p;
     for (int i = 0; i != ch.rows(); ++i) {
       // update measurement vectors dy, y
       if (trueMeasAvail[ch(i)])
-        dy(ch(i)) = sv_->imProc->procDataQArr[ch(i)]->get().y - yref(ch(i));
+        p = sv_->imProc->procDataQArr[ch(i)]->get();
+
+      if (trueMeasAvail[ch(i)] && (rot == -1 || p.rot == rot))
+          dy(ch(i)) = p.loc.y - yref(ch(i));
       else if (stateTransitionCondition) { // assume interface is stuck at junction
         if (ytrans(ch(i)) < yref(ch(i)))
           ytrans(ch(i)) = yref(ch(i));
@@ -143,6 +147,7 @@ public:
         dy(ch(i)) = dyhat(ch(i));
       y(ch(i)) = dy(ch(i)) + yref(ch(i));
 
+      // TODO move everything after this point to the step function
       // update time step dt for numerical integration
       if (!firstMeasAvail[ch(i)])
         firstMeasAvail[ch(i)] = true;
@@ -152,6 +157,8 @@ public:
 
       // update integral error based on time step for each channel's data
       z(ch(i)) += -dy(ch(i)) * dt[ch(i)].count();
+
+      uref(ch(i)) += 0.1 * du(ch(i)) * dt[ch(i)].count();
     }
   }
 
@@ -169,9 +176,9 @@ public:
     // Kalman observer
     // prediction
     // dxhat = dxhat_prev - dxref, Cd*dxref = dyref
-    dxhat(ch.array(), Eigen::all) = Ad * dxhat(ch.array(), Eigen::all) +
-                                    Bd * du(ch.array(), Eigen::all) -
-                                    CdInv * dyref(ch.array(), Eigen::all);
+    dxhat(ch.array(), Eigen::all) =
+        Ad * dxhat(ch.array(), Eigen::all) + Bd * du(ch.array(), Eigen::all);
+    // CdInv * dyref(ch.array(), Eigen::all);
     P = Ad * P * Ad_ + Qw;
     // correction
     temp = Cd * P * Cd_ + Rv;
@@ -189,7 +196,7 @@ public:
     u = uref + du;
 
     // apply saturation (+/- 20)
-    int sat = 30;
+    int sat = 40;
     for (int i = 0; i != du.rows(); ++i) {
       if (du(i) < -sat)
         du(i) = -sat;

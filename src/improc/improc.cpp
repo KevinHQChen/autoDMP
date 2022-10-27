@@ -13,9 +13,9 @@ ImProc::ImProc(ImCap *imCap)
                          new QueueFPS<cv::Mat>(dataPath + "procFramesQueue2.txt"),
                          new QueueFPS<cv::Mat>(dataPath + "procFramesQueue3.txt")}),
       tmplThres(toml::get<double>(conf["improc"]["tmplThres"])),
-      procDataQArr({new QueueFPS<cv::Point>(dataPath + "procDataQueue1.txt"),
-                    new QueueFPS<cv::Point>(dataPath + "procDataQueue2.txt"),
-                    new QueueFPS<cv::Point>(dataPath + "procDataQueue3.txt")}) {
+      procDataQArr({new QueueFPS<Pose>(dataPath + "procDataQueue1.txt"),
+                    new QueueFPS<Pose>(dataPath + "procDataQueue2.txt"),
+                    new QueueFPS<Pose>(dataPath + "procDataQueue3.txt")}) {
   for (int ch = 0; ch < numChans; ch++)
     procDataQArr[ch]->out << "time (ms), maxLoc.x (px), maxLoc.y (px)\n";
 
@@ -115,6 +115,7 @@ void ImProc::start() {
 
           // perform TM for each tmpl rotation, for each channel
           currMaxLoc.reset();
+          int matchRot = 0;
           for (int rot = 0; rot < NUM_TEMPLATES; ++rot) {
             // outputs a 32-bit float matrix to result (we're using normed cross-correlation)
             cv::matchTemplate(tempProcFrame, impConf.getTmplImg()[rot], tempResultFrame[rot],
@@ -124,13 +125,16 @@ void ImProc::start() {
             cv::minMaxLoc(tempResultFrame[rot], &minVal, &maxVal, &minLoc, &maxLoc,
                           cv::Mat()); // we only need maxVal & maxLoc if we use correlation
             // keep only the maxLoc closest to junction (i.e. with the highest y value)
-            if ((maxVal >= tmplThres) && (maxLoc.y >= currMaxLoc.value_or(maxLoc).y))
+            if ((maxVal >= tmplThres) && (maxLoc.y >= currMaxLoc.value_or(maxLoc).y)) {
               currMaxLoc = maxLoc;
+              matchRot = rot;
+            }
           }
 
           if (currMaxLoc.has_value()) {
             // save timestamp and maxLoc to file
-            procDataQArr[ch]->push(*currMaxLoc);
+            Pose p = {matchRot, *currMaxLoc};
+            procDataQArr[ch]->push(p);
             procDataQArr[ch]->out << currMaxLoc->x << ", " << currMaxLoc->y << "\n";
             // draw tmpl match for each channel
             cv::rectangle(tempProcFrame, *currMaxLoc,
@@ -185,7 +189,7 @@ cv::Mat ImProc::getProcFrame() {
 
 cv::Point ImProc::getProcData(int idx) {
   if (!procDataQArr[idx]->empty())
-    return procDataQArr[idx]->get();
+    return procDataQArr[idx]->get().loc;
   return cv::Point();
 }
 

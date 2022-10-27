@@ -1,6 +1,7 @@
 #include "ctrl/state/state1.hpp"
 #include "ctrl/state/state.hpp"
 #include "ctrl/state/state0.hpp"
+#include "ctrl/state/state2.hpp"
 #include "ctrl/supervisor.hpp"
 
 State1::State1(Supervisor *sv, Eigen::Vector3d uref_)
@@ -30,7 +31,12 @@ State1::~State1() {
 
 bool State1::measurementAvailable() { return State::measurementAvailable<2>(ch); }
 
-void State1::updateMeasurement() { State::updateMeasurement<2>(ch); }
+void State1::updateMeasurement() {
+  if (stateTransitionCondition)
+    State::updateMeasurement<2>(ch, 1);
+  else
+    State::updateMeasurement<2>(ch, -1);
+}
 
 void State1::handleEvent(Event *event) {
   if (event->srcState != 1) {
@@ -84,9 +90,9 @@ void State1::handleEvent(Event *event) {
   }
 
   // transition to State 0
-  //   |__|        |  |
+  //   |  |        |__|
   //   |  |   =>   |  |
-  //  /_/\ \      / /\_\
+  //  /_/\_\      / /\ \
   // / /  \ \    / /  \ \.
   if (event->destState == 0) {
     // ch1 & ch2 are 85% to junction
@@ -106,25 +112,23 @@ void State1::handleEvent(Event *event) {
   }
 
   // transition to State 2
-  //   |__|        |__|
+  //   |  |        |__|
   //   |  |   =>   |  |
-  //  /_/\ \      / /\_\
-  // / /  \ \    / /  \ \.
+  //  /_/\_\      / /\_\
+  // / /  \ \    / /  \_\.
   if (event->destState == 2) {
-    // ch1 is 90% to junction and we're observing ch1
-    if (yref(1) > 0.9 * yrefScale(1) && yref(2) > 0.9 * yrefScale(2) && obsv[1]) {
-      obsv[1] = false;
+    // ch1 is 85% to junction
+    if (yref(1) > 0.85 * yrefScale(1) && !stateTransitionCondition) {
       sv_->imProc->clearProcDataQueues();
       stateTransitionCondition = true;
     }
     // we're in sim mode and ch1 is 95% to junction
-    // or ch0 & ch2 are observable and we're not observing ch1
+    // or ch0 is observable
     if ((yref(1) > 0.95 * yrefScale(1) && sv_->simModeActive) ||
-        (!obsv[1] && !sv_->imProc->procDataQArr[0]->empty() &&
-         !sv_->imProc->procDataQArr[1]->empty())) {
+        (stateTransitionCondition && !sv_->imProc->procDataQArr[0]->empty())) {
       delete sv_->currEvent_;
       sv_->currEvent_ = nullptr;
-      // sv_->updateState<State2>();
+      sv_->updateState<State2>(usat);
     }
   }
 }

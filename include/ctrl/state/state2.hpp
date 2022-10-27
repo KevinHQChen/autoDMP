@@ -10,6 +10,9 @@ public:
   // dynamic (changes based on observer estimation error)
   Eigen::Matrix2d P0, P, Ko, temp, tempInv;
 
+  bool settled;
+  int settlingTime;
+
   State2(Supervisor *sv, Eigen::Vector3d uref_);
   ~State2();
 

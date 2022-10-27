@@ -25,7 +25,9 @@ public:
       prevValveState{false, false, false, false};
   int freq{0}, prevFreq{0};
 
-  Pump();
+  bool simModeActive;
+
+  Pump(bool simModeActive = false);
   ~Pump();
 
   // pumpIdx, valveIdx are 1-indexed
