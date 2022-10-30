@@ -134,5 +134,5 @@ void State1::handleEvent(Event *event) {
 }
 
 Eigen::Matrix<int16_t, 3, 1> State1::step() {
-  return State::step<2>(ch, Ad, Ad_, Bd, Cd, Cd_, CdInv, K1, K2, Qw, Rv, P, Ko, temp, tempInv);
+  return State::step<2, 2, 2>(ch, Ad, Ad_, Bd, Cd, Cd_, CdInv, K1, K2, Qw, Rv, P, Ko, temp, tempInv);
 }

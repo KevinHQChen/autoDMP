@@ -138,7 +138,7 @@ public:
         p = sv_->imProc->procDataQArr[ch(i)]->get();
 
       if (trueMeasAvail[ch(i)] && (rot == -1 || p.rot == rot))
-          dy(ch(i)) = p.loc.y - yref(ch(i));
+        dy(ch(i)) = p.loc.y - yref(ch(i));
       else if (stateTransitionCondition) { // assume interface is stuck at junction
         if (ytrans(ch(i)) < yref(ch(i)))
           ytrans(ch(i)) = yref(ch(i));
@@ -162,16 +162,16 @@ public:
     }
   }
 
-  template <int dim>
+  template <int numX, int numY, int numU>
   Eigen::Matrix<int16_t, 3, 1>
-  step(Eigen::Matrix<unsigned int, dim, 1> &ch, Eigen::Matrix<double, dim, dim> &Ad,
-       Eigen::Matrix<double, dim, dim> &Ad_, Eigen::Matrix<double, dim, dim> &Bd,
-       Eigen::Matrix<double, dim, dim> &Cd, Eigen::Matrix<double, dim, dim> &Cd_,
-       Eigen::Matrix<double, dim, dim> &CdInv, Eigen::Matrix<double, dim, dim> &K1,
-       Eigen::Matrix<double, dim, dim> &K2, Eigen::Matrix<double, dim, dim> &Qw,
-       Eigen::Matrix<double, dim, dim> &Rv, Eigen::Matrix<double, dim, dim> &P,
-       Eigen::Matrix<double, dim, dim> &Ko, Eigen::Matrix<double, dim, dim> &temp,
-       Eigen::Matrix<double, dim, dim> &tempInv) {
+  step(Eigen::Matrix<unsigned int, numY, 1> &ch, Eigen::Matrix<double, numX, numX> &Ad,
+       Eigen::Matrix<double, numX, numX> &Ad_, Eigen::Matrix<double, numX, numY> &Bd,
+       Eigen::Matrix<double, numY, numX> &Cd, Eigen::Matrix<double, numY, numX> &Cd_,
+       Eigen::Matrix<double, numY, numX> &CdInv, Eigen::Matrix<double, numU, numX> &K1,
+       Eigen::Matrix<double, numY, numY> &K2, Eigen::Matrix<double, numX, numX> &Qw,
+       Eigen::Matrix<double, numY, numY> &Rv, Eigen::Matrix<double, numX, numX> &P,
+       Eigen::Matrix<double, numY, numX> &Ko, Eigen::Matrix<double, numY, numY> &temp,
+       Eigen::Matrix<double, numY, numY> &tempInv) {
     // update state x and control signal u based on new measurements
     // Kalman observer
     // prediction

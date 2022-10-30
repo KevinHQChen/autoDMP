@@ -130,5 +130,5 @@ Eigen::Matrix<int16_t, 3, 1> State2::step() {
     }
     return uref.cast<int16_t>();
   } else
-    return State::step<2>(ch, Ad, Ad_, Bd, Cd, Cd_, CdInv, K1, K2, Qw, Rv, P, Ko, temp, tempInv);
+    return State::step<4, 2, 2>(ch, Ad, Ad_, Bd, Cd, Cd_, CdInv, K1, K2, Qw, Rv, P, Ko, temp, tempInv);
 }
