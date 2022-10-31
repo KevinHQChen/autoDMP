@@ -4,47 +4,47 @@ Pump::Pump(bool simModeActive) : simModeActive(simModeActive) {
   if (simModeActive)
     return;
 
-// #if USEFGTPUMP == TRUE
-//   // detect number/type of instrument controllers and their serial numbers
-//   numControllers = Fgt_detect(SN, instrumentType);
-//   std::cout << "Number of controllers detected: " << int(numControllers) << "\n";
+    // #if USEFGTPUMP == TRUE
+    //   // detect number/type of instrument controllers and their serial numbers
+    //   numControllers = Fgt_detect(SN, instrumentType);
+    //   std::cout << "Number of controllers detected: " << int(numControllers) << "\n";
 
-//   // only initialize MFCS-EZ (SN is populated sequentially for each detected controller)
-//   for (unsigned char controllerIdx = 0; controllerIdx < numControllers; controllerIdx++) {
-//     if (instrumentType[controllerIdx] == fgt_INSTRUMENT_TYPE::MFCS_EZ) {
-//       std::cout << "MFCS-EZ instrument detected at index: " << int(controllerIdx)
-//                 << ", serial number: " << SN[controllerIdx] << "\n";
-//     } else {
-//       SN[controllerIdx] = 0;
-//     }
-//   }
-//   Fgt_initEx(SN);
+    //   // only initialize MFCS-EZ (SN is populated sequentially for each detected controller)
+    //   for (unsigned char controllerIdx = 0; controllerIdx < numControllers; controllerIdx++) {
+    //     if (instrumentType[controllerIdx] == fgt_INSTRUMENT_TYPE::MFCS_EZ) {
+    //       std::cout << "MFCS-EZ instrument detected at index: " << int(controllerIdx)
+    //                 << ", serial number: " << SN[controllerIdx] << "\n";
+    //     } else {
+    //       SN[controllerIdx] = 0;
+    //     }
+    //   }
+    //   Fgt_initEx(SN);
 
-//   // Get total number of initialized pressure channel(s)
-//   Fgt_get_pressureChannelCount(&numPressureChannels);
-//   std::cout << "Total number of pressure channels: " << int(numPressureChannels) << "\n";
+    //   // Get total number of initialized pressure channel(s)
+    //   Fgt_get_pressureChannelCount(&numPressureChannels);
+    //   std::cout << "Total number of pressure channels: " << int(numPressureChannels) << "\n";
 
-//   // Get detailed info about all pressure channels
-//   Fgt_get_pressureChannelsInfo(channelInfo);
+    //   // Get detailed info about all pressure channels
+    //   Fgt_get_pressureChannelsInfo(channelInfo);
 
-//   for (unsigned char chanIdx = 0; chanIdx < numPressureChannels; chanIdx++) {
-//     // Get pressure limits
-//     unsigned int idx = channelInfo[chanIdx].index;
-//     Fgt_get_pressureRange(idx, &minPressure, &maxPressure);
-//     std::cout << "Channel " << idx << " max pressure: " << maxPressure << " mbar\n";
-//     std::cout << "Channel " << idx << " min pressure: " << minPressure << " mbar\n";
+    //   for (unsigned char chanIdx = 0; chanIdx < numPressureChannels; chanIdx++) {
+    //     // Get pressure limits
+    //     unsigned int idx = channelInfo[chanIdx].index;
+    //     Fgt_get_pressureRange(idx, &minPressure, &maxPressure);
+    //     std::cout << "Channel " << idx << " max pressure: " << maxPressure << " mbar\n";
+    //     std::cout << "Channel " << idx << " min pressure: " << minPressure << " mbar\n";
 
-//     // Calibrate pressure channels (set pressure commands will not be accepted during this
-//     time) if (chanIdx == 0) {
-//       std::cout << "Beginning pressure channel calibration, unplug all tubing from pump.\n";
-//       std::cout << "Press enter to continue...\n";
-//       getchar();
-//     }
-//     std::cout << "Calibrating pressure channel " << idx << "\n";
-//     Fgt_calibratePressure(idx);
-//     std::cout << "Done.\n";
-//   }
-// #endif
+    //     // Calibrate pressure channels (set pressure commands will not be accepted during this
+    //     time) if (chanIdx == 0) {
+    //       std::cout << "Beginning pressure channel calibration, unplug all tubing from pump.\n";
+    //       std::cout << "Press enter to continue...\n";
+    //       getchar();
+    //     }
+    //     std::cout << "Calibrating pressure channel " << idx << "\n";
+    //     Fgt_calibratePressure(idx);
+    //     std::cout << "Done.\n";
+    //   }
+    // #endif
 
 #if USEPIEZOPUMP == TRUE
   // open serial port and check for errors (refer to:
@@ -110,13 +110,13 @@ Pump::~Pump() {
   if (simModeActive)
     return;
 
-  // #if USEFGTPUMP == TRUE
-  //   // set all pressures to 0mbar before closing
-  //   for (unsigned char chanIdx = 0; chanIdx < numPressureChannels; chanIdx++)
-  //     Fgt_set_pressure(channelInfo[chanIdx].index, 0);
+    // #if USEFGTPUMP == TRUE
+    //   // set all pressures to 0mbar before closing
+    //   for (unsigned char chanIdx = 0; chanIdx < numPressureChannels; chanIdx++)
+    //     Fgt_set_pressure(channelInfo[chanIdx].index, 0);
 
-  //   Fgt_close();
-  // #endif
+    //   Fgt_close();
+    // #endif
 
 #if USEPIEZOPUMP == TRUE
   info("Closing pump serial port {}", ttyname(serialPort));
@@ -131,7 +131,7 @@ bool Pump::setVoltage(unsigned int pumpIdx, int16_t voltage) {
   if (voltage == prevPumpVoltages[pumpIdx - 1])
     return true;
 
-  if(simModeActive) {
+  if (simModeActive) {
     pumpVoltages[pumpIdx - 1] = voltage;
     prevPumpVoltages[pumpIdx - 1] = voltage;
     info("Pump {} set to {} V.", pumpIdx, voltage);
@@ -160,7 +160,7 @@ void Pump::setFreq(int freq_) {
   if (freq_ == prevFreq)
     return;
 
-  if(simModeActive) {
+  if (simModeActive) {
     freq = freq_;
     prevFreq = freq_;
     info("Set pump freq to {} Hz.", freq_);
@@ -184,7 +184,7 @@ void Pump::enableValve(unsigned int valveIdx) {
   if (valveOnOff[valveIdx - 1] == true)
     return;
 
-  if(simModeActive) {
+  if (simModeActive) {
     valveOnOff[valveIdx - 1] = true;
     info("Valve {} enabled.", valveIdx);
     return;
@@ -206,7 +206,7 @@ void Pump::disableValve(unsigned int valveIdx) {
   if (valveOnOff[valveIdx - 1] == false)
     return;
 
-  if(simModeActive) {
+  if (simModeActive) {
     valveOnOff[valveIdx - 1] = false;
     info("Valve {} disabled.", valveIdx);
     return;
@@ -226,7 +226,7 @@ void Pump::setValve(unsigned int valveIdx, bool state) {
   if (valveState[valveIdx - 1] == state)
     return;
 
-  if(simModeActive) {
+  if (simModeActive) {
     valveOnOff[valveIdx - 1] = false;
     info("Valve {} disabled.", valveIdx);
     return;

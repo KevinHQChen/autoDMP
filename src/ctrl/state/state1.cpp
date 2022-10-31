@@ -8,18 +8,7 @@ State1::State1(Supervisor *sv, Eigen::Vector3d uref_)
     : State(sv, uref_,
             Eigen::Vector3d(0, sv->imProc->impConf.getRotChanBBox()[1].height,
                             sv->imProc->impConf.getRotChanBBox()[2].height)),
-      ch(Vector2ui(1, 2)),
-      // system matrices
-      Ad(openData(sv->getConfPath() + "state1/Ad.txt")),
-      Ad_(openData(sv->getConfPath() + "state1/Ad_.txt")),
-      Bd(openData(sv->getConfPath() + "state1/Bd.txt")),
-      Cd(openData(sv->getConfPath() + "state1/Cd.txt")),
-      Cd_(openData(sv->getConfPath() + "state1/Cd_.txt")), CdInv(Cd.inverse()),
-      K1(openData(sv->getConfPath() + "state1/K1.txt")),
-      K2(openData(sv->getConfPath() + "state1/K2.txt")),
-      Qw(openData(sv->getConfPath() + "state1/Qw.txt")),
-      Rv(openData(sv->getConfPath() + "state1/Rv.txt")), P0(Eigen::Matrix2d::Identity(2, 2)),
-      P(P0) {
+      mdl(new MDL<state, numX, numY, numU>(sv)) {
   // clear all improc queues
   sv_->imProc->clearProcDataQueues();
   stateTransitionCondition = true;
@@ -27,6 +16,7 @@ State1::State1(Supervisor *sv, Eigen::Vector3d uref_)
 
 State1::~State1() {
   // clean up any resources used by current state here
+  delete mdl;
 }
 
 bool State1::measurementAvailable() { return State::measurementAvailable<2>(ch); }
@@ -134,5 +124,5 @@ void State1::handleEvent(Event *event) {
 }
 
 Eigen::Matrix<int16_t, 3, 1> State1::step() {
-  return State::step<2, 2, 2>(ch, Ad, Ad_, Bd, Cd, Cd_, CdInv, K1, K2, Qw, Rv, P, Ko, temp, tempInv);
+  return State::step<state, numX, numY, numU>(ch, mdl);
 }

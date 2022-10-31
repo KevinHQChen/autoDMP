@@ -35,6 +35,34 @@
 //     u(1)    u(2)
 //     y(1)    y(2)
 
+template <int state, int numX, int numY, int numU> struct MDL {
+  Supervisor *sv; // TODO remove this dependency somehow
+
+  Eigen::Matrix<double, numX, 1> dxhat{Eigen::Matrix<double, numX, 1>::Zero()};
+  Eigen::Matrix<double, numX, numX> Ad, Ad_;
+  Eigen::Matrix<double, numX, numU> Bd;
+  Eigen::Matrix<double, numY, numX> Cd;
+  Eigen::Matrix<double, numX, numY> Cd_;
+  Eigen::Matrix<double, numU, numX> K1;
+  Eigen::Matrix<double, numY, numY> K2, Rv;
+  Eigen::Matrix<double, numX, numX> Qw;
+  // dynamic (changes based on observer estimation error)
+  Eigen::Matrix<double, numX, numX> P0{Eigen::Matrix<double, numX, numX>::Identity()}, P{P0};
+  Eigen::Matrix<double, numX, numY> Ko;
+  Eigen::Matrix<double, numY, numY> temp, tempInv;
+
+  MDL(Supervisor *sv)
+      : Ad(openData(sv->getConfPath() + "state" + std::to_string(state) + "/Ad.txt")),
+        Ad_(openData(sv->getConfPath() + "state" + std::to_string(state) + "/Ad_.txt")),
+        Bd(openData(sv->getConfPath() + "state" + std::to_string(state) + "/Bd.txt")),
+        Cd(openData(sv->getConfPath() + "state" + std::to_string(state) + "/Cd.txt")),
+        Cd_(openData(sv->getConfPath() + "state" + std::to_string(state) + "/Cd_.txt")),
+        K1(openData(sv->getConfPath() + "state" + std::to_string(state) + "/K1.txt")),
+        K2(openData(sv->getConfPath() + "state" + std::to_string(state) + "/K2.txt")),
+        Rv(openData(sv->getConfPath() + "state" + std::to_string(state) + "/Rv.txt")),
+        Qw(openData(sv->getConfPath() + "state" + std::to_string(state) + "/Qw.txt")) {}
+};
+
 class State {
   template <bool COND, int A, int B> struct IF {
     enum { val = A };
@@ -73,7 +101,7 @@ public:
   Eigen::Vector3d yrefScale;
   Eigen::Vector3d y{Eigen::Vector3d::Zero()}, yref0, yref, ytrans{Eigen::Vector3d::Zero()};
   Eigen::Vector3d dy, dyref{Eigen::Vector3d::Zero()};
-  Eigen::Vector3d yhat, dxhat{Eigen::Vector3d::Zero()}, dyhat{Eigen::Vector3d::Zero()}, ytilde;
+  Eigen::Vector3d yhat, dyhat{Eigen::Vector3d::Zero()}, ytilde;
   Eigen::Vector3d yDest;
 
   bool firstMeasAvail[3] = {false, false, false};
@@ -162,37 +190,26 @@ public:
     }
   }
 
-  template <int numX, int numY, int numU>
-  Eigen::Matrix<int16_t, 3, 1>
-  step(Eigen::Matrix<unsigned int, numY, 1> &ch, Eigen::Matrix<double, numX, numX> &Ad,
-       Eigen::Matrix<double, numX, numX> &Ad_, Eigen::Matrix<double, numX, numY> &Bd,
-       Eigen::Matrix<double, numY, numX> &Cd, Eigen::Matrix<double, numY, numX> &Cd_,
-       Eigen::Matrix<double, numY, numX> &CdInv, Eigen::Matrix<double, numU, numX> &K1,
-       Eigen::Matrix<double, numY, numY> &K2, Eigen::Matrix<double, numX, numX> &Qw,
-       Eigen::Matrix<double, numY, numY> &Rv, Eigen::Matrix<double, numX, numX> &P,
-       Eigen::Matrix<double, numY, numX> &Ko, Eigen::Matrix<double, numY, numY> &temp,
-       Eigen::Matrix<double, numY, numY> &tempInv) {
+  template <int state, int numX, int numY, int numU>
+  Eigen::Matrix<int16_t, 3, 1> step(Eigen::Matrix<unsigned int, numY, 1> &ch,
+                                    MDL<state, numX, numY, numU> *mdl) {
     // update state x and control signal u based on new measurements
     // Kalman observer
     // prediction
     // dxhat = dxhat_prev - dxref, Cd*dxref = dyref
-    dxhat(ch.array(), Eigen::all) =
-        Ad * dxhat(ch.array(), Eigen::all) + Bd * du(ch.array(), Eigen::all);
-    // CdInv * dyref(ch.array(), Eigen::all);
-    P = Ad * P * Ad_ + Qw;
+    mdl->dxhat = mdl->Ad * mdl->dxhat + mdl->Bd * du(ch.array(), Eigen::all);
+    mdl->P = mdl->Ad * mdl->P * mdl->Ad_ + mdl->Qw;
     // correction
-    temp = Cd * P * Cd_ + Rv;
-    tempInv = temp.inverse();
-    Ko = P * Cd_ * tempInv;
-    dyhat(ch.array(), Eigen::all) = Cd * dxhat(ch.array(), Eigen::all);
-    dxhat(ch.array(), Eigen::all) =
-        dxhat(ch.array(), Eigen::all) +
-        Ko * (dy(ch.array(), Eigen::all) - dyhat(ch.array(), Eigen::all));
+    mdl->temp = mdl->Cd * mdl->P * mdl->Cd_ + mdl->Rv;
+    mdl->tempInv = mdl->temp.inverse();
+    mdl->Ko = mdl->P * mdl->Cd_ * mdl->tempInv;
+    dyhat(ch.array(), Eigen::all) = mdl->Cd * mdl->dxhat;
+    mdl->dxhat =
+        mdl->dxhat + mdl->Ko * (dy(ch.array(), Eigen::all) - dyhat(ch.array(), Eigen::all));
 
     // apply updated control signals (with saturation limits) to pump
     // LQI control law
-    du(ch.array(), Eigen::all) =
-        -K1 * dxhat(ch.array(), Eigen::all) - K2 * z(ch.array(), Eigen::all);
+    du(ch.array(), Eigen::all) = -mdl->K1 * mdl->dxhat - mdl->K2 * z(ch.array(), Eigen::all);
     u = uref + du;
 
     // apply saturation (+/- 20)

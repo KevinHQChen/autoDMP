@@ -2,23 +2,15 @@
 
 #include "ctrl/state/state.hpp"
 
-#define NUM_X 4 // num states
-#define NUM_Y 2 // num outputs
-#define NUM_U 2 // num inputs
-
 class State2 : public State {
+  // num of states, outputs, inputs
+  static constexpr int state = 2, numX = 4, numY = 2, numU = 2;
+
 public:
   // system matrices
-  Vector2ui ch;
-  Eigen::Matrix<double, NUM_X, NUM_X> Ad, Ad_, Qw;
-  Eigen::Matrix<double, NUM_X, NUM_Y> Bd;
-  Eigen::Matrix<double, NUM_Y, NUM_X> Cd, Cd_, CdInv; // TODO remove CdInv
-  Eigen::Matrix<double, NUM_U, NUM_X> K1;
-  Eigen::Matrix<double, NUM_Y, NUM_Y> K2, Rv;
-  // dynamic (changes based on observer estimation error)
-  Eigen::Matrix<double, NUM_X, NUM_X> P0, P;
-  Eigen::Matrix<double, NUM_Y, NUM_X> Ko;
-  Eigen::Matrix<double, NUM_Y, NUM_Y> temp, tempInv;
+  Vector2ui ch{Vector2ui(0, 2)};
+  // Eigen::Matrix<double, numX, 1> dxhat{Eigen::Matrix<double, numX, 1>::Zero()};
+  MDL<state, numX, numY, numU> *mdl;
 
   bool settled;
   int settlingTime;

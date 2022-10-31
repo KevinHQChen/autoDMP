@@ -3,12 +3,14 @@
 #include "ctrl/state/state.hpp"
 
 class State1 : public State {
+  // num of states, outputs, inputs
+  static constexpr int state = 1, numX = 2, numY = 2, numU = 2;
+
 public:
   // system matrices
-  Vector2ui ch;
-  Eigen::Matrix2d Ad, Ad_, Bd, Cd, Cd_, CdInv, K1, K2, Qw, Rv;
-  // dynamic (changes based on observer estimation error)
-  Eigen::Matrix2d P0, P, Ko, temp, tempInv;
+  Vector2ui ch{Vector2ui(1, 2)};
+  // Eigen::Matrix<double, numX, 1> dxhat{Eigen::Matrix<double, numX, 1>::Zero()};
+  MDL<state, numX, numY, numU> *mdl;
 
   State1(Supervisor *sv, Eigen::Vector3d uref_);
   ~State1();

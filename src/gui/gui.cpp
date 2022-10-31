@@ -3,8 +3,8 @@
 
 GUI::GUI()
     : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")), guiConf(toml::find<guiConfig>(conf, "gui")),
-      imCap(new ImCap()), imProc(new ImProc(imCap)), pump(new Pump(toml::get<bool>(conf["ctrl"]["simMode"]))),
-      sv(new Supervisor(imProc, pump)) {
+      imCap(new ImCap()), imProc(new ImProc(imCap)),
+      pump(new Pump(toml::get<bool>(conf["ctrl"]["simMode"]))), sv(new Supervisor(imProc, pump)) {
   info("Config type: {}", type_name<decltype(guiConf)>());
   info("Parsed config: {}", toml::find(conf, "gui"));
   // TODO may want to make GUI, ImCap, ImProc, Supervisor, etc. singletons
@@ -473,9 +473,9 @@ void GUI::showCtrl() {
         yref0.AddPoint(guiTime, sv->currState_->yref(0));
         yref1.AddPoint(guiTime, sv->currState_->yref(1));
         yref2.AddPoint(guiTime, sv->currState_->yref(2));
-        dxhat0.AddPoint(guiTime, sv->currState_->dxhat(0));
-        dxhat1.AddPoint(guiTime, sv->currState_->dxhat(1));
-        dxhat2.AddPoint(guiTime, sv->currState_->dxhat(2));
+        // dxhat0.AddPoint(guiTime, sv->currState_->dxhat(0));
+        // dxhat1.AddPoint(guiTime, sv->currState_->dxhat(1));
+        // dxhat2.AddPoint(guiTime, sv->currState_->dxhat(2));
         z0.AddPoint(guiTime, sv->currState_->z(0));
         z1.AddPoint(guiTime, sv->currState_->z(1));
         z2.AddPoint(guiTime, sv->currState_->z(2));
