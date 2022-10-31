@@ -149,6 +149,7 @@ public:
 
       // only allow true measurements if we're within channel boundaries (35%->85%)
       // otherwise allow estimated measurements from the observer
+      // TODO WE SHOULD PROBABLY USE Y INSTEAD OF YREF, LOOK INTO IT MORE
       tmpMeasAvail &=
           (yref(ch(i)) < 0.85 * yrefScale(ch(i)) && yref(ch(i)) > 0.35 * yrefScale(ch(i)))
               ? trueMeasAvail[ch(i)]

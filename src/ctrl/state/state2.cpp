@@ -10,8 +10,8 @@ State2::State2(Supervisor *sv, Eigen::Vector3d uref_)
       mdl(new MDL<state, numX, numY, numU>(sv)) {
   // clear all improc queues
   sv_->imProc->clearProcDataQueues();
-  stateTransitionCondition = true;
-  settled = false;
+  stateTransitionCondition = false;
+  settled = true;
   settlingTime = 40; // 40 * 25ms = 1s
 }
 

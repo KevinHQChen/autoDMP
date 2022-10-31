@@ -26,9 +26,9 @@ void Supervisor::startThread() {
     imProc->clearProcFrameQueues();
     imProc->clearTempFrameQueues();
     imProc->clearProcDataQueues();
-    updateState<State0>(Eigen::Vector3d(100, 70, 70));
+    updateState<State0>(Eigen::Vector3d(161, 121, 121));
     // updateState<State1>(Eigen::Vector3d(90, 60, 50));
-    // updateState<State2>(Eigen::Vector3d(85, 50, 50));
+    // updateState<State2>(Eigen::Vector3d(161, 120, 87));
     if (!simModeActive)
       pump->setFreq(200);
     ctrlThread = std::thread(&Supervisor::start, this);
