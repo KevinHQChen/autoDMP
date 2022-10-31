@@ -19,13 +19,13 @@ State1::~State1() {
   delete mdl;
 }
 
-bool State1::measurementAvailable() { return State::measurementAvailable<2>(ch); }
+bool State1::measurementAvailable() { return State::measurementAvailable<numY>(ch); }
 
 void State1::updateMeasurement() {
   if (stateTransitionCondition)
-    State::updateMeasurement<2>(ch, 1);
+    State::updateMeasurement<numY>(ch, 1);
   else
-    State::updateMeasurement<2>(ch, -1);
+    State::updateMeasurement<numY>(ch, -1);
 }
 
 void State1::handleEvent(Event *event) {

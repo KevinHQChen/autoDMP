@@ -20,7 +20,7 @@ State2::~State2() {
   delete mdl;
 }
 
-bool State2::measurementAvailable() { return State::measurementAvailable<2>(ch); }
+bool State2::measurementAvailable() { return State::measurementAvailable<numY>(ch); }
 
 void State2::updateMeasurement() {
   if (!settled) {
@@ -30,7 +30,7 @@ void State2::updateMeasurement() {
     return;
   }
 
-  State::updateMeasurement<2>(ch, 0);
+  State::updateMeasurement<numY>(ch, 0);
 }
 
 void State2::handleEvent(Event *event) {

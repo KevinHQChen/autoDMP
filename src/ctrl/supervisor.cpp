@@ -26,7 +26,7 @@ void Supervisor::startThread() {
     imProc->clearProcFrameQueues();
     imProc->clearTempFrameQueues();
     imProc->clearProcDataQueues();
-    updateState<State0>(Eigen::Vector3d(161, 121, 121));
+    updateState<State0>(Eigen::Vector3d(110, 79, 126));
     // updateState<State1>(Eigen::Vector3d(90, 60, 50));
     // updateState<State2>(Eigen::Vector3d(161, 120, 87));
     if (!simModeActive)
@@ -100,7 +100,7 @@ void Supervisor::stopSysIDThread() {
 
     if (sysIDThread.joinable())
       sysIDThread.join();
-    updateState<State0>(Eigen::Vector3d(85, 50, 50));
+    updateState<State0>(Eigen::Vector3d(110, 79, 126));
   }
 }
 

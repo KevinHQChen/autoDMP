@@ -16,9 +16,9 @@ State0::~State0() {
   delete mdl;
 }
 
-bool State0::measurementAvailable() { return State::measurementAvailable<1>(ch); }
+bool State0::measurementAvailable() { return State::measurementAvailable<numY>(ch); }
 
-void State0::updateMeasurement() { State::updateMeasurement<1>(ch, -1); }
+void State0::updateMeasurement() { State::updateMeasurement<numY>(ch, -1); }
 
 void State0::handleEvent(Event *event) {
   if (event->srcState != 0) {

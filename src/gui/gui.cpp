@@ -212,10 +212,10 @@ void GUI::showPumpSetup() {
       }
 
       if (ImGui::Button("Set State0 uref")) {
-        pump->pumpVoltages[0] = 85;
-        pump->pumpVoltages[1] = 85;
-        pump->pumpVoltages[2] = 50;
-        pump->pumpVoltages[3] = 50;
+        pump->pumpVoltages[0] = 110;
+        pump->pumpVoltages[1] = 110;
+        pump->pumpVoltages[2] = 79;
+        pump->pumpVoltages[3] = 126;
         for (int i = 0; i < 4; ++i)
           pump->setVoltage(i + 1, (int16_t)pump->pumpVoltages[i]);
       }
