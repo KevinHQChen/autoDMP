@@ -212,10 +212,10 @@ void GUI::showPumpSetup() {
       }
 
       if (ImGui::Button("Set State0 uref")) {
-        pump->pumpVoltages[0] = 110;
-        pump->pumpVoltages[1] = 110;
-        pump->pumpVoltages[2] = 79;
-        pump->pumpVoltages[3] = 126;
+        pump->pumpVoltages[0] = 135;
+        pump->pumpVoltages[1] = 135;
+        pump->pumpVoltages[2] = 101;
+        pump->pumpVoltages[3] = 101;
         for (int i = 0; i < 4; ++i)
           pump->setVoltage(i + 1, (int16_t)pump->pumpVoltages[i]);
       }
@@ -276,6 +276,29 @@ void GUI::showCtrlSetup() {
           sv->addEvent(currEvent.srcState, currEvent.destState, posVec, velVec);
           guiEventQueue.push_back(currEvent);
         }
+
+        ImGui::SliderInt("Droplet length", &dropletLength, 0, 85);
+        if (ImGui::Button("Add Droplet Generation Event")) {
+          sv->addEvent(0, 1, Eigen::Vector3d(200 / 100.0, 0, 0), Eigen::Vector3d(10, 0, 0));
+          guiEventQueue.push_back(
+              GUIEvent(0, 1, Eigen::Vector3d(200, 0, 0), Eigen::Vector3d(10, 0, 0)));
+
+          sv->addEvent(1, 1, Eigen::Vector3d(0, 84 / 100.0, (85 - dropletLength) / 100.0),
+                       Eigen::Vector3d(0, 10, 10));
+          guiEventQueue.push_back(GUIEvent(1, 1, Eigen::Vector3d(0, 84, (85 - dropletLength)),
+                                           Eigen::Vector3d(0, 10, 10)));
+
+          sv->addEvent(1, 2, Eigen::Vector3d(0, 200 / 100.0, (85 - dropletLength) / 100.0),
+                       Eigen::Vector3d(0, 10, 10));
+          guiEventQueue.push_back(GUIEvent(1, 2, Eigen::Vector3d(0, 200, (85 - dropletLength)),
+                                           Eigen::Vector3d(0, 10, 10)));
+
+          sv->addEvent(2, 2, Eigen::Vector3d(80 / 100.0, 0, 80 / 100.0),
+                       Eigen::Vector3d(10, 0, 10));
+          guiEventQueue.push_back(
+              GUIEvent(2, 2, Eigen::Vector3d(80, 0, 80), Eigen::Vector3d(10, 0, 10)));
+        }
+
         ImGui::TreePop();
       }
       ImGui::Separator();

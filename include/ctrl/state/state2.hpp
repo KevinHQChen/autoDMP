@@ -4,7 +4,7 @@
 
 class State2 : public State {
   // num of states, outputs, inputs
-  static constexpr int state = 2, numX = 4, numY = 2, numU = 2;
+  static constexpr int state = 2, numX = 5, numY = 2, numU = 2;
 
 public:
   // system matrices

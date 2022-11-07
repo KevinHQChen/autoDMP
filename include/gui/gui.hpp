@@ -73,6 +73,21 @@ struct GUIEvent {
     data[i++] = pos;
     data[i++] = vel;
   }
+
+  GUIEvent(int srcState, int destState, Eigen::Vector3d pos, Eigen::Vector3d vel) {
+    this->srcState = srcState;
+    this->destState = destState;
+    for (int i = 0; i < 3; i++) {
+      this->pos[i] = pos(i);
+      this->vel[i] = vel(i);
+    }
+
+    int i = 0;
+    data[i++] = &srcState;
+    data[i++] = &destState;
+    data[i++] = this->pos;
+    data[i++] = this->vel;
+  }
 };
 
 void setWindowFullscreen();
@@ -169,6 +184,7 @@ class GUI {
   std::deque<GUIEvent> guiEventQueue;
   int openAction = -1;
   bool syncPump1_2 = true;
+  int dropletLength = 0;
 
   // template matching interactions
   ImVector<ImVec2> points;
