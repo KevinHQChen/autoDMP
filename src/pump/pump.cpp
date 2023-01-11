@@ -125,35 +125,23 @@ Pump::~Pump() {
 }
 
 bool Pump::setVoltage(unsigned int pumpIdx, int16_t voltage) {
-  std::lock_guard<std::mutex> lockGuard(mutex);
-  bool ret = true;
-  // check if voltage is different from current voltage
-  if (voltage == prevPumpVoltages[pumpIdx - 1])
-    return true;
+  std::lock_guard lock(mutex);
 
-  if (simModeActive) {
-    pumpVoltages[pumpIdx - 1] = voltage;
-    prevPumpVoltages[pumpIdx - 1] = voltage;
-    info("Pump {} set to {} V.", pumpIdx, voltage);
-    return true;
-  }
+  // Check if voltage is different from current voltage, return early if it's the same
+  if (voltage == prevPumpVoltages[pumpIdx - 1]) return true;
 
-  // send raw pressure as ascii chars
-  std::string presCommand = "P" + std::to_string(pumpIdx) + "V" + std::to_string(voltage) + "\r\n";
+  auto presCommand = "P" + std::to_string(pumpIdx) + "V" + std::to_string(voltage) + "\r\n";
 
-  bool success = sendCmd(presCommand, 4);
-
-  if (std::strncmp("OK", readData, 2) != 0 || !success) {
+  if (!simModeActive && ( !sendCmd(presCommand, 4) || std::strncmp("OK", readData, 2) != 0 )) {
     error("Error setting pump {} to {} V.", pumpIdx, voltage);
-    ret = false;
-  } else {
-    pumpVoltages[pumpIdx - 1] = voltage;
-    prevPumpVoltages[pumpIdx - 1] = voltage;
-    info("Pump {} set to {} V.", pumpIdx, voltage);
-    ret = true;
+    return false;
   }
 
-  return ret;
+  // sim mode is active
+  pumpVoltages[pumpIdx - 1] = voltage;
+  prevPumpVoltages[pumpIdx - 1] = voltage;
+  info("Pump {} set to {} V.", pumpIdx, voltage);
+  return true;
 }
 
 void Pump::setFreq(int freq_) {
