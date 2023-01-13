@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help   # set default target if no arguments are given to make
 
-.PHONY: help configure build test test_release debug release docs format clean
+.PHONY: help configure build docker-build docker-build-dev docker-build-deps docker-run-prebuild docker-run debug_config debug release_config release test test_release_debug test_release test_install coverage docs format clean
 
 help:	## Show help.
 	@grep -hE '^[A-Za-z0-9_ \-]*?:.*##.*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

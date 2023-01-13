@@ -41,10 +41,6 @@
       "name": "nativefiledialog"
     },
     {
-      "name": "catch2",
-      "version>=": "2.13.8"
-    },
-    {
       "name": "opencv4",
       "default-features": false,
       "features": ["contrib", "eigen", "ffmpeg", "opengl", "gtk", "jpeg", "png"]
@@ -58,5 +54,16 @@
     {
       "name": "tsl-ordered-map"
     }
-  ]
+  ],
+  "features": {
+    "tests": {
+      "description": "Build the tests of the package's tests",
+      "dependencies": [
+        {
+          "name": "catch2",
+          "version>=": "2.13.8"
+        }
+      ]
+    }
+  }
 }

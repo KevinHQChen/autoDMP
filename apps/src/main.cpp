@@ -3,11 +3,11 @@
 // the source template at `configured_files/config.hpp.in`. #include
 // <internal_use_only/config.hpp>
 
-#include "gui/gui.hpp"
+// #include "gui/gui.hpp"
+#include "util/util.hpp"
 
 // NOLINTNEXTLINE(bugprone-exception-escape)
 int main(int, const char **) {
-  GUI *gui = new GUI();
-  gui->startGUIThread();
-  delete gui;
+  // GUI gui;
+  // gui.startGUIThread();
 }
