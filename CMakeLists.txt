@@ -57,6 +57,7 @@ string(
 package_project(
   TARGETS
   autoDMP
+  # these libraries cannot be packaged as the target include directories include the build directory (TODO why is this the case?)
   # util
   # cam
   # gui

@@ -5,8 +5,6 @@ target_link_libraries(util PRIVATE project_options project_warnings)
 set(util_INCLUDE_DIR
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
   CACHE STRING "")
-message(STATUS "util_INCLUDE_DIR: ${util_INCLUDE_DIR}")
-message(STATUS "util CMAKE_INSTALL_INCLUDEDIR: ${CMAKE_INSTALL_INCLUDEDIR}")
 target_include_directories(util PUBLIC
   "$<BUILD_INTERFACE:${util_INCLUDE_DIR}>"
   "$<INSTALL_INTERFACE:./${CMAKE_INSTALL_INCLUDEDIR}>")
@@ -23,11 +21,8 @@ set(util_DEPENDENCIES_CONFIGURED
     # Boost
     CACHE STRING "")
 foreach (dep ${util_DEPENDENCIES_CONFIGURED})
-  find_package(${dep} CONFIG REQUIRED)
-# find_package(Boost REQUIRED COMPONENTS program_options)
+  find_package(${dep} REQUIRED) # certain packages like boost may need different find_package calls, check the output of run_vcpkg
   if (DEFINED ${dep}_INCLUDE_DIRS)
-    message(STATUS "util ${dep} include dirs: ${${dep}_INCLUDE_DIRS}")
-    # include_directories(${${dep}_INCLUDE_DIRS})
     target_include_directories(util PUBLIC ${${dep}_INCLUDE_DIRS})
   endif ()
 endforeach ()

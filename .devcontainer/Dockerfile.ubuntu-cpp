@@ -117,6 +117,8 @@ RUN ./setup_cpp_linux --compiler gcc \
     --gcovr true \
     # cache
     --ccache true
+    # documentation
+    --doxygen true
 
 # install any additional dependencies
 RUN apt-get install -y --no-install-recommends \

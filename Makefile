@@ -1,15 +1,73 @@
-.DEFAULT_GOAL := help   # set default target if no arguments are given to make
+CMAKE_BUILD_TYPE ?= Release	# set the default build type to Release if none was specified
+FEATURE_TESTS ?= OFF		# disable tests by default
+FEATURE_DOCS ?= OFF		# disable docs by default
 
-.PHONY: help configure build docker-build docker-build-dev docker-build-deps docker-run-prebuild docker-run debug_config debug release_config release test test_release_debug test_release test_install coverage docs format clean
+.DEFAULT_GOAL := help   	# set default target if no arguments are given to make
 
-help:	## Show help.
+# these targets will always be executed when called, even if a file with the same name exists
+.PHONY: help configure build test debug release relwithdebuginfo minsizerel test clean
+
+help:					## Show help.
 	@grep -hE '^[A-Za-z0-9_ \-]*?:.*##.*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-configure:	## Configure the build (Debug by default).
-	make debug_config
+configure:				## Configure the build (default build type: Release).
+	cmake -S ./ -B ./build -G "Ninja Multi-Config" -DCMAKE_BUILD_TYPE:STRING=$(CMAKE_BUILD_TYPE) -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DFEATURE_TESTS:BOOL=$(FEATURE_TESTS) -DFEATURE_DOCS:BOOL=$(FEATURE_DOCS)
 
-build:	## Build the project (Debug by default).
-	make debug
+build: configure		## Build the project.
+	cmake --build ./build --config $(CMAKE_BUILD_TYPE)
+
+#   -DGIT_SHA:STRING=${{ github.sha }} # https://medium.com/@mtiller/using-git-hashes-in-makefile-rules-387a099b9cb
+debug: 					## Build the project in debug mode.
+	$(MAKE) CMAKE_BUILD_TYPE=Debug build
+
+release: 				## Build the project in release mode.
+	$(MAKE) CMAKE_BUILD_TYPE=Release build
+
+relwithdebinfo: 		## Build the project in release with debug info mode.
+	$(MAKE) CMAKE_BUILD_TYPE=RelWithDebInfo build
+
+minsizerel: 			## Build the project in minsizerel mode.
+	$(MAKE) CMAKE_BUILD_TYPE=MinSizeRel build
+
+test: 					## Run tests (default build type: Release).
+	$(MAKE) FEATURE_TESTS=ON build
+	(cd build/autoDMP/test && ctest -C $(CMAKE_BUILD_TYPE) --output-on-failure)
+	(cd build/util/test && ctest -C $(CMAKE_BUILD_TYPE) --output-on-failure)
+	(cd build/gui/test && ctest -C $(CMAKE_BUILD_TYPE) --output-on-failure)
+	(cd build/cam/test && ctest -C $(CMAKE_BUILD_TYPE)  --output-on-failure)
+	(cd build/ctrl/test && ctest -C $(CMAKE_BUILD_TYPE) --output-on-failure)
+
+test_debug: 			## Run tests in debug mode.
+	$(MAKE) CMAKE_BUILD_TYPE=Debug FEATURE_TESTS=ON test
+
+test_release: 			## Run tests in release mode.
+	$(MAKE) CMAKE_BUILD_TYPE=Release FEATURE_TESTS=ON test
+
+test_relwithdebinfo: 	## Run tests in release with debug info mode.
+	$(MAKE) CMAKE_BUILD_TYPE=RelWithDebInfo FEATURE_TESTS=ON test
+
+test_minsizerel: 		## Run tests in minsizerel mode.
+	$(MAKE) CMAKE_BUILD_TYPE=MinSizeRel FEATURE_TESTS=ON test
+
+test_install:
+	cmake --install ./build --prefix ./build/test_install
+
+coverage: 				## Run tests and generate coverage report.
+	make test
+	gcovr -j 1 --delete --root ./ --print-summary --xml-pretty --xml coverage.xml ./build --gcov-executable gcov
+
+docs: 					## Build the documentation.
+	$(MAKE) CMAKE_BUILD_TYPE=Debug FEATURE_DOCS=ON configure
+	$(MAKE) CMAKE_BUILD_TYPE=Debug FEATURE_DOCS=ON build_docs
+
+build_docs:
+	cmake --build ./build --config $(CMAKE_BUILD_TYPE) --target doxygen-docs
+
+format:
+	git ls-files --exclude-standard | grep -E '\.(cpp|hpp|c|cc|cxx|hxx|ixx)$$' | xargs clang-format -i -style=file
+
+clean:
+	rm -rf ./build
 
 docker-build:	## Build ubuntu-cpp:prebuild image (build tools).
 	./.devcontainer/build_deps.bash "ubuntu:20.04"
@@ -25,57 +83,3 @@ docker-run-prebuild:	## Run ubuntu-cpp:prebuild container from current image.
 
 docker-run:	## Run ubuntu-cpp:latest container from current image.
 	./.devcontainer/run.bash "ubuntu-cpp:latest"
-
-#   -DGIT_SHA:STRING=${{ github.sha }} # https://medium.com/@mtiller/using-git-hashes-in-makefile-rules-387a099b9cb
-debug_config:
-	cmake -S . -B ./build -G "Ninja Multi-Config" -DCMAKE_BUILD_TYPE:STRING=Debug -DENABLE_DEVELOPER_MODE:BOOL=OFF -DOPT_ENABLE_COVERAGE:BOOL=ON
-
-debug: debug_config
-	cmake --build ./build --config Debug
-
-release_config:
-	cmake -S ./ -B ./build -G "Ninja Multi-Config" -DCMAKE_BUILD_TYPE:STRING=Release -DFEATURE_TESTS:BOOL=OFF -DENABLE_DEVELOPER_MODE:BOOL=OFF -DOPT_ENABLE_COVERAGE:BOOL=ON
-
-release: release_config
-	cmake --build ./build --config Release
-
-test:
-	cmake -S ./ -B ./build -G "Ninja Multi-Config" -DCMAKE_BUILD_TYPE:STRING=Debug -DFEATURE_TESTS:BOOL=ON
-	cmake --build ./build --config Debug
-
-	(cd build/my_exe/test && ctest -C Debug --output-on-failure)
-	(cd build/my_header_lib/test && ctest -C Debug --output-on-failure)
-	(cd build/my_lib/test && ctest -C Debug --output-on-failure)
-
-test_release_debug:
-	cmake -S ./ -B ./build -G "Ninja Multi-Config" -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo -DFEATURE_TESTS:BOOL=ON
-	cmake --build ./build --config RelWithDebInfo
-
-	(cd build/my_exe/test && ctest -C RelWithDebInfo --output-on-failure)
-	(cd build/my_header_lib/test && ctest -C RelWithDebInfo --output-on-failure)
-	(cd build/my_lib/test && ctest -C RelWithDebInfo --output-on-failure)
-
-test_release:
-	cmake -S ./ -B ./build -G "Ninja Multi-Config" -DCMAKE_BUILD_TYPE:STRING=Release -DFEATURE_TESTS:BOOL=ON
-	cmake --build ./build --config Release
-
-	(cd build/my_exe/test && ctest -C Release --output-on-failure)
-	(cd build/my_header_lib/test && ctest -C Release --output-on-failure)
-	(cd build/my_lib/test && ctest -C Release --output-on-failure)
-
-test_install:
-	cmake --install ./build --prefix ./build/test_install
-
-coverage:
-	make test
-	gcovr -j 1 --delete --root ./ --print-summary --xml-pretty --xml coverage.xml ./build --gcov-executable gcov
-
-docs:
-	cmake -S ./ -B ./build -G "Ninja Multi-Config" -DCMAKE_BUILD_TYPE:STRING=Debug -DFEATURE_DOCS:BOOL=ON -DFEATURE_TESTS:BOOL=OFF
-	cmake --build ./build --target doxygen-docs --config Debug
-
-format: ## Format source code using clang-format.
-	git ls-files --exclude-standard | grep -E '\.(cpp|hpp|c|cc|cxx|hxx|ixx)$$' | xargs clang-format -i -style=file
-
-clean:
-	rm -rf ./build
