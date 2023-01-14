@@ -128,11 +128,12 @@ bool Pump::setVoltage(unsigned int pumpIdx, int16_t voltage) {
   std::lock_guard lock(mutex);
 
   // Check if voltage is different from current voltage, return early if it's the same
-  if (voltage == prevPumpVoltages[pumpIdx - 1]) return true;
+  if (voltage == prevPumpVoltages[pumpIdx - 1])
+    return true;
 
   auto presCommand = "P" + std::to_string(pumpIdx) + "V" + std::to_string(voltage) + "\r\n";
 
-  if (!simModeActive && ( !sendCmd(presCommand, 4) || std::strncmp("OK", readData, 2) != 0 )) {
+  if (!simModeActive && (!sendCmd(presCommand, 4) || std::strncmp("OK", readData, 2) != 0)) {
     error("Error setting pump {} to {} V.", pumpIdx, voltage);
     return false;
   }

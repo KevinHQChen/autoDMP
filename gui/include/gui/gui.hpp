@@ -22,7 +22,7 @@
 
 #include "ctrl/supervisor.hpp"
 #include "gui/guiframe.hpp"
-#include "improc/imcap.hpp"
+#include "imcap/imcap.hpp"
 #include "improc/improc.hpp"
 #include "pump/pump.hpp"
 #include "util/util.hpp"

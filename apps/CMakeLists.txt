@@ -16,8 +16,14 @@ target_include_directories(autoDMP PRIVATE ${autoDMP_INCLUDE_DIR})
 # endforeach()
 
 # link dependencies
-set(autoDMP_LINKED_LIBRARIES util) # cam gui imcap improc)
-target_link_system_libraries(autoDMP PRIVATE ${autoDMP_LINKED_LIBRARIES})
+target_link_system_libraries(autoDMP PRIVATE
+  util
+  cam
+  pump
+  gui
+  imcap
+  improc
+  ctrl)
 
 # tests
 if(FEATURE_TESTS)

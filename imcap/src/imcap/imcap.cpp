@@ -1,4 +1,4 @@
-#include "improc/imcap.hpp"
+#include "imcap/imcap.hpp"
 
 ImCap::ImCap()
     : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")),

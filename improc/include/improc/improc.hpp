@@ -1,6 +1,6 @@
 #pragma once
 
-#include "improc/imcap.hpp"
+#include "imcap/imcap.hpp"
 #include "improc/improc.config.hpp"
 #include "util/util.hpp"
 

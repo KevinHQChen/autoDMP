@@ -27,6 +27,12 @@ endforeach ()
 
 # link dependencies
 target_link_system_libraries(gui PRIVATE
+  util
+  ctrl
+  improc
+  imcap
+  cam
+  pump
   imgui::imgui
   implot::implot
   ${OPENGL_opengl_LIBRARY}

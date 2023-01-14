@@ -5,7 +5,7 @@ FEATURE_DOCS ?= OFF		# disable docs by default
 .DEFAULT_GOAL := help   	# set default target if no arguments are given to make
 
 # these targets will always be executed when called, even if a file with the same name exists
-.PHONY: help configure build test debug release relwithdebuginfo minsizerel test clean
+.PHONY: help configure build debug release relwithdebinfo minsizerel test test_debug test_release test_relwithdebinfo test_minsizerel test_install coverage docs build_docs format clean docker-build docker-build-dev docker-build-deps docker-run-prebuild docker-run
 
 help:					## Show help.
 	@grep -hE '^[A-Za-z0-9_ \-]*?:.*##.*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -13,7 +13,7 @@ help:					## Show help.
 configure:				## Configure the build (default build type: Release).
 	cmake -S ./ -B ./build -G "Ninja Multi-Config" -DCMAKE_BUILD_TYPE:STRING=$(CMAKE_BUILD_TYPE) -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DFEATURE_TESTS:BOOL=$(FEATURE_TESTS) -DFEATURE_DOCS:BOOL=$(FEATURE_DOCS)
 
-build: configure		## Build the project.
+build: configure		## Build the project (default build type: Release).
 	cmake --build ./build --config $(CMAKE_BUILD_TYPE)
 
 #   -DGIT_SHA:STRING=${{ github.sha }} # https://medium.com/@mtiller/using-git-hashes-in-makefile-rules-387a099b9cb
@@ -83,3 +83,6 @@ docker-run-prebuild:	## Run ubuntu-cpp:prebuild container from current image.
 
 docker-run:	## Run ubuntu-cpp:latest container from current image.
 	./.devcontainer/run.bash "ubuntu-cpp:latest"
+
+docker-commit:	## Commit current container as ubuntu-cpp:latest.
+	docker commit ubuntu-cpplatest ubuntu-cpp:latest

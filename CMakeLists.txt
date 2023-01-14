@@ -32,7 +32,12 @@ include(cmake/features.cmake)
 
 add_subdirectory(./apps)
 add_subdirectory(./util)
-# add_subdirectory(./gui)
+add_subdirectory(./cam)
+add_subdirectory(./imcap)
+add_subdirectory(./improc)
+add_subdirectory(./ctrl)
+add_subdirectory(./gui)
+add_subdirectory(./pump)
 
 # ---- Package ----
 
