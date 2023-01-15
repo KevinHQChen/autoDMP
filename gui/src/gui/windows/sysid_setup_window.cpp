@@ -3,17 +3,23 @@
 namespace gui {
 
 SysIdSetupWindow::SysIdSetupWindow() {
+  excitationSignalDropdown_ =
+      std::make_unique<Dropdown>("Excitation Signal Type:", excitationSignalTypes_,
+                                 [this]() { info("Excitation Signal Type"); });
   excitationSignalPreviewButton_ = std::make_unique<Button>(
       "Preview Excitation Signal", [this]() { previewExcitationSignal(); });
-  registerCallback([this]() { excitationSignalPreviewButton_->render(); });
-
   toggleExcitationSignalButton_ =
       std::make_unique<Button>("Toggle Excitation Signal", [this]() { toggleExcitationSignal(); });
-  registerCallback([this]() { toggleExcitationSignalButton_->render(); });
-
+  minValSlider_ = std::make_unique<SliderFloatArray>(
+      "Excitation Signal Min Value", 3, 0.0f, 1.0f, [this]() { info("Min Value"); });
+  maxValSlider_ = std::make_unique<SliderFloatArray>(
+      "Excitation Signal Max Value", 3, 0.0f, 1.0f, [this]() { info("Max Value"); });
+  urefSlider_ = std::make_unique<SliderFloatArray>(
+      "Control Signal Setpoint (uref)", 3, 0.0f, 1.0f, [this]() { info("Uref"); });
   sendExcitationSignalButton_ =
       std::make_unique<Button>("Send Excitation Signal", [this]() { sendExcitationSignal(); });
-  registerCallback([this]() { sendExcitationSignalButton_->render(); });
+  // This is how you can add callbacks to the window
+  // registerCallback([this]() { excitationSignalDropdown_->render(); });
 }
 
 SysIdSetupWindow::~SysIdSetupWindow() {
@@ -21,36 +27,21 @@ SysIdSetupWindow::~SysIdSetupWindow() {
   toggleExcitationSignalButton_.reset();
   sendExcitationSignalButton_.reset();
   excitationSignalDropdown_.reset();
+  minValSlider_.reset();
+  maxValSlider_.reset();
+  urefSlider_.reset();
 }
 
 void SysIdSetupWindow::render() {
   ImGui::Begin("SysID Setup");
   ImGui::Text("Configure Excitation Signal");
-
   excitationSignalDropdown_->render();
   excitationSignalPreviewButton_->render();
   toggleExcitationSignalButton_->render();
-
-  ImGui::Text("Excitation Signal Max/Min Values:");
-  ImGui::BeginGroup();
-  for (int i = 0; i < 3; i++) {
-    std::string maxLabel = "Channel " + std::to_string(i) + " Max";
-    std::string minLabel = "Channel " + std::to_string(i) + " Min";
-    ImGui::SliderFloat(maxLabel.c_str(), &excitationSignalMaxValues_[i], 0.0f, 1.0f);
-    ImGui::SliderFloat(minLabel.c_str(), &excitationSignalMinValues_[i], 0.0f, 1.0f);
-  }
-  ImGui::EndGroup();
-
-  ImGui::Text("Control Signal Setpoint (uref):");
-  ImGui::BeginGroup();
-  for (int i = 0; i < 3; i++) {
-    std::string label = "Channel " + std::to_string(i);
-    ImGui::SliderFloat(label.c_str(), &controlSignalSetpoints_[i], 0.0f, 1.0f);
-  }
-  ImGui::EndGroup();
-
+  minValSlider_->render();
+  maxValSlider_->render();
+  urefSlider_->render();
   sendExcitationSignalButton_->render();
-
   ImGui::End();
 }
 

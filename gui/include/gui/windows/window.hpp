@@ -21,7 +21,7 @@ public:
 protected:
   void registerCallback(std::function<void()> callback);
 
-  void handleEvent();
+  void handleEvents();
 
 private:
   std::vector<std::function<void()>> callbacks_;
