@@ -4,7 +4,6 @@
 // <internal_use_only/config.hpp>
 
 #include "gui/gui.hpp"
-#include "util/util.hpp"
 
 // NOLINTNEXTLINE(bugprone-exception-escape)
 int main(int, const char **) {

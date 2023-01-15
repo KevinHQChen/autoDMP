@@ -1,5 +1,6 @@
 #pragma once
 
+#include "gui/windows/sysid_setup_window.hpp"
 #include "imgui.h"
 #include "implot.h"
 
@@ -16,8 +17,6 @@
 // #include <SDL2/SDL.h>
 // #include <SDL2/SDL_opengl.h>
 
-// #include "imguiwrap.dear.h"
-// #include "imguiwrap.helpers.h"
 #include <stdio.h>
 
 #include "ctrl/supervisor.hpp"
@@ -26,6 +25,8 @@
 #include "improc/improc.hpp"
 #include "pump/pump.hpp"
 #include "util/util.hpp"
+
+#include "windows/window.hpp"
 
 #include <cstdio>
 
@@ -203,6 +204,8 @@ class GUI {
   std::array<GUIFrame, NUM_TEMPLATES> tmplGUIFrames;
   std::vector<cv::Mat> procFrames;
   std::vector<int> procWidths, procHeights;
+
+  std::unique_ptr<gui::SysIdSetupWindow> sysIDSetupWindow_;
 
 public:
   GUI();

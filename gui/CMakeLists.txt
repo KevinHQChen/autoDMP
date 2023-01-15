@@ -1,4 +1,15 @@
-add_library(gui "./src/gui/gui.cpp")
+add_library(gui
+  "./src/gui/gui.cpp"
+  "./src/gui/windows/window.cpp"
+  # "./src/gui/windows/imcap_window.cpp"
+  # "./src/gui/windows/improc_setup_window.cpp"
+  # "./src/gui/windows/improc_window.cpp"
+  # "./src/gui/windows/pump_window.cpp"
+  "./src/gui/windows/sysid_setup_window.cpp")
+  # "./src/gui/windows/sysid_window.cpp"
+  # "./src/gui/windows/ctrl_setup_window.cpp"
+  # "./src/gui/windows/ctrl_window.cpp")
+
 target_link_libraries(gui PRIVATE project_options project_warnings)
 
 # includes

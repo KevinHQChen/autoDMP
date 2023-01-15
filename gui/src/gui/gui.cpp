@@ -7,6 +7,7 @@ GUI::GUI()
       pump(new Pump(toml::get<bool>(conf["ctrl"]["simMode"]))), sv(new Supervisor(imProc, pump)) {
   info("Config type: {}", type_name<decltype(guiConf)>());
   info("Parsed config: {}", toml::find(conf, "gui"));
+  sysIDSetupWindow_ = std::make_unique<gui::SysIdSetupWindow>();
   // TODO may want to make GUI, ImCap, ImProc, Supervisor, etc. singletons
 }
 
@@ -554,6 +555,7 @@ std::optional<int> GUI::render() {
   showCtrl();
   showSysIDSetup();
   showSysID();
+  sysIDSetupWindow_->render();
   if (guiConf.showDebug) {
     ImGui::ShowDemoWindow(&guiConf.showDebug);
     ImPlot::ShowDemoWindow(&guiConf.showDebug);
