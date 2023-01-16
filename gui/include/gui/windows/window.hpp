@@ -1,8 +1,8 @@
 #pragma once
 
+#include "util/util.hpp"
 #include <functional>
 #include <memory>
-#include "util/util.hpp"
 
 // include/gui/windows/window.hpp
 // base class for all windows
@@ -17,6 +17,8 @@ public:
   virtual ~Window() = default;
 
   virtual void render() = 0;
+
+  bool visible_ = false;
 
 protected:
   void registerCallback(std::function<void()> callback);

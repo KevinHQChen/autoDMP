@@ -32,8 +32,8 @@ public:
   bool simModeActive;
   std::string dataPath, confPath;
 
-  Pump *pump = nullptr;
-  ImProc *imProc = nullptr;
+  std::shared_ptr<Pump> pump;
+  std::shared_ptr<ImProc> imProc;
   State *currState_ = nullptr;
   Event *currEvent_ = nullptr;
   QueueFPS<Event *> *eventQueue_;
@@ -46,7 +46,7 @@ public:
   Eigen::Vector3d sysidUref = Eigen::Vector3d::Zero();
   float sysidMin = 0.3, sysidMax = 0.7;
 
-  Supervisor(ImProc *imProc, Pump *pump);
+  Supervisor(std::shared_ptr<ImProc> imProc, std::shared_ptr<Pump> pump);
   ~Supervisor();
 
   void startThread();

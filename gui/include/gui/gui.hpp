@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gui/windows/sysid_setup_window.hpp"
+#include "gui/windows.hpp"
 #include "imgui.h"
 #include "implot.h"
 
@@ -26,35 +26,7 @@
 #include "pump/pump.hpp"
 #include "util/util.hpp"
 
-#include "windows/window.hpp"
-
 #include <cstdio>
-
-// utility structure for realtime plot
-struct ScrollingBuffer {
-  int MaxSize;
-  int Offset;
-  ImVector<ImVec2> Data;
-  ScrollingBuffer(int max_size = 2000) {
-    MaxSize = max_size;
-    Offset = 0;
-    Data.reserve(MaxSize);
-  }
-  void AddPoint(float x, float y) {
-    if (Data.size() < MaxSize)
-      Data.push_back(ImVec2(x, y));
-    else {
-      Data[Offset] = ImVec2(x, y);
-      Offset = (Offset + 1) % MaxSize;
-    }
-  }
-  void Erase() {
-    if (Data.size() > 0) {
-      Data.shrink(0);
-      Offset = 0;
-    }
-  }
-};
 
 struct GUIEvent {
   int srcState = 0;
@@ -130,10 +102,10 @@ class GUI {
   ordered_value conf;
   guiConfig guiConf;
 
-  ImCap *imCap = nullptr;
-  ImProc *imProc = nullptr;
-  Pump *pump = nullptr;
-  Supervisor *sv = nullptr;
+  std::shared_ptr<ImCap> imCap;
+  std::shared_ptr<ImProc> imProc;
+  std::shared_ptr<Pump> pump;
+  std::shared_ptr<Supervisor> sv;
 
   GLFWwindow *window;
   std::optional<std::pair<int, int>> newSize{};
@@ -205,7 +177,8 @@ class GUI {
   std::vector<cv::Mat> procFrames;
   std::vector<int> procWidths, procHeights;
 
-  std::unique_ptr<gui::SysIdSetupWindow> sysIDSetupWindow_;
+  std::shared_ptr<gui::SysIdSetupWindow> sysIDSetupWindow_;
+  std::shared_ptr<gui::SysIdWindow> sysIDWindow_;
 
 public:
   GUI();

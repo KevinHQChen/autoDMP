@@ -1,22 +1,25 @@
 #include "gui/gui.hpp"
 #include "ctrl/state/state.hpp"
 
-GUI::GUI()
-    : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")), guiConf(toml::find<guiConfig>(conf, "gui")),
-      imCap(new ImCap()), imProc(new ImProc(imCap)),
-      pump(new Pump(toml::get<bool>(conf["ctrl"]["simMode"]))), sv(new Supervisor(imProc, pump)) {
-  info("Config type: {}", type_name<decltype(guiConf)>());
-  info("Parsed config: {}", toml::find(conf, "gui"));
-  sysIDSetupWindow_ = std::make_unique<gui::SysIdSetupWindow>();
-  // TODO may want to make GUI, ImCap, ImProc, Supervisor, etc. singletons
-}
+  GUI::GUI()
+      : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")),
+        guiConf(toml::find<guiConfig>(conf, "gui")), imCap(std::make_shared<ImCap>()),
+        imProc(std::make_shared<ImProc>(imCap)),
+        pump(std::make_shared<Pump>(toml::get<bool>(conf["ctrl"]["simMode"]))),
+        sv(std::make_shared<Supervisor>(imProc, pump)) {
+    info("Config type: {}", type_name<decltype(guiConf)>());
+    info("Parsed config: {}", toml::find(conf, "gui"));
+    sysIDWindow_ = std::make_shared<gui::SysIdWindow>(sv);
+    sysIDSetupWindow_ = std::make_shared<gui::SysIdSetupWindow>(sysIDWindow_, sv);
+    // TODO may want to make GUI, ImCap, ImProc, Supervisor, etc. singletons
+  }
 
-GUI::~GUI() {
-  delete sv;
-  delete pump;
-  delete imProc;
-  delete imCap;
-}
+  GUI::~GUI() {
+    sv.reset();
+    pump.reset();
+    imProc.reset();
+    imCap.reset();
+  }
 
 void GUI::showRawImCap() {
   if (guiConf.startImCap) {
@@ -388,12 +391,18 @@ void GUI::showCtrlSetup() {
       }
       ImGui::Separator();
 
-      if (!guiConf.startSysIDSetup)
+      // if (!guiConf.startSysIDSetup)
+      //   if (ImGui::Button("Start System ID Setup"))
+      //     guiConf.startSysIDSetup = true;
+      // if (guiConf.startSysIDSetup)
+      //   if (ImGui::Button("Stop System ID Setup"))
+      //     guiConf.startSysIDSetup = false;
+      if (!sysIDSetupWindow_->visible_)
         if (ImGui::Button("Start System ID Setup"))
-          guiConf.startSysIDSetup = true;
-      if (guiConf.startSysIDSetup)
+          sysIDSetupWindow_->visible_ = true;
+      if (sysIDSetupWindow_->visible_)
         if (ImGui::Button("Stop System ID Setup"))
-          guiConf.startSysIDSetup = false;
+          sysIDSetupWindow_->visible_ = false;
 
       if (!guiConf.startCtrl)
         if (ImGui::Button("Start Controller"))
@@ -556,6 +565,7 @@ std::optional<int> GUI::render() {
   showSysIDSetup();
   showSysID();
   sysIDSetupWindow_->render();
+  sysIDWindow_->render();
   if (guiConf.showDebug) {
     ImGui::ShowDemoWindow(&guiConf.showDebug);
     ImPlot::ShowDemoWindow(&guiConf.showDebug);
