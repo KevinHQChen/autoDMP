@@ -1,25 +1,23 @@
 #include "gui/gui.hpp"
 #include "ctrl/state/state.hpp"
 
-  GUI::GUI()
-      : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")),
-        guiConf(toml::find<guiConfig>(conf, "gui")), imCap(std::make_shared<ImCap>()),
-        imProc(std::make_shared<ImProc>(imCap)),
-        pump(std::make_shared<Pump>(toml::get<bool>(conf["ctrl"]["simMode"]))),
-        sv(std::make_shared<Supervisor>(imProc, pump)) {
-    info("Config type: {}", type_name<decltype(guiConf)>());
-    info("Parsed config: {}", toml::find(conf, "gui"));
-    sysIDWindow_ = std::make_shared<gui::SysIdWindow>(sv);
-    sysIDSetupWindow_ = std::make_shared<gui::SysIdSetupWindow>(sysIDWindow_, sv);
-    // TODO may want to make GUI, ImCap, ImProc, Supervisor, etc. singletons
-  }
+GUI::GUI()
+    : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")), guiConf(toml::find<guiConfig>(conf, "gui")),
+      imCap(std::make_shared<ImCap>()), imProc(std::make_shared<ImProc>(imCap)),
+      pump(std::make_shared<Pump>(toml::get<bool>(conf["ctrl"]["simMode"]))),
+      sv(std::make_shared<Supervisor>(imProc, pump)) {
+  info("Config type: {}", type_name<decltype(guiConf)>());
+  info("Parsed config: {}", toml::find(conf, "gui"));
+  sysIDWindow_ = std::make_shared<gui::SysIdWindow>(sv);
+  // TODO may want to make GUI, ImCap, ImProc, Supervisor, etc. singletons
+}
 
-  GUI::~GUI() {
-    sv.reset();
-    pump.reset();
-    imProc.reset();
-    imCap.reset();
-  }
+GUI::~GUI() {
+  sv.reset();
+  pump.reset();
+  imProc.reset();
+  imCap.reset();
+}
 
 void GUI::showRawImCap() {
   if (guiConf.startImCap) {
@@ -397,12 +395,12 @@ void GUI::showCtrlSetup() {
       // if (guiConf.startSysIDSetup)
       //   if (ImGui::Button("Stop System ID Setup"))
       //     guiConf.startSysIDSetup = false;
-      if (!sysIDSetupWindow_->visible_)
+      if (!sysIDWindow_->visible_)
         if (ImGui::Button("Start System ID Setup"))
-          sysIDSetupWindow_->visible_ = true;
-      if (sysIDSetupWindow_->visible_)
+          sysIDWindow_->visible_ = true;
+      if (sysIDWindow_->visible_)
         if (ImGui::Button("Stop System ID Setup"))
-          sysIDSetupWindow_->visible_ = false;
+          sysIDWindow_->visible_ = false;
 
       if (!guiConf.startCtrl)
         if (ImGui::Button("Start Controller"))
@@ -430,63 +428,63 @@ void GUI::showCtrlSetup() {
   }
 }
 
-void GUI::showSysIDSetup() {
-  if (guiConf.startSysIDSetup) {
-    if (ImGui::Begin("SysID Setup", &guiConf.startSysIDSetup)) {
-      ImGui::Text("Configure Excitation Signal");
+// void GUI::showSysIDSetup() {
+//   if (guiConf.startSysIDSetup) {
+//     if (ImGui::Begin("SysID Setup", &guiConf.startSysIDSetup)) {
+//       ImGui::Text("Configure Excitation Signal");
 
-      for (int n = 0; n < IM_ARRAYSIZE(sv->sysidCh); ++n) {
-        if (n != 0)
-          ImGui::SameLine();
-        if (ImGui::Button(sv->sysidCh[n], ImVec2(60, 60))) {
-          sv->sysidCh[n] = "";
-          sv->sysidDu[n] = 0;
-        }
-      }
-      if (ImGui::Button("Reset excitation signal")) {
-        sv->sysidCh[0] = "ch0", sv->sysidCh[1] = "ch1", sv->sysidCh[2] = "ch2";
-        sv->sysidDu[0] = 1.0f, sv->sysidDu[1] = 1.0f, sv->sysidDu[2] = 1.0f;
-      }
-      ImGui::SliderFloat3("SysID du scale", sv->sysidDu, 0.0f, 15.0f);
-      ImGui::SliderFloat3("uref", sv->sysidUrefArr, 0.0f, 100.0f);
-      ImGui::SliderFloat("min", &sv->sysidMin, 0.0f, 1.0f);
-      ImGui::SliderFloat("max", &sv->sysidMax, 0.0f, 1.0f);
+//       for (int n = 0; n < IM_ARRAYSIZE(sv->sysidCh); ++n) {
+//         if (n != 0)
+//           ImGui::SameLine();
+//         if (ImGui::Button(sv->sysidCh[n], ImVec2(60, 60))) {
+//           sv->sysidCh[n] = "";
+//           sv->sysidDu[n] = 0;
+//         }
+//       }
+//       if (ImGui::Button("Reset excitation signal")) {
+//         sv->sysidCh[0] = "ch0", sv->sysidCh[1] = "ch1", sv->sysidCh[2] = "ch2";
+//         sv->sysidDu[0] = 1.0f, sv->sysidDu[1] = 1.0f, sv->sysidDu[2] = 1.0f;
+//       }
+//       ImGui::SliderFloat3("SysID du scale", sv->sysidDu, 0.0f, 15.0f);
+//       ImGui::SliderFloat3("uref", sv->sysidUrefArr, 0.0f, 100.0f);
+//       ImGui::SliderFloat("min", &sv->sysidMin, 0.0f, 1.0f);
+//       ImGui::SliderFloat("max", &sv->sysidMax, 0.0f, 1.0f);
 
-      if (!guiConf.startSysID)
-        if (ImGui::Button("Send excitation signal"))
-          guiConf.startSysID = true;
-      if (guiConf.startSysID)
-        if (ImGui::Button("Stop excitation signal"))
-          guiConf.startSysID = false;
-      if (ImGui::Button("Clear ctrlDataQueue"))
-        sv->ctrlDataQueuePtr->clearFile();
+//       if (!guiConf.startSysID)
+//         if (ImGui::Button("Send excitation signal"))
+//           guiConf.startSysID = true;
+//       if (guiConf.startSysID)
+//         if (ImGui::Button("Stop excitation signal"))
+//           guiConf.startSysID = false;
+//       if (ImGui::Button("Clear ctrlDataQueue"))
+//         sv->ctrlDataQueuePtr->clearFile();
 
-      ImGui::End();
-    }
-  }
-}
+//       ImGui::End();
+//     }
+//   }
+// }
 
-void GUI::showSysID() {
-  if (guiConf.startSysID) {
-    sv->startSysIDThread();
-    if (ImGui::Begin("SysID", &guiConf.startSysID)) {
-      guiTime += ImGui::GetIO().DeltaTime;
-      u0.AddPoint(guiTime, sv->currState_->u(0));
-      u1.AddPoint(guiTime, sv->currState_->u(1));
-      u2.AddPoint(guiTime, sv->currState_->u(2));
-      y0.AddPoint(guiTime, sv->currState_->y(0));
-      y1.AddPoint(guiTime, sv->currState_->y(1));
-      y2.AddPoint(guiTime, sv->currState_->y(2));
+// void GUI::showSysID() {
+//   if (guiConf.startSysID) {
+//     sv->startSysIDThread();
+//     if (ImGui::Begin("SysID", &guiConf.startSysID)) {
+//       guiTime += ImGui::GetIO().DeltaTime;
+//       u0.AddPoint(guiTime, sv->currState_->u(0));
+//       u1.AddPoint(guiTime, sv->currState_->u(1));
+//       u2.AddPoint(guiTime, sv->currState_->u(2));
+//       y0.AddPoint(guiTime, sv->currState_->y(0));
+//       y1.AddPoint(guiTime, sv->currState_->y(1));
+//       y2.AddPoint(guiTime, sv->currState_->y(2));
 
-      ImGui::SliderFloat("History", &history, 1, 30, "%.1f s");
+//       ImGui::SliderFloat("History", &history, 1, 30, "%.1f s");
 
-      plotVector3d("##Control Input", "time (s)", "voltage (V)", 0, 250, sysidCtrlVecs);
-      plotVector3d("##Measured Output", "time (s)", "position (px)", -500, 500, sysidMeasVecs);
-      ImGui::End();
-    }
-  } else
-    sv->stopSysIDThread();
-}
+//       plotVector3d("##Control Input", "time (s)", "voltage (V)", 0, 250, sysidCtrlVecs);
+//       plotVector3d("##Measured Output", "time (s)", "position (px)", -500, 500, sysidMeasVecs);
+//       ImGui::End();
+//     }
+//   } else
+//     sv->stopSysIDThread();
+// }
 
 void GUI::showCtrl() {
   if (guiConf.startCtrl) {
@@ -562,9 +560,6 @@ std::optional<int> GUI::render() {
   showPumpSetup();
   showCtrlSetup();
   showCtrl();
-  showSysIDSetup();
-  showSysID();
-  sysIDSetupWindow_->render();
   sysIDWindow_->render();
   if (guiConf.showDebug) {
     ImGui::ShowDemoWindow(&guiConf.showDebug);

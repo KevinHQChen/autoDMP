@@ -8,6 +8,9 @@ namespace gui {
 
 class Dropdown {
 public:
+  Dropdown(std::string label, std::vector<std::string> items)
+      : label_(label), items_(items), item_(items[0]) {}
+
   Dropdown(std::string label, std::vector<std::string> items, std::function<void()> callback)
       : label_(label), items_(items), item_(items[0]), callback_(callback) {}
 

@@ -73,16 +73,16 @@ void Supervisor::start() {
   }
 }
 
-void Supervisor::startSysIDThread() {
+void Supervisor::startSysIDThread(Eigen::Vector3d uref, bool *selChs, float *minVals,
+                                  float *maxVals, unsigned int samples) {
   if (!startedSysID()) {
     info("Starting SysID...");
     startedSysIDFlag = true;
 
-    sysidUref = Eigen::Vector3d(sysidUrefArr[0], sysidUrefArr[1], sysidUrefArr[2]);
     if (!simModeActive)
       pump->setFreq(200);
 
-    updateState<SysIDState>(sysidUref);
+    updateState<SysIDState>(uref, selChs, minVals, maxVals, samples);
     sysIDThread = std::thread(&Supervisor::startSysID, this);
     sysIDThread.detach();
   }
@@ -94,9 +94,9 @@ void Supervisor::stopSysIDThread() {
     startedSysIDFlag = false;
 
     if (!simModeActive)
-      pump->sendSigs(sysidUref.cast<int16_t>());
+      pump->sendSigs(currState_->uref.cast<int16_t>());
     else
-      info(sysidUref);
+      info(currState_->uref);
 
     if (sysIDThread.joinable())
       sysIDThread.join();

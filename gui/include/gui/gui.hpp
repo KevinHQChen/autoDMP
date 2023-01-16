@@ -177,7 +177,6 @@ class GUI {
   std::vector<cv::Mat> procFrames;
   std::vector<int> procWidths, procHeights;
 
-  std::shared_ptr<gui::SysIdSetupWindow> sysIDSetupWindow_;
   std::shared_ptr<gui::SysIdWindow> sysIDWindow_;
 
 public:

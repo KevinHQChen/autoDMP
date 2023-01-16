@@ -39,19 +39,20 @@ public:
   QueueFPS<Event *> *eventQueue_;
   QueueFPS<int> *ctrlDataQueuePtr;
 
-  const char *sysidCh[3] = {"ch0", "ch1", "ch2"};
-  float sysidDu[3] = {1, 1, 1};
-  unsigned int sysidSamples = 4000;
-  float sysidUrefArr[3] = {85, 50, 50}; // default to state0 uref
-  Eigen::Vector3d sysidUref = Eigen::Vector3d::Zero();
-  float sysidMin = 0.3, sysidMax = 0.7;
+  // const char *sysidCh[3] = {"ch0", "ch1", "ch2"};
+  // float sysidDu[3] = {1, 1, 1};
+  // unsigned int sysidSamples = 4000;
+  // float sysidUrefArr[3] = {85, 50, 50}; // default to state0 uref
+  // Eigen::Vector3d sysidUref = Eigen::Vector3d::Zero();
+  // float sysidMin = 0.3, sysidMax = 0.7;
 
   Supervisor(std::shared_ptr<ImProc> imProc, std::shared_ptr<Pump> pump);
   ~Supervisor();
 
   void startThread();
   void stopThread();
-  void startSysIDThread();
+  void startSysIDThread(Eigen::Vector3d uref, bool *selChs, float *minVals, float *maxVals,
+                        unsigned int samples);
   void stopSysIDThread();
   bool started();
   bool startedSysID();
@@ -72,6 +73,13 @@ public:
   template <typename T> void updateState(Eigen::Vector3d uref_, int prevState) {
     delete currState_;
     currState_ = new T(this, prevState, uref_);
+  }
+
+  template <typename T>
+  void updateState(Eigen::Vector3d uref, bool *selChs, float *minVals, float *maxVals,
+                   unsigned int samples) {
+    delete currState_;
+    currState_ = new T(this, uref, selChs, minVals, maxVals, samples);
   }
 
   std::string getDataPath() const { return dataPath; }

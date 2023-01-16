@@ -7,7 +7,21 @@
 namespace gui {
 
 class SliderFloatArray {
+  std::string label_;
+  int size_;
+  float *values_;
+  float min_;
+  float max_;
+  std::function<void()> callback_;
+
 public:
+  SliderFloatArray(std::string label, int size, float min, float max)
+      : label_(label), size_(size), values_(new float[size]), min_(min), max_(max) {
+    for (int i = 0; i < size; ++i) {
+      values_[i] = 0.0f;
+    }
+  }
+
   SliderFloatArray(std::string label, int size, float min, float max,
                    std::function<void()> callback)
       : label_(label), size_(size), values_(new float[size]), min_(min), max_(max),
@@ -29,13 +43,7 @@ public:
     ImGui::EndGroup();
   }
 
-private:
-  std::string label_;
-  int size_;
-  float *values_;
-  float min_;
-  float max_;
-  std::function<void()> callback_;
+  float *getValues() { return values_; }
 };
 
 } // namespace gui
