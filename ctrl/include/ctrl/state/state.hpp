@@ -111,9 +111,6 @@ public:
   bool stateTransitionCondition = false;
   bool startEvent = false;
 
-  // sysID specific
-  int stp = 0;
-
   State(Supervisor *sv, Eigen::Vector3d uref_, Eigen::Vector3d yrefScale);
   virtual ~State();
 
@@ -187,6 +184,7 @@ public:
       // update integral error based on time step for each channel's data
       z(ch(i)) += -dy(ch(i)) * dt[ch(i)].count();
 
+      // update uref to minimize du
       uref(ch(i)) += 0.1 * du(ch(i)) * dt[ch(i)].count();
     }
   }

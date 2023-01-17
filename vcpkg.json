@@ -53,6 +53,9 @@
     },
     {
       "name": "tsl-ordered-map"
+    },
+    {
+      "name": "pybind11"
     }
   ],
   "features": {

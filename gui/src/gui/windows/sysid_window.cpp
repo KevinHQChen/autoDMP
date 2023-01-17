@@ -80,9 +80,9 @@ void SysIdWindow::render() {
       plotVector3d("##Control Input", "time (s)", "voltage (V)", 0, 250, sysidCtrlVecs);
       plotVector3d("##Measured Output", "time (s)", "position (px)", -500, 500, sysidMeasVecs);
       ImGui::End();
-    } else
-      sv_->stopSysIDThread();
-  }
+    }
+  } else
+    sv_->stopSysIDThread();
 }
 
 void SysIdWindow::previewExcitationSignal() { info("Previewing excitation signal"); }

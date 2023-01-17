@@ -1,6 +1,7 @@
 #include "ctrl/state/sysidstate.hpp"
 #include "ctrl/supervisor.hpp"
 
+
 SysIDState::SysIDState(Supervisor *sv, Eigen::Vector3d uref_)
     : State(sv, uref_,
             Eigen::Vector3d(sv->imProc->impConf.getChanBBox()[0].height,
@@ -8,6 +9,11 @@ SysIDState::SysIDState(Supervisor *sv, Eigen::Vector3d uref_)
                             sv->imProc->impConf.getRotChanBBox()[2].height)) {
   // clear all improc queues
   sv_->imProc->clearProcDataQueues();
+  pybind11::initialize_interpreter();
+
+  py::eval_file("ctrl/scripts/incrementfcn.py");
+
+  incFcn = py::module::import("__main__").attr("incrementfcn");
 }
 
 SysIDState::SysIDState(Supervisor *sv, Eigen::Vector3d uref, bool *selChs, float *minVals,
@@ -19,10 +25,16 @@ SysIDState::SysIDState(Supervisor *sv, Eigen::Vector3d uref, bool *selChs, float
       selChs_(selChs), minVals_(minVals), maxVals_(maxVals), numSamples_(numSamples) {
   // clear all improc queues
   sv_->imProc->clearProcDataQueues();
+  pybind11::initialize_interpreter();
+
+  py::eval_file("ctrl/scripts/incrementfcn.py");
+
+  incFcn = py::module::import("__main__").attr("incrementfcn");
 }
 
 SysIDState::~SysIDState() {
   // clean up any resources used by current state here
+  pybind11::finalize_interpreter();
 }
 
 // check for new measurements on selected channels
@@ -42,43 +54,32 @@ bool SysIDState::measurementAvailable() {
 
 // update instantaneous trajectory vectors
 void SysIDState::updateMeasurement() {
-  for (int i = 0; i < 3; ++i) {
-    if (selChs_[i]) {
-      // update y
-      if (trueMeasAvail_)
+  stp = incFcn(stp).cast<int>();
+  if (trueMeasAvail_) { // update true measurement y
+    for (int i = 0; i < 3; ++i)
+      if (selChs_[i])
         y(i) = sv_->imProc->procDataQArr[i]->get().loc.y;
-      else // generate random simulated measurement
-        y(i) = 50 + (std::rand() % (600 - 50 + 1));
+  } else // use simulated measurement based on a noisy second order model
+    y = simMeas(u, y).cast<Eigen::Vector3d>();
+
+  for (int i = 0; i < 3; ++i)
+    if (selChs_[i])
       prevCtrlTime[i] = steady_clock::now();
-
-      // update du
-      if (stp <= numSamples_) {
-        // state1 sysID settings
-        if (stp % 10 == 0) {
-          minVals_[i] = (40 + (std::rand() % (60 - 40 + 1))) / 100.0;
-          maxVals_[i] = minVals_[i] + 0.2;
-        }
-
-        // state0 sysID settings
-        // if (stp % 10 == 0) {
-        //   sv_->sysidMin = (20 + (std::rand() % (40 - 20 + 1))) / 100.0;
-        //   sv_->sysidMax = 1 - sv_->sysidMin;
-        // }
-
-        if (y(i) > maxVals_[i] * yrefScale(i))
-          du(i) = -10;
-        else if (y(i) < minVals_[i] * yrefScale(i))
-          du(i) = 10;
-      } else
-        du(i) = 0;
-    }
-  }
-  stp++;
 }
 
 void SysIDState::handleEvent(Event *event) { return; }
 
 Eigen::Matrix<int16_t, 3, 1> SysIDState::step() {
+  // update control signal u based on new measurements
+
+  // apply updated control signal to pump
+
+  std::cout << "the c++ value before calling the python script: " << stp << std::endl;
+
+  stp = incFcn(stp).cast<int>();
+
+  std::cout << "the c++ value after calling the python script: " << stp << std::endl;
+
   u = uref + du;
   sv_->ctrlDataQueuePtr->out << u(0) << ", " << u(1) << ", " << u(2) << ", ";
   sv_->ctrlDataQueuePtr->out << y(0) << ", " << y(1) << ", " << y(2) << "\n";

@@ -3,6 +3,7 @@
 #include "improc/improc.hpp"
 #include "pump/pump.hpp"
 #include "util/util.hpp"
+#include <pybind11/embed.h>
 
 struct Event {
   int srcState, destState;
@@ -38,13 +39,6 @@ public:
   Event *currEvent_ = nullptr;
   QueueFPS<Event *> *eventQueue_;
   QueueFPS<int> *ctrlDataQueuePtr;
-
-  // const char *sysidCh[3] = {"ch0", "ch1", "ch2"};
-  // float sysidDu[3] = {1, 1, 1};
-  // unsigned int sysidSamples = 4000;
-  // float sysidUrefArr[3] = {85, 50, 50}; // default to state0 uref
-  // Eigen::Vector3d sysidUref = Eigen::Vector3d::Zero();
-  // float sysidMin = 0.3, sysidMax = 0.7;
 
   Supervisor(std::shared_ptr<ImProc> imProc, std::shared_ptr<Pump> pump);
   ~Supervisor();
