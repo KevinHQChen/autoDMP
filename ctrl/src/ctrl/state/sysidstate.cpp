@@ -1,7 +1,6 @@
 #include "ctrl/state/sysidstate.hpp"
 #include "ctrl/supervisor.hpp"
 
-
 SysIDState::SysIDState(Supervisor *sv, Eigen::Vector3d uref_)
     : State(sv, uref_,
             Eigen::Vector3d(sv->imProc->impConf.getChanBBox()[0].height,
@@ -9,11 +8,10 @@ SysIDState::SysIDState(Supervisor *sv, Eigen::Vector3d uref_)
                             sv->imProc->impConf.getRotChanBBox()[2].height)) {
   // clear all improc queues
   sv_->imProc->clearProcDataQueues();
-  pybind11::initialize_interpreter();
+  py::initialize_interpreter();
+  py::eval_file("scripts/sysid.py"); // import sysid functions
 
-  py::eval_file("ctrl/scripts/incrementfcn.py");
-
-  incFcn = py::module::import("__main__").attr("incrementfcn");
+  simMeas = py::module::import("sim_meas").attr("sim_meas");
 }
 
 SysIDState::SysIDState(Supervisor *sv, Eigen::Vector3d uref, bool *selChs, float *minVals,
@@ -25,11 +23,11 @@ SysIDState::SysIDState(Supervisor *sv, Eigen::Vector3d uref, bool *selChs, float
       selChs_(selChs), minVals_(minVals), maxVals_(maxVals), numSamples_(numSamples) {
   // clear all improc queues
   sv_->imProc->clearProcDataQueues();
-  pybind11::initialize_interpreter();
+  py::initialize_interpreter();
+  py::eval_file("scripts/sysid.py"); // import sysid functions
 
-  py::eval_file("ctrl/scripts/incrementfcn.py");
-
-  incFcn = py::module::import("__main__").attr("incrementfcn");
+  simMeas = py::module::import("sim_meas").attr("sim_meas");
+  // incFcn = py::module::import("__main__").attr("incrementfcn");
 }
 
 SysIDState::~SysIDState() {
@@ -54,7 +52,6 @@ bool SysIDState::measurementAvailable() {
 
 // update instantaneous trajectory vectors
 void SysIDState::updateMeasurement() {
-  stp = incFcn(stp).cast<int>();
   if (trueMeasAvail_) { // update true measurement y
     for (int i = 0; i < 3; ++i)
       if (selChs_[i])
@@ -76,7 +73,8 @@ Eigen::Matrix<int16_t, 3, 1> SysIDState::step() {
 
   std::cout << "the c++ value before calling the python script: " << stp << std::endl;
 
-  stp = incFcn(stp).cast<int>();
+  if (!simMeas.is_none())
+    stp = simMeas(stp).cast<int>();
 
   std::cout << "the c++ value after calling the python script: " << stp << std::endl;
 

@@ -17,6 +17,22 @@ target_include_directories(ctrl PUBLIC
 
 # find dependencies
 find_package(Python 3.8 COMPONENTS Interpreter Development REQUIRED)
+# print python version
+# message(STATUS "Python version: ${Python_VERSION}")
+# message(STATUS "Python include dir: ${Python_INCLUDE_DIRS}")
+# message(STATUS "Python libraries: ${Python_LIBRARIES}")
+# message(STATUS "Python interpreter: ${Python_EXECUTABLE}")
+# message(STATUS "Python site packages: ${Python_SITELIB}")
+# if a python virtual environment does not exist, create it, update pip, and use it to install dependencies
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/scripts/venv")
+  execute_process(COMMAND ${Python_EXECUTABLE} -m venv venv WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/scripts)
+  # update pip and install dependencies
+  execute_process(COMMAND venv/bin/python -m pip install --upgrade pip WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/scripts)
+  execute_process(COMMAND venv/bin/python -m pip install -r ${CMAKE_CURRENT_SOURCE_DIR}/scripts/requirements.txt WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/scripts)
+endif()
+# use virtual environment python interpreter
+set(Python_EXECUTABLE ${CMAKE_CURRENT_SOURCE_DIR}/scripts/venv/bin/python)
+
 set(ctrl_DEPENDENCIES_CONFIGURED
   pybind11
   CACHE STRING "")

@@ -12,7 +12,7 @@ class SysIDState : public State {
   float *maxVals_;
   unsigned int numSamples_;
   int stp = 0;
-  py::object incFcn;
+  py::object simMeas;
 
 public:
   bool simMeasAvail_ = true, trueMeasAvail_ = true;

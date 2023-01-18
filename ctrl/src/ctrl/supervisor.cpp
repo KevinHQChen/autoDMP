@@ -108,8 +108,6 @@ void Supervisor::startSysID() {
   while (startedSysID()) {
     if (currState_->measurementAvailable()) {
 
-
-
       currState_->updateMeasurement();
       // send excitation signal to pump and save to ctrlDataQueue
       if (!simModeActive)
