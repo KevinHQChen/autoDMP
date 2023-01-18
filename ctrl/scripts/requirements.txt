@@ -1,5 +1,6 @@
 python-lsp-server
-readline
+pyqt6
+gnureadline
 ipython
 numpy
 scipy
