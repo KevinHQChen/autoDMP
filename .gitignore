@@ -7,6 +7,11 @@ conan-cache/
 .cache/
 coverage.xml
 
+# Python
+**/venv/
+**/__pycache__/
+
+
 # Generated data
 data/
 

@@ -32,7 +32,7 @@ SysIDState::SysIDState(Supervisor *sv, Eigen::Vector3d uref, bool *selChs, float
 
 SysIDState::~SysIDState() {
   // clean up any resources used by current state here
-  pybind11::finalize_interpreter();
+  py::finalize_interpreter();
 }
 
 // check for new measurements on selected channels
