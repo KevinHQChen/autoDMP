@@ -125,4 +125,10 @@ RUN --mount=type=ssh cd ~/.doom.d && rm * \
     && git checkout origin/dev -ft
 RUN bash -c 'retry --until=success timeout 1200 ~/.emacs.d/bin/doom sync'
 
+# manual fixes for doom emacs
+# https://discourse.doomemacs.org/t/error-on-syncing-wrong-type-argument-string-p-afternoon-theme/3432/3
+# after fresh install, run M-x all-the-icons-install-fonts to install all-the-icons fonts
+# for ipython plotting support:
+    # apt-get install '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev
+
 ENTRYPOINT ["/bin/bash"]
