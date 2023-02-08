@@ -167,20 +167,6 @@ void GUI::showPumpSetup() {
       for (int i = 0; i < 4; ++i) {
         if (i != 0)
           ImGui::SameLine();
-        if (pump->valveOnOff[i]) {
-          std::string tmplabel = "Disable\nValve " + std::to_string(i + 1);
-          if (ImGui::Button(tmplabel.c_str(), ImVec2(36, 0)))
-            pump->disableValve(i + 1);
-        } else {
-          std::string tmplabel = "Enable\nValve " + std::to_string(i + 1);
-          if (ImGui::Button(tmplabel.c_str(), ImVec2(36, 0)))
-            pump->enableValve(i + 1);
-        }
-      }
-
-      for (int i = 0; i < 4; ++i) {
-        if (i != 0)
-          ImGui::SameLine();
         if (pump->valveState[i]) {
           std::string tmplabel = "Open\nValve " + std::to_string(i + 1);
           if (ImGui::Button(tmplabel.c_str(), ImVec2(36, 0)))

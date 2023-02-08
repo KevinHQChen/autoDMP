@@ -169,65 +169,22 @@ void Pump::setFreq(int freq_) {
   }
 }
 
-void Pump::enableValve(unsigned int valveIdx) {
-  if (valveOnOff[valveIdx - 1] == true)
-    return;
-
-  if (simModeActive) {
-    valveOnOff[valveIdx - 1] = true;
-    info("Valve {} enabled.", valveIdx);
-    return;
-  }
-
-  std::string valveCommand = "V" + std::to_string(valveIdx) + "ON\r\n";
-
-  sendCmd(valveCommand, 4);
-
-  if (std::strncmp("OK", readData, 2) != 0)
-    error("Error enabling valve {}.", valveIdx);
-  else {
-    valveOnOff[valveIdx - 1] = true;
-    info("Valve {} enabled.", valveIdx);
-  }
-}
-
-void Pump::disableValve(unsigned int valveIdx) {
-  if (valveOnOff[valveIdx - 1] == false)
-    return;
-
-  if (simModeActive) {
-    valveOnOff[valveIdx - 1] = false;
-    info("Valve {} disabled.", valveIdx);
-    return;
-  }
-
-  std::string valveCommand = "V" + std::to_string(valveIdx) + "OFF\r\n";
-  sendCmd(valveCommand, 4);
-  if (std::strncmp("OK", readData, 2) != 0)
-    error("Error disabling valve {}.", valveIdx);
-  else {
-    valveOnOff[valveIdx - 1] = false;
-    info("Valve {} disabled.", valveIdx);
-  }
-}
-
 void Pump::setValve(unsigned int valveIdx, bool state) {
   if (valveState[valveIdx - 1] == state)
     return;
 
   if (simModeActive) {
-    valveOnOff[valveIdx - 1] = false;
+    valveState[valveIdx - 1] = false;
     info("Valve {} disabled.", valveIdx);
     return;
   }
 
-  int angle;
+  std::string valveCommand;
   if (state)
-    angle = 175;
+    valveCommand = "V" + std::to_string(valveIdx) + "ON\r\n";
   else
-    angle = 10;
+    valveCommand = "V" + std::to_string(valveIdx) + "OFF\r\n";
 
-  std::string valveCommand = "V" + std::to_string(valveIdx) + "A" + std::to_string(angle) + "\r\n";
   sendCmd(valveCommand, 4);
   if (std::strncmp("OK", readData, 2) != 0)
     error("Error setting valve {} to {}.", valveIdx, state ? "ON" : "OFF");
