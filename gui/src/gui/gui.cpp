@@ -9,6 +9,7 @@ GUI::GUI()
   info("Config type: {}", type_name<decltype(guiConf)>());
   info("Parsed config: {}", toml::find(conf, "gui"));
   sysIDWindow_ = std::make_shared<gui::SysIdWindow>(sv);
+  pumpWindow_ = std::make_shared<gui::PumpWindow>(pump);
   // TODO may want to make GUI, ImCap, ImProc, Supervisor, etc. singletons
 }
 
@@ -528,7 +529,8 @@ std::optional<int> GUI::render() {
       ImGui::MenuItem("Start Image Capture", nullptr, &guiConf.startImCap);
       ImGui::MenuItem("Setup Image Processing", nullptr, &guiConf.startImProcSetup);
       ImGui::MenuItem("Start Image Processing", nullptr, &guiConf.startImProc);
-      ImGui::MenuItem("Start Pump Setup", nullptr, &guiConf.startPumpSetup);
+      // ImGui::MenuItem("Start Pump Setup", nullptr, &guiConf.startPumpSetup);
+      ImGui::MenuItem("Start Pump Setup", nullptr, &pumpWindow_->visible_);
       ImGui::MenuItem("Start Controller Setup", nullptr, &guiConf.startCtrlSetup);
       ImGui::EndMenu();
     }
@@ -543,7 +545,8 @@ std::optional<int> GUI::render() {
   showRawImCap();
   showImProcSetup();
   showImProc();
-  showPumpSetup();
+  pumpWindow_->render();
+  // showPumpSetup();
   showCtrlSetup();
   showCtrl();
   sysIDWindow_->render();

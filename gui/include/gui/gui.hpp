@@ -178,6 +178,7 @@ class GUI {
   std::vector<int> procWidths, procHeights;
 
   std::shared_ptr<gui::SysIdWindow> sysIDWindow_;
+  std::shared_ptr<gui::PumpWindow> pumpWindow_;
 
 public:
   GUI();

@@ -174,8 +174,8 @@ void Pump::setValve(unsigned int valveIdx, bool state) {
     return;
 
   if (simModeActive) {
-    valveState[valveIdx - 1] = false;
-    info("Valve {} disabled.", valveIdx);
+    valveState[valveIdx - 1] = state;
+    info("Valve {} set to {}.", valveIdx, state ? "ON" : "OFF");
     return;
   }
 
