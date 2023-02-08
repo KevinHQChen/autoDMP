@@ -68,6 +68,7 @@ format:
 
 clean:
 	rm -rf ./build
+	rm -rf ./ctrl/scripts/venv
 
 docker-build:	## Build ubuntu-cpp:prebuild image (build tools).
 	./.devcontainer/build_deps.bash "ubuntu:20.04"
