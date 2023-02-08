@@ -18,7 +18,8 @@ class VertSliderIntArray {
 
 public:
   VertSliderIntArray(std::string label, int size, int min, int max,
-                     ImVec2 sliderSize = ImVec2(36, 200), std::string format = "%d", std::function<void()> callback = nullptr)
+                     ImVec2 sliderSize = ImVec2(36, 200), std::string format = "%d",
+                     std::function<void()> callback = nullptr)
       : label_(label), size_(size), sliderSize_(sliderSize), format_(format),
         values_(new int[size]), min_(min), max_(max), callback_(callback) {
     for (int i = 0; i < size; ++i) {
@@ -35,7 +36,8 @@ public:
     }
     ImGui::Text("%s", label_.c_str());
     ImGui::EndGroup();
-    callback_();
+    if (callback_)
+      callback_();
   }
 
   int *getValues() { return values_; }

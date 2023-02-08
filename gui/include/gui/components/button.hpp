@@ -13,7 +13,9 @@ class Button {
   std::function<void()> callback_;
 
 public:
-  Button(std::vector<std::string> labels, std::function<void()> callback = nullptr, int numButtons = 1, ImVec2 buttonSize = ImVec2(0,0)) : labels_(labels), numButtons_(numButtons), buttonSize_(buttonSize), callback_(callback) {}
+  Button(std::vector<std::string> labels, std::function<void()> callback = nullptr,
+         int numButtons = 1, ImVec2 buttonSize = ImVec2(0, 0))
+      : labels_(labels), numButtons_(numButtons), buttonSize_(buttonSize), callback_(callback) {}
 
   void render() {
     ImGui::BeginGroup();
@@ -21,16 +23,13 @@ public:
       if (i != 0)
         ImGui::SameLine();
       bool pressed = ImGui::Button(labels_[i].c_str(), buttonSize_);
-      if (pressed)
+      if (pressed && callback_)
         callback_();
     }
     ImGui::EndGroup();
   }
 
-  void setLabel(int idx, std::string label) {
-    labels_[idx] = label;
-  }
-
+  void setLabel(int idx, std::string label) { labels_[idx] = label; }
 };
 
 } // namespace gui

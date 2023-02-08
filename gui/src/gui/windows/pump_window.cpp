@@ -3,9 +3,13 @@
 namespace gui {
 
 PumpWindow::PumpWindow(std::shared_ptr<Pump> pp) : pp_(pp) {
-  voltageSlider_ = std::make_unique<SliderInt>("Voltage", 0, 250, "%d V", NUM_PUMPS, ImVec2(36, 200), false, [this]() { setPumps(); });
-  freqSlider_ = std::make_unique<SliderInt>("Frequency", 0, 800, "%d Hz\nFreq", 1, ImVec2(36, 200), true, [this]() { setFreq(); });
-  valveOnOff_ = std::make_unique<Button>(std::vector<std::string>(NUM_PUMPS, "Open\nValve"), [this]() { setValves(); }, NUM_PUMPS, ImVec2(36, 0));
+  voltageSlider_ = std::make_unique<SliderInt>("Voltage", 0, 250, "%d V", NUM_PUMPS,
+                                               ImVec2(36, 200), false, [this]() { setPumps(); });
+  freqSlider_ = std::make_unique<SliderInt>("Frequency", 0, 800, "%d Hz\nFreq", 1, ImVec2(36, 200),
+                                            true, [this]() { setFreq(); });
+  valveOnOff_ = std::make_unique<Button>(
+      std::vector<std::string>(NUM_PUMPS, "Open\nValve"), [this]() { setValves(); }, NUM_PUMPS,
+      ImVec2(36, 0));
 }
 
 PumpWindow::~PumpWindow() { voltageSlider_.reset(); }
@@ -26,9 +30,7 @@ void PumpWindow::setPumps() {
     pp_->setVoltage(i + 1, (int16_t)voltageSlider_->get(i));
 }
 
-void PumpWindow::setFreq() {
-  pp_->setFreq(freqSlider_->get(0));
-}
+void PumpWindow::setFreq() { pp_->setFreq(freqSlider_->get(0)); }
 
 // (ON = TRUE = Close = LOW, OFF = FALSE = Open = high)
 void PumpWindow::setValves() {

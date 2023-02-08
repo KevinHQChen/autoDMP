@@ -41,7 +41,8 @@ public:
         ImGui::VSliderInt(label.c_str(), sliderSize_, &values_[i], min_, max_, format_.c_str());
     }
     ImGui::EndGroup();
-    callback_();
+    if (callback_)
+      callback_();
   }
 
   int get(int index) const { return values_[index]; }

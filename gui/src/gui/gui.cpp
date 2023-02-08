@@ -410,6 +410,7 @@ void GUI::showCtrlSetup() {
           vec.Erase();
       }
 
+      ImGui::PopStyleVar();
       ImGui::End();
     }
   }

@@ -9,8 +9,8 @@
 #include "window.hpp"
 #include <ctrl/state/state.hpp>
 
-#include "implot.h"
 #include "gui/components/implot_helpers.hpp"
+#include "implot.h"
 
 #define NUM_CHANS 3
 
