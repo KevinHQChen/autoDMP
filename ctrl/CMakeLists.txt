@@ -5,7 +5,7 @@ add_library(ctrl
   "./src/ctrl/state/state0.cpp"
   "./src/ctrl/state/state1.cpp"
   "./src/ctrl/state/state2.cpp")
-target_link_libraries(ctrl PRIVATE project_options project_warnings)
+# target_link_libraries(ctrl PRIVATE project_options project_warnings)
 
 # includes
 set(ctrl_INCLUDE_DIR

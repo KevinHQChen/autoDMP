@@ -1,5 +1,5 @@
 add_library(imcap "./src/imcap/imcap.cpp")
-target_link_libraries(imcap PRIVATE project_options project_warnings)
+# target_link_libraries(imcap PRIVATE project_options project_warnings)
 
 # includes
 set(imcap_INCLUDE_DIR

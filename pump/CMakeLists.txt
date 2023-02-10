@@ -1,5 +1,5 @@
 add_library(pump "./src/pump/pump.cpp")
-target_link_libraries(pump PRIVATE project_options project_warnings)
+# target_link_libraries(pump PRIVATE project_options project_warnings)
 
 # includes
 set(pump_INCLUDE_DIR

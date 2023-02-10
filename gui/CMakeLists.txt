@@ -8,10 +8,20 @@ add_library(gui
   "./src/gui/windows/sysid_window.cpp")
   # "./src/gui/windows/ctrl_setup_window.cpp"
   # "./src/gui/windows/ctrl_window.cpp")
-
-target_link_libraries(gui PRIVATE project_options project_warnings)
+# target_link_libraries(gui PRIVATE project_options project_warnings)
 
 # includes
+include(FetchContent)
+Set(FETCHCONTENT_QUIET FALSE)
+FetchContent_Declare(
+    imgui_bundle
+    GIT_REPOSITORY https://github.com/pthom/imgui_bundle.git
+    GIT_PROGRESS TRUE
+    # Enter the desired git tag below
+    GIT_TAG main
+)
+FetchContent_MakeAvailable(imgui_bundle)
+
 set(gui_INCLUDE_DIR
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
   CACHE STRING "")
@@ -21,12 +31,9 @@ target_include_directories(gui PUBLIC
 
 # find dependencies
 set(gui_DEPENDENCIES_CONFIGURED
-    imgui
-    implot
-    OpenGL
+    # OpenGL
     GLEW
     # glfw3
-    # SDL2
     CACHE STRING "")
 foreach (dep ${gui_DEPENDENCIES_CONFIGURED})
   find_package(${dep} REQUIRED)
@@ -43,12 +50,10 @@ target_link_system_libraries(gui PRIVATE
   imcap
   cam
   pump
-  imgui::imgui
-  implot::implot
-  ${OPENGL_opengl_LIBRARY}
+  # ${OPENGL_opengl_LIBRARY}
   GLEW::GLEW
-  glfw
-  # SDL2::SDL2 SDL2::SDL2main SDL2::SDL2-static
+  # glfw
+  imgui_bundle
 )
 
 # tests

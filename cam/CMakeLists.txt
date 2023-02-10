@@ -2,7 +2,7 @@ add_library(cam "./src/cam/cam.cpp")
 
 # This depends on andor, opencv libraries
 # https://www.pragmaticlinux.com/2022/03/how-to-link-a-shared-library-with-gcc-and-cmake/
-target_link_libraries(cam PRIVATE project_options project_warnings)
+# target_link_libraries(cam PRIVATE project_options project_warnings)
 
 # includes
 set(cam_INCLUDE_DIR

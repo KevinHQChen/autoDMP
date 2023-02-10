@@ -59,31 +59,31 @@ string(
 
 # the variables set using CACHE STRING "" are passed to package_project
 
-package_project(
-  TARGETS
-  autoDMP
-  # these libraries cannot be packaged as the target include directories include the build directory (TODO why is this the case?)
-  # util
-  # cam
-  # gui
-  # imcap
-  # improc
-  project_options
-  project_warnings
-  INTERFACE_DEPENDENCIES_CONFIGURED
-  # ${my_header_lib_DEPENDENCIES_CONFIGURED}
-  INTERFACE_INCLUDES
-  # ${my_header_lib_INCLUDE_DIR}
-  PUBLIC_INCLUDES
-  # ${util_INCLUDE_DIR}
-  # ${cam_INCLUDE_DIR}
-  # ${gui_INCLUDE_DIR}
-  # ${imcap_INCLUDE_DIR}
-  # ${improc_INCLUDE_DIR}
-)
+# package_project(
+#   TARGETS
+#   autoDMP
+#   # these libraries cannot be packaged as the target include directories include the build directory (TODO why is this the case?)
+#   # util
+#   # cam
+#   # gui
+#   # imcap
+#   # improc
+#   project_options
+#   project_warnings
+#   INTERFACE_DEPENDENCIES_CONFIGURED
+#   # ${my_header_lib_DEPENDENCIES_CONFIGURED}
+#   INTERFACE_INCLUDES
+#   # ${my_header_lib_INCLUDE_DIR}
+#   PUBLIC_INCLUDES
+#   # ${util_INCLUDE_DIR}
+#   # ${cam_INCLUDE_DIR}
+#   # ${gui_INCLUDE_DIR}
+#   # ${imcap_INCLUDE_DIR}
+#   # ${improc_INCLUDE_DIR}
+# )
 
-set(CPACK_PACKAGE_FILE_NAME
-    "${CMAKE_PROJECT_NAME}-${CMAKE_PROJECT_VERSION}-${GIT_SHORT_SHA}-${CMAKE_SYSTEM_NAME}-${CMAKE_BUILD_TYPE}-${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION}"
-)
+# set(CPACK_PACKAGE_FILE_NAME
+#     "${CMAKE_PROJECT_NAME}-${CMAKE_PROJECT_VERSION}-${GIT_SHORT_SHA}-${CMAKE_SYSTEM_NAME}-${CMAKE_BUILD_TYPE}-${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION}"
+# )
 
-include(CPack)
+# include(CPack)

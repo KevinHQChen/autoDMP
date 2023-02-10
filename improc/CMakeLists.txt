@@ -1,7 +1,7 @@
 add_library(improc
     "./src/improc/improc.cpp"
     "./src/improc/improc_helpers.cpp")
-target_link_libraries(improc PRIVATE project_options project_warnings)
+# target_link_libraries(improc PRIVATE project_options project_warnings)
 
 # includes
 set(improc_INCLUDE_DIR

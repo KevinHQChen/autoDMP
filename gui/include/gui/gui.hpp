@@ -1,16 +1,17 @@
 #pragma once
 
 #include "gui/windows.hpp"
-#include "imgui.h"
-#include "implot.h"
+#include "immapp/immapp.h"
+#include "implot/implot.h"
+#include "imgui_md_wrapper.h"
 
 // renderers
-#include "imgui_impl_opengl3.h"
+#include "imgui/backends/imgui_impl_opengl3.h"
 #include <GL/glew.h>
 
 // platforms
 // glfw (more direct access to OpenGL) is a lower level alternative to SDL
-#include "imgui_impl_glfw.h"
+#include "imgui/backends/imgui_impl_glfw.h"
 #include <GLFW/glfw3.h>
 // SDL is more suited for 2D game dev
 // #include "imgui_impl_sdl.h"
@@ -26,6 +27,7 @@
 #include "pump/pump.hpp"
 #include "util/util.hpp"
 
+#include <cmath>
 #include <cstdio>
 
 struct GUIEvent {
@@ -99,6 +101,9 @@ inline void displayArray3b(const char *arrName, bool arr[3], const char *helpTex
 }
 
 class GUI {
+  HelloImGui::SimpleRunnerParams runnerParams;
+  ImmApp::AddOnsParams addOnsParams;
+
   ordered_value conf;
   guiConfig guiConf;
 
