@@ -4,8 +4,7 @@
 #include "gui/components/button.hpp"
 #include "gui/components/checkboxarray.hpp"
 #include "gui/components/dropdown.hpp"
-#include "gui/components/sliderfloatarray.hpp"
-#include "gui/components/sliderint.hpp"
+#include "gui/components/slider.hpp"
 #include "window.hpp"
 #include <ctrl/state/state.hpp>
 
@@ -31,11 +30,11 @@ class SysIdWindow : public Window {
   std::unique_ptr<Button> stopExcitationSignalBtn_;
   std::unique_ptr<Button> clearDataBtn_;
   std::unique_ptr<Dropdown> excitationSignalDropdown_;
-  std::unique_ptr<SliderFloatArray> minValSlider_;
-  std::unique_ptr<SliderFloatArray> maxValSlider_;
-  std::unique_ptr<SliderFloatArray> urefSlider_;
+  std::unique_ptr<Slider<float>> minValSlider_;
+  std::unique_ptr<Slider<float>> maxValSlider_;
+  std::unique_ptr<Slider<float>> urefSlider_;
   std::unique_ptr<CheckboxArray> chSelect_;
-  std::unique_ptr<SliderInt> numSampleSlider_;
+  std::unique_ptr<Slider<int>> numSampleSlider_;
 
   std::vector<std::string> excitationSignalTypes_ = {"sine", "square", "triangle", "sawtooth"};
 

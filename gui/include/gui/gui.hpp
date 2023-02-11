@@ -1,9 +1,9 @@
 #pragma once
 
 #include "gui/windows.hpp"
+#include "imgui_md_wrapper.h"
 #include "immapp/immapp.h"
 #include "implot/implot.h"
-#include "imgui_md_wrapper.h"
 
 // renderers
 #include "imgui/backends/imgui_impl_opengl3.h"
@@ -101,7 +101,7 @@ inline void displayArray3b(const char *arrName, bool arr[3], const char *helpTex
 }
 
 class GUI {
-  HelloImGui::SimpleRunnerParams runnerParams;
+  HelloImGui::RunnerParams runnerParams;
   ImmApp::AddOnsParams addOnsParams;
 
   ordered_value conf;
@@ -128,7 +128,7 @@ class GUI {
   ImGuiWindowFlags imCapFlags = 0;
   // ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
   ImGuiWindowFlags imProcSetupFlags = 0;
-  bool needToQuit{false};
+  bool fullScreen{false};
 
   // real time plotting
   ImPlotAxisFlags implotFlags = ImPlotAxisFlags_NoTickLabels;
@@ -189,7 +189,10 @@ public:
   GUI();
   ~GUI();
   void startGUIThread();
-  std::optional<int> render();
+  void imguiConfig();
+  void imguiStyle();
+  void render();
+  void renderMenu();
   int imguiMain();
 
   void showRawImCap();
@@ -200,8 +203,6 @@ public:
   void showCtrl();
   void showSysIDSetup();
   void showSysID();
-
-  void contextMenu(bool enable);
 
   std::thread guiThread;
 };
