@@ -18,8 +18,6 @@
 // #include <SDL2/SDL.h>
 // #include <SDL2/SDL_opengl.h>
 
-#include <stdio.h>
-
 #include "ctrl/supervisor.hpp"
 #include "gui/guiframe.hpp"
 #include "imcap/imcap.hpp"
@@ -112,23 +110,8 @@ class GUI {
   std::shared_ptr<Pump> pump;
   std::shared_ptr<Supervisor> sv;
 
-  GLFWwindow *window;
-  std::optional<std::pair<int, int>> newSize{};
-  std::vector<GLuint> procTextureIDs;
-  ImGuiDockNodeFlags dockNodeFlags = ImGuiDockNodeFlags_PassthruCentralNode;
-  // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
-  // because it would be confusing to have two docking targets within each others.
-  // When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background
-  // and handle the pass-thru hole, so we ask Begin() to not render a background.
-  ImGuiWindowFlags dockSpaceFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking |
-                                    ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
-                                    ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-                                    ImGuiWindowFlags_NoBringToFrontOnFocus |
-                                    ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoBackground;
   ImGuiWindowFlags imCapFlags = 0;
   // ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
-  ImGuiWindowFlags imProcSetupFlags = 0;
-  bool fullScreen{false};
 
   // real time plotting
   ImPlotAxisFlags implotFlags = ImPlotAxisFlags_NoTickLabels;
@@ -161,7 +144,6 @@ class GUI {
   GUIEvent currEvent;
   std::deque<GUIEvent> guiEventQueue;
   int openAction = -1;
-  bool syncPump1_2 = true;
   int dropletLength = 0;
 
   // template matching interactions
@@ -198,7 +180,6 @@ public:
   void showRawImCap();
   void showImProcSetup();
   void showImProc();
-  void showPumpSetup();
   void showCtrlSetup();
   void showCtrl();
   void showSysIDSetup();

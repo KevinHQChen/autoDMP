@@ -45,7 +45,7 @@ GUI::GUI()
   runnerParams.callbacks.SetupImGuiConfig = [this]() { imguiConfig(); };
   runnerParams.callbacks.SetupImGuiStyle = [this]() { imguiStyle(); };
   ImGuiTheme::ImGuiTweakedTheme theme;
-  theme.Theme = ImGuiTheme::ImGuiTheme_::ImGuiTheme_GrayVariations_Darker;
+  theme.Theme = ImGuiTheme::ImGuiTheme_::ImGuiTheme_MaterialFlat;
   runnerParams.imGuiWindowParams.tweakedTheme = theme;
   // runnerParams.callbacks.LoadAdditionalFonts = [this]() { LoadFonts(); };
 
@@ -83,7 +83,8 @@ GUI::~GUI() {
 }
 
 void GUI::showRawImCap() {
-  if(ImGui::IsKeyPressed(ImGuiKey_C)) guiConf.startImCap = !guiConf.startImCap;
+  if (ImGui::IsKeyPressed(ImGuiKey_C))
+    guiConf.startImCap = !guiConf.startImCap;
   if (guiConf.startImCap) {
     imCap->startCaptureThread();
 
@@ -99,7 +100,8 @@ void GUI::showRawImCap() {
 }
 
 void GUI::showImProcSetup() {
-  if(ImGui::IsKeyPressed(ImGuiKey_S)) guiConf.startImProcSetup = !guiConf.startImProcSetup;
+  if (ImGui::IsKeyPressed(ImGuiKey_S))
+    guiConf.startImProcSetup = !guiConf.startImProcSetup;
   imProc->setSetupStatus(guiConf.startImProcSetup);
   if (guiConf.startImProcSetup) {
     if (ImGui::Begin("ImProc Setup", &guiConf.startImProcSetup)) {
@@ -187,7 +189,8 @@ void GUI::showImProcSetup() {
 }
 
 void GUI::showImProc() {
-  if(ImGui::IsKeyPressed(ImGuiKey_I)) guiConf.startImProc = !guiConf.startImProc;
+  if (ImGui::IsKeyPressed(ImGuiKey_I))
+    guiConf.startImProc = !guiConf.startImProc;
   if (guiConf.startImProc) {
     imProc->startProcThread();
     for (int idx = 0; idx < toml::get<int>(conf["improc"]["numChans"]); ++idx) {
@@ -211,72 +214,6 @@ void GUI::showImProc() {
     }
   } else
     imProc->stopProcThread();
-}
-
-void GUI::showPumpSetup() {
-  if (guiConf.startPumpSetup) {
-    if (ImGui::Begin("Pump Setup", &guiConf.startPumpSetup)) {
-      for (int i = 0; i < 4; ++i) {
-        ImGui::PushID(i);
-        ImGui::VSliderInt("##pump", ImVec2(36, 200), &pump->pumpVoltages[i], 0, 250, "%d V");
-        if (ImGui::IsItemActive() || ImGui::IsItemHovered())
-          ImGui::SetTooltip("%d", pump->pumpVoltages[i]);
-        ImGui::PopID();
-        ImGui::SameLine();
-
-        pump->setVoltage(i + 1, (int16_t)pump->pumpVoltages[i]);
-      }
-
-      ImGui::VSliderInt("##freq", ImVec2(36, 200), &pump->freq, 0, 800, "%d Hz\nFreq");
-      pump->setFreq(pump->freq);
-
-      for (int i = 0; i < 4; ++i) {
-        if (i != 0)
-          ImGui::SameLine();
-        if (pump->valveState[i]) {
-          std::string tmplabel = "Open\nValve " + std::to_string(i + 1);
-          if (ImGui::Button(tmplabel.c_str(), ImVec2(36, 0)))
-            pump->setValve(i + 1, false);
-        } else {
-          std::string tmplabel = "Close\nValve " + std::to_string(i + 1);
-          if (ImGui::Button(tmplabel.c_str(), ImVec2(36, 0)))
-            pump->setValve(i + 1, true);
-        }
-      }
-
-      if (!syncPump1_2) {
-        if (ImGui::Button("Sync Pump 1 & 2"))
-          syncPump1_2 = true;
-      } else {
-        if (ImGui::Button("Unsync Pump 1 & 2"))
-          syncPump1_2 = false;
-      }
-
-      if (syncPump1_2) {
-        pump->pumpVoltages[1] = pump->pumpVoltages[0];
-        pump->setVoltage(2, (int16_t)pump->pumpVoltages[1]);
-      }
-
-      if (ImGui::Button("Reset Pump")) {
-        for (int i = 0; i < 4; ++i) {
-          pump->setValve(i + 1, false);
-          pump->pumpVoltages[i] = 0;
-          pump->setVoltage(i + 1, 0);
-        }
-      }
-
-      if (ImGui::Button("Set State0 uref")) {
-        pump->pumpVoltages[0] = 135;
-        pump->pumpVoltages[1] = 135;
-        pump->pumpVoltages[2] = 101;
-        pump->pumpVoltages[3] = 101;
-        for (int i = 0; i < 4; ++i)
-          pump->setVoltage(i + 1, (int16_t)pump->pumpVoltages[i]);
-      }
-
-      ImGui::End();
-    }
-  }
 }
 
 void GUI::showCtrlSetup() {
@@ -538,7 +475,6 @@ void GUI::showCtrlSetup() {
 //   } else
 //     sv->stopSysIDThread();
 // }
-
 void GUI::showCtrl() {
   if (guiConf.startCtrl) {
     sv->startThread();
@@ -596,12 +532,12 @@ void GUI::renderMenu() {
 }
 
 void GUI::render() {
-  if(ImGui::IsKeyPressed(ImGuiKey_Q)) runnerParams.appShallExit = true;
+  if (ImGui::IsKeyPressed(ImGuiKey_Q))
+    runnerParams.appShallExit = true;
   showRawImCap();
   showImProcSetup();
   showImProc();
   pumpWindow_->render();
-  // showPumpSetup();
   showCtrlSetup();
   showCtrl();
   sysIDWindow_->render();

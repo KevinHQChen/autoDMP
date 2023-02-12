@@ -4,25 +4,25 @@ namespace gui {
 
 SysIdWindow::SysIdWindow(std::shared_ptr<Supervisor> sv) : sv_(sv) {
   chSelect_ = std::make_unique<CheckboxArray>("Channel", NUM_CHANS);
-  numSampleSlider_ = std::make_unique<Slider<int>>("Num Samples", 0, 4000);
+  numSampleSlider_ = std::make_unique<Slider<int>>("Num Samples", 0, 4000, &numSamples_);
   excitationSignalDropdown_ =
       std::make_unique<Dropdown>("Excitation Signal Type:", excitationSignalTypes_);
-  excitationSignalPreviewBtn_ = std::make_unique<Button>("Preview Excitation Signal",
+  excitationSignalPreviewBtn_ = std::make_unique<Button>("Preview Excitation Signal", nullptr,
                                                          [this]() { previewExcitationSignal(); });
-  toggleExcitationSignalBtn_ =
-      std::make_unique<Button>("Toggle Excitation Signal", [this]() { toggleExcitationSignal(); });
+  toggleExcitationSignalBtn_ = std::make_unique<Button>("Toggle Excitation Signal", nullptr,
+                                                        [this]() { toggleExcitationSignal(); });
   minValSlider_ =
-      std::make_unique<Slider<float>>("Excitation Signal Min Value", 0.0f, 10.0f, "%d", NUM_CHANS);
+      std::make_unique<SliderArray<float>>("Excitation Signal Min Value", 0.0f, 10.0f, &minVal_);
   maxValSlider_ =
-      std::make_unique<Slider<float>>("Excitation Signal Max Value", 0.0f, 10.0f, "%d", NUM_CHANS);
-  urefSlider_ = std::make_unique<Slider<float>>("Control Signal Setpoint (uref)", 0.0f, 10.0f, "%d",
-                                                NUM_CHANS);
-  sendExcitationSignalBtn_ =
-      std::make_unique<Button>("Send Excitation Signal", [this]() { sendExcitationSignal(); });
-  stopExcitationSignalBtn_ =
-      std::make_unique<Button>("Stop Excitation Signal", [this]() { stopExcitationSignal(); });
+      std::make_unique<SliderArray<float>>("Excitation Signal Max Value", 0.0f, 10.0f, &maxVal_);
+  urefSlider_ =
+      std::make_unique<SliderArray<float>>("Control Signal Setpoint (uref)", 0.0f, 10.0f, &uref_);
+  sendExcitationSignalBtn_ = std::make_unique<Button>("Send Excitation Signal", nullptr,
+                                                      [this]() { sendExcitationSignal(); });
+  stopExcitationSignalBtn_ = std::make_unique<Button>("Stop Excitation Signal", nullptr,
+                                                      [this]() { stopExcitationSignal(); });
   clearDataBtn_ =
-      std::make_unique<Button>("Clear ctrlDataQueue", [this]() { clearCtrlDataQueue(); });
+      std::make_unique<Button>("Clear ctrlDataQueue", nullptr, [this]() { clearCtrlDataQueue(); });
   // This is how you can add callbacks to the window
   // registerCallback([this]() { excitationSignalDropdown_->render(); });
 }
@@ -63,11 +63,10 @@ void SysIdWindow::render() {
   }
 
   if (sysIDWindowVisible_) {
-    float *uref = urefSlider_->get();
+    std::vector<float> uref = urefSlider_->get();
 
     sv_->startSysIDThread(Eigen::Vector3d(uref[0], uref[1], uref[2]), chSelect_->get(),
-                          minValSlider_->get(), maxValSlider_->get(),
-                          numSampleSlider_->get(0));
+                          minValSlider_->get(), maxValSlider_->get(), numSampleSlider_->get());
 
     if (ImGui::Begin("SysID", &sysIDWindowVisible_)) {
       guiTime += ImGui::GetIO().DeltaTime;

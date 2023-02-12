@@ -73,8 +73,8 @@ void Supervisor::start() {
   }
 }
 
-void Supervisor::startSysIDThread(Eigen::Vector3d uref, bool *selChs, float *minVals,
-                                  float *maxVals, unsigned int samples) {
+void Supervisor::startSysIDThread(Eigen::Vector3d uref, bool *selChs, std::vector<float> minVals,
+                                  std::vector<float> maxVals, unsigned int samples) {
   if (!startedSysID()) {
     info("Starting SysID...");
     startedSysIDFlag = true;

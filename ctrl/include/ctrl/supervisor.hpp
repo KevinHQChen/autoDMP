@@ -45,8 +45,8 @@ public:
 
   void startThread();
   void stopThread();
-  void startSysIDThread(Eigen::Vector3d uref, bool *selChs, float *minVals, float *maxVals,
-                        unsigned int samples);
+  void startSysIDThread(Eigen::Vector3d uref, bool *selChs, std::vector<float> minVals,
+                        std::vector<float> maxVals, unsigned int samples);
   void stopSysIDThread();
   bool started();
   bool startedSysID();
@@ -70,8 +70,8 @@ public:
   }
 
   template <typename T>
-  void updateState(Eigen::Vector3d uref, bool *selChs, float *minVals, float *maxVals,
-                   unsigned int samples) {
+  void updateState(Eigen::Vector3d uref, bool *selChs, std::vector<float> minVals,
+                   std::vector<float> maxVals, unsigned int samples) {
     delete currState_;
     currState_ = new T(this, uref, selChs, minVals, maxVals, samples);
   }

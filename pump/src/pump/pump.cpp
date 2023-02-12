@@ -128,20 +128,20 @@ bool Pump::setVoltage(unsigned int pumpIdx, int16_t voltage) {
   std::lock_guard lock(mutex);
 
   // Check if voltage is different from current voltage, return early if it's the same
-  if (voltage == prevPumpVoltages[pumpIdx - 1])
+  if (voltage == prevPumpVoltages[pumpIdx])
     return true;
 
-  auto presCommand = "P" + std::to_string(pumpIdx) + "V" + std::to_string(voltage) + "\r\n";
+  auto presCommand = "P" + std::to_string(pumpIdx + 1) + "V" + std::to_string(voltage) + "\r\n";
 
   if (!simModeActive && (!sendCmd(presCommand, 4) || std::strncmp("OK", readData, 2) != 0)) {
-    error("Error setting pump {} to {} V.", pumpIdx, voltage);
+    error("Error setting pump {} to {} V.", pumpIdx + 1, voltage);
     return false;
   }
 
-  // sim mode is active
-  pumpVoltages[pumpIdx - 1] = voltage;
-  prevPumpVoltages[pumpIdx - 1] = voltage;
-  info("Pump {} set to {} V.", pumpIdx, voltage);
+  // sim mode is active or command was successful
+  pumpVoltages[pumpIdx] = voltage;
+  prevPumpVoltages[pumpIdx] = voltage;
+  info("Pump {} set to {} V.", pumpIdx + 1, voltage);
   return true;
 }
 
@@ -170,11 +170,8 @@ void Pump::setFreq(int freq_) {
 }
 
 void Pump::setValve(unsigned int valveIdx, bool state) {
-  if (valveState[valveIdx - 1] == state)
-    return;
-
   if (simModeActive) {
-    valveState[valveIdx - 1] = state;
+    valveState[valveIdx] = state;
     info("Valve {} set to {}.", valveIdx, state ? "ON" : "OFF");
     return;
   }
@@ -187,10 +184,10 @@ void Pump::setValve(unsigned int valveIdx, bool state) {
 
   sendCmd(valveCommand, 4);
   if (std::strncmp("OK", readData, 2) != 0)
-    error("Error setting valve {} to {}.", valveIdx, state ? "ON" : "OFF");
+    error("Error setting valve {} to {}.", valveIdx + 1, state ? "ON" : "OFF");
   else {
-    valveState[valveIdx - 1] = state;
-    info("Valve {} set to {}.", valveIdx, state ? "ON" : "OFF");
+    valveState[valveIdx] = state;
+    info("Valve {} set to {}.", valveIdx + 1, state ? "ON" : "OFF");
   }
 }
 
@@ -217,8 +214,8 @@ bool Pump::sendCmd(std::string cmd, int len) {
 
 void Pump::sendSigs(Eigen::Matrix<int16_t, 3, 1> u) {
   // channel -> pump mapping
+  setVoltage(0, u(0)); // ch1 = P1, P2
   setVoltage(1, u(0)); // ch1 = P1, P2
-  setVoltage(2, u(0)); // ch1 = P1, P2
-  setVoltage(3, u(1)); // ch2 = P3
-  setVoltage(4, u(2)); // ch3 = P4
+  setVoltage(2, u(1)); // ch2 = P3
+  setVoltage(3, u(2)); // ch3 = P4
 }

@@ -8,8 +8,8 @@ using namespace py::literals;
 
 class SysIDState : public State {
   bool *selChs_;
-  float *minVals_;
-  float *maxVals_;
+  std::vector<float> minVals_;
+  std::vector<float> maxVals_;
   unsigned int numSamples_;
   int stp = 0;
   py::object simMeas;
@@ -17,8 +17,8 @@ class SysIDState : public State {
 public:
   bool simMeasAvail_ = true, trueMeasAvail_ = true;
   SysIDState(Supervisor *sv, Eigen::Vector3d uref);
-  SysIDState(Supervisor *sv, Eigen::Vector3d uref, bool *selChs, float *minVals, float *maxVals,
-             unsigned int numSamples);
+  SysIDState(Supervisor *sv, Eigen::Vector3d uref, bool *selChs, std::vector<float> minVals,
+             std::vector<float> maxVals, unsigned int numSamples);
   ~SysIDState();
 
   virtual bool measurementAvailable() override;

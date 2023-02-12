@@ -30,15 +30,20 @@ class SysIdWindow : public Window {
   std::unique_ptr<Button> stopExcitationSignalBtn_;
   std::unique_ptr<Button> clearDataBtn_;
   std::unique_ptr<Dropdown> excitationSignalDropdown_;
-  std::unique_ptr<Slider<float>> minValSlider_;
-  std::unique_ptr<Slider<float>> maxValSlider_;
-  std::unique_ptr<Slider<float>> urefSlider_;
+  std::unique_ptr<SliderArray<float>> minValSlider_;
+  std::unique_ptr<SliderArray<float>> maxValSlider_;
+  std::unique_ptr<SliderArray<float>> urefSlider_;
   std::unique_ptr<CheckboxArray> chSelect_;
   std::unique_ptr<Slider<int>> numSampleSlider_;
 
   std::vector<std::string> excitationSignalTypes_ = {"sine", "square", "triangle", "sawtooth"};
 
   bool sysIDWindowVisible_ = false;
+  int numSamples_ = 1000;
+  std::vector<float> minVal_{std::vector<float>(NUM_CHANS, 0.0f)};
+  std::vector<float> maxVal_{std::vector<float>(NUM_CHANS, 1.0f)};
+  std::vector<float> uref_{std::vector<float>(NUM_CHANS, 1.0f)};
+
   float guiTime{0.0f}, history{30.0f};
   ScrollingBuffer u0, u1, u2, du0, du1, du2;
   ScrollingBuffer y0, y1, y2, yref0, yref1, yref2;

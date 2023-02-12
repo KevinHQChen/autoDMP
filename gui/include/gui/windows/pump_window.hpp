@@ -1,8 +1,6 @@
 #pragma once
 
 #include "gui/components/button.hpp"
-#include "gui/components/checkboxarray.hpp"
-#include "gui/components/dropdown.hpp"
 #include "gui/components/slider.hpp"
 #include "pump/pump.hpp"
 #include "window.hpp"
@@ -13,19 +11,19 @@
 namespace gui {
 
 class PumpWindow : public Window {
-  bool controlFlag_{false};
-
   void setPumps();
   void setValves();
   void setFreq();
   void resetPump();
 
+  bool controlFlag_{false};
+
   std::shared_ptr<Pump> pp_;
 
-  std::unique_ptr<Slider<int>> voltageSlider_;
+  std::unique_ptr<SliderArray<int>> voltageSlider_;
   std::unique_ptr<Slider<int>> freqSlider_;
-  std::unique_ptr<Button> valveOnOff_;
-  std::unique_ptr<Button> controlOnOff_;
+  std::unique_ptr<ToggleArray> valveToggle_;
+  std::unique_ptr<Toggle> controlToggle_;
   std::unique_ptr<Button> resetBtn_;
 
 public:

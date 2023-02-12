@@ -14,8 +14,9 @@ SysIDState::SysIDState(Supervisor *sv, Eigen::Vector3d uref_)
   simMeas = py::module::import("sim_meas").attr("sim_meas");
 }
 
-SysIDState::SysIDState(Supervisor *sv, Eigen::Vector3d uref, bool *selChs, float *minVals,
-                       float *maxVals, unsigned int numSamples)
+SysIDState::SysIDState(Supervisor *sv, Eigen::Vector3d uref, bool *selChs,
+                       std::vector<float> minVals, std::vector<float> maxVals,
+                       unsigned int numSamples)
     : State(sv, uref,
             Eigen::Vector3d(sv->imProc->impConf.getChanBBox()[0].height,
                             sv->imProc->impConf.getRotChanBBox()[1].height,
