@@ -46,10 +46,8 @@ public:
   void startThread();
   void stopThread();
   void startSysIDThread(Eigen::Vector3d uref, bool *selChs, std::vector<float> minVals,
-                        std::vector<float> maxVals, unsigned int samples);
+                        std::vector<float> maxVals, Eigen::MatrixXd &data);
   void stopSysIDThread();
-  bool started();
-  bool startedSysID();
 
   void addEvent(int srcState, int destState, Eigen::Vector3d pos, Eigen::Vector3d vel);
 
@@ -71,9 +69,9 @@ public:
 
   template <typename T>
   void updateState(Eigen::Vector3d uref, bool *selChs, std::vector<float> minVals,
-                   std::vector<float> maxVals, unsigned int samples) {
+                   std::vector<float> maxVals, Eigen::MatrixXd &data) {
     delete currState_;
-    currState_ = new T(this, uref, selChs, minVals, maxVals, samples);
+    currState_ = new T(this, uref, selChs, minVals, maxVals, data);
   }
 
   std::string getDataPath() const { return dataPath; }

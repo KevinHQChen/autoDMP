@@ -1,6 +1,6 @@
 #pragma once
 
-// #define USEFGTPUMP FALSE
+#define USEFGTPUMP FALSE
 #define USEPIEZOPUMP TRUE
 
 #include "util/util.hpp"
@@ -11,9 +11,9 @@
 #include <termios.h> // Contains POSIX terminal control definitions
 #include <unistd.h>  // write(), read(), close()
 
-// #if USEFGTPUMP == TRUE
-// #include "fgt_SDK_Cpp.h" // include wrapper to fgt_SDK dll, functions can also be accessed by
-// loading the dll #endif
+#if USEFGTPUMP == TRUE
+#include "fgt_SDK_Cpp.h" // include wrapper to fgt_SDK dll, functions can also be accessed by loading the dll
+#endif
 
 class Pump {
 public:
@@ -45,22 +45,22 @@ public:
   void sendSigs(Eigen::Matrix<int16_t, 3, 1> u);
 
 private:
-  // #if USEFGTPUMP == TRUE
-  //   // structures holding controller/instrument identification and details
-  //   fgt_CHANNEL_INFO channelInfo[256];       // each idx represents one channel
-  //                                            // (numPressureChannels)
-  //   fgt_CONTROLLER_INFO controllerInfo[256]; // each idx represents one
-  //                                            // controller (numControllers)
-  //   fgt_INSTRUMENT_TYPE instrumentType[256]; // None for each idx w/o an instrument
-  //   unsigned short SN[256];                  // Zero for each idx w/o an instrument
+#if USEFGTPUMP == TRUE
+  // structures holding controller/instrument identification and details
+  fgt_CHANNEL_INFO channelInfo[256];       // each idx represents one channel
+                                           // (numPressureChannels)
+  fgt_CONTROLLER_INFO controllerInfo[256]; // each idx represents one
+                                           // controller (numControllers)
+  fgt_INSTRUMENT_TYPE instrumentType[256]; // None for each idx w/o an instrument
+  unsigned short SN[256];                  // Zero for each idx w/o an instrument
 
-  //   unsigned char numControllers = 0;
-  //   unsigned char numPressureChannels = 0;
-  //   // unsigned int pressureIdx = 0;				// pressure
-  //   // channel index, 0 if first detected channel of list
-  //   float minPressure;
-  //   float maxPressure;
-  // #endif
+  unsigned char numControllers = 0;
+  unsigned char numPressureChannels = 0;
+  // unsigned int pressureIdx = 0;				// pressure
+  // channel index, 0 if first detected channel of list
+  float minPressure;
+  float maxPressure;
+#endif
 
 #if USEPIEZOPUMP == TRUE
   int serialPort;

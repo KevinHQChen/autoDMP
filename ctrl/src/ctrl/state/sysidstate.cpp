@@ -8,32 +8,30 @@ SysIDState::SysIDState(Supervisor *sv, Eigen::Vector3d uref_)
                             sv->imProc->impConf.getRotChanBBox()[2].height)) {
   // clear all improc queues
   sv_->imProc->clearProcDataQueues();
-  py::initialize_interpreter();
-  py::eval_file("scripts/sysid.py"); // import sysid functions
+  // py::initialize_interpreter();
+  // py::eval_file("scripts/sysid.py"); // import sysid functions
 
-  simMeas = py::module::import("sim_meas").attr("sim_meas");
+  // simMeas = py::module::import("sim_meas").attr("sim_meas");
 }
 
 SysIDState::SysIDState(Supervisor *sv, Eigen::Vector3d uref, bool *selChs,
-                       std::vector<float> minVals, std::vector<float> maxVals,
-                       unsigned int numSamples)
+                       std::vector<float> minVals, std::vector<float> maxVals, Eigen::MatrixXd &data)
     : State(sv, uref,
             Eigen::Vector3d(sv->imProc->impConf.getChanBBox()[0].height,
                             sv->imProc->impConf.getRotChanBBox()[1].height,
                             sv->imProc->impConf.getRotChanBBox()[2].height)),
-      selChs_(selChs), minVals_(minVals), maxVals_(maxVals), numSamples_(numSamples) {
+      selChs_(selChs), minVals_(minVals), maxVals_(maxVals), excitationSignal_(data) {
   // clear all improc queues
   sv_->imProc->clearProcDataQueues();
-  py::initialize_interpreter();
-  py::eval_file("scripts/sysid.py"); // import sysid functions
+  // py::initialize_interpreter();
+  // py::eval_file("scripts/sysid.py"); // import sysid functions
 
-  simMeas = py::module::import("sim_meas").attr("sim_meas");
-  // incFcn = py::module::import("__main__").attr("incrementfcn");
+  // simMeas = py::module::import("sim_meas").attr("sim_meas");
 }
 
 SysIDState::~SysIDState() {
   // clean up any resources used by current state here
-  py::finalize_interpreter();
+  // py::finalize_interpreter();
 }
 
 // check for new measurements on selected channels
@@ -72,14 +70,20 @@ Eigen::Matrix<int16_t, 3, 1> SysIDState::step() {
 
   // apply updated control signal to pump
 
-  std::cout << "the c++ value before calling the python script: " << stp << std::endl;
+  // std::cout << "the c++ value before calling the python script: " << stp << std::endl;
 
-  if (!simMeas.is_none())
-    stp = simMeas(stp).cast<int>();
+  // if (!simMeas.is_none())
+  //   stp = simMeas(stp).cast<int>();
 
-  std::cout << "the c++ value after calling the python script: " << stp << std::endl;
+  // std::cout << "the c++ value after calling the python script: " << stp << std::endl;
 
-  u = uref + du;
+  if (stp/4 < excitationSignal_.cols()) {
+    du = excitationSignal_.col(stp/4);
+    u = uref + du;
+    ++stp;
+  } else
+    u = uref;
+
   sv_->ctrlDataQueuePtr->out << u(0) << ", " << u(1) << ", " << u(2) << ", ";
   sv_->ctrlDataQueuePtr->out << y(0) << ", " << y(1) << ", " << y(2) << "\n";
   return u.cast<int16_t>();

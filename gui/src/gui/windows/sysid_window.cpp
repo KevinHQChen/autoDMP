@@ -5,18 +5,14 @@ namespace gui {
 SysIdWindow::SysIdWindow(std::shared_ptr<Supervisor> sv) : sv_(sv) {
   chSelect_ = std::make_unique<CheckboxArray>("Channel", NUM_CHANS);
   numSampleSlider_ = std::make_unique<Slider<int>>("Num Samples", 0, 4000, &numSamples_);
-  excitationSignalDropdown_ =
-      std::make_unique<Dropdown>("Excitation Signal Type:", excitationSignalTypes_);
-  excitationSignalPreviewBtn_ = std::make_unique<Button>("Preview Excitation Signal", nullptr,
-                                                         [this]() { previewExcitationSignal(); });
-  toggleExcitationSignalBtn_ = std::make_unique<Button>("Toggle Excitation Signal", nullptr,
-                                                        [this]() { toggleExcitationSignal(); });
+  excitationSignalDropdown_ = std::make_unique<Dropdown>(
+      "Excitation Signal Type:", excitationSignalTypes_, [this]() { generateExcitationSignal(); });
   minValSlider_ =
-      std::make_unique<SliderArray<float>>("Excitation Signal Min Value", 0.0f, 10.0f, &minVal_);
+      std::make_unique<SliderArray<float>>("Excitation Signal Min Value", -10.0f, 0.0f, &minVal_);
   maxValSlider_ =
       std::make_unique<SliderArray<float>>("Excitation Signal Max Value", 0.0f, 10.0f, &maxVal_);
   urefSlider_ =
-      std::make_unique<SliderArray<float>>("Control Signal Setpoint (uref)", 0.0f, 10.0f, &uref_);
+      std::make_unique<SliderArray<float>>("Control Signal Setpoint (uref)", 0.0f, 200.0f, &uref_);
   sendExcitationSignalBtn_ = std::make_unique<Button>("Send Excitation Signal", nullptr,
                                                       [this]() { sendExcitationSignal(); });
   stopExcitationSignalBtn_ = std::make_unique<Button>("Stop Excitation Signal", nullptr,
@@ -28,8 +24,6 @@ SysIdWindow::SysIdWindow(std::shared_ptr<Supervisor> sv) : sv_(sv) {
 }
 
 SysIdWindow::~SysIdWindow() {
-  excitationSignalPreviewBtn_.reset();
-  toggleExcitationSignalBtn_.reset();
   sendExcitationSignalBtn_.reset();
   excitationSignalDropdown_.reset();
   minValSlider_.reset();
@@ -45,6 +39,7 @@ void SysIdWindow::render() {
   if (visible_) {
     if (ImGui::Begin("SysId Setup", &visible_)) {
       ImGui::Text("Configure Excitation Signal");
+      ImGui::Separator();
 
       chSelect_->render();
       minValSlider_->render();
@@ -52,8 +47,6 @@ void SysIdWindow::render() {
       urefSlider_->render();
       numSampleSlider_->render();
       excitationSignalDropdown_->render();
-      excitationSignalPreviewBtn_->render();
-      toggleExcitationSignalBtn_->render();
       sendExcitationSignalBtn_->render();
       stopExcitationSignalBtn_->render();
       clearDataBtn_->render();
@@ -66,7 +59,7 @@ void SysIdWindow::render() {
     std::vector<float> uref = urefSlider_->get();
 
     sv_->startSysIDThread(Eigen::Vector3d(uref[0], uref[1], uref[2]), chSelect_->get(),
-                          minValSlider_->get(), maxValSlider_->get(), numSampleSlider_->get());
+                          minValSlider_->get(), maxValSlider_->get(), excitationSignal_);
 
     if (ImGui::Begin("SysID", &sysIDWindowVisible_)) {
       guiTime += ImGui::GetIO().DeltaTime;
@@ -87,9 +80,24 @@ void SysIdWindow::render() {
     sv_->stopSysIDThread();
 }
 
-void SysIdWindow::previewExcitationSignal() { info("Previewing excitation signal"); }
+void SysIdWindow::generateExcitationSignal() {
+  if (excitationSignalDropdown_->getItem() == "prbs") {
+    info("Generating excitation signal...");
+    py::gil_scoped_acquire acquire;
+    py::eval_file("ctrl/scripts/sysid.py"); // import sysid functions
+    py::object prbs = py::module::import("prbs").attr("prbs");
+    py::list chSel;
+    for (int i = 0; i < NUM_CHANS; i++)
+      if (chSelect_->get()[i])
+        chSel.append(chSelect_->get()[i]);
 
-void SysIdWindow::toggleExcitationSignal() { info("Toggling excitation signal"); }
+    excitationSignal_ =
+        prbs(chSel, minValSlider_->get(), maxValSlider_->get(), numSampleSlider_->get())
+            .cast<Eigen::MatrixXd>();
+  }
+
+  info("Excitation signal dimensions: {}x{}", excitationSignal_.rows(), excitationSignal_.cols());
+}
 
 void SysIdWindow::sendExcitationSignal() { sysIDWindowVisible_ = true; }
 

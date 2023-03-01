@@ -18,7 +18,7 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/pthom/imgui_bundle.git
     GIT_PROGRESS TRUE
     # Enter the desired git tag below
-    GIT_TAG main
+    GIT_TAG "v0.8.5"
 )
 FetchContent_MakeAvailable(imgui_bundle)
 

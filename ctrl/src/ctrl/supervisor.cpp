@@ -20,7 +20,7 @@ Supervisor::~Supervisor() {
 }
 
 void Supervisor::startThread() {
-  if (!started()) {
+  if (!startedCtrl) {
     info("Starting Supervisor...");
     startedCtrl = true;
     imProc->clearProcFrameQueues();
@@ -37,7 +37,7 @@ void Supervisor::startThread() {
 }
 
 void Supervisor::stopThread() {
-  if (started()) {
+  if (startedCtrl) {
     info("Stopping Supervisor...");
     startedCtrl = false;
     if (ctrlThread.joinable())
@@ -50,7 +50,7 @@ void Supervisor::stopThread() {
 }
 
 void Supervisor::start() {
-  while (started()) {
+  while (startedCtrl) {
     if (currState_->measurementAvailable()) {
       currState_->updateMeasurement();
 
@@ -74,22 +74,22 @@ void Supervisor::start() {
 }
 
 void Supervisor::startSysIDThread(Eigen::Vector3d uref, bool *selChs, std::vector<float> minVals,
-                                  std::vector<float> maxVals, unsigned int samples) {
-  if (!startedSysID()) {
+                                  std::vector<float> maxVals, Eigen::MatrixXd &data) {
+  if (!startedSysIDFlag) {
     info("Starting SysID...");
     startedSysIDFlag = true;
 
     if (!simModeActive)
       pump->setFreq(200);
 
-    updateState<SysIDState>(uref, selChs, minVals, maxVals, samples);
+    updateState<SysIDState>(uref, selChs, minVals, maxVals, data);
     sysIDThread = std::thread(&Supervisor::startSysID, this);
     sysIDThread.detach();
   }
 }
 
 void Supervisor::stopSysIDThread() {
-  if (startedSysID()) {
+  if (startedSysIDFlag) {
     info("Stopping SysID...");
     startedSysIDFlag = false;
 
@@ -105,7 +105,7 @@ void Supervisor::stopSysIDThread() {
 }
 
 void Supervisor::startSysID() {
-  while (startedSysID()) {
+  while (startedSysIDFlag) {
     if (currState_->measurementAvailable()) {
 
       currState_->updateMeasurement();
@@ -118,16 +118,6 @@ void Supervisor::startSysID() {
   }
 }
 
-bool Supervisor::started() { return startedCtrl; }
-
-bool Supervisor::startedSysID() { return startedSysIDFlag; }
-
 void Supervisor::addEvent(int srcState, int destState, Eigen::Vector3d pos, Eigen::Vector3d vel) {
   eventQueue_->push(new Event(srcState, destState, pos, vel));
 }
-
-// Eigen::Matrix<int16_t, 3, 1> Supervisor::getCtrlData() {
-//     if (!ctrlDataQueuePtr->empty())
-//         return ctrlDataQueuePtr->get();
-//     return Eigen::Matrix<int16_t, 3, 1>::Zero();
-// }

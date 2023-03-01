@@ -8,6 +8,7 @@ set(autoDMP_INCLUDE_DIR
 target_include_directories(autoDMP PRIVATE ${autoDMP_INCLUDE_DIR})
 
 # link dependencies
+target_link_options(autoDMP PUBLIC "LINKER:-export-dynamic")
 target_link_system_libraries(autoDMP PRIVATE
   util
   cam

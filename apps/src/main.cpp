@@ -5,8 +5,13 @@
 
 #include "gui/gui.hpp"
 
+namespace py = pybind11;
+using namespace py::literals;
+
 // NOLINTNEXTLINE(bugprone-exception-escape)
 int main(int, const char **) {
+  py::scoped_interpreter python;
+  py::gil_scoped_release release; // add this to release the GIL
   GUI gui;
   gui.startGUIThread();
 }

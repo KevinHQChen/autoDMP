@@ -10,22 +10,27 @@
 
 #include "gui/components/implot_helpers.hpp"
 #include "implot/implot.h"
+#include <pybind11/eigen.h>
+#include <pybind11/numpy.h>
+#include <pybind11/embed.h>
+#include <pybind11/stl.h>
 
 #define NUM_CHANS 3
 
+
 namespace gui {
 
+namespace py = pybind11;
+using namespace py::literals;
+
 class SysIdWindow : public Window {
-  void previewExcitationSignal();
-  void toggleExcitationSignal();
+  void generateExcitationSignal();
   void sendExcitationSignal();
   void stopExcitationSignal();
   void clearCtrlDataQueue();
 
   std::shared_ptr<Supervisor> sv_;
 
-  std::unique_ptr<Button> excitationSignalPreviewBtn_;
-  std::unique_ptr<Button> toggleExcitationSignalBtn_;
   std::unique_ptr<Button> sendExcitationSignalBtn_;
   std::unique_ptr<Button> stopExcitationSignalBtn_;
   std::unique_ptr<Button> clearDataBtn_;
@@ -36,7 +41,10 @@ class SysIdWindow : public Window {
   std::unique_ptr<CheckboxArray> chSelect_;
   std::unique_ptr<Slider<int>> numSampleSlider_;
 
-  std::vector<std::string> excitationSignalTypes_ = {"sine", "square", "triangle", "sawtooth"};
+  std::vector<std::string> excitationSignalTypes_ = {"prbs", "sine", "square", "triangle",
+                                                     "sawtooth"};
+  Eigen::MatrixXd excitationSignal_;
+  // py::object prbs;
 
   bool sysIDWindowVisible_ = false;
   int numSamples_ = 1000;

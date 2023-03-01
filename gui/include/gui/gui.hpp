@@ -28,6 +28,9 @@
 #include <cmath>
 #include <cstdio>
 
+namespace py = pybind11;
+using namespace py::literals;
+
 struct GUIEvent {
   int srcState = 0;
   int destState = 0;

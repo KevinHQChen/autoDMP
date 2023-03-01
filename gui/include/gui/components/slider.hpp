@@ -40,9 +40,9 @@ public:
   typename std::enable_if<std::is_floating_point<U>::value, void>
   renderFloatSlider(std::string label) {
     if (horizontal_)
-      ImGui::SliderFloat(label.c_str(), (float *)value_, min_, max_, format_.c_str());
+      ImGui::SliderFloat(label.c_str(), (float *)value_, min_, max_);
     else
-      ImGui::VSliderFloat(label.c_str(), sliderSize_, (float *)value_, min_, max_, format_.c_str());
+      ImGui::VSliderFloat(label.c_str(), sliderSize_, (float *)value_, min_, max_);
   }
 
   void render() {
@@ -74,7 +74,7 @@ template <typename T> class SliderArray {
   std::function<void()> callback_;
 
 public:
-  SliderArray(std::string label, T min, T max, std::vector<T> *values, int numSliders = 1,
+  SliderArray(std::string label, T min, T max, std::vector<T> *values = nullptr, int numSliders = 1,
               std::string format = "%d", ImVec2 sliderSize = ImVec2(36, 200),
               bool horizontal = true, std::function<void()> callback = nullptr)
       : label_(label), min_(min), max_(max), values_(values), format_(format),
@@ -101,14 +101,14 @@ public:
   typename std::enable_if<std::is_floating_point<U>::value, void>
   renderFloatSlider(std::string label, int idx) {
     if (horizontal_)
-      ImGui::SliderFloat(label.c_str(), (float *)&(*values_)[idx], min_, max_, format_.c_str());
+      ImGui::SliderFloat(label.c_str(), (float *)&(*values_)[idx], min_, max_);
     else
-      ImGui::VSliderFloat(label.c_str(), sliderSize_, (float *)&(*values_)[idx], min_, max_,
-                          format_.c_str());
+      ImGui::VSliderFloat(label.c_str(), sliderSize_, (float *)&(*values_)[idx], min_, max_);
   }
 
   void render() {
     ImGui::BeginGroup();
+    ImGui::Text("%s", label_.c_str());
     for (int i = 0; i < numSliders_; ++i) {
       std::string label = "##" + label_ + std::to_string(i);
       if (std::is_integral<T>::value)
@@ -118,7 +118,6 @@ public:
       if (!horizontal_)
         ImGui::SameLine();
     }
-    ImGui::Text("%s", label_.c_str());
     ImGui::EndGroup();
     if (callback_)
       callback_();
