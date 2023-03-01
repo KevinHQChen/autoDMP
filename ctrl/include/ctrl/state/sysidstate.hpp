@@ -11,11 +11,10 @@ class SysIDState : public State {
   std::vector<float> maxVals_;
   int stp = 0;
   py::object simMeas;
-  Eigen::MatrixXd &excitationSignal_;
+  Eigen::MatrixXd excitationSignal_;
 
 public:
   bool simMeasAvail_ = true, trueMeasAvail_ = true;
-  SysIDState(Supervisor *sv, Eigen::Vector3d uref);
   SysIDState(Supervisor *sv, Eigen::Vector3d uref, bool *selChs, std::vector<float> minVals,
              std::vector<float> maxVals, Eigen::MatrixXd &data);
   ~SysIDState();

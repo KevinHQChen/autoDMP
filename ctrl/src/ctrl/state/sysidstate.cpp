@@ -1,21 +1,9 @@
 #include "ctrl/state/sysidstate.hpp"
 #include "ctrl/supervisor.hpp"
 
-SysIDState::SysIDState(Supervisor *sv, Eigen::Vector3d uref_)
-    : State(sv, uref_,
-            Eigen::Vector3d(sv->imProc->impConf.getChanBBox()[0].height,
-                            sv->imProc->impConf.getRotChanBBox()[1].height,
-                            sv->imProc->impConf.getRotChanBBox()[2].height)) {
-  // clear all improc queues
-  sv_->imProc->clearProcDataQueues();
-  // py::initialize_interpreter();
-  // py::eval_file("scripts/sysid.py"); // import sysid functions
-
-  // simMeas = py::module::import("sim_meas").attr("sim_meas");
-}
-
 SysIDState::SysIDState(Supervisor *sv, Eigen::Vector3d uref, bool *selChs,
-                       std::vector<float> minVals, std::vector<float> maxVals, Eigen::MatrixXd &data)
+                       std::vector<float> minVals, std::vector<float> maxVals,
+                       Eigen::MatrixXd &data)
     : State(sv, uref,
             Eigen::Vector3d(sv->imProc->impConf.getChanBBox()[0].height,
                             sv->imProc->impConf.getRotChanBBox()[1].height,
@@ -55,8 +43,12 @@ void SysIDState::updateMeasurement() {
     for (int i = 0; i < 3; ++i)
       if (selChs_[i])
         y(i) = sv_->imProc->procDataQArr[i]->get().loc.y;
-  } else // use simulated measurement based on a noisy second order model
-    y = simMeas(u, y).cast<Eigen::Vector3d>();
+  } else
+    for (int i = 0; i < 3; ++i)
+      if (selChs_[i])
+        y(i) = 50 + (std::rand() % (600 - 50 + 1));
+  // TODO use simulated measurement based on a noisy second order model
+  // y = simMeas(u, y).cast<Eigen::Vector3d>();
 
   for (int i = 0; i < 3; ++i)
     if (selChs_[i])
@@ -77,8 +69,9 @@ Eigen::Matrix<int16_t, 3, 1> SysIDState::step() {
 
   // std::cout << "the c++ value after calling the python script: " << stp << std::endl;
 
-  if (stp/4 < excitationSignal_.cols()) {
-    du = excitationSignal_.col(stp/4);
+  // 4 is the ideal clock period
+  if (stp / 4 < excitationSignal_.cols()) {
+    du = excitationSignal_.col(stp / 4);
     u = uref + du;
     ++stp;
   } else

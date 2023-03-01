@@ -11,12 +11,11 @@
 #include "gui/components/implot_helpers.hpp"
 #include "implot/implot.h"
 #include <pybind11/eigen.h>
-#include <pybind11/numpy.h>
 #include <pybind11/embed.h>
+#include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 
 #define NUM_CHANS 3
-
 
 namespace gui {
 
@@ -73,7 +72,8 @@ public:
       ImPlot::SetupAxisLimits(ImAxis_Y1, yMin, yMax);
       for (auto &vec : vecs)
         ImPlot::PlotLine(vec.second.c_str(), &vec.first->Data[0].x, &vec.first->Data[0].y,
-                         vec.first->Data.size(), vec.first->Offset, 2 * sizeof(float));
+                         vec.first->Data.size(), 0, vec.first->Offset, 2 * sizeof(float));
+
       ImPlot::EndPlot();
     }
   }

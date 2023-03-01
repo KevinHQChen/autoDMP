@@ -129,7 +129,7 @@ bool Pump::setVoltage(unsigned int pumpIdx, int16_t voltage) {
 
 #if USEFGTPUMP == TRUE
 
-  if(!simModeActive)
+  if (!simModeActive)
     Fgt_set_pressure(pumpIdx, voltage);
 
   // sim mode is active or command was successful

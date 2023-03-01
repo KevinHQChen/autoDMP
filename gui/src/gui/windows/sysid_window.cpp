@@ -70,7 +70,7 @@ void SysIdWindow::render() {
       y1.AddPoint(guiTime, sv_->currState_->y(1));
       y2.AddPoint(guiTime, sv_->currState_->y(2));
 
-      ImGui::SliderFloat("History", &history, 1, 30, "%.1f s");
+      ImGui::SliderFloat("History", &history, 1, 60, "%.1f s");
 
       plotVector3d("##Control Input", "time (s)", "voltage (V)", 0, 250, sysidCtrlVecs);
       plotVector3d("##Measured Output", "time (s)", "position (px)", -500, 500, sysidMeasVecs);
@@ -99,10 +99,25 @@ void SysIdWindow::generateExcitationSignal() {
   info("Excitation signal dimensions: {}x{}", excitationSignal_.rows(), excitationSignal_.cols());
 }
 
-void SysIdWindow::sendExcitationSignal() { sysIDWindowVisible_ = true; }
+void SysIdWindow::sendExcitationSignal() {
+  if (sendExcitationSignalBtn_->get()) {
+    info("Sending excitation signal...");
+    sysIDWindowVisible_ = true;
+  }
+}
 
-void SysIdWindow::stopExcitationSignal() { sysIDWindowVisible_ = false; }
+void SysIdWindow::stopExcitationSignal() {
+  if (stopExcitationSignalBtn_->get()) {
+    info("Stopping excitation signal...");
+    sysIDWindowVisible_ = false;
+  }
+}
 
-void SysIdWindow::clearCtrlDataQueue() { sv_->ctrlDataQueuePtr->clearFile(); }
+void SysIdWindow::clearCtrlDataQueue() {
+  if (clearDataBtn_->get()) {
+    info("Clearing ctrlDataQueue...");
+    sv_->ctrlDataQueuePtr->clearFile();
+  }
+}
 
 } // namespace gui
