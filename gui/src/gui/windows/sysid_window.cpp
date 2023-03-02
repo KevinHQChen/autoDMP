@@ -107,7 +107,6 @@ void SysIdWindow::generateExcitationSignal() {
   if (excitationSignalDropdown_->getItem() == "prbs") {
     info("Generating excitation signal...");
     py::gil_scoped_acquire acquire;
-    // py::eval_file("ctrl/scripts/sysid.py"); // import sysid functions
     py::object prbs = py::module::import("prbs").attr("prbs");
     py::list chSel;
     for (int i = 0; i < NUM_CHANS; i++)
