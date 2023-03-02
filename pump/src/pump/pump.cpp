@@ -4,7 +4,7 @@ Pump::Pump(bool simModeActive) : simModeActive(simModeActive) {
   if (simModeActive)
     return;
 
-#if USEFGTPUMP == TRUE
+#ifdef USEFGTPUMP
   // detect number/type of instrument controllers and their serial numbers
   numControllers = Fgt_detect(SN, instrumentType);
   std::cout << "Number of controllers detected: " << int(numControllers) << "\n";
@@ -46,7 +46,7 @@ Pump::Pump(bool simModeActive) : simModeActive(simModeActive) {
   }
 #endif
 
-#if USEPIEZOPUMP == TRUE
+#ifdef USEPIEZOPUMP
   // open serial port and check for errors (refer to:
   // https://blog.mbedded.ninja/programming/operating-systems/linux/linux-serial-ports-using-c-cpp/#overview)
   serialPort = open("/dev/ttyACM0", O_RDWR);
@@ -110,7 +110,7 @@ Pump::~Pump() {
   if (simModeActive)
     return;
 
-#if USEFGTPUMP == TRUE
+#ifdef USEFGTPUMP
   // set all pressures to 0mbar before closing
   for (unsigned char chanIdx = 0; chanIdx < numPressureChannels; chanIdx++)
     Fgt_set_pressure(channelInfo[chanIdx].index, 0);
@@ -118,7 +118,7 @@ Pump::~Pump() {
   Fgt_close();
 #endif
 
-#if USEPIEZOPUMP == TRUE
+#ifdef USEPIEZOPUMP
   info("Closing pump serial port {}", ttyname(serialPort));
   close(serialPort);
 #endif
@@ -127,7 +127,10 @@ Pump::~Pump() {
 bool Pump::setVoltage(unsigned int pumpIdx, int16_t voltage) {
   std::lock_guard lock(mutex);
 
-#if USEFGTPUMP == TRUE
+#ifdef USEFGTPUMP
+  // Check if voltage is different from current voltage, return early if it's the same
+  if (voltage == prevPumpVoltages[pumpIdx])
+    return true;
 
   if (!simModeActive)
     Fgt_set_pressure(pumpIdx, voltage);
@@ -139,7 +142,7 @@ bool Pump::setVoltage(unsigned int pumpIdx, int16_t voltage) {
   return true;
 #endif
 
-#if USEPIEZOPUMP == TRUE
+#ifdef USEPIEZOPUMP
   // Check if voltage is different from current voltage, return early if it's the same
   if (voltage == prevPumpVoltages[pumpIdx])
     return true;
@@ -160,7 +163,7 @@ bool Pump::setVoltage(unsigned int pumpIdx, int16_t voltage) {
 }
 
 void Pump::setFreq(int freq_) {
-#if USEPIEZOPUMP == TRUE
+#ifdef USEPIEZOPUMP
   if (freq_ == prevFreq)
     return;
 
@@ -186,7 +189,7 @@ void Pump::setFreq(int freq_) {
 }
 
 void Pump::setValve(unsigned int valveIdx, bool state) {
-#if USEPIEZOPUMP == TRUE
+#ifdef USEPIEZOPUMP
   if (simModeActive) {
     valveState[valveIdx] = state;
     info("Valve {} set to {}.", valveIdx, state ? "ON" : "OFF");
@@ -210,7 +213,7 @@ void Pump::setValve(unsigned int valveIdx, bool state) {
 }
 
 bool Pump::sendCmd(std::string cmd, int len) {
-#if USEPIEZOPUMP == TRUE
+#ifdef USEPIEZOPUMP
   bool ret = true;
   delete readData;
   readData = new char[len];

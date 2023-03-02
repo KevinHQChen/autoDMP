@@ -1,7 +1,7 @@
 #pragma once
 
-#define USEFGTPUMP FALSE
-#define USEPIEZOPUMP TRUE
+#define USEFGTPUMP
+// #define USEPIEZOPUMP FALSE
 
 #include "util/util.hpp"
 
@@ -11,7 +11,7 @@
 #include <termios.h> // Contains POSIX terminal control definitions
 #include <unistd.h>  // write(), read(), close()
 
-#if USEFGTPUMP == TRUE
+#ifdef USEFGTPUMP
 #include "fgt_SDK_Cpp.h" // include wrapper to fgt_SDK dll, functions can also be accessed by loading the dll
 #endif
 
@@ -45,7 +45,9 @@ public:
   void sendSigs(Eigen::Matrix<int16_t, 3, 1> u);
 
 private:
-#if USEFGTPUMP == TRUE
+  std::mutex mutex;
+
+#ifdef USEFGTPUMP
   // structures holding controller/instrument identification and details
   fgt_CHANNEL_INFO channelInfo[256];       // each idx represents one channel
                                            // (numPressureChannels)
@@ -62,13 +64,12 @@ private:
   float maxPressure;
 #endif
 
-#if USEPIEZOPUMP == TRUE
+#ifdef USEPIEZOPUMP
   int serialPort;
   // Create new termios struct, we call it 'tty' for convention
   // No need for "= {0}" at the end as we'll immediately write the existing
   // config to this struct
   termios tty;
   char *readData{nullptr};
-  std::mutex mutex;
 #endif
 };

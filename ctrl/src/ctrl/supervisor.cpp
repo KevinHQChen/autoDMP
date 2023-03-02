@@ -29,8 +29,10 @@ void Supervisor::startThread() {
     updateState<State0>(Eigen::Vector3d(116, 90, 134));
     // updateState<State1>(Eigen::Vector3d(90, 60, 50));
     // updateState<State2>(Eigen::Vector3d(135, 101, 101));
+#ifdef USEPIEZOPUMP
     if (!simModeActive)
       pump->setFreq(200);
+#endif
     ctrlThread = std::thread(&Supervisor::start, this);
     ctrlThread.detach();
   }
@@ -79,8 +81,10 @@ void Supervisor::startSysIDThread(Eigen::Vector3d uref, bool *selChs, std::vecto
     info("Starting SysID...");
     startedSysIDFlag = true;
 
+#ifdef USEPIEZOPUMP
     if (!simModeActive)
       pump->setFreq(200);
+#endif
 
     updateState<SysIDState>(uref, selChs, minVals, maxVals, data);
     sysIDThread = std::thread(&Supervisor::startSysID, this);
