@@ -43,6 +43,7 @@ class SysIdWindow : public Window {
   std::vector<std::string> excitationSignalTypes_ = {"prbs", "sine", "square", "triangle",
                                                      "sawtooth"};
   Eigen::MatrixXd excitationSignal_;
+  std::vector<double> timeVec_, u0Vec_, u1Vec_, u2Vec_;
   // py::object prbs;
 
   bool sysIDWindowVisible_ = false;

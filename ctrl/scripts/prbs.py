@@ -1,14 +1,11 @@
-# import traceback
-# try:
-#     import numpy
-# except:
-#     traceback.print_exc()
+import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import max_len_seq, periodogram
 from numpy.fft import fft, ifft, fftshift, fftfreq
 
 def prbs(selCh, minVal, maxVal, order):
-    """function that generates a PRBS sequence.
+    """
+    function that generates a PRBS sequence.
     Parameters
     ----------
     selCh : bool array
@@ -25,11 +22,25 @@ def prbs(selCh, minVal, maxVal, order):
         PRBS sequence.
     """
     print(selCh)
+    numCh = selCh.count(True)
+
     prbs = np.zeros((3, 2**order-1))
 
     print('Generating PRBS sequence...')
     for i in range(len(selCh)):
         if selCh[i]:
-            prbs_1_period = max_len_seq(order)[0] * (maxVal[i] - minVal[i]) - minVal[i]
+            prbs_1_period = max_len_seq(order)[0] * (maxVal[i] - minVal[i]) + minVal[i]
             prbs[i, :] = prbs_1_period
+
+    firstCh = True
+    if numCh > 1:
+        flipped_prbs = np.copy(prbs)
+        for i in range(len(selCh)):
+            if selCh[i]:
+                if firstCh:
+                    firstCh = False
+                else:
+                    flipped_prbs[i, :] = -prbs[i, :]
+        prbs = np.concatenate((prbs, flipped_prbs), axis=1)
+
     return prbs

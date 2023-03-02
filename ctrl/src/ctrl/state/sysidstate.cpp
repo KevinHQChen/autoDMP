@@ -11,9 +11,7 @@ SysIDState::SysIDState(Supervisor *sv, Eigen::Vector3d uref, bool *selChs,
       selChs_(selChs), minVals_(minVals), maxVals_(maxVals), excitationSignal_(data) {
   // clear all improc queues
   sv_->imProc->clearProcDataQueues();
-  // py::initialize_interpreter();
-  // py::eval_file("scripts/sysid.py"); // import sysid functions
-
+  // py::gil_scoped_acquire acquire;
   // simMeas = py::module::import("sim_meas").attr("sim_meas");
 }
 

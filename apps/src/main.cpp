@@ -11,6 +11,7 @@ using namespace py::literals;
 // NOLINTNEXTLINE(bugprone-exception-escape)
 int main(int, const char **) {
   py::scoped_interpreter python;
+  py::eval_file("ctrl/scripts/sysid.py"); // import sysid functions
   py::gil_scoped_release release; // add this to release the GIL
   GUI gui;
   gui.startGUIThread();

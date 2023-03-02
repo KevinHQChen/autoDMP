@@ -51,6 +51,29 @@ void SysIdWindow::render() {
       stopExcitationSignalBtn_->render();
       clearDataBtn_->render();
 
+      ImGui::Separator();
+
+      if (excitationSignal_.size() != 0) {
+        timeVec_.clear();
+        u0Vec_.clear();
+        u1Vec_.clear();
+        u2Vec_.clear();
+        for (int i = 0; i < excitationSignal_.cols(); ++i) {
+          timeVec_.push_back(i * 0.1);
+          u0Vec_.push_back(excitationSignal_(0, i));
+          u1Vec_.push_back(excitationSignal_(1, i));
+          u2Vec_.push_back(excitationSignal_(2, i));
+        }
+
+        if (ImPlot::BeginPlot("Preview")) {
+          ImPlot::SetupAxes("time (s)", "Input");
+          ImPlot::PlotLine("u0", timeVec_.data(), u0Vec_.data(), excitationSignal_.cols());
+          ImPlot::PlotLine("u1", timeVec_.data(), u1Vec_.data(), excitationSignal_.cols());
+          ImPlot::PlotLine("u2", timeVec_.data(), u2Vec_.data(), excitationSignal_.cols());
+          ImPlot::EndPlot();
+        }
+      }
+
       ImGui::End();
     }
   }
@@ -84,12 +107,11 @@ void SysIdWindow::generateExcitationSignal() {
   if (excitationSignalDropdown_->getItem() == "prbs") {
     info("Generating excitation signal...");
     py::gil_scoped_acquire acquire;
-    py::eval_file("ctrl/scripts/sysid.py"); // import sysid functions
+    // py::eval_file("ctrl/scripts/sysid.py"); // import sysid functions
     py::object prbs = py::module::import("prbs").attr("prbs");
     py::list chSel;
     for (int i = 0; i < NUM_CHANS; i++)
-      if (chSelect_->get()[i])
-        chSel.append(chSelect_->get()[i]);
+      chSel.append(chSelect_->get()[i]);
 
     excitationSignal_ =
         prbs(chSel, minValSlider_->get(), maxValSlider_->get(), numSampleSlider_->get())
