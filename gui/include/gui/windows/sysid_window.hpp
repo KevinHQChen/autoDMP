@@ -74,7 +74,6 @@ public:
       for (auto &vec : vecs)
         ImPlot::PlotLine(vec.second.c_str(), &vec.first->Data[0].x, &vec.first->Data[0].y,
                          vec.first->Data.size(), 0, vec.first->Offset, 2 * sizeof(float));
-
       ImPlot::EndPlot();
     }
   }

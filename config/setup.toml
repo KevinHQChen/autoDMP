@@ -92,7 +92,7 @@ numChans    = 3
 confPath    = "/autoDMP/config/ctrl/"
 dataPath    = "/autoDMP/data/ctrl/"
 # perform all steps but don't send control signal to pump [bool]
-simMode         = false
+simMode         = true
 
 [postproc]
 # path for improc data

@@ -4,7 +4,7 @@ namespace gui {
 
 PumpWindow::PumpWindow(std::shared_ptr<Pump> pp) : pp_(pp) {
   voltageSlider_ =
-      std::make_unique<SliderArray<int>>("Pump\nVoltage", 0, 1200, &pp_->pumpVoltages, NUM_PUMPS,
+      std::make_unique<SliderArray<int>>("Pump\nVoltage", 0, 250, &pp_->pumpVoltages, NUM_PUMPS,
                                          "%d V", ImVec2(40, 200), false, [this]() { setPumps(); });
   freqSlider_ = std::make_unique<Slider<int>>("Frequency", 0, 800, &pp_->freq, "%d Hz",
                                               ImVec2(0, 0), true, [this]() { setFreq(); });

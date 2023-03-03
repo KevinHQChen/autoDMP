@@ -73,7 +73,6 @@ void SysIdWindow::render() {
           ImPlot::EndPlot();
         }
       }
-
       ImGui::End();
     }
   }
