@@ -33,7 +33,7 @@ Cam::Cam(int cameraIdx, ordered_value conf)
   } else if (toml::get<std::string>(camConf["source"]) == "File")
     offlineCam = new cv::VideoCapture(toml::get<std::string>(camConf["File"]));
   else if (toml::get<std::string>(camConf["source"]) == "Webcam")
-    offlineCam = new cv::VideoCapture(0);
+    offlineCam = new cv::VideoCapture(2);
 }
 
 Cam::~Cam() {

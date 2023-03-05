@@ -33,8 +33,9 @@ GUI::GUI()
   info("Parsed config: {}", toml::find(conf, "gui"));
   sysIDWindow_ = std::make_shared<gui::SysIdWindow>(sv);
   pumpWindow_ = std::make_shared<gui::PumpWindow>(pump);
-  // for documentation on runnerParam members, go to the associated header file
+  imProcWindow_ = std::make_shared<gui::ImProcWindow>(imCap, imProc);
 
+  // for documentation on runnerParam members, go to the associated header file
   runnerParams.appWindowParams.windowTitle = "autoDMP";
   runnerParams.appWindowParams.windowGeometry.fullScreenMode =
       HelloImGui::FullScreenMode::FullMonitorWorkArea;
@@ -89,10 +90,10 @@ void GUI::showRawImCap() {
     imCap->startCaptureThread();
 
     if (ImGui::Begin("Raw Image Capture", &guiConf.startImCap, imCapFlags)) {
-      rawFrame = imCap->getRawFrame();
-      (rawFrame.empty)
-          ? ImGui::Text("No image available")
-          : ImGui::Image((ImTextureID)rawFrame.texture, ImVec2(rawFrame.width, rawFrame.height));
+      pre = imCap->getRawFrame();
+      if (!pre.empty())
+        raw = pre.clone();
+      ImmVision::Image("##raw", raw, &immvisionParams);
       ImGui::End();
     }
   } else

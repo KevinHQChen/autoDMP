@@ -169,6 +169,7 @@ class GUI {
 
   std::shared_ptr<gui::SysIdWindow> sysIDWindow_;
   std::shared_ptr<gui::PumpWindow> pumpWindow_;
+  std::shared_ptr<gui::ImProcWindow> imProcWindow_;
 
 public:
   GUI();
