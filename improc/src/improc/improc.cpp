@@ -89,21 +89,12 @@ void ImProc::start() {
         for (int ch = 0; ch < numChans; ++ch) {
           // use chanPose to crop preFrame
           tempPreFrame = tempFrame(impConf.getChanBBox()[ch]);
-          if (impConf.getRotAngle()[ch] != 0) {
-            // assume tempPreFrame is square
-            cv::RotatedRect rr = cv::RotatedRect(
-                cv::Point2f(tempPreFrame.cols / 2, tempPreFrame.rows / 2),
-                cv::Size2f(impConf.getRotChanBBox()[ch].width, impConf.getRotChanBBox()[ch].height),
-                impConf.getRotAngle()[ch]);
-            cv::Point2f vertices[4];
-            rr.points(vertices);
-            for (int i = 0; i < 4; ++i)
-              cv::line(tempPreFrame, vertices[i], vertices[(i + 1) % 4], cv::Scalar::all(0), 1);
-            rotateMat(tempPreFrame, tempProcFrame, impConf.getRotAngle()[ch]);
-            tempPreFrame = tempProcFrame(impConf.getRotChanBBox()[ch]);
-          } else
-            cv::rectangle(tempFrame, impConf.getChanBBox()[ch], cv::Scalar::all(0));
+          if (impConf.getRotAngle()[ch] == 90)
+            cv::rotate(tempPreFrame, tempPreFrame, cv::ROTATE_90_COUNTERCLOCKWISE);
+          else if (impConf.getRotAngle()[ch] == -90)
+            cv::rotate(tempPreFrame, tempPreFrame, cv::ROTATE_90_CLOCKWISE);
           tempProcFrame = tempPreFrame;
+          cv::rectangle(tempFrame, impConf.getChanBBox()[ch], cv::Scalar::all(0));
 
           // if setup is currently active, use tmplBBox to update tmplImg
           if (startedSetup && ch == 0) {

@@ -27,8 +27,8 @@ public:
   std::vector<cv::Rect> rotChanBBox_;
 
   ImProcConfig()
-      : rotAngle_{0, -135, 135}, junction_(cv::Point(200, 200)),
-        bbox_(cv::Rect(0, 0, junction_.x * 3, junction_.y * 2)), tmplBBox_(cv::Rect(5, 5, 90, 90)),
+      : rotAngle_{0, -90, 90}, junction_(cv::Point(200, 200)),
+        bbox_(cv::Rect(0, 0, junction_.x * 2, junction_.y * 2)), tmplBBox_(cv::Rect(5, 5, 90, 90)),
         chanWidth_(100) {
     // generate sensible defaults
     for (int i = 0; i < NUM_TEMPLATES; ++i)

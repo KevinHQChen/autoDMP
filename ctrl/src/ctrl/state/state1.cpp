@@ -6,8 +6,8 @@
 
 State1::State1(Supervisor *sv, Eigen::Vector3d uref_)
     : State(sv, uref_,
-            Eigen::Vector3d(0, sv->imProc->impConf.getRotChanBBox()[1].height,
-                            sv->imProc->impConf.getRotChanBBox()[2].height)),
+            Eigen::Vector3d(0, sv->imProc->impConf.getChanBBox()[1].width,
+                            sv->imProc->impConf.getChanBBox()[2].width)),
       mdl(new MDL<state, numX, numY, numU>(sv)) {
   // clear all improc queues
   sv_->imProc->clearProcDataQueues();

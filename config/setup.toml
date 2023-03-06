@@ -22,8 +22,8 @@ pauseCtrlDataViz = false
 showDebug = false
 
 [cam]
-# select camera source [string: "Webcam"/"File"/"Andor"]
-source      = "Webcam"
+# select camera source [string: "Webcam"/"USBcam"/"File"/"Andor"]
+source      = "USBcam"
 # if source = "File", the selected video file is used [string]
 file        = ""
 

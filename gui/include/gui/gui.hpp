@@ -5,21 +5,7 @@
 #include "immapp/immapp.h"
 #include "implot/implot.h"
 
-// renderers
-#include "imgui/backends/imgui_impl_opengl3.h"
-#include <GL/glew.h>
-
-// platforms
-// glfw (more direct access to OpenGL) is a lower level alternative to SDL
-#include "imgui/backends/imgui_impl_glfw.h"
-#include <GLFW/glfw3.h>
-// SDL is more suited for 2D game dev
-// #include "imgui_impl_sdl.h"
-// #include <SDL2/SDL.h>
-// #include <SDL2/SDL_opengl.h>
-
 #include "ctrl/supervisor.hpp"
-#include "gui/guiframe.hpp"
 #include "imcap/imcap.hpp"
 #include "improc/improc.hpp"
 #include "pump/pump.hpp"
@@ -66,8 +52,6 @@ struct GUIEvent {
   }
 };
 
-void setWindowFullscreen();
-
 inline void HelpMarker(const char *desc) {
   ImGui::TextDisabled("(?)");
   if (ImGui::IsItemHovered()) {
@@ -108,13 +92,14 @@ class GUI {
   ordered_value conf;
   guiConfig guiConf;
 
-  std::shared_ptr<ImCap> imCap;
-  std::shared_ptr<ImProc> imProc;
-  std::shared_ptr<Pump> pump;
-  std::shared_ptr<Supervisor> sv;
+  std::shared_ptr<ImCap> imCap_;
+  std::shared_ptr<ImProc> imProc_;
+  std::shared_ptr<Pump> pump_;
+  std::shared_ptr<Supervisor> sv_;
 
-  ImGuiWindowFlags imCapFlags = 0;
-  // ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
+  std::shared_ptr<gui::SysIdWindow> sysIDWindow_;
+  std::shared_ptr<gui::PumpWindow> pumpWindow_;
+  std::shared_ptr<gui::ImProcWindow> imProcWindow_;
 
   // real time plotting
   ImPlotAxisFlags implotFlags = ImPlotAxisFlags_NoTickLabels;
@@ -161,27 +146,18 @@ class GUI {
   bool addingRect = false;
 
   // for showing raw/processed frames
-  GUIFrame rawFrame, preFrame;
-  GUIFrame procGUIFrames[3];
-  std::array<GUIFrame, NUM_TEMPLATES> tmplGUIFrames;
   std::vector<cv::Mat> procFrames;
   std::vector<int> procWidths, procHeights;
 
-  std::shared_ptr<gui::SysIdWindow> sysIDWindow_;
-  std::shared_ptr<gui::PumpWindow> pumpWindow_;
-  std::shared_ptr<gui::ImProcWindow> imProcWindow_;
-
 public:
-  GUI();
+  GUI(std::shared_ptr<ImCap> imCap, std::shared_ptr<ImProc> imProc, std::shared_ptr<Pump> pump, std::shared_ptr<Supervisor> sv);
   ~GUI();
   void startGUIThread();
   void imguiConfig();
   void imguiStyle();
   void render();
   void renderMenu();
-  int imguiMain();
 
-  void showRawImCap();
   void showImProcSetup();
   void showImProc();
   void showCtrlSetup();

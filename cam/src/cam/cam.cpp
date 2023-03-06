@@ -33,6 +33,8 @@ Cam::Cam(int cameraIdx, ordered_value conf)
   } else if (toml::get<std::string>(camConf["source"]) == "File")
     offlineCam = new cv::VideoCapture(toml::get<std::string>(camConf["File"]));
   else if (toml::get<std::string>(camConf["source"]) == "Webcam")
+    offlineCam = new cv::VideoCapture(0);
+  else if (toml::get<std::string>(camConf["source"]) == "USBcam")
     offlineCam = new cv::VideoCapture(2);
 }
 
@@ -262,6 +264,10 @@ void Cam::start(const int &Ts) {
     //      imageSizeBytes, frameRate, imageWidth, imageLeft, imageHeight, imageTop, imageStride,
     //      queueLength);
   } else if (toml::get<std::string>(camConf["source"]) == "Webcam") {
+    imageWidth = offlineCam->get(cv::CAP_PROP_FRAME_WIDTH);
+    imageHeight = offlineCam->get(cv::CAP_PROP_FRAME_HEIGHT);
+    offlineCam->set(cv::CAP_PROP_FPS, frameRate);
+  } else if (toml::get<std::string>(camConf["source"]) == "USBcam") {
     imageWidth = offlineCam->get(cv::CAP_PROP_FRAME_WIDTH);
     imageHeight = offlineCam->get(cv::CAP_PROP_FRAME_HEIGHT);
     offlineCam->set(cv::CAP_PROP_FPS, frameRate);
