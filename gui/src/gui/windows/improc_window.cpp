@@ -7,18 +7,20 @@ ImProcWindow::ImProcWindow(std::shared_ptr<ImCap> imCap, std::shared_ptr<ImProc>
   imProcSetupToggle_ = std::make_unique<Toggle>("ImProc Setup", &improcSetupVisible_);
   rawImage_ = std::make_unique<IMMImage>("Raw Image", 0.25);
   procImage_ = std::make_unique<IMMImage>("Proc Image", 1);
-  tmplImage1_ = std::make_unique<IMMImage>("Template Image 1", 1, "t");
-  tmplImage2_ = std::make_unique<IMMImage>("Template Image 2", 1, "t");
+  for (int i = 0; i < NUM_TEMPLATES; i++)
+    tmplImages_[i] = std::make_unique<IMMImage>("TmpImage: " + std::to_string(i), 1, "t");
   for (int i = 0; i < NUM_CHANS; i++)
-    chImages_[i] = std::make_unique<IMMImage>("Channel " + std::to_string(i), 1, "c");
+    chImages_[i] = std::make_unique<IMMImage>("Channel " + std::to_string(i), 1, "c"+ std::to_string(i));
 }
 
 ImProcWindow::~ImProcWindow() {
   imProcSetupToggle_.reset();
   rawImage_.reset();
   procImage_.reset();
-  tmplImage1_.reset();
-  tmplImage2_.reset();
+  for (int i = 0; i < NUM_TEMPLATES; i++)
+    tmplImages_[i].reset();
+  for (int i = 0; i < NUM_CHANS; i++)
+    chImages_[i].reset();
 }
 
 void ImProcWindow::render() {
@@ -97,9 +99,9 @@ void ImProcWindow::render() {
       ImGui::SliderFloat("Tmpl Thres", &tmplThres, 0.0f, 1.0f, "ratio = %.3f");
       imProc_->tmplThres = tmplThres;
 
-      // show tmplImg
-      tmplImage1_->render(imProc_->impConf.getTmplImg()[0]);
-      tmplImage2_->render(imProc_->impConf.getTmplImg()[1]);
+      // show tmplImgs
+      for (int i = 0; i < NUM_TEMPLATES; ++i)
+        tmplImages_[i]->render(imProc_->impConf.getTmplImg()[i]);
 
       // load from/save to file
       if (ImGui::Button("Load from file"))

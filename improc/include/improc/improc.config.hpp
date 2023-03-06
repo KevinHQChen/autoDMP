@@ -1,7 +1,7 @@
 #pragma once
 #include "util/util.hpp"
 
-#define NUM_TEMPLATES 2
+#define NUM_TEMPLATES 4
 
 // macros to generate from_toml/into_toml functions for cv::Point and cv::Rect
 TOML11_DEFINE_CONVERSION_NON_INTRUSIVE(cv::Point, x, y)
@@ -138,6 +138,11 @@ public:
   void setTmplBBox(const cv::Rect &tmplBBox) {
     std::lock_guard<std::mutex> lock(tmplBBoxMtx);
     tmplBBox_ = tmplBBox;
+  }
+
+  void setTmplImg(int idx, cv::Mat tmplImg) {
+    std::lock_guard<std::mutex> lock(tmplMtx);
+    tmplImg_[idx] = tmplImg;
   }
 
   void setTmplImg(const std::array<cv::Mat, NUM_TEMPLATES> &tmplImg) {

@@ -101,8 +101,14 @@ void ImProc::start() {
           if (startedSetup && ch == 0) {
             tmplFrames[0] = tempProcFrame(impConf.getTmplBBox());
             cv::flip(tmplFrames[0], tmplFrames[1], -1); // 180deg CCW (flip around x & y-axis)
-            impConf.setTmplImg(
-                std::array<cv::Mat, NUM_TEMPLATES>{tmplFrames[0].clone(), tmplFrames[1].clone()});
+            impConf.setTmplImg(0, tmplFrames[0].clone());
+            impConf.setTmplImg(1, tmplFrames[1].clone());
+          }
+          if (startedSetup && ch == 1) {
+            tmplFrames[2] = tempProcFrame(impConf.getTmplBBox());
+            cv::flip(tmplFrames[2], tmplFrames[3], -1); // 180deg CCW (flip around x & y-axis)
+            impConf.setTmplImg(2, tmplFrames[2].clone());
+            impConf.setTmplImg(3, tmplFrames[3].clone());
           }
 
           // perform TM for each tmpl rotation, for each channel

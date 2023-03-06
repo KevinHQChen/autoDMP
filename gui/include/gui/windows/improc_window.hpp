@@ -25,6 +25,7 @@ class ImProcWindow : public Window {
   std::unique_ptr<IMMImage> rawImage_, procImage_, tmplImage1_, tmplImage2_;
 
   std::array<std::unique_ptr<IMMImage>, NUM_CHANS> chImages_;
+  std::array<std::unique_ptr<IMMImage>, NUM_TEMPLATES> tmplImages_;
 
 public:
   ImProcWindow(std::shared_ptr<ImCap> imCap, std::shared_ptr<ImProc> imProc);

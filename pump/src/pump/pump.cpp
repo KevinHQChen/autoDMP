@@ -37,8 +37,8 @@ Pump::Pump(bool simModeActive) : simModeActive(simModeActive) {
     // Calibrate pressure channels (set pressure commands will not be accepted during this time)
     if (chanIdx == 0) {
       std::cout << "Beginning pressure channel calibration, unplug all tubing from pump.\n";
-      std::cout << "Press enter to continue...\n";
-      getchar();
+      // std::cout << "Press enter to continue...\n";
+      // getchar();
     }
     std::cout << "Calibrating pressure channel " << idx << "\n";
     Fgt_calibratePressure(idx);
