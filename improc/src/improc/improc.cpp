@@ -90,10 +90,11 @@ void ImProc::start() {
           // use chanPose to crop preFrame
           tempPreFrame = tempFrame(impConf.getChanBBox()[ch]);
           if (impConf.getRotAngle()[ch] == 90)
-            cv::rotate(tempPreFrame, tempPreFrame, cv::ROTATE_90_COUNTERCLOCKWISE);
+            cv::rotate(tempPreFrame, tempProcFrame, cv::ROTATE_90_COUNTERCLOCKWISE);
           else if (impConf.getRotAngle()[ch] == -90)
-            cv::rotate(tempPreFrame, tempPreFrame, cv::ROTATE_90_CLOCKWISE);
-          tempProcFrame = tempPreFrame;
+            cv::rotate(tempPreFrame, tempProcFrame, cv::ROTATE_90_CLOCKWISE);
+          else
+            tempProcFrame = tempPreFrame;
           cv::rectangle(tempFrame, impConf.getChanBBox()[ch], cv::Scalar::all(0));
 
           // if setup is currently active, use tmplBBox to update tmplImg

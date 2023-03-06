@@ -5,7 +5,7 @@ namespace gui {
 ImProcWindow::ImProcWindow(std::shared_ptr<ImCap> imCap, std::shared_ptr<ImProc> imProc)
     : imCap_(imCap), imProc_(imProc) {
   imProcSetupToggle_ = std::make_unique<Toggle>("ImProc Setup", &improcSetupVisible_);
-  rawImage_ = std::make_unique<IMMImage>("Raw Image", 1);
+  rawImage_ = std::make_unique<IMMImage>("Raw Image", 0.25);
   procImage_ = std::make_unique<IMMImage>("Proc Image", 1);
   tmplImage1_ = std::make_unique<IMMImage>("Template Image 1", 1, "t");
   tmplImage2_ = std::make_unique<IMMImage>("Template Image 2", 1, "t");
@@ -29,7 +29,7 @@ void ImProcWindow::render() {
     imCap_->startCaptureThread();
     if (ImGui::Begin("Image Processing", &visible_)) {
       imProcSetupToggle_->render();
-      rawImage_->render(imCap_->getRawFrame());
+      // rawImage_->render(imCap_->getRawFrame());
       ImGui::SameLine();
       procImage_->render(imProc_->getProcFrame());
       ImGui::End();

@@ -398,6 +398,7 @@ void GUI::showCtrlSetup() {
 void GUI::showCtrl() {
   if (guiConf.startCtrl) {
     sv_->startThread();
+    /*
     if (ImGui::Begin("Ctrl Data", &guiConf.startCtrl)) {
       if (!guiConf.pauseCtrlDataViz) {
         guiTime += ImGui::GetIO().DeltaTime;
@@ -427,6 +428,7 @@ void GUI::showCtrl() {
       plotVector3d("##State Error, Integral Error", "time (s)", "error (px)", -500, 500, errorVecs);
       ImGui::End();
     }
+    */
   } else
     sv_->stopThread();
 }

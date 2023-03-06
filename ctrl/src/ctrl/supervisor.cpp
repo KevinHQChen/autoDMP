@@ -26,7 +26,7 @@ void Supervisor::startThread() {
     imProc->clearProcFrameQueues();
     imProc->clearTempFrameQueues();
     imProc->clearProcDataQueues();
-    updateState<State0>(Eigen::Vector3d(116, 90, 134));
+    updateState<State0>(Eigen::Vector3d(81, 78, 78));
     // updateState<State1>(Eigen::Vector3d(90, 60, 50));
     // updateState<State2>(Eigen::Vector3d(135, 101, 101));
 #ifdef USEPIEZOPUMP
