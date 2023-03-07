@@ -27,6 +27,12 @@ void State0::handleEvent(Event *event) {
     sv_->currEvent_ = nullptr;
     return;
   }
+  // if (event->destPos.isZero() && event->vel.isZero()) {
+  //   info("resetting state 0");
+  //   sv_->updateState<State0>(uref);
+  //   sv_->addEvent(0, 0, Eigen::Vector3d(0.5, 0, 0), Eigen::Vector3d(10, 0, 0));
+  //   return;
+  // }
   if (!startEvent) {
     yDest = (event->destPos.array() * yrefScale.array()).matrix();
     startEvent = true;

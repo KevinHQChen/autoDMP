@@ -303,9 +303,9 @@ void GUI::showCtrl() {
       }
 
       ImGui::SliderFloat("History", &history, 1, 30, "%.1f s");
-      plotVector3d("##Control Input", "time (s)", "voltage (V)", 0, 250, ctrlVecs);
-      plotVector3d("##Measured Output", "time (s)", "position (px)", 0, 600, measVecs);
-      plotVector3d("##State Error, Integral Error", "time (s)", "error (px)", -500, 500, errorVecs);
+      // plotVector3d("##Control Input", "time (s)", "voltage (V)", 0, 250, ctrlVecs);
+      // plotVector3d("##Measured Output", "time (s)", "position (px)", 0, 600, measVecs);
+      // plotVector3d("##State Error, Integral Error", "time (s)", "error (px)", -500, 500, errorVecs);
       ImGui::End();
     }
   } else
