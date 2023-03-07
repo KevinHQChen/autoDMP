@@ -89,6 +89,7 @@ void ImProc::start() {
         for (int ch = 0; ch < numChans; ++ch) {
           // use chanPose to crop preFrame
           tempPreFrame = tempFrame(impConf.getChanBBox()[ch]);
+          tempProcFrame.release(); // a fresh cv::Mat is needed each time we call cv::rotate
           if (impConf.getRotAngle()[ch] == 90)
             cv::rotate(tempPreFrame, tempProcFrame, cv::ROTATE_90_COUNTERCLOCKWISE);
           else if (impConf.getRotAngle()[ch] == -90)

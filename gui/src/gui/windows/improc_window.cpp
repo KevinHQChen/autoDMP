@@ -8,9 +8,9 @@ ImProcWindow::ImProcWindow(std::shared_ptr<ImCap> imCap, std::shared_ptr<ImProc>
   rawImage_ = std::make_unique<IMMImage>("Raw Image", 0.25);
   procImage_ = std::make_unique<IMMImage>("Proc Image", 1);
   for (int i = 0; i < NUM_TEMPLATES; i++)
-    tmplImages_[i] = std::make_unique<IMMImage>("TmpImage: " + std::to_string(i), 1, "t");
+    tmplImages_[i] = std::make_unique<IMMImage>("TmpImage: " + std::to_string(i), 1, true);
   for (int i = 0; i < NUM_CHANS; i++)
-    chImages_[i] = std::make_unique<IMMImage>("Channel " + std::to_string(i), 1, "c"+ std::to_string(i));
+    chImages_[i] = std::make_unique<IMMImage>("Channel " + std::to_string(i), 1);
 }
 
 ImProcWindow::~ImProcWindow() {
@@ -30,10 +30,8 @@ void ImProcWindow::render() {
   if (visible_) {
     imCap_->startCaptureThread();
     if (ImGui::Begin("Image Processing", &visible_)) {
+      rawImage_->render(imCap_->getRawFrame());
       imProcSetupToggle_->render();
-      // rawImage_->render(imCap_->getRawFrame());
-      ImGui::SameLine();
-      procImage_->render(imProc_->getProcFrame());
       ImGui::End();
     }
   } else
@@ -118,11 +116,15 @@ void ImProcWindow::render() {
   if (improcVisible_) {
     imProc_->startProcThread();
     if (ImGui::Begin("Channels", &improcVisible_)) {
-      for (int i = 0; i < NUM_CHANS; i++) {
+      for (int i = 0; i < NUM_CHANS; ++i) {
         if (i != 0)
           ImGui::SameLine();
         chImages_[i]->render(imProc_->getProcFrame(i));
       }
+      ImGui::End();
+    }
+    if (ImGui::Begin("Proc Image", &improcVisible_)) {
+      procImage_->render(imProc_->getProcFrame());
       ImGui::End();
     }
   } else

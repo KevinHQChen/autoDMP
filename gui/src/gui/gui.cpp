@@ -480,7 +480,7 @@ void GUI::plotVector3d(const char *plotName, const char *xAx, const char *yAx, d
     ImPlot::SetupAxisLimits(ImAxis_Y1, yMin, yMax);
     for (auto &vec : vecs)
       ImPlot::PlotLine(vec.second.c_str(), &vec.first->Data[0].x, &vec.first->Data[0].y,
-                       vec.first->Data.size(), vec.first->Offset, 2 * sizeof(float));
+                       vec.first->Data.size(), 0, vec.first->Offset, 2 * sizeof(float));
     ImPlot::EndPlot();
   }
 }
