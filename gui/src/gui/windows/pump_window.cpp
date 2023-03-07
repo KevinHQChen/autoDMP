@@ -3,6 +3,9 @@
 namespace gui {
 
 PumpWindow::PumpWindow(std::shared_ptr<Pump> pp) : pp_(pp) {
+  maxVoltageSlider_ =
+      std::make_unique<Slider<int>>("Max\nVoltage", 250, 1000, &maxVoltage_, "%d V", ImVec2(0, 0),
+                                    true, [this]() { setMaxVoltage(); });
   voltageSlider_ =
       std::make_unique<SliderArray<int>>("Pump\nVoltage", 0, 250, &pp_->pumpVoltages, NUM_PUMPS,
                                          "%d V", ImVec2(40, 200), false, [this]() { setPumps(); });
@@ -15,6 +18,7 @@ PumpWindow::PumpWindow(std::shared_ptr<Pump> pp) : pp_(pp) {
 }
 
 PumpWindow::~PumpWindow() {
+  maxVoltageSlider_.reset();
   voltageSlider_.reset();
   freqSlider_.reset();
   valveToggle_.reset();
@@ -27,6 +31,7 @@ void PumpWindow::render() {
     visible_ = !visible_;
   if (visible_) {
     if (ImGui::Begin("Pump Setup", &visible_)) {
+      maxVoltageSlider_->render();
       voltageSlider_->render();
       freqSlider_->render();
       valveToggle_->render();
@@ -58,6 +63,8 @@ void PumpWindow::setValves() {
     if (valveToggle_->changed(i))
       pp_->setValve(i, valveToggle_->get(i));
 }
+
+void PumpWindow::setMaxVoltage() { voltageSlider_->setMax(maxVoltage_); }
 
 void PumpWindow::resetPump() {
   if (resetBtn_->get()) {

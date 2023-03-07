@@ -30,7 +30,10 @@ void ImProcWindow::render() {
   if (visible_) {
     imCap_->startCaptureThread();
     if (ImGui::Begin("Image Processing", &visible_)) {
-      rawImage_->render(imCap_->getRawFrame());
+      if (!improcVisible_)
+        rawImage_->render(imCap_->getRawFrame());
+      else
+        imCap_->getRawFrame();
       imProcSetupToggle_->render();
       ImGui::End();
     }

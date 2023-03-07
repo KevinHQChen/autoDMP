@@ -128,6 +128,14 @@ public:
   std::vector<T> get() const { return *values_; }
 
   void set(T value, int index = 0) { (*values_)[index] = value; }
+
+  void setMax(int max) {
+    if (max != max_) {
+      max_ = max;
+      for (auto &v : *values_)
+        v = std::min(v, max_);
+    }
+  }
 };
 
 } // namespace gui

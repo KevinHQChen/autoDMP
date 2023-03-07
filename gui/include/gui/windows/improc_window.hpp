@@ -1,8 +1,8 @@
 #pragma once
 
 #include "gui/components/button.hpp"
-#include "gui/components/slider.hpp"
 #include "gui/components/image.hpp"
+#include "gui/components/slider.hpp"
 #include "window.hpp"
 
 #include "imcap/imcap.hpp"

@@ -17,7 +17,7 @@ public:
   cv::Mat image_;
   ImmVision::ImageParams imParams;
 
-  IMMImage(std::string label, float scale, bool interactive=false, std::string zoomKey = "z")
+  IMMImage(std::string label, float scale, bool interactive = false, std::string zoomKey = "z")
       : label_(label), scale_(scale) {
     if (!interactive)
       imParams = ImmVision::FactorImageParamsDisplayOnly();

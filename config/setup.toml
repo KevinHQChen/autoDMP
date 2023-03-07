@@ -23,7 +23,7 @@ showDebug = false
 
 [cam]
 # select camera source [string: "Webcam"/"USBcam"/"File"/"Andor"]
-source      = "USBcam"
+source      = "Andor"
 # if source = "File", the selected video file is used [string]
 file        = ""
 
@@ -83,7 +83,7 @@ confPath    = "/autoDMP/config/improc/"
 confSrc = "fromFile"
 # select template matching threshold: pxIntensity/255 (8-bit) [double]
 # 0.5 - 0.85 is a good range
-tmplThres   = 0.88
+tmplThres   = 0.8
 # number of channels to observe for improc
 numChans    = 3
 
@@ -92,7 +92,7 @@ numChans    = 3
 confPath    = "/autoDMP/config/ctrl/"
 dataPath    = "/autoDMP/data/ctrl/"
 # perform all steps but don't send control signal to pump [bool]
-simMode         = true
+simMode         = false
 
 [postproc]
 # path for improc data

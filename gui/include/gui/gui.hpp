@@ -150,7 +150,8 @@ class GUI {
   std::vector<int> procWidths, procHeights;
 
 public:
-  GUI(std::shared_ptr<ImCap> imCap, std::shared_ptr<ImProc> imProc, std::shared_ptr<Pump> pump, std::shared_ptr<Supervisor> sv);
+  GUI(std::shared_ptr<ImCap> imCap, std::shared_ptr<ImProc> imProc, std::shared_ptr<Pump> pump,
+      std::shared_ptr<Supervisor> sv);
   ~GUI();
   void startGUIThread();
   void imguiConfig();

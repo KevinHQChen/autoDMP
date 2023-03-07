@@ -80,119 +80,6 @@ GUI::~GUI() {
   imProcWindow_.reset();
 }
 
-/*
-void GUI::showImProcSetup() {
-  if (ImGui::IsKeyPressed(ImGuiKey_S))
-    guiConf.startImProcSetup = !guiConf.startImProcSetup;
-  imProc_->setSetupStatus(guiConf.startImProcSetup);
-  if (guiConf.startImProcSetup) {
-    if (ImGui::Begin("ImProc Setup", &guiConf.startImProcSetup)) {
-      // update bbox
-      int bbox[4] = {imProc_->impConf.getBBox().x, imProc_->impConf.getBBox().y,
-                     imProc_->impConf.getBBox().width,
-                     imProc_->impConf.getBBox().height}; // x, y, width, height
-      ImGui::SliderInt("BBox.x", &bbox[0], 0, 1000);
-      ImGui::SliderInt("BBox.y", &bbox[1], 0, 1000);
-      ImGui::SliderInt("BBox.width", &bbox[2], 0, 1000);
-      ImGui::SliderInt("BBox.height", &bbox[3], 0, 1000);
-      imProc_->impConf.setBBox(cv::Rect(bbox[0], bbox[1], bbox[2], bbox[3]));
-
-      // update junction
-      int junc[2] = {imProc_->impConf.getJunction().x, imProc_->impConf.getJunction().y};
-      junc[0] = bbox[2] / 2;
-      ImGui::SliderInt("junction.y", &junc[1], 0, 1000);
-      imProc_->impConf.setJunction(cv::Point(junc[0], junc[1]));
-
-      // update chanWidth
-      int chanWidth = imProc_->impConf.getChanWidth();
-      ImGui::SliderInt("Channel Width", &chanWidth, 0, 100);
-      imProc_->impConf.setChanWidth(chanWidth);
-
-      // update rotAngles
-      std::vector<int> rotAngles = imProc_->impConf.getRotAngle();
-      for (int idx = 0; idx < toml::find<int>(conf["improc"], "numChans"); ++idx) {
-        std::string chanWinName = "Channel " + std::to_string(idx);
-        if (ImGui::CollapsingHeader(chanWinName.c_str())) {
-          std::string rotWinName = "Rot Angle " + std::to_string(idx);
-          ImGui::SliderInt(rotWinName.c_str(), &rotAngles[idx], -180, 180);
-        }
-      }
-      imProc_->impConf.setRotAngle(rotAngles);
-
-      // update chanBBox, rotChanBBox (using bbox, junction, chanWidth, rotAngle)
-      std::vector<cv::Rect> chanBBoxes = imProc_->impConf.getChanBBox();
-      chanBBoxes[0] = cv::Rect(junc[0] - chanWidth / 2, 0, chanWidth, junc[1]);
-      chanBBoxes[1] = cv::Rect(0, junc[1], bbox[2] / 2, bbox[2] / 2);
-      chanBBoxes[2] = cv::Rect(junc[0], junc[1], bbox[2] / 2, bbox[2] / 2);
-      imProc_->impConf.setChanBBox(chanBBoxes);
-      std::vector<cv::Rect> rotChanBBoxes = imProc_->impConf.getRotChanBBox();
-      rotChanBBoxes[0] = cv::Rect(0, 0, 0, 0);
-      for (int i = 1; i < toml::find<int>(conf["improc"], "numChans"); ++i)
-        rotChanBBoxes[i] = cv::Rect(bbox[2] / 2.0 * 1.414 / 2.0 - chanWidth / 2.0, 0, chanWidth,
-                                    bbox[2] / 2.0 * 1.414);
-      imProc_->impConf.setRotChanBBox(rotChanBBoxes);
-
-      // update tmplBBox
-      int tmplBBox[4] = {imProc_->impConf.getTmplBBox().x, imProc_->impConf.getTmplBBox().y,
-                         imProc_->impConf.getTmplBBox().width,
-                         imProc_->impConf.getTmplBBox().height}; // x, y, width, height
-      ImGui::SliderInt("TmplBBox.x", &tmplBBox[0], 0, 100);
-      ImGui::SliderInt("TmplBBox.y", &tmplBBox[1], 0, 1000);
-      ImGui::SliderInt("TmplBBox.width", &tmplBBox[2], 0, 100);
-      ImGui::SliderInt("TmplBBox.height", &tmplBBox[3], 0, 100);
-      imProc_->impConf.setTmplBBox(cv::Rect(tmplBBox[0], tmplBBox[1], tmplBBox[2], tmplBBox[3]));
-
-      // update tmplThres
-      float tmplThres = imProc_->tmplThres;
-      ImGui::SliderFloat("Tmpl Thres", &tmplThres, 0.0f, 1.0f, "ratio = %.3f");
-      imProc_->tmplThres = tmplThres;
-
-      // show tmplImg
-      std::array<cv::Mat, NUM_TEMPLATES> tmplImg = imProc_->impConf.getTmplImg();
-      for (int idx = 0; idx < NUM_TEMPLATES; ++idx) {
-        tmplGUIFrames[idx] = tmplImg[idx];
-        (tmplGUIFrames[idx].empty)
-            ? ImGui::Text("Empty tmpl %d", idx)
-            : ImGui::Image((void *)(intptr_t)tmplGUIFrames[idx].texture,
-                           ImVec2(tmplGUIFrames[idx].width, tmplGUIFrames[idx].height));
-      }
-
-      // load from/save to file
-      if (ImGui::Button("Load from file"))
-        imProc_->loadConfig();
-      if (ImGui::Button("Save to file"))
-        imProc_->saveConfig();
-      if (ImGui::Button("Quit ImProc Setup"))
-        guiConf.startImProcSetup = false;
-
-      ImGui::End();
-    }
-  }
-}
-*/
-
-/*
-void GUI::showImProc() {
-  if (ImGui::IsKeyPressed(ImGuiKey_I))
-    guiConf.startImProc = !guiConf.startImProc;
-  if (guiConf.startImProc) {
-    imProc_->startProcThread();
-    for (int idx = 0; idx < toml::get<int>(conf["improc"]["numChans"]); ++idx) {
-      std::string windowName = "Processed Frame " + std::to_string(idx);
-      if (ImGui::Begin(windowName.c_str(), &guiConf.startImProc)) {
-        procGUIFrames[idx] = imProc_->getProcFrame(idx);
-        (procGUIFrames[idx].empty)
-            ? ImGui::Text("Empty frame %d", idx)
-            : ImGui::Image((ImTextureID)procGUIFrames[idx].texture,
-                           ImVec2(procGUIFrames[idx].width, procGUIFrames[idx].height));
-        ImGui::End();
-      }
-    }
-  } else
-    imProc_->stopProcThread();
-}
-*/
-
 void GUI::showCtrlSetup() {
   if (guiConf.startCtrlSetup) {
     if (ImGui::Begin("Ctrl Setup", &guiConf.startCtrlSetup)) {
@@ -355,12 +242,6 @@ void GUI::showCtrlSetup() {
       }
       ImGui::Separator();
 
-      // if (!guiConf.startSysIDSetup)
-      //   if (ImGui::Button("Start System ID Setup"))
-      //     guiConf.startSysIDSetup = true;
-      // if (guiConf.startSysIDSetup)
-      //   if (ImGui::Button("Stop System ID Setup"))
-      //     guiConf.startSysIDSetup = false;
       if (!sysIDWindow_->visible_)
         if (ImGui::Button("Start System ID Setup"))
           sysIDWindow_->visible_ = true;
@@ -398,7 +279,6 @@ void GUI::showCtrlSetup() {
 void GUI::showCtrl() {
   if (guiConf.startCtrl) {
     sv_->startThread();
-    /*
     if (ImGui::Begin("Ctrl Data", &guiConf.startCtrl)) {
       if (!guiConf.pauseCtrlDataViz) {
         guiTime += ImGui::GetIO().DeltaTime;
@@ -428,7 +308,6 @@ void GUI::showCtrl() {
       plotVector3d("##State Error, Integral Error", "time (s)", "error (px)", -500, 500, errorVecs);
       ImGui::End();
     }
-    */
   } else
     sv_->stopThread();
 }
