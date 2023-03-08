@@ -119,9 +119,7 @@ class GUI {
       std::make_pair(&y2, "y2"),       std::make_pair(&yref0, "yref0"),
       std::make_pair(&yref1, "yref1"), std::make_pair(&yref2, "yref2")};
   std::vector<std::pair<ScrollingBuffer *, std::string>> errorVecs{
-      std::make_pair(&dxhat0, "dxhat0"), std::make_pair(&dxhat1, "dxhat1"),
-      std::make_pair(&dxhat2, "dxhat2"), std::make_pair(&z0, "z0"),
-      std::make_pair(&z1, "z1"),         std::make_pair(&z2, "z2")};
+      std::make_pair(&z0, "z0"), std::make_pair(&z1, "z1"), std::make_pair(&z2, "z2")};
   void plotVector3d(const char *plotName, const char *xAx, const char *yAx, double yMin,
                     double yMax, std::vector<std::pair<ScrollingBuffer *, std::string>> &vecs);
 

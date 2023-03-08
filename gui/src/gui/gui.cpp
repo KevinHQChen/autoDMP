@@ -294,6 +294,7 @@ void GUI::showCtrl() {
         yref0.AddPoint(guiTime, sv_->currState_->yref(0));
         yref1.AddPoint(guiTime, sv_->currState_->yref(1));
         yref2.AddPoint(guiTime, sv_->currState_->yref(2));
+        // TODO set mdl->dxhat to state->dxhat at each state::step() so we can plot it
         // dxhat0.AddPoint(guiTime, sv_->currState_->dxhat(0));
         // dxhat1.AddPoint(guiTime, sv_->currState_->dxhat(1));
         // dxhat2.AddPoint(guiTime, sv_->currState_->dxhat(2));
@@ -302,10 +303,10 @@ void GUI::showCtrl() {
         z2.AddPoint(guiTime, sv_->currState_->z(2));
       }
 
-      ImGui::SliderFloat("History", &history, 1, 30, "%.1f s");
-      // plotVector3d("##Control Input", "time (s)", "voltage (V)", 0, 250, ctrlVecs);
-      // plotVector3d("##Measured Output", "time (s)", "position (px)", 0, 600, measVecs);
-      // plotVector3d("##State Error, Integral Error", "time (s)", "error (px)", -500, 500, errorVecs);
+      ImGui::SliderFloat("History", &history, 1, 60, "%.1f s");
+      plotVector3d("##Control Input", "time (s)", "voltage (V)", 0, 250, ctrlVecs);
+      plotVector3d("##Measured Output", "time (s)", "position (px)", 0, 600, measVecs);
+      plotVector3d("##State Error, Integral Error", "time (s)", "error (px)", -500, 500, errorVecs);
       ImGui::End();
     }
   } else
