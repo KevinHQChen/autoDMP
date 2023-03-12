@@ -3,7 +3,7 @@
 #include "ctrl/state/state2.hpp"
 #include "ctrl/state/sysidstate.hpp"
 
-Supervisor::Supervisor(std::shared_ptr<ImProc> imProc, std::shared_ptr<Pump> pump)
+Supervisor::Supervisor(ImProc* imProc, Pump* pump)
     : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")),
       simModeActive(toml::get<bool>(conf["ctrl"]["simMode"])),
       dataPath(toml::get<std::string>(conf["ctrl"]["dataPath"])),

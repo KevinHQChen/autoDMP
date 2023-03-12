@@ -2,7 +2,7 @@
 
 namespace gui {
 
-ImProcWindow::ImProcWindow(std::shared_ptr<ImCap> imCap, std::shared_ptr<ImProc> imProc)
+ImProcWindow::ImProcWindow(ImCap* imCap, ImProc* imProc)
     : imCap_(imCap), imProc_(imProc) {
   imProcSetupToggle_ = std::make_unique<Toggle>("ImProc Setup", &improcSetupVisible_);
   // rawImage_ = std::make_unique<IMMImage>("Raw Image", 1);

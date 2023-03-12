@@ -19,8 +19,8 @@ class ImProcWindow : public Window {
   // ImGuiWindowFlags imCapFlags = 0;
   // ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
 
-  std::shared_ptr<ImCap> imCap_;
-  std::shared_ptr<ImProc> imProc_;
+  ImCap* imCap_;
+  ImProc* imProc_;
 
   std::unique_ptr<Toggle> imProcSetupToggle_;
 
@@ -35,7 +35,7 @@ class ImProcWindow : public Window {
   std::vector<int> procWidths, procHeights;
 
 public:
-  ImProcWindow(std::shared_ptr<ImCap> imCap, std::shared_ptr<ImProc> imProc);
+  ImProcWindow(ImCap* imCap, ImProc* imProc);
   ~ImProcWindow();
   void render() override;
 };

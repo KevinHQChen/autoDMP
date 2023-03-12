@@ -2,7 +2,7 @@
 
 namespace gui {
 
-SysIdWindow::SysIdWindow(std::shared_ptr<Supervisor> sv) : sv_(sv) {
+SysIdWindow::SysIdWindow(Supervisor* sv) : sv_(sv) {
   chSelect_ = std::make_unique<CheckboxArray>("Channel", NUM_CHANS);
   numSampleSlider_ = std::make_unique<Slider<int>>("Num Samples", 0, 4000, &numSamples_);
   excitationSignalDropdown_ = std::make_unique<Dropdown>(

@@ -1,6 +1,6 @@
 #include "improc/improc.hpp"
 
-ImProc::ImProc(std::shared_ptr<ImCap> imCap)
+ImProc::ImProc(ImCap* imCap)
     : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")),
       confPath(toml::get<std::string>(conf["improc"]["confPath"])),
       dataPath(toml::get<std::string>(conf["postproc"]["procDataPath"])),

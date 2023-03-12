@@ -19,7 +19,7 @@ class PumpWindow : public Window {
   void setMaxVoltage();
   void resetPump();
 
-  std::shared_ptr<Pump> pp_;
+  Pump* pp_;
 
   std::unique_ptr<Slider<int>> maxVoltageSlider_;
   std::unique_ptr<SliderArray<int>> voltageSlider_;
@@ -30,7 +30,7 @@ class PumpWindow : public Window {
   std::unique_ptr<Button> resetBtn_;
 
 public:
-  PumpWindow(std::shared_ptr<Pump> pp);
+  PumpWindow(Pump * pp);
   ~PumpWindow();
   void render() override;
 };

@@ -28,7 +28,7 @@ class SysIdWindow : public Window {
   void stopExcitationSignal();
   void clearCtrlDataQueue();
 
-  std::shared_ptr<Supervisor> sv_;
+  Supervisor* sv_;
 
   std::unique_ptr<Button> sendExcitationSignalBtn_;
   std::unique_ptr<Button> stopExcitationSignalBtn_;
@@ -61,7 +61,7 @@ class SysIdWindow : public Window {
       std::make_pair(&y0, "y0"), std::make_pair(&y1, "y1"), std::make_pair(&y2, "y2")};
 
 public:
-  SysIdWindow(std::shared_ptr<Supervisor> sv);
+  SysIdWindow(Supervisor* sv);
   ~SysIdWindow();
   void render() override;
 

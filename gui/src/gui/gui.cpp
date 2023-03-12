@@ -23,8 +23,8 @@ void GUI::imguiStyle() {
   style.ScaleAllSizes(guiConf.scale);
 }
 
-GUI::GUI(std::shared_ptr<ImCap> imCap, std::shared_ptr<ImProc> imProc, std::shared_ptr<Pump> pump,
-         std::shared_ptr<Supervisor> sv)
+GUI::GUI(ImCap* imCap, ImProc* imProc, Pump* pump,
+         Supervisor* sv)
     : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")), guiConf(toml::find<guiConfig>(conf, "gui")),
       imCap_(imCap), imProc_(imProc), pump_(pump), sv_(sv) {
   sysIDWindow_ = std::make_shared<gui::SysIdWindow>(sv);
@@ -70,11 +70,6 @@ GUI::GUI(std::shared_ptr<ImCap> imCap, std::shared_ptr<ImProc> imProc, std::shar
 }
 
 GUI::~GUI() {
-  sv_.reset();
-  pump_.reset();
-  imProc_.reset();
-  imCap_.reset();
-
   sysIDWindow_.reset();
   pumpWindow_.reset();
   imProcWindow_.reset();

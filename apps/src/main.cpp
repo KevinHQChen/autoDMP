@@ -20,10 +20,10 @@ int main(int, const char **) {
   info("Config type: {}", type_name<decltype(guiConf)>());
   info("Parsed config: {}", toml::find(conf, "gui"));
 
-  auto imCap = std::make_shared<ImCap>();
-  auto imProc = std::make_shared<ImProc>(imCap);
-  auto pump = std::make_shared<Pump>(toml::get<bool>(conf["ctrl"]["simMode"]));
-  auto sv = std::make_shared<Supervisor>(imProc, pump);
+  auto imCap = new ImCap();
+  auto imProc = new ImProc(imCap);
+  auto pump = new Pump(toml::get<bool>(conf["ctrl"]["simMode"]));
+  auto sv = new Supervisor(imProc, pump);
 
   GUI gui(imCap, imProc, pump, sv);
   gui.startGUIThread();
