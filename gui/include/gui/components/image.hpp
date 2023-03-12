@@ -29,7 +29,7 @@ public:
     imParams.RefreshImage = true; // this enables live video
   }
 
-  void render(const cv::Mat &image) {
+  void render(cv::Mat image) {
     if (!image.empty())
       image_ = image;
 

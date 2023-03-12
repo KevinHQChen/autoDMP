@@ -5,22 +5,22 @@ namespace gui {
 ImProcWindow::ImProcWindow(std::shared_ptr<ImCap> imCap, std::shared_ptr<ImProc> imProc)
     : imCap_(imCap), imProc_(imProc) {
   imProcSetupToggle_ = std::make_unique<Toggle>("ImProc Setup", &improcSetupVisible_);
-  rawImage_ = std::make_unique<IMMImage>("Raw Image", 0.25);
-  procImage_ = std::make_unique<IMMImage>("Proc Image", 1);
-  for (int i = 0; i < NUM_TEMPLATES; i++)
-    tmplImages_[i] = std::make_unique<IMMImage>("TmpImage: " + std::to_string(i), 1, true);
-  for (int i = 0; i < NUM_CHANS; i++)
-    chImages_[i] = std::make_unique<IMMImage>("Channel " + std::to_string(i), 1);
+  // rawImage_ = std::make_unique<IMMImage>("Raw Image", 1);
+  // procImage_ = std::make_unique<IMMImage>("Proc Image", 1);
+  // for (int i = 0; i < NUM_TEMPLATES; i++)
+  //   tmplImages_[i] = std::make_unique<IMMImage>("TmpImage: " + std::to_string(i), 1, true);
+  // for (int i = 0; i < NUM_CHANS; i++)
+  //   chImages_[i] = std::make_unique<IMMImage>("Channel " + std::to_string(i), 1);
 }
 
 ImProcWindow::~ImProcWindow() {
   imProcSetupToggle_.reset();
-  rawImage_.reset();
-  procImage_.reset();
-  for (int i = 0; i < NUM_TEMPLATES; i++)
-    tmplImages_[i].reset();
-  for (int i = 0; i < NUM_CHANS; i++)
-    chImages_[i].reset();
+  // rawImage_.reset();
+  // procImage_.reset();
+  // for (int i = 0; i < NUM_TEMPLATES; i++)
+  //   tmplImages_[i].reset();
+  // for (int i = 0; i < NUM_CHANS; i++)
+  //   chImages_[i].reset();
 }
 
 void ImProcWindow::render() {
@@ -30,10 +30,10 @@ void ImProcWindow::render() {
   if (visible_) {
     imCap_->startCaptureThread();
     if (ImGui::Begin("Image Processing", &visible_)) {
-      if (!improcVisible_)
-        rawImage_->render(imCap_->getRawFrame());
-      else
-        imCap_->getRawFrame(); // discard frame so buffer doesn't fill up
+      rawFrame = imCap_->getRawFrame();
+      (rawFrame.empty)
+          ? ImGui::Text("No image available")
+          : ImGui::Image((ImTextureID)rawFrame.texture, ImVec2(rawFrame.width, rawFrame.height));
       imProcSetupToggle_->render();
       ImGui::End();
     }
@@ -112,8 +112,8 @@ void ImProcWindow::render() {
       imProc_->tmplThres = tmplThres;
 
       // show tmplImgs
-      for (int i = 0; i < NUM_TEMPLATES; ++i)
-        tmplImages_[i]->render(imProc_->impConf.getTmplImg()[i]);
+      // for (int i = 0; i < NUM_TEMPLATES; ++i)
+      //   tmplImages_[i]->render(imProc_->impConf.getTmplImg()[i]);
 
       // load from/save to file
       if (ImGui::Button("Load from file"))
@@ -133,12 +133,19 @@ void ImProcWindow::render() {
       for (int i = 0; i < NUM_CHANS; ++i) {
         if (i != 0)
           ImGui::SameLine();
-        chImages_[i]->render(imProc_->getProcFrame(i));
+        procGUIFrames[i] = imProc_->getProcFrame(i);
+        (procGUIFrames[i].empty)
+            ? ImGui::Text("Empty frame %d", i)
+            : ImGui::Image((ImTextureID)procGUIFrames[i].texture,
+                           ImVec2(procGUIFrames[i].width, procGUIFrames[i].height));
       }
       ImGui::End();
     }
     if (ImGui::Begin("Proc Image", &improcVisible_)) {
-      procImage_->render(imProc_->getProcFrame());
+      preFrame = imProc_->getProcFrame();
+      (preFrame.empty)
+          ? ImGui::Text("No image available")
+          : ImGui::Image((ImTextureID)preFrame.texture, ImVec2(preFrame.width, preFrame.height));
       ImGui::End();
     }
   } else

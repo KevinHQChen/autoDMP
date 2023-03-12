@@ -83,8 +83,8 @@ void ImProc::start() {
     preFrame = imCap->getPreFrame();
     try {
       if (!preFrame.empty()) {
-        // auto startTime = high_resolution_clock::now();
-        // auto stopTime = high_resolution_clock::now();
+        auto startTime = high_resolution_clock::now();
+        auto stopTime = high_resolution_clock::now();
 
         // grab most recent raw frame
         tempFrame = preFrame(impConf.getBBox());
@@ -177,9 +177,9 @@ void ImProc::start() {
           // info("currPose rotChanBBox: {}", currPose.rotChanBBox[idx]);
         } // iterate over all channels
         procFrameQueuePtr->push(tempFrame);
-        // stopTime = high_resolution_clock::now();
-        // auto duration = duration_cast<milliseconds>(stopTime - startTime);
-        // info("imProc duration: {}", duration.count());
+        stopTime = high_resolution_clock::now();
+        auto duration = duration_cast<milliseconds>(stopTime - startTime);
+        info("imProc duration: {}", duration.count());
       }
     } catch (cv::Exception &e) {
       error("Message: {}", e.what());

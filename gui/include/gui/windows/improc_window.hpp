@@ -1,8 +1,9 @@
 #pragma once
 
 #include "gui/components/button.hpp"
-#include "gui/components/image.hpp"
+// #include "gui/components/image.hpp"
 #include "gui/components/slider.hpp"
+#include "gui/guiframe.hpp"
 #include "window.hpp"
 
 #include "imcap/imcap.hpp"
@@ -22,10 +23,16 @@ class ImProcWindow : public Window {
   std::shared_ptr<ImProc> imProc_;
 
   std::unique_ptr<Toggle> imProcSetupToggle_;
-  std::unique_ptr<IMMImage> rawImage_, procImage_, tmplImage1_, tmplImage2_;
 
-  std::array<std::unique_ptr<IMMImage>, NUM_CHANS> chImages_;
-  std::array<std::unique_ptr<IMMImage>, NUM_TEMPLATES> tmplImages_;
+  // std::unique_ptr<IMMImage> rawImage_, procImage_;
+  // std::array<std::unique_ptr<IMMImage>, NUM_CHANS> chImages_;
+  // std::array<std::unique_ptr<IMMImage>, NUM_TEMPLATES> tmplImages_;
+
+  GUIFrame rawFrame, preFrame;
+  GUIFrame procGUIFrames[3];
+  std::array<GUIFrame, NUM_TEMPLATES> tmplGUIFrames;
+  std::vector<cv::Mat> procFrames;
+  std::vector<int> procWidths, procHeights;
 
 public:
   ImProcWindow(std::shared_ptr<ImCap> imCap, std::shared_ptr<ImProc> imProc);
