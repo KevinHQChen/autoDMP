@@ -33,7 +33,7 @@ void ImProcWindow::render() {
       if (!improcVisible_)
         rawImage_->render(imCap_->getRawFrame());
       else
-        imCap_->getRawFrame();
+        imCap_->getRawFrame(); // discard frame so buffer doesn't fill up
       imProcSetupToggle_->render();
       ImGui::End();
     }
@@ -80,10 +80,21 @@ void ImProcWindow::render() {
 
       // update chanBBox, rotChanBBox (using bbox, junction, chanWidth, rotAngle)
       std::vector<cv::Rect> chanBBoxes = imProc_->impConf.getChanBBox();
+      // for T-junction
+      // chanBBoxes[0] = cv::Rect(junc[0] - chanWidth / 2, 0, chanWidth, junc[1]);
+      // chanBBoxes[1] = cv::Rect(0, junc[1] - chanWidth / 2, junc[0], chanWidth);
+      // chanBBoxes[2] = cv::Rect(junc[0], junc[1] - chanWidth / 2, junc[0], chanWidth);
+      // for Y-junction
       chanBBoxes[0] = cv::Rect(junc[0] - chanWidth / 2, 0, chanWidth, junc[1]);
-      chanBBoxes[1] = cv::Rect(0, junc[1] - chanWidth / 2, junc[0], chanWidth);
-      chanBBoxes[2] = cv::Rect(junc[0], junc[1] - chanWidth / 2, junc[0], chanWidth);
+      chanBBoxes[1] = cv::Rect(0, junc[1], bbox[2] / 2, bbox[2] / 2);
+      chanBBoxes[2] = cv::Rect(junc[0], junc[1], bbox[2] / 2, bbox[2] / 2);
       imProc_->impConf.setChanBBox(chanBBoxes);
+      std::vector<cv::Rect> rotChanBBoxes = imProc_->impConf.getRotChanBBox();
+      rotChanBBoxes[0] = cv::Rect(0, 0, 0, 0);
+      for (int i = 1; i < NUM_CHANS; ++i)
+        rotChanBBoxes[i] = cv::Rect(bbox[2] / 2.0 * 1.414 / 2.0 - chanWidth / 2.0, 0, chanWidth,
+                                    bbox[2] / 2.0 * 1.414);
+      imProc_->impConf.setRotChanBBox(rotChanBBoxes);
 
       // update tmplBBox
       int tmplBBox[4] = {imProc_->impConf.getTmplBBox().x, imProc_->impConf.getTmplBBox().y,

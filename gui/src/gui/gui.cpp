@@ -46,8 +46,8 @@ GUI::GUI(std::shared_ptr<ImCap> imCap, std::shared_ptr<ImProc> imProc, std::shar
   runnerParams.imGuiWindowParams.tweakedTheme = theme;
   // runnerParams.callbacks.LoadAdditionalFonts = [this]() { LoadFonts(); };
 
-  // STATUS BAR: enable default + custom status bar
-  runnerParams.imGuiWindowParams.showStatusBar = true;
+  // STATUS BAR (disable for now): enable default + custom status bar
+  runnerParams.imGuiWindowParams.showStatusBar = false;
   // runnerParams.imGuiWindowParams.showStatusFps = false;
   runnerParams.fpsIdling.enableIdling = false;
   runnerParams.callbacks.ShowStatus = nullptr; // GUI::renderStatusBar;
@@ -65,7 +65,7 @@ GUI::GUI(std::shared_ptr<ImCap> imCap, std::shared_ptr<ImProc> imProc, std::shar
   // runnerParams.imGuiWindowParams.enableViewports = true;
 
   // define any external addons
-  addOnsParams.withNodeEditor = true;
+  addOnsParams.withNodeEditor = false;
   addOnsParams.withImplot = true;
 }
 

@@ -63,7 +63,8 @@ BitDepth                    = "16 Bit"
 AOIBinning                  = "2x2"             # binning, intensity vs resolution
 [andor.int]
 # AOIHBin                     = 2                 # horizontal binning
-AOIWidth                    = 1776 # 888 # 1776/2      # units in superpixels (540 superpixels * 2 pixels/superpixel)
+AOIWidth                    = 888 # 1776/2      # units in superpixels (540 superpixels * 2 pixels/superpixel)
+                                                # 1776 for PDMS T-junction
 AOILeft                     = 1                 # units in sensor pixels
 # AOIVBin                     = 2                 # vertical binning
 AOIHeight                   = 1760              # units in superpixels
