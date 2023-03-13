@@ -90,10 +90,10 @@ void ImProcWindow::render() {
       chanBBoxes[2] = cv::Rect(junc[0], junc[1], bbox[2] / 2, bbox[2] / 2);
       imProc_->impConf.setChanBBox(chanBBoxes);
       std::vector<cv::Rect> rotChanBBoxes = imProc_->impConf.getRotChanBBox();
-      rotChanBBoxes[0] = cv::Rect(0, 0, 0, 0);
-      for (int i = 1; i < NUM_CHANS; ++i)
-        rotChanBBoxes[i] = cv::Rect(bbox[2] / 2.0 * 1.414 / 2.0 - chanWidth / 2.0, 0, chanWidth,
-                                    bbox[2] / 2.0 * 1.414);
+      // rotChanBBoxes[0] = cv::Rect(0, 0, 0, 0);
+      // for (int i = 1; i < NUM_CHANS; ++i)
+      //   rotChanBBoxes[i] = cv::Rect(bbox[2] / 2.0 * 1.414 / 2.0 - chanWidth / 2.0, 0, chanWidth,
+      //                               bbox[2] / 2.0 * 1.414);
       imProc_->impConf.setRotChanBBox(rotChanBBoxes);
 
       // update tmplBBox

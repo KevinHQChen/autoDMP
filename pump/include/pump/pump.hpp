@@ -1,7 +1,7 @@
 #pragma once
 
 #define USEFGTPUMP
-// #define USEPIEZOPUMP FALSE
+// #define USEPIEZOPUMP
 
 #include "util/util.hpp"
 
