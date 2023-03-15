@@ -198,9 +198,9 @@ void Pump::setValve(unsigned int valveIdx, bool state) {
 
   std::string valveCommand;
   if (state)
-    valveCommand = "V" + std::to_string(valveIdx) + "ON\r\n";
+    valveCommand = "V" + std::to_string(valveIdx+1) + "ON\r\n";
   else
-    valveCommand = "V" + std::to_string(valveIdx) + "OFF\r\n";
+    valveCommand = "V" + std::to_string(valveIdx+1) + "OFF\r\n";
 
   sendCmd(valveCommand, 4);
   if (std::strncmp("OK", readData, 2) != 0)
