@@ -21,6 +21,8 @@
         "ENABLE_TESTS": "OFF",
         "ENABLE_CLANG_TIDY": "OFF",
         "ENABLE_CPPCHECK": "OFF",
+        "ENABLE_SANITIZER_ADDRESS": "OFF",
+        "ENABLE_SANITIZER_UNDEFINED_BEHAVIOR": "OFF",
         "ENABLE_COVERAGE": "OFF",
         "ENABLE_DOXYGEN": "OFF"
       }

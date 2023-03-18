@@ -7,12 +7,6 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
   return()
 endif()
 
-set(ENABLE_CLANG_TIDY OFF)
-set(ENABLE_CPPCHECK OFF)
-set(ENABLE_SANITIZER_ADDRESS OFF)
-set(ENABLE_SANITIZER_UNDEFINED_BEHAVIOR OFF)
-set(ENABLE_COVERAGE OFF)
-
 # Enable CCache if available
 find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM)
@@ -21,14 +15,14 @@ endif()
 
 # building the tests (check test/constexpr_test.cpp for constexpr testing)
 # enable sanitizers and clang-tidy if running the tests
-option(FEATURE_TESTS "Enable the tests" OFF)
-if(FEATURE_TESTS)
+if(ENABLE_TESTS)
   list(APPEND VCPKG_MANIFEST_FEATURES "tests") # activate the tests feature in the manifest (vcpkg.json)
   set(ENABLE_CLANG_TIDY "ENABLE_CLANG_TIDY")
   set(ENABLE_CPPCHECK "ENABLE_CPPCHECK")
   set(ENABLE_COVERAGE "ENABLE_COVERAGE")
   set(ENABLE_SANITIZER_ADDRESS "ENABLE_SANITIZER_ADDRESS")
   set(ENABLE_SANITIZER_UNDEFINED_BEHAVIOR "ENABLE_SANITIZER_UNDEFINED_BEHAVIOR")
+  enable_testing()
 endif()
 
 # building the docs
