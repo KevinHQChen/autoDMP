@@ -1,17 +1,6 @@
-cmake_minimum_required(VERSION 3.21)
-
-# ensure tooling and projects use the same version of C++
-set(CMAKE_CXX_STANDARD 20) # C++20
-set(CMAKE_CXX_STANDARD_REQUIRED ON) # don't allow compiler to fall back to older standard
-set(CMAKE_CXX_EXTENSIONS OFF) # disable compiler-specific extensions (force strict adherence to standard)
+cmake_minimum_required(VERSION 3.23)
 
 # ---- Project ----
-
-# Add project_options (update version number regularly - manually for now)
-include(FetchContent)
-FetchContent_Declare(_project_options URL https://github.com/aminya/project_options/archive/refs/tags/v0.26.3.zip)
-FetchContent_MakeAvailable(_project_options)
-include(${_project_options_SOURCE_DIR}/Index.cmake)
 
 # Setup vcpkg before defining the project
 set(CMAKE_TOOLCHAIN_FILE ~/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE FILEPATH "Path to toolchain")
@@ -38,52 +27,3 @@ add_subdirectory(./improc)
 add_subdirectory(./ctrl)
 add_subdirectory(./gui)
 add_subdirectory(./pump)
-
-# ---- Package ----
-
-if(CMAKE_SKIP_INSTALL_RULES)
-  return()
-elseif(NOT PROJECT_IS_TOP_LEVEL)
-  return()
-endif()
-
-# TODO where is this set?
-set(GIT_SHA
-    "Unknown"
-    CACHE STRING "SHA this build was generated from")
-string(
-  SUBSTRING "${GIT_SHA}"
-            0
-            8
-            GIT_SHORT_SHA)
-
-# the variables set using CACHE STRING "" are passed to package_project
-
-# package_project(
-#   TARGETS
-#   autoDMP
-#   # these libraries cannot be packaged as the target include directories include the build directory (TODO why is this the case?)
-#   # util
-#   # cam
-#   # gui
-#   # imcap
-#   # improc
-#   project_options
-#   project_warnings
-#   INTERFACE_DEPENDENCIES_CONFIGURED
-#   # ${my_header_lib_DEPENDENCIES_CONFIGURED}
-#   INTERFACE_INCLUDES
-#   # ${my_header_lib_INCLUDE_DIR}
-#   PUBLIC_INCLUDES
-#   # ${util_INCLUDE_DIR}
-#   # ${cam_INCLUDE_DIR}
-#   # ${gui_INCLUDE_DIR}
-#   # ${imcap_INCLUDE_DIR}
-#   # ${improc_INCLUDE_DIR}
-# )
-
-# set(CPACK_PACKAGE_FILE_NAME
-#     "${CMAKE_PROJECT_NAME}-${CMAKE_PROJECT_VERSION}-${GIT_SHORT_SHA}-${CMAKE_SYSTEM_NAME}-${CMAKE_BUILD_TYPE}-${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION}"
-# )
-
-# include(CPack)
