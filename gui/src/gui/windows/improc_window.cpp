@@ -2,14 +2,13 @@
 
 namespace gui {
 
-ImProcWindow::ImProcWindow(ImCap* imCap, ImProc* imProc)
-    : imCap_(imCap), imProc_(imProc) {
+ImProcWindow::ImProcWindow(ImCap *imCap, ImProc *imProc) : imCap_(imCap), imProc_(imProc) {
   imProcSetupToggle_ = std::make_unique<Toggle>("ImProc Setup", &improcSetupVisible_);
   // rawImage_ = std::make_unique<IMMImage>("Raw Image", 1);
   // procImage_ = std::make_unique<IMMImage>("Proc Image", 1);
   // for (int i = 0; i < NUM_TEMPLATES; i++)
   //   tmplImages_[i] = std::make_unique<IMMImage>("TmpImage: " + std::to_string(i), 1, true);
-  // for (int i = 0; i < NUM_CHANS; i++)
+  // for (int i = 0; i < numChans_; i++)
   //   chImages_[i] = std::make_unique<IMMImage>("Channel " + std::to_string(i), 1);
 }
 
@@ -19,7 +18,7 @@ ImProcWindow::~ImProcWindow() {
   // procImage_.reset();
   // for (int i = 0; i < NUM_TEMPLATES; i++)
   //   tmplImages_[i].reset();
-  // for (int i = 0; i < NUM_CHANS; i++)
+  // for (int i = 0; i < numChans_; i++)
   //   chImages_[i].reset();
 }
 
@@ -69,7 +68,7 @@ void ImProcWindow::render() {
 
       // update rotAngles
       std::vector<int> rotAngles = imProc_->impConf.getRotAngle();
-      for (int idx = 0; idx < NUM_CHANS; ++idx) {
+      for (int idx = 0; idx < numChans_; ++idx) {
         std::string chanWinName = "Channel " + std::to_string(idx);
         if (ImGui::CollapsingHeader(chanWinName.c_str())) {
           std::string rotWinName = "Rot Angle " + std::to_string(idx);
@@ -91,7 +90,7 @@ void ImProcWindow::render() {
       imProc_->impConf.setChanBBox(chanBBoxes);
       std::vector<cv::Rect> rotChanBBoxes = imProc_->impConf.getRotChanBBox();
       // rotChanBBoxes[0] = cv::Rect(0, 0, 0, 0);
-      // for (int i = 1; i < NUM_CHANS; ++i)
+      // for (int i = 1; i < numChans; ++i)
       //   rotChanBBoxes[i] = cv::Rect(bbox[2] / 2.0 * 1.414 / 2.0 - chanWidth / 2.0, 0, chanWidth,
       //                               bbox[2] / 2.0 * 1.414);
       imProc_->impConf.setRotChanBBox(rotChanBBoxes);
@@ -130,7 +129,7 @@ void ImProcWindow::render() {
   if (improcVisible_) {
     imProc_->startProcThread();
     if (ImGui::Begin("Channels", &improcVisible_)) {
-      for (int i = 0; i < NUM_CHANS; ++i) {
+      for (int i = 0; i < numChans_; ++i) {
         if (i != 0)
           ImGui::SameLine();
         procGUIFrames[i] = imProc_->getProcFrame(i);

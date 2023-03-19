@@ -9,23 +9,23 @@
 #include "imcap/imcap.hpp"
 #include "improc/improc.hpp"
 
-#define NUM_CHANS 3
-
 namespace gui {
 
 class ImProcWindow : public Window {
+  const int numChans_ = toml::get<int>(Config::conf["improc"]["numChans"]);
+
   bool improcSetupVisible_{false}, improcVisible_{false};
 
   // ImGuiWindowFlags imCapFlags = 0;
   // ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
 
-  ImCap* imCap_;
-  ImProc* imProc_;
+  ImCap *imCap_;
+  ImProc *imProc_;
 
   std::unique_ptr<Toggle> imProcSetupToggle_;
 
   // std::unique_ptr<IMMImage> rawImage_, procImage_;
-  // std::array<std::unique_ptr<IMMImage>, NUM_CHANS> chImages_;
+  // std::array<std::unique_ptr<IMMImage>, numChans_> chImages_;
   // std::array<std::unique_ptr<IMMImage>, NUM_TEMPLATES> tmplImages_;
 
   GUIFrame rawFrame, preFrame;
@@ -35,7 +35,7 @@ class ImProcWindow : public Window {
   std::vector<int> procWidths, procHeights;
 
 public:
-  ImProcWindow(ImCap* imCap, ImProc* imProc);
+  ImProcWindow(ImCap *imCap, ImProc *imProc);
   ~ImProcWindow();
   void render() override;
 };

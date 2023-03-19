@@ -92,10 +92,10 @@ class GUI {
   ordered_value conf;
   guiConfig guiConf;
 
-  ImCap* imCap_;
-  ImProc* imProc_;
-  Pump* pump_;
-  Supervisor* sv_;
+  ImCap *imCap_;
+  ImProc *imProc_;
+  Pump *pump_;
+  Supervisor *sv_;
 
   std::shared_ptr<gui::SysIdWindow> sysIDWindow_;
   std::shared_ptr<gui::PumpWindow> pumpWindow_;
@@ -148,8 +148,7 @@ class GUI {
   std::vector<int> procWidths, procHeights;
 
 public:
-  GUI(ImCap* imCap, ImProc* imProc, Pump* pump,
-      Supervisor* sv);
+  GUI(ImCap *imCap, ImProc *imProc, Pump *pump, Supervisor *sv);
   ~GUI();
   void startGUIThread();
   void imguiConfig();

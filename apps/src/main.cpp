@@ -10,20 +10,15 @@ int main(int, const char **) {
   py::eval_file("ctrl/scripts/sysid.py"); // import sysid functions
   py::gil_scoped_release release;         // add this to release the GIL
 
-  // load config
-  ordered_value conf = TOML11_PARSE_IN_ORDER("config/setup.toml");
-  guiConfig guiConf = toml::find<guiConfig>(conf, "gui");
-
-  info("Config type: {}", type_name<decltype(guiConf)>());
-  info("Parsed config: {}", toml::find(conf, "gui"));
-
   // initialize all subsystems
   auto imCap = new ImCap();
   auto imProc = new ImProc(imCap);
-  auto pump = new Pump(toml::get<bool>(conf["ctrl"]["simMode"]));
+  auto pump = new Pump();
   auto sv = new Supervisor(imProc, pump);
 
   // start gui
+  info("Config type: {}", type_name<decltype(Config::guiConf)>());
+  info("Parsed config: {}", toml::find(Config::conf, "gui"));
   GUI gui(imCap, imProc, pump, sv);
   gui.startGUIThread();
 }

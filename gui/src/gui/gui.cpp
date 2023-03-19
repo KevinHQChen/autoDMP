@@ -23,10 +23,9 @@ void GUI::imguiStyle() {
   style.ScaleAllSizes(guiConf.scale);
 }
 
-GUI::GUI(ImCap* imCap, ImProc* imProc, Pump* pump,
-         Supervisor* sv)
-    : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")), guiConf(toml::find<guiConfig>(conf, "gui")),
-      imCap_(imCap), imProc_(imProc), pump_(pump), sv_(sv) {
+GUI::GUI(ImCap *imCap, ImProc *imProc, Pump *pump, Supervisor *sv)
+    : conf(Config::conf), guiConf(Config::guiConf), imCap_(imCap), imProc_(imProc), pump_(pump),
+      sv_(sv) {
   sysIDWindow_ = std::make_shared<gui::SysIdWindow>(sv);
   pumpWindow_ = std::make_shared<gui::PumpWindow>(pump);
   imProcWindow_ = std::make_shared<gui::ImProcWindow>(imCap, imProc);

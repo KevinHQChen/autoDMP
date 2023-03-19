@@ -1,35 +1,33 @@
 #pragma once
 
-#define USEFGTPUMP
-// #define USEPIEZOPUMP
-
 #include "util/util.hpp"
 
+/* BARTELS */
 // Linux headers
 #include <errno.h>   // Error integer and strerror() function
 #include <fcntl.h>   // Contains file controls like O_RDWR
 #include <termios.h> // Contains POSIX terminal control definitions
 #include <unistd.h>  // write(), read(), close()
+/* BARTELS END */
 
-#ifdef USEFGTPUMP
+/* FLUIGENT */
 #include "fgt_SDK_Cpp.h" // include wrapper to fgt_SDK dll, functions can also be accessed by loading the dll
-#endif
+/* FLUIGENT END */
 
 class Pump {
+  const std::string pumpType_ = toml::get<std::string>(Config::conf["pump"]["type"]);
+
 public:
   // pump state (voltages are ints to work with imgui slider)
   std::vector<int> pumpVoltages{0, 0, 0, 0}, prevPumpVoltages{0, 0, 0, 0};
   bool valveState[4]{true, true, true, true}, prevValveState[4]{true, true, true, true};
   int freq{0}, prevFreq{0};
 
-  bool simModeActive;
+  const bool simModeActive = toml::get<bool>(Config::conf["ctrl"]["simMode"]);
 
-  Pump(bool simModeActive = false);
+  Pump();
   ~Pump();
 
-  // pumpIdx, valveIdx are 1-indexed
-  void enablePump(unsigned int pumpIdx);
-  void disablePump(unsigned int pumpIdx);
   bool setVoltage(unsigned int pumpIdx, int16_t voltage);
   int getVoltage(unsigned int pumpIdx);
 
@@ -47,7 +45,7 @@ public:
 private:
   std::mutex mutex;
 
-#ifdef USEFGTPUMP
+  /* FLUIGENT */
   // structures holding controller/instrument identification and details
   fgt_CHANNEL_INFO channelInfo[256];       // each idx represents one channel
                                            // (numPressureChannels)
@@ -58,18 +56,18 @@ private:
 
   unsigned char numControllers = 0;
   unsigned char numPressureChannels = 0;
-  // unsigned int pressureIdx = 0;				// pressure
+  // unsigned int pressureIdx = 0;         // pressure
   // channel index, 0 if first detected channel of list
   float minPressure;
   float maxPressure;
-#endif
+  /* FLUIGENT END */
 
-#ifdef USEPIEZOPUMP
+  /* BARTELS */
   int serialPort;
   // Create new termios struct, we call it 'tty' for convention
   // No need for "= {0}" at the end as we'll immediately write the existing
   // config to this struct
   termios tty;
   char *readData{nullptr};
-#endif
+  /* BARTELS END */
 };

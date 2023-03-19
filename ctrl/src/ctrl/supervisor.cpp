@@ -3,9 +3,8 @@
 #include "ctrl/state/state2.hpp"
 #include "ctrl/state/sysidstate.hpp"
 
-Supervisor::Supervisor(ImProc* imProc, Pump* pump)
-    : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")),
-      simModeActive(toml::get<bool>(conf["ctrl"]["simMode"])),
+Supervisor::Supervisor(ImProc *imProc, Pump *pump)
+    : conf(Config::conf), simModeActive(toml::get<bool>(conf["ctrl"]["simMode"])),
       dataPath(toml::get<std::string>(conf["ctrl"]["dataPath"])),
       confPath(toml::get<std::string>(conf["ctrl"]["confPath"])), pump(pump), imProc(imProc),
       currState_(new State0(this, Eigen::Vector3d(100, 70, 70))),
@@ -29,10 +28,8 @@ void Supervisor::startThread() {
     updateState<State0>(Eigen::Vector3d(94, 97, 97));
     // updateState<State1>(Eigen::Vector3d(90, 60, 50));
     // updateState<State2>(Eigen::Vector3d(135, 101, 101));
-#ifdef USEPIEZOPUMP
     if (!simModeActive)
       pump->setFreq(200);
-#endif
     ctrlThread = std::thread(&Supervisor::start, this);
     ctrlThread.detach();
   }
@@ -81,10 +78,8 @@ void Supervisor::startSysIDThread(Eigen::Vector3d uref, bool *selChs, std::vecto
     info("Starting SysID...");
     startedSysIDFlag = true;
 
-#ifdef USEPIEZOPUMP
     if (!simModeActive)
       pump->setFreq(200);
-#endif
 
     updateState<SysIDState>(uref, selChs, minVals, maxVals, data);
     sysIDThread = std::thread(&Supervisor::startSysID, this);

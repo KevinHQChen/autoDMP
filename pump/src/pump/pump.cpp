@@ -1,169 +1,169 @@
 #include "pump/pump.hpp"
 
-Pump::Pump(bool simModeActive) : simModeActive(simModeActive) {
+Pump::Pump() {
   if (simModeActive)
     return;
 
-#ifdef USEFGTPUMP
-  // detect number/type of instrument controllers and their serial numbers
-  numControllers = Fgt_detect(SN, instrumentType);
-  std::cout << "Number of controllers detected: " << int(numControllers) << "\n";
+  if (pumpType_ == "FLUIGENT") {
+    // detect number/type of instrument controllers and their serial numbers
+    numControllers = Fgt_detect(SN, instrumentType);
+    std::cout << "Number of controllers detected: " << int(numControllers) << "\n";
 
-  // only initialize MFCS-EZ (SN is populated sequentially for each detected controller)
-  for (unsigned char controllerIdx = 0; controllerIdx < numControllers; controllerIdx++) {
-    if (instrumentType[controllerIdx] == fgt_INSTRUMENT_TYPE::MFCS_EZ) {
-      std::cout << "MFCS-EZ instrument detected at index: " << int(controllerIdx)
-                << ", serial number: " << SN[controllerIdx] << "\n";
-    } else {
-      SN[controllerIdx] = 0;
+    // only initialize MFCS-EZ (SN is populated sequentially for each detected controller)
+    for (unsigned char controllerIdx = 0; controllerIdx < numControllers; controllerIdx++) {
+      if (instrumentType[controllerIdx] == fgt_INSTRUMENT_TYPE::MFCS_EZ) {
+        std::cout << "MFCS-EZ instrument detected at index: " << int(controllerIdx)
+                  << ", serial number: " << SN[controllerIdx] << "\n";
+      } else {
+        SN[controllerIdx] = 0;
+      }
     }
-  }
-  Fgt_initEx(SN);
+    Fgt_initEx(SN);
 
-  // Get total number of initialized pressure channel(s)
-  Fgt_get_pressureChannelCount(&numPressureChannels);
-  std::cout << "Total number of pressure channels: " << int(numPressureChannels) << "\n";
+    // Get total number of initialized pressure channel(s)
+    Fgt_get_pressureChannelCount(&numPressureChannels);
+    std::cout << "Total number of pressure channels: " << int(numPressureChannels) << "\n";
 
-  // Get detailed info about all pressure channels
-  Fgt_get_pressureChannelsInfo(channelInfo);
+    // Get detailed info about all pressure channels
+    Fgt_get_pressureChannelsInfo(channelInfo);
 
-  for (unsigned char chanIdx = 0; chanIdx < numPressureChannels; chanIdx++) {
-    // Get pressure limits
-    unsigned int idx = channelInfo[chanIdx].index;
-    Fgt_get_pressureRange(idx, &minPressure, &maxPressure);
-    std::cout << "Channel " << idx << " max pressure: " << maxPressure << " mbar\n";
-    std::cout << "Channel " << idx << " min pressure: " << minPressure << " mbar\n";
+    for (unsigned char chanIdx = 0; chanIdx < numPressureChannels; chanIdx++) {
+      // Get pressure limits
+      unsigned int idx = channelInfo[chanIdx].index;
+      Fgt_get_pressureRange(idx, &minPressure, &maxPressure);
+      std::cout << "Channel " << idx << " max pressure: " << maxPressure << " mbar\n";
+      std::cout << "Channel " << idx << " min pressure: " << minPressure << " mbar\n";
 
-    // Calibrate pressure channels (set pressure commands will not be accepted during this time)
-    if (chanIdx == 0) {
-      std::cout << "Beginning pressure channel calibration, unplug all tubing from pump.\n";
-      // std::cout << "Press enter to continue...\n";
-      // getchar();
+      // Calibrate pressure channels (set pressure commands will not be accepted during this time)
+      if (chanIdx == 0) {
+        std::cout << "Beginning pressure channel calibration, unplug all tubing from pump.\n";
+        // std::cout << "Press enter to continue...\n";
+        // getchar();
+      }
+      std::cout << "Calibrating pressure channel " << idx << "\n";
+      Fgt_calibratePressure(idx);
+      std::cout << "Done.\n";
     }
-    std::cout << "Calibrating pressure channel " << idx << "\n";
-    Fgt_calibratePressure(idx);
-    std::cout << "Done.\n";
+  } else if (pumpType_ == "BARTELS") {
+    // open serial port and check for errors (refer to:
+    // https://blog.mbedded.ninja/programming/operating-systems/linux/linux-serial-ports-using-c-cpp/#overview)
+    serialPort = open("/dev/ttyACM0", O_RDWR);
+    if (serialPort < 0)
+      error("Error {} opening {}: {}", errno, ttyname(serialPort), strerror(errno));
+
+    /* Configure serial port by modifying termios struct */
+    // Read in existing settings, and handle any error
+    // NOTE: This is important! POSIX states that the struct passed to tcsetattr()
+    // must have been initialized with a call to tcgetattr() overwise behaviour
+    // is undefined
+    if (tcgetattr(serialPort, &tty) != 0)
+      error("Error {} from tcgetattr: {}", errno, strerror(errno));
+
+    // control modes
+    // Set 8N1 (8 bits/byte, no parity, one stop bit)
+    tty.c_cflag &= ~PARENB; // Clear parity bit, disabling parity (most common)
+    tty.c_cflag &=
+        ~CSTOPB; // Clear stop field, only one stop bit used in communication (most common)
+    tty.c_cflag &= ~CSIZE; // Clear all the size bits, then use one of the statements below
+    tty.c_cflag |= CS8;    // 8 bits per byte (most common)
+
+    tty.c_cflag &= ~CRTSCTS;       // Disable RTS/CTS hardware flow control (most common)
+    tty.c_cflag |= CREAD | CLOCAL; // Turn on READ & ignore ctrl lines (CLOCAL = 1)
+
+    // local modes
+    tty.c_lflag &= ~ICANON; // Disable canonical mode
+    tty.c_lflag &= ~ECHO;   // Disable echo
+    tty.c_lflag &= ~ECHOE;  // Disable erasure
+    tty.c_lflag &= ~ECHONL; // Disable new-line echo
+    tty.c_lflag &= ~ISIG;   // Disable interpretation of INTR, QUIT and SUSP
+
+    // input modes
+    tty.c_iflag &= ~(IXON | IXOFF | IXANY); // Turn off s/w flow ctrl
+    tty.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR |
+                     ICRNL); // Disable any special handling of received bytes
+
+    // output modes
+    tty.c_oflag &= ~OPOST; // Prevent special interpretation of output bytes (e.g. newline chars)
+    tty.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
+    // tty.c_oflag &= ~OXTABS; // Prevent conversion of tabs to spaces (NOT PRESENT IN LINUX)
+    // tty.c_oflag &= ~ONOEOT; // Prevent removal of C-d chars (0x004) in output (NOT PRESENT IN
+    // LINUX)
+
+    // read() will block until data is available (exact amount can be set by VMIN)
+    // or timeout occurs (set by VTIME)
+    tty.c_cc[VMIN] = 0;   // return as soon as any data is received
+    tty.c_cc[VTIME] = 10; // wait for up to 1s (10 deciseconds) for data
+
+    // set in/out baud rate to 9600
+    cfsetspeed(&tty, B9600);
+
+    // Save tty settings, also checking for error
+    if (tcsetattr(serialPort, TCSANOW, &tty) != 0)
+      error("Error {} from tcsetattr: {}", errno, strerror(errno));
+
+    info("Pump serial port {} successfully configured", ttyname(serialPort));
   }
-#endif
-
-#ifdef USEPIEZOPUMP
-  // open serial port and check for errors (refer to:
-  // https://blog.mbedded.ninja/programming/operating-systems/linux/linux-serial-ports-using-c-cpp/#overview)
-  serialPort = open("/dev/ttyACM0", O_RDWR);
-  if (serialPort < 0)
-    error("Error {} opening {}: {}", errno, ttyname(serialPort), strerror(errno));
-
-  /* Configure serial port by modifying termios struct */
-  // Read in existing settings, and handle any error
-  // NOTE: This is important! POSIX states that the struct passed to tcsetattr()
-  // must have been initialized with a call to tcgetattr() overwise behaviour
-  // is undefined
-  if (tcgetattr(serialPort, &tty) != 0)
-    error("Error {} from tcgetattr: {}", errno, strerror(errno));
-
-  // control modes
-  // Set 8N1 (8 bits/byte, no parity, one stop bit)
-  tty.c_cflag &= ~PARENB; // Clear parity bit, disabling parity (most common)
-  tty.c_cflag &= ~CSTOPB; // Clear stop field, only one stop bit used in communication (most common)
-  tty.c_cflag &= ~CSIZE;  // Clear all the size bits, then use one of the statements below
-  tty.c_cflag |= CS8;     // 8 bits per byte (most common)
-
-  tty.c_cflag &= ~CRTSCTS;       // Disable RTS/CTS hardware flow control (most common)
-  tty.c_cflag |= CREAD | CLOCAL; // Turn on READ & ignore ctrl lines (CLOCAL = 1)
-
-  // local modes
-  tty.c_lflag &= ~ICANON; // Disable canonical mode
-  tty.c_lflag &= ~ECHO;   // Disable echo
-  tty.c_lflag &= ~ECHOE;  // Disable erasure
-  tty.c_lflag &= ~ECHONL; // Disable new-line echo
-  tty.c_lflag &= ~ISIG;   // Disable interpretation of INTR, QUIT and SUSP
-
-  // input modes
-  tty.c_iflag &= ~(IXON | IXOFF | IXANY); // Turn off s/w flow ctrl
-  tty.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR |
-                   ICRNL); // Disable any special handling of received bytes
-
-  // output modes
-  tty.c_oflag &= ~OPOST; // Prevent special interpretation of output bytes (e.g. newline chars)
-  tty.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
-  // tty.c_oflag &= ~OXTABS; // Prevent conversion of tabs to spaces (NOT PRESENT IN LINUX)
-  // tty.c_oflag &= ~ONOEOT; // Prevent removal of C-d chars (0x004) in output (NOT PRESENT IN
-  // LINUX)
-
-  // read() will block until data is available (exact amount can be set by VMIN)
-  // or timeout occurs (set by VTIME)
-  tty.c_cc[VMIN] = 0;   // return as soon as any data is received
-  tty.c_cc[VTIME] = 10; // wait for up to 1s (10 deciseconds) for data
-
-  // set in/out baud rate to 9600
-  cfsetspeed(&tty, B9600);
-
-  // Save tty settings, also checking for error
-  if (tcsetattr(serialPort, TCSANOW, &tty) != 0)
-    error("Error {} from tcsetattr: {}", errno, strerror(errno));
-
-  info("Pump serial port {} successfully configured", ttyname(serialPort));
-#endif
 }
 
 Pump::~Pump() {
   if (simModeActive)
     return;
 
-#ifdef USEFGTPUMP
-  // set all pressures to 0mbar before closing
-  for (unsigned char chanIdx = 0; chanIdx < numPressureChannels; chanIdx++)
-    Fgt_set_pressure(channelInfo[chanIdx].index, 0);
+  if (pumpType_ == "FLUIGENT") {
+    // set all pressures to 0mbar before closing
+    for (unsigned char chanIdx = 0; chanIdx < numPressureChannels; chanIdx++)
+      Fgt_set_pressure(channelInfo[chanIdx].index, 0);
 
-  Fgt_close();
-#endif
-
-#ifdef USEPIEZOPUMP
-  info("Closing pump serial port {}", ttyname(serialPort));
-  close(serialPort);
-#endif
+    Fgt_close();
+  } else if (pumpType_ == "BARTELS") {
+    info("Closing pump serial port {}", ttyname(serialPort));
+    close(serialPort);
+  }
 }
 
 bool Pump::setVoltage(unsigned int pumpIdx, int16_t voltage) {
   std::lock_guard lock(mutex);
 
-#ifdef USEFGTPUMP
-  // Check if voltage is different from current voltage, return early if it's the same
-  if (voltage == prevPumpVoltages[pumpIdx])
+  if (pumpType_ == "FLUIGENT") {
+    // Check if voltage is different from current voltage, return early if it's the same
+    if (voltage == prevPumpVoltages[pumpIdx])
+      return true;
+
+    if (!simModeActive)
+      Fgt_set_pressure(pumpIdx, voltage);
+
+    // sim mode is active or command was successful
+    pumpVoltages[pumpIdx] = voltage;
+    prevPumpVoltages[pumpIdx] = voltage;
+    info("Pump {} set to {} V.", pumpIdx + 1, voltage);
     return true;
+  } else if (pumpType_ == "BARTELS") {
+    // Check if voltage is different from current voltage, return early if it's the same
+    if (voltage == prevPumpVoltages[pumpIdx])
+      return true;
 
-  if (!simModeActive)
-    Fgt_set_pressure(pumpIdx, voltage);
+    auto presCommand = "P" + std::to_string(pumpIdx + 1) + "V" + std::to_string(voltage) + "\r\n";
 
-  // sim mode is active or command was successful
-  pumpVoltages[pumpIdx] = voltage;
-  prevPumpVoltages[pumpIdx] = voltage;
-  info("Pump {} set to {} V.", pumpIdx + 1, voltage);
-  return true;
-#endif
+    if (!simModeActive && (!sendCmd(presCommand, 4) || std::strncmp("OK", readData, 2) != 0)) {
+      error("Error setting pump {} to {} V.", pumpIdx + 1, voltage);
+      return false;
+    }
 
-#ifdef USEPIEZOPUMP
-  // Check if voltage is different from current voltage, return early if it's the same
-  if (voltage == prevPumpVoltages[pumpIdx])
+    // sim mode is active or command was successful
+    pumpVoltages[pumpIdx] = voltage;
+    prevPumpVoltages[pumpIdx] = voltage;
+    info("Pump {} set to {} V.", pumpIdx + 1, voltage);
     return true;
-
-  auto presCommand = "P" + std::to_string(pumpIdx + 1) + "V" + std::to_string(voltage) + "\r\n";
-
-  if (!simModeActive && (!sendCmd(presCommand, 4) || std::strncmp("OK", readData, 2) != 0)) {
-    error("Error setting pump {} to {} V.", pumpIdx + 1, voltage);
+  } else {
+    error("Pump type {} not supported", pumpType_);
     return false;
   }
-
-  // sim mode is active or command was successful
-  pumpVoltages[pumpIdx] = voltage;
-  prevPumpVoltages[pumpIdx] = voltage;
-  info("Pump {} set to {} V.", pumpIdx + 1, voltage);
-  return true;
-#endif
 }
 
 void Pump::setFreq(int freq_) {
-#ifdef USEPIEZOPUMP
+  if (pumpType_ != "BARTELS")
+    return;
+
   if (freq_ == prevFreq)
     return;
 
@@ -185,11 +185,12 @@ void Pump::setFreq(int freq_) {
     prevFreq = freq_;
     info("Set pump freq to {} Hz.", freq_);
   }
-#endif
 }
 
 void Pump::setValve(unsigned int valveIdx, bool state) {
-#ifdef USEPIEZOPUMP
+  if (pumpType_ != "BARTELS")
+    return;
+
   if (simModeActive) {
     valveState[valveIdx] = state;
     info("Valve {} set to {}.", valveIdx, state ? "ON" : "OFF");
@@ -198,9 +199,9 @@ void Pump::setValve(unsigned int valveIdx, bool state) {
 
   std::string valveCommand;
   if (state)
-    valveCommand = "V" + std::to_string(valveIdx+1) + "ON\r\n";
+    valveCommand = "V" + std::to_string(valveIdx + 1) + "ON\r\n";
   else
-    valveCommand = "V" + std::to_string(valveIdx+1) + "OFF\r\n";
+    valveCommand = "V" + std::to_string(valveIdx + 1) + "OFF\r\n";
 
   sendCmd(valveCommand, 4);
   if (std::strncmp("OK", readData, 2) != 0)
@@ -209,11 +210,12 @@ void Pump::setValve(unsigned int valveIdx, bool state) {
     valveState[valveIdx] = state;
     info("Valve {} set to {}.", valveIdx + 1, state ? "ON" : "OFF");
   }
-#endif
 }
 
 bool Pump::sendCmd(std::string cmd, int len) {
-#ifdef USEPIEZOPUMP
+  if (pumpType_ != "BARTELS")
+    return false;
+
   bool ret = true;
   delete readData;
   readData = new char[len];
@@ -232,7 +234,6 @@ bool Pump::sendCmd(std::string cmd, int len) {
   info("readData: {}", readData);
 
   return ret;
-#endif
 }
 
 void Pump::sendSigs(Eigen::Matrix<int16_t, 3, 1> u) {

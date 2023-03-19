@@ -87,6 +87,12 @@ confSrc = "fromFile"
 tmplThres   = 0.8
 # number of channels to observe for improc
 numChans    = 3
+# number of templates to use for improc
+numTmpls    = 2 # 4 for Noura's PDMS chip
+
+[pump]
+# select pump [string: "bartels"/"fluigent"]
+type      = "BARTELS"
 
 [ctrl]
 # path for control data

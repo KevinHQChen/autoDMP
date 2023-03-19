@@ -17,7 +17,7 @@ class ImProc {
   ordered_value conf;
   std::string confPath, dataPath;
   int numChans;
-  ImCap* imCap;
+  ImCap *imCap;
   QueueFPS<cv::Mat> *procFrameQueuePtr;
   std::vector<QueueFPS<cv::Mat> *> tempResultQueueArr, procFrameQueueArr;
   std::vector<int> compParams;
@@ -44,7 +44,7 @@ public:
   std::atomic<double> tmplThres;
   std::vector<QueueFPS<Pose> *> procDataQArr;
 
-  ImProc(ImCap* imCap);
+  ImProc(ImCap *imCap);
   ~ImProc();
 
   // load/save template images, channel bounding boxes into imProcConfig

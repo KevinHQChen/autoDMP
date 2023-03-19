@@ -18,12 +18,8 @@
 #include "opencv2/imgproc.hpp"
 #include "opencv2/opencv.hpp"
 
-// #include "boost/program_options.hpp"
-// #include "opencv2/core/cuda.hpp"
 #include <Eigen/Dense>
 
-// #include <CLI/CLI.hpp>
-// #include <nfd.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <spdlog/spdlog.h>
@@ -110,6 +106,13 @@ struct guiConfig {
     showDebug = toml::find<bool>(v, "showDebug");
   }
 };
+
+namespace Config {
+static ordered_value conf = TOML11_PARSE_IN_ORDER("config/setup.toml");
+static int numChans_ = toml::get<int>(Config::conf["improc"]["numChans"]);
+static int numTmpls_ = toml::get<int>(Config::conf["improc"]["numTmpls"]);
+static guiConfig guiConf = toml::find<guiConfig>(conf, "gui");
+} // namespace Config
 
 struct ffstream {
   std::ofstream fileStream;

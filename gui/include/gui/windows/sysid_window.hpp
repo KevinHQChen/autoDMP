@@ -15,8 +15,6 @@
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 
-#define NUM_CHANS 3
-
 namespace gui {
 
 namespace py = pybind11;
@@ -28,7 +26,7 @@ class SysIdWindow : public Window {
   void stopExcitationSignal();
   void clearCtrlDataQueue();
 
-  Supervisor* sv_;
+  Supervisor *sv_;
 
   std::unique_ptr<Button> sendExcitationSignalBtn_;
   std::unique_ptr<Button> stopExcitationSignalBtn_;
@@ -48,9 +46,10 @@ class SysIdWindow : public Window {
 
   bool sysIDWindowVisible_ = false;
   int numSamples_ = 1000;
-  std::vector<float> minVal_{std::vector<float>(NUM_CHANS, 0.0f)};
-  std::vector<float> maxVal_{std::vector<float>(NUM_CHANS, 1.0f)};
-  std::vector<float> uref_{std::vector<float>(NUM_CHANS, 1.0f)};
+  const int numChans_ = toml::get<int>(Config::conf["improc"]["numChans"]);
+  std::vector<float> minVal_{std::vector<float>(numChans_, 0.0f)};
+  std::vector<float> maxVal_{std::vector<float>(numChans_, 1.0f)};
+  std::vector<float> uref_{std::vector<float>(numChans_, 1.0f)};
 
   float guiTime{0.0f}, history{30.0f};
   ScrollingBuffer u0, u1, u2, du0, du1, du2;
@@ -61,7 +60,7 @@ class SysIdWindow : public Window {
       std::make_pair(&y0, "y0"), std::make_pair(&y1, "y1"), std::make_pair(&y2, "y2")};
 
 public:
-  SysIdWindow(Supervisor* sv);
+  SysIdWindow(Supervisor *sv);
   ~SysIdWindow();
   void render() override;
 

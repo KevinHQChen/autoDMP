@@ -33,14 +33,14 @@ public:
   bool simModeActive;
   std::string dataPath, confPath;
 
-  Pump* pump;
-  ImProc* imProc;
+  Pump *pump;
+  ImProc *imProc;
   State *currState_ = nullptr;
   Event *currEvent_ = nullptr;
   QueueFPS<Event *> *eventQueue_;
   QueueFPS<int> *ctrlDataQueuePtr;
 
-  Supervisor(ImProc* imProc, Pump* pump);
+  Supervisor(ImProc *imProc, Pump *pump);
   ~Supervisor();
 
   void startThread();

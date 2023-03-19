@@ -1,9 +1,8 @@
 #include "imcap/imcap.hpp"
 
 ImCap::ImCap()
-    : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")),
-      dataPath(toml::get<std::string>(conf["postproc"]["rawDataPath"])), cam(new Cam(0, conf)),
-      rawFrameQueue(new QueueFPS<cv::Mat>(dataPath + "rawFramesQueue.txt")),
+    : conf(Config::conf), dataPath(toml::get<std::string>(conf["postproc"]["rawDataPath"])),
+      cam(new Cam(0, conf)), rawFrameQueue(new QueueFPS<cv::Mat>(dataPath + "rawFramesQueue.txt")),
       preFrameQueue(new QueueFPS<cv::Mat>(dataPath + "preFramesQueue.txt")) {}
 
 ImCap::~ImCap() {

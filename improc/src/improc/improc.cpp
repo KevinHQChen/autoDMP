@@ -1,8 +1,7 @@
 #include "improc/improc.hpp"
 
-ImProc::ImProc(ImCap* imCap)
-    : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")),
-      confPath(toml::get<std::string>(conf["improc"]["confPath"])),
+ImProc::ImProc(ImCap *imCap)
+    : conf(Config::conf), confPath(toml::get<std::string>(conf["improc"]["confPath"])),
       dataPath(toml::get<std::string>(conf["postproc"]["procDataPath"])),
       numChans(toml::get<int>(conf["improc"]["numChans"])), imCap(imCap),
       procFrameQueuePtr(new QueueFPS<cv::Mat>(dataPath + "procFramesQueue.txt")),
@@ -106,8 +105,8 @@ void ImProc::start() {
             // assume tempPreFrame is square
             // cv::RotatedRect rr = cv::RotatedRect(
             //     cv::Point2f(tempPreFrame.cols / 2, tempPreFrame.rows / 2),
-            //     cv::Size2f(impConf.getRotChanBBox()[ch].width, impConf.getRotChanBBox()[ch].height),
-            //     impConf.getRotAngle()[ch]);
+            //     cv::Size2f(impConf.getRotChanBBox()[ch].width,
+            //     impConf.getRotChanBBox()[ch].height), impConf.getRotAngle()[ch]);
             // cv::Point2f vertices[4];
             // rr.points(vertices);
             // for (int i = 0; i < 4; ++i)

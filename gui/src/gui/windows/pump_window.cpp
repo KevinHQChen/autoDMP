@@ -2,10 +2,9 @@
 
 namespace gui {
 
-PumpWindow::PumpWindow(Pump* pp) : pp_(pp) {
-  maxVoltageSlider_ =
-      std::make_unique<Slider<int>>("Max\nVoltage", 30, 1000, nullptr, "%d V", ImVec2(0, 0), true,
-                                    [this]() { setMaxVoltage(); });
+PumpWindow::PumpWindow(Pump *pp) : pp_(pp) {
+  maxVoltageSlider_ = std::make_unique<Slider<int>>(
+      "Max\nVoltage", 30, 1000, nullptr, "%d V", ImVec2(0, 0), true, [this]() { setMaxVoltage(); });
   voltageSlider_ =
       std::make_unique<SliderArray<int>>("Pump\nVoltage", 0, 250, &pp_->pumpVoltages, NUM_PUMPS,
                                          "%d V", ImVec2(40, 200), false, [this]() { setPumps(); });
