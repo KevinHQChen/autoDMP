@@ -1,5 +1,4 @@
 add_executable(autoDMP "./src/main.cpp")
-# target_link_libraries(autoDMP PRIVATE project_options project_warnings)
 
 # includes (private includes require absolute paths)
 set(autoDMP_INCLUDE_DIR
@@ -9,7 +8,7 @@ target_include_directories(autoDMP PRIVATE ${autoDMP_INCLUDE_DIR})
 
 # link dependencies
 target_link_options(autoDMP PUBLIC "LINKER:-export-dynamic")
-target_link_system_libraries(autoDMP PRIVATE
+target_link_libraries(autoDMP PRIVATE
   util
   cam
   pump
@@ -21,6 +20,6 @@ target_link_system_libraries(autoDMP PRIVATE
 )
 
 # tests
-if(FEATURE_TESTS)
+if(BUILD_TESTS)
   add_subdirectory("./test")
 endif()

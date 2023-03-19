@@ -1,5 +1,4 @@
 add_library(pump "./src/pump/pump.cpp")
-# target_link_libraries(pump PRIVATE project_options project_warnings)
 
 # includes
 include(FetchContent)
@@ -22,11 +21,12 @@ target_include_directories(pump PUBLIC
     "${CMAKE_BINARY_DIR}/_deps/fgt_sdk_cpp-src/C++/fgt_SDK_Cpp"
     "${CMAKE_BINARY_DIR}/_deps/fgt_sdk_cpp-src/C++/fgt_SDK_Cpp/dlls")
 
-target_link_system_libraries(pump PRIVATE
+# link dependencies
+target_link_libraries(pump PRIVATE
     util
     fgt_SDK_cpp)
 
 # tests
-if(FEATURE_TESTS)
+if(BUILD_TESTS)
   add_subdirectory("./test")
 endif()

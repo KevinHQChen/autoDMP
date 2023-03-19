@@ -5,7 +5,6 @@ add_library(ctrl
   "./src/ctrl/state/state0.cpp"
   "./src/ctrl/state/state1.cpp"
   "./src/ctrl/state/state2.cpp")
-# target_link_libraries(ctrl PRIVATE project_options project_warnings)
 
 # includes
 set(ctrl_INCLUDE_DIR
@@ -46,7 +45,7 @@ foreach (dep ${ctrl_DEPENDENCIES_CONFIGURED})
 endforeach ()
 
 # link dependencies
-target_link_system_libraries(ctrl PRIVATE
+target_link_libraries(ctrl PRIVATE
   ${Python_LIBRARY_RELEASE}
   pybind11::embed
   util
@@ -56,6 +55,6 @@ target_link_system_libraries(ctrl PRIVATE
   pump)
 
 # tests
-if(FEATURE_TESTS)
+if(BUILD_TESTS)
   add_subdirectory("./test")
 endif()

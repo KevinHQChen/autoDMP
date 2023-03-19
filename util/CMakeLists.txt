@@ -1,5 +1,4 @@
 add_library(util "./src/util/util.cpp")
-# target_link_libraries(util PRIVATE project_options project_warnings)
 
 # includes
 set(util_INCLUDE_DIR
@@ -26,7 +25,7 @@ foreach (dep ${util_DEPENDENCIES_CONFIGURED})
 endforeach ()
 
 # link dependencies
-target_link_system_libraries(util PRIVATE
+target_link_libraries(util PRIVATE
     # unofficial::nativefiledialog::nfd
     fmt::fmt fmt::fmt-header-only
     spdlog::spdlog spdlog::spdlog_header_only
@@ -38,6 +37,6 @@ target_link_system_libraries(util PRIVATE
 )
 
 # tests
-if(FEATURE_TESTS)
+if(BUILD_TESTS)
   add_subdirectory("./test")
 endif()

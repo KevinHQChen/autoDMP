@@ -7,10 +7,9 @@
   },
   "configurePresets": [
     {
-      "name": "base",
-      "hidden": true,
+      "name": "Multi-Config",
       "generator": "Ninja Multi-Config",
-      "binaryDir": "${sourceDir}/build/${presetName}",
+      "binaryDir": "${sourceDir}/build",
       "cacheVariables": {
         "CMAKE_C_COMPILER": "gcc",
         "CMAKE_CXX_COMPILER": "g++",
@@ -18,63 +17,46 @@
         "CMAKE_CXX_STANDARD_REQUIRED": "ON",
         "CMAKE_CXX_EXTENSIONS": "OFF",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-        "ENABLE_TESTS": "OFF",
-        "ENABLE_CLANG_TIDY": "OFF",
-        "ENABLE_CPPCHECK": "OFF",
-        "ENABLE_SANITIZER_ADDRESS": "OFF",
-        "ENABLE_SANITIZER_UNDEFINED_BEHAVIOR": "OFF",
-        "ENABLE_COVERAGE": "OFF",
-        "ENABLE_DOXYGEN": "OFF"
+        "BUILD_TESTS": "OFF",
+        "BUILD_DOCS": "OFF"
       }
     },
     {
-      "name": "debug",
-      "inherits": "base",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
-      }
-    },
-    {
-      "name": "release",
-      "inherits": "base",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
-      }
-    },
-    {
-      "name": "relwithdebinfo",
-      "inherits": "base",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
-      }
+      "name": "docs",
+      "inherits": "Multi-Config",
+      "cacheVariables": {"BUILD_DOCS": "ON"}
     }
   ],
   "testPresets": [
     {
       "name": "test-base",
       "hidden": true,
-      "output": {
-        "outputOnFailure": true
-      },
-      "execution": {
-        "noTestsAction": "error",
-        "stopOnFailure": true
-      }
+      "output": {"outputOnFailure": true},
+      "execution": {"noTestsAction": "error", "stopOnFailure": true}
     },
     {
       "name": "debug",
       "inherits": "test-base",
-      "configurePreset": "debug",
+      "configurePreset": "Multi-Config",
+      "execution": {
+        "ctestCommandArgs": ["--build-config", "Debug"]
+      }
     },
     {
       "name": "release",
       "inherits": "test-base",
-      "configurePreset": "release",
+      "configurePreset": "Multi-Config",
+      "execution": {
+        "ctestCommandArgs": ["--build-config", "Release"]
+      }
     },
     {
       "name": "relwithdebinfo",
       "inherits": "test-base",
-      "configurePreset": "relwithdebinfo",
+      "configurePreset": "Multi-Config",
+      "execution": {
+        "ctestCommandArgs": ["--build-config", "RelWithDebInfo"]
+      }
     }
   ]
 }

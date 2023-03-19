@@ -1,7 +1,6 @@
 add_library(improc
     "./src/improc/improc.cpp"
     "./src/improc/improc_helpers.cpp")
-# target_link_libraries(improc PRIVATE project_options project_warnings)
 
 # includes
 set(improc_INCLUDE_DIR
@@ -11,12 +10,12 @@ target_include_directories(improc PUBLIC
   "$<BUILD_INTERFACE:${improc_INCLUDE_DIR}>"
   "$<INSTALL_INTERFACE:./${CMAKE_INSTALL_INCLUDEDIR}>")
 
-target_link_system_libraries(improc PRIVATE
+target_link_libraries(improc PRIVATE
   util
   imcap
   cam)
 
 # tests
-if(FEATURE_TESTS)
+if(BUILD_TESTS)
   add_subdirectory("./test")
 endif()
