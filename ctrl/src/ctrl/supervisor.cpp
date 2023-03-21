@@ -7,7 +7,7 @@ Supervisor::Supervisor(ImProc *imProc, Pump *pump)
     : conf(Config::conf), simModeActive(toml::get<bool>(conf["ctrl"]["simMode"])),
       dataPath(toml::get<std::string>(conf["ctrl"]["dataPath"])),
       confPath(toml::get<std::string>(conf["ctrl"]["confPath"])), pump(pump), imProc(imProc),
-      currState_(new State0(this, Eigen::Vector3d(100, 70, 70))),
+      currState_(new State0(this)),
       currEvent_(new Event(0, 0, Eigen::Vector3d(0.5, 0, 0), Eigen::Vector3d(10, 0, 0))),
       eventQueue_(new QueueFPS<Event *>(dataPath + "eventQueue.txt")),
       ctrlDataQueuePtr(new QueueFPS<int>(dataPath + "ctrlDataQueue.txt")) {}
@@ -25,7 +25,7 @@ void Supervisor::startThread() {
     imProc->clearProcFrameQueues();
     imProc->clearTempFrameQueues();
     imProc->clearProcDataQueues();
-    updateState<State0>(Eigen::Vector3d(94, 97, 97));
+    updateState<State0>();
     // updateState<State1>(Eigen::Vector3d(90, 60, 50));
     // updateState<State2>(Eigen::Vector3d(135, 101, 101));
     if (!simModeActive)
@@ -99,7 +99,7 @@ void Supervisor::stopSysIDThread() {
 
     if (sysIDThread.joinable())
       sysIDThread.join();
-    updateState<State0>(Eigen::Vector3d(110, 79, 126));
+    updateState<State0>();
   }
 }
 

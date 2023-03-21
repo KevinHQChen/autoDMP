@@ -1,3 +1,4 @@
+# good cmake resource: https://cliutils.gitlab.io/modern-cmake/, https://alexreinking.com/blog/how-to-use-cmake-without-the-agonizing-pain-part-1.html
 # include guard
 if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
   message(

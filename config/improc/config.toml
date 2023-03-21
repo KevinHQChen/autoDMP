@@ -1,13 +1,13 @@
-rotAngle = [0,-135,135]
-chanWidth = 39
-junction = {y=566,x=209}
-bbox = {height=880,width=418,y=0,x=16}
-tmplBBox = {height=20,width=20,y=211,x=10}
+rotAngle = [0,-90,90]
+chanWidth = 31
+junction = {y=441,x=215}
+bbox = {height=480,width=430,y=0,x=16}
+tmplBBox = {height=20,width=20,y=54,x=5}
 
 chanBBox = [
-{height=566,width=39,y=0,x=190},
-{height=209,width=209,y=566,x=0},
-{height=209,width=209,y=566,x=209},
+{height=441,width=31,y=0,x=200},
+{height=31,width=215,y=426,x=0},
+{height=31,width=215,y=426,x=215},
 ]
 
 [[rotChanBBox]]
@@ -16,12 +16,13 @@ width = 0
 y = 0
 x = 0
 [[rotChanBBox]]
-height = 95
-width = 39
+height = 267
+width = 31
 y = 0
-x = 128
+x = 118
 [[rotChanBBox]]
-height = 95
-width = 39
+height = 267
+width = 31
 y = 0
-x = 128
+x = 118
+

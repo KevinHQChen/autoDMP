@@ -37,6 +37,7 @@ class SysIdWindow : public Window {
   std::unique_ptr<SliderArray<float>> urefSlider_;
   std::unique_ptr<CheckboxArray> chSelect_;
   std::unique_ptr<Slider<int>> numSampleSlider_;
+  std::unique_ptr<Toggle> flipSignalToggle_;
 
   std::vector<std::string> excitationSignalTypes_ = {"prbs", "sine", "square", "triangle",
                                                      "sawtooth"};

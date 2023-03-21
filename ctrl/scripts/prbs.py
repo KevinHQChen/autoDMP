@@ -3,7 +3,7 @@ import numpy as np
 from scipy.signal import max_len_seq, periodogram
 from numpy.fft import fft, ifft, fftshift, fftfreq
 
-def prbs(selCh, minVal, maxVal, order):
+def prbs(selCh, minVal, maxVal, order, flip=True):
     """
     function that generates a PRBS sequence.
     Parameters
@@ -30,7 +30,10 @@ def prbs(selCh, minVal, maxVal, order):
     for i in range(len(selCh)):
         if selCh[i]:
             prbs_1_period = max_len_seq(order)[0] * (maxVal[i] - minVal[i]) + minVal[i]
-            prbs[i, :] = prbs_1_period
+            if flip:
+                prbs[i, :] = -prbs_1_period
+            else:
+                prbs[i, :] = prbs_1_period
 
     firstCh = True
     if numCh > 1:

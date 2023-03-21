@@ -4,7 +4,7 @@
 
 class State0 : public State {
   // num of states, outputs, inputs
-  static constexpr int state = 0, numX = 2, numY = 1, numU = 1;
+  static constexpr int state = 0, numX = 3, numY = 1, numU = 1;
 
 public:
   // system matrices
@@ -12,7 +12,7 @@ public:
   // Eigen::Matrix<double, numX, 1> dxhat{Eigen::Matrix<double, numX, 1>::Zero()};
   MDL<state, numX, numY, numU> *mdl;
 
-  State0(Supervisor *sv, Eigen::Vector3d uref_);
+  State0(Supervisor *sv, Eigen::Vector3d uref_ = Eigen::Vector3d(84, 41, 40));
   ~State0();
 
   virtual bool measurementAvailable() override;

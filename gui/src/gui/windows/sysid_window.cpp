@@ -13,6 +13,7 @@ SysIdWindow::SysIdWindow(Supervisor *sv) : sv_(sv) {
       std::make_unique<SliderArray<float>>("Excitation Signal Max Value", 0.0f, 10.0f, &maxVal_);
   urefSlider_ =
       std::make_unique<SliderArray<float>>("Control Signal Setpoint (uref)", 0.0f, 200.0f, &uref_);
+  flipSignalToggle_ = std::make_unique<Toggle>("Flip Excitation Signal");
   sendExcitationSignalBtn_ = std::make_unique<Button>("Send Excitation Signal", nullptr,
                                                       [this]() { sendExcitationSignal(); });
   stopExcitationSignalBtn_ = std::make_unique<Button>("Stop Excitation Signal", nullptr,
@@ -29,6 +30,7 @@ SysIdWindow::~SysIdWindow() {
   minValSlider_.reset();
   maxValSlider_.reset();
   urefSlider_.reset();
+  flipSignalToggle_.reset();
   stopExcitationSignalBtn_.reset();
   clearDataBtn_.reset();
   chSelect_.reset();
@@ -45,6 +47,7 @@ void SysIdWindow::render() {
       minValSlider_->render();
       maxValSlider_->render();
       urefSlider_->render();
+      flipSignalToggle_->render();
       numSampleSlider_->render();
       excitationSignalDropdown_->render();
       sendExcitationSignalBtn_->render();
@@ -111,9 +114,9 @@ void SysIdWindow::generateExcitationSignal() {
     for (int i = 0; i < numChans_; i++)
       chSel.append(chSelect_->get()[i]);
 
-    excitationSignal_ =
-        prbs(chSel, minValSlider_->get(), maxValSlider_->get(), numSampleSlider_->get())
-            .cast<Eigen::MatrixXd>();
+    excitationSignal_ = prbs(chSel, minValSlider_->get(), maxValSlider_->get(),
+                             numSampleSlider_->get(), flipSignalToggle_->get())
+                            .cast<Eigen::MatrixXd>();
   }
 
   info("Excitation signal dimensions: {}x{}", excitationSignal_.rows(), excitationSignal_.cols());

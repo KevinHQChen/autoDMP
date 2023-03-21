@@ -1,7 +1,7 @@
 #pragma once
 #include "util/util.hpp"
 
-#define NUM_TEMPLATES 2
+#define NUM_TEMPLATES 4
 
 // macros to generate from_toml/into_toml functions for cv::Point and cv::Rect
 TOML11_DEFINE_CONVERSION_NON_INTRUSIVE(cv::Point, x, y)
