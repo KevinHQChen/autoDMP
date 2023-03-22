@@ -52,7 +52,8 @@ target_link_libraries(ctrl PRIVATE
   improc
   imcap
   cam
-  pump)
+  pump
+  mpcmove)
 
 # tests
 if(BUILD_TESTS)

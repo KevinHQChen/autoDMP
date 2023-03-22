@@ -8,7 +8,12 @@ State0::State0(Supervisor *sv, Eigen::Vector3d uref_)
       mdl(new MDL<state, numX, numY, numU>(sv)) {
   // clear all improc queues
   sv_->imProc->clearProcDataQueues();
+
   stateTransitionCondition = true;
+  argInit_struct4_T(&stateData);
+  onlineData = argInit_struct5_T();
+
+  // TODO update onlineData.limits.ymax with yrefScale
 }
 
 State0::~State0() {
@@ -101,5 +106,22 @@ void State0::handleEvent(Event *event) {
 }
 
 Eigen::Matrix<int16_t, 3, 1> State0::step() {
-  return State::step<state, numX, numY, numU>(ch, mdl);
+  // Update measured output in online data.
+  onlineData.signals.ym = dy(ch.array(), Eigen::all);
+
+  // Update reference in online data.
+  onlineData.signals.ref = yref(ch.array(), Eigen::all);
+
+  // Update constraints in online data using current uref
+  onlineData.limits.umin = (uref(0) > 40) ? -40 : std::fmax(-uref(0), 0);
+  onlineData.limits.umax = (uref(0) < 250-40) ? 40 : std::fmin(250-uref,250);
+  onlineData.limits.ymin = -y(ch.array(), Eigen::all);
+  onlineData.limits.ymax = yrefScale(ch.array(), Eigen::all) - y(ch.array(), Eigen::all);
+
+  // Compute and store control action.
+  double du_;
+  mpcmoveCodeGeneration(&stateData, &onlineData, &du_, &info);
+  du(0) = du_;
+  u = uref + du;
+  return u.cast<int16_t>();
 }
