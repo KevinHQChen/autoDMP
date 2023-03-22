@@ -14,7 +14,6 @@
 #include "norm.h"
 #include "rt_nonfinite.h"
 #include "xgerc.h"
-#include "rt_nonfinite.h"
 #include <math.h>
 #include <string.h>
 

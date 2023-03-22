@@ -32,8 +32,6 @@ endif()
 # use virtual environment python interpreter
 set(Python_EXECUTABLE ${CMAKE_CURRENT_SOURCE_DIR}/scripts/venv/bin/python)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/scripts/venv/bin/python)
-
 set(ctrl_DEPENDENCIES_CONFIGURED
   pybind11
   CACHE STRING "")
@@ -44,16 +42,20 @@ foreach (dep ${ctrl_DEPENDENCIES_CONFIGURED})
   endif ()
 endforeach ()
 
+# target_include_directories(ctrl PUBLIC ${mpcmove_INCLUDE_DIRS})
+# # print mpmove include directories
+# message(STATUS "mpcmove include directories: ${mpcmove_INCLUDE_DIRS}")
+
 # link dependencies
 target_link_libraries(ctrl PRIVATE
+  mpcmove
   ${Python_LIBRARY_RELEASE}
   pybind11::embed
   util
   improc
   imcap
   cam
-  pump
-  mpcmove)
+  pump)
 
 # tests
 if(BUILD_TESTS)

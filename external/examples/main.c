@@ -61,8 +61,7 @@ static struct6_T argInit_struct6_T(void);
 static struct8_T argInit_struct8_T(void);
 
 /* Function Definitions */
-static void argInit_3x1_real_T(double result[3])
-{
+static void argInit_3x1_real_T(double result[3]) {
   int idx0;
   /* Loop over the array to initialize each element. */
   for (idx0 = 0; idx0 < 3; idx0++) {
@@ -72,8 +71,7 @@ Change this value to the value that the application requires. */
   }
 }
 
-static void argInit_3x3_real_T(double result[9])
-{
+static void argInit_3x3_real_T(double result[9]) {
   int i;
   /* Loop over the array to initialize each element. */
   for (i = 0; i < 9; i++) {
@@ -83,8 +81,7 @@ Change this value to the value that the application requires. */
   }
 }
 
-static void argInit_62x1_boolean_T(boolean_T result[62])
-{
+static void argInit_62x1_boolean_T(boolean_T result[62]) {
   int idx0;
   /* Loop over the array to initialize each element. */
   for (idx0 = 0; idx0 < 62; idx0++) {
@@ -94,18 +91,11 @@ Change this value to the value that the application requires. */
   }
 }
 
-static boolean_T argInit_boolean_T(void)
-{
-  return false;
-}
+static boolean_T argInit_boolean_T(void) { return false; }
 
-static double argInit_real_T(void)
-{
-  return 0.0;
-}
+static double argInit_real_T(void) { return 0.0; }
 
-static void argInit_struct4_T(struct4_T *result)
-{
+static void argInit_struct4_T(struct4_T *result) {
   /* Set the value of each structure field.
 Change this value to the value that the application requires. */
   argInit_3x1_real_T(result->Plant);
@@ -114,8 +104,7 @@ Change this value to the value that the application requires. */
   argInit_62x1_boolean_T(result->iA);
 }
 
-static struct5_T argInit_struct5_T(void)
-{
+static struct5_T argInit_struct5_T(void) {
   struct5_T result;
   /* Set the value of each structure field.
 Change this value to the value that the application requires. */
@@ -124,8 +113,7 @@ Change this value to the value that the application requires. */
   return result;
 }
 
-static struct6_T argInit_struct6_T(void)
-{
+static struct6_T argInit_struct6_T(void) {
   struct6_T result;
   double result_tmp;
   /* Set the value of each structure field.
@@ -136,8 +124,7 @@ Change this value to the value that the application requires. */
   return result;
 }
 
-static struct8_T argInit_struct8_T(void)
-{
+static struct8_T argInit_struct8_T(void) {
   struct8_T result;
   double result_tmp;
   /* Set the value of each structure field.
@@ -150,8 +137,7 @@ Change this value to the value that the application requires. */
   return result;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   (void)argc;
   (void)argv;
   /* The initialize function is being called automatically from your entry-point
@@ -165,8 +151,7 @@ You do not need to do this more than one time. */
   return 0;
 }
 
-void main_mpcmoveCodeGeneration(void)
-{
+void main_mpcmoveCodeGeneration(void) {
   struct10_T Info;
   struct4_T statedata;
   struct5_T r;
