@@ -127,6 +127,13 @@ RUN ./setup_cpp_linux --compiler gcc \ # llvm would be nice, but vcpkg's ffmpeg 
     # documentation
     --doxygen true
 
+# install MATLAB runtime R2022b Update 5 to /MATLAB_Runtime
+RUN mkdir -p /MATLAB_Runtime && cd /MATLAB_Runtime && \
+    wget https://ssd.mathworks.com/supportfiles/downloads/R2022b/Release/5/deployment_files/installer/complete/glnxa64/MATLAB_Runtime_R2022b_Update_5_glnxa64.zip && \
+    unzip MATLAB_Runtime_R2022b_Update_5_glnxa64.zip && \
+    ./install -mode silent -agreeToLicense yes && \
+    rm MATLAB_Runtime_R2022b_Update_5_glnxa64.zip
+
 # get fonts
 RUN wget -P ~/.local/share/fonts/ https://www.1001fonts.com/download/jetbrains-mono.zip \
     && unzip ~/.local/share/fonts/jetbrains-mono.zip -d ~/.local/share/fonts/ \
