@@ -11,9 +11,9 @@ coverage.xml
 **/venv/
 **/__pycache__/
 
-
 # Generated data
 data/
+**/html/
 
 # User specific settings
 CMakeUserPresets.json
