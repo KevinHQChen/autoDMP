@@ -14,6 +14,7 @@ coverage.xml
 # Generated data
 data/
 **/html/
+**/_htmllib/
 
 # User specific settings
 CMakeUserPresets.json
