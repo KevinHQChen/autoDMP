@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SupervisoryController.h" // Model header file
 #include "improc/improc.hpp"
 #include "pump/pump.hpp"
 #include "util/util.hpp"
@@ -16,6 +17,14 @@ struct Event {
 
 struct StateData;
 class State; // forward declaration
+
+class SupervisoryControllerRecvData_event_busT : public RecvData_event_busT{
+ public:
+  void RecvData(event_bus* data, int32_T length, int32_T* status)
+  {
+    // Add receive data logic here
+  }
+};
 
 class Supervisor {
 
@@ -35,9 +44,15 @@ public:
 
   Pump *pump;
   ImProc *imProc;
+  SupervisoryController *sup;
+  SupervisoryControllerRecvData_event_busT nextEventRecvData_arg;
+  SupervisoryController::ExtU *supIn;
+  SupervisoryController::ExtY *supOut;
   State *currState_ = nullptr;
   Event *currEvent_ = nullptr;
   QueueFPS<Event *> *eventQueue_;
+  event_bus *currEv_ = nullptr;
+  QueueFPS<event_bus *> *evQueue_;
   QueueFPS<int> *ctrlDataQueuePtr;
 
   Supervisor(ImProc *imProc, Pump *pump);
@@ -48,6 +63,9 @@ public:
   void startSysIDThread(Eigen::Vector3d uref, bool *selChs, std::vector<float> minVals,
                         std::vector<float> maxVals, Eigen::MatrixXd &data);
   void stopSysIDThread();
+
+  bool measAvail();
+  bool updateInputs();
 
   void addEvent(int srcState, int destState, Eigen::Vector3d pos, Eigen::Vector3d vel);
 

@@ -42,13 +42,14 @@ foreach (dep ${ctrl_DEPENDENCIES_CONFIGURED})
   endif ()
 endforeach ()
 
-# target_include_directories(ctrl PUBLIC ${mpcmove_INCLUDE_DIRS})
-# # print mpmove include directories
-# message(STATUS "mpcmove include directories: ${mpcmove_INCLUDE_DIRS}")
+# target_include_directories(ctrl PUBLIC ${supervisor_INCLUDE_DIRS})
+# # print supervisor include directories
+# message(STATUS "supervisor include directories: ${supervisor_INCLUDE_DIRS}")
 
 # link dependencies
 target_link_libraries(ctrl PRIVATE
   mpcmove
+  supervisor
   ${Python_LIBRARY_RELEASE}
   pybind11::embed
   util

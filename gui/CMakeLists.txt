@@ -30,6 +30,7 @@ target_include_directories(gui PUBLIC
 target_link_libraries(gui PRIVATE
   util
   ctrl
+  supervisor
   improc
   imcap
   cam

@@ -7,6 +7,8 @@ Supervisor::Supervisor(ImProc *imProc, Pump *pump)
     : conf(Config::conf), simModeActive(toml::get<bool>(conf["ctrl"]["simMode"])),
       dataPath(toml::get<std::string>(conf["ctrl"]["dataPath"])),
       confPath(toml::get<std::string>(conf["ctrl"]["confPath"])), pump(pump), imProc(imProc),
+      sup(new SupervisoryController(nextEventRecvData_arg)),
+      supIn(new SupervisoryController::ExtU()), supOut(new SupervisoryController::ExtY()),
       currState_(new State0(this)),
       currEvent_(new Event(0, 0, Eigen::Vector3d(0.5, 0, 0), Eigen::Vector3d(10, 0, 0))),
       eventQueue_(new QueueFPS<Event *>(dataPath + "eventQueue.txt")),
@@ -22,10 +24,11 @@ void Supervisor::startThread() {
   if (!startedCtrl) {
     info("Starting Supervisor...");
     startedCtrl = true;
+    sup->initialize();
     imProc->clearProcFrameQueues();
     imProc->clearTempFrameQueues();
     imProc->clearProcDataQueues();
-    updateState<State0>();
+    // updateState<State0>();
     // updateState<State1>(Eigen::Vector3d(90, 60, 50));
     // updateState<State2>(Eigen::Vector3d(135, 101, 101));
     if (!simModeActive)
@@ -48,10 +51,26 @@ void Supervisor::stopThread() {
   }
 }
 
+bool Supervisor::measAvail() {
+  return true;
+}
+
+bool Supervisor::updateInputs() {
+  if (supIn->inputevents != *currEv_)
+  supIn->
+
+
+
+  return true;
+}
+
 void Supervisor::start() {
   while (startedCtrl) {
-    if (currState_->measurementAvailable()) {
-      currState_->updateMeasurement();
+    if (measAvail()) {
+      updateInputs();
+      sup->setExternalInputs(supIn);
+      sup->step();
+      *supOut = sup->getExternalOutputs();
 
       // events are pushed to a FIFO event queue by GUI
       // get the first event in the queue and pop it

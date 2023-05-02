@@ -16,6 +16,7 @@ target_link_libraries(autoDMP PRIVATE
   imcap
   improc
   ctrl
+  supervisor
   imgui_bundle
 )
 
