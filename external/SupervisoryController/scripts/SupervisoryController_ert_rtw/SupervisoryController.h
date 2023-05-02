@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.714
+// Model version                  : 1.720
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon May  1 13:52:35 2023
+// C/C++ source code generated on : Mon May  1 22:26:26 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -22,15 +22,6 @@
 #define RTW_HEADER_SupervisoryController_h_
 #include "rtwtypes.h"
 #include <stddef.h>
-
-extern "C"
-{
-
-#include "rt_nonfinite.h"
-
-}
-
-#include "rt_zcfcn.h"
 #include "zero_crossing_types.h"
 #ifndef DEFINED_TYPEDEF_FOR_event_bus_
 #define DEFINED_TYPEDEF_FOR_event_bus_
@@ -173,51 +164,6 @@ struct struct_KFAcLAwxCsqlX6o2IlMd8D
 
 #endif
 
-#ifndef DEFINED_TYPEDEF_FOR_QueuePolicy_T_
-#define DEFINED_TYPEDEF_FOR_QueuePolicy_T_
-
-enum class QueuePolicy_T
-  : int32_T {
-  MSG_QUEUE_UNUSED = -1,               // Default value
-  MSG_FIFO_QUEUE,
-  MSG_LIFO_QUEUE,
-  MSG_PRIORITY_QUEUE
-};
-
-#endif
-
-#ifndef DEFINED_TYPEDEF_FOR_Msg_event_bus_
-#define DEFINED_TYPEDEF_FOR_Msg_event_bus_
-
-struct Msg_event_bus
-{
-  event_bus *fData;
-};
-
-#endif
-
-#ifndef DEFINED_TYPEDEF_FOR_MemPool_event_bus_
-#define DEFINED_TYPEDEF_FOR_MemPool_event_bus_
-
-struct MemPool_event_bus
-{
-  event_bus *fMemArray;
-  int32_T fNumUsed;
-  event_bus **fFreeList;
-  int32_T fNumFree;
-  int32_T fSize;
-};
-
-#endif
-
-class RecvData_event_busT
-{
- public:
-  virtual void RecvData(event_bus *data, int32_T length, int32_T *status) = 0;
-  virtual ~RecvData_event_busT()
-    = default;
-};
-
 // Custom Type definition for MATLAB Function: '<S38>/RLS'
 #ifndef struct_c_controllib_internal_blocks_rl
 #define struct_c_controllib_internal_blocks_rl
@@ -338,6 +284,57 @@ struct emxArray_s_vjEZ2dxatR8VOmLd9oOq
 
 #endif                                // struct_emxArray_s_vjEZ2dxatR8VOmLd9oOq
 
+extern "C"
+{
+  static real_T rtGetInf(void);
+  static real32_T rtGetInfF(void);
+  static real_T rtGetMinusInf(void);
+  static real32_T rtGetMinusInfF(void);
+}                                      // extern "C"
+
+extern "C"
+{
+  static real_T rtGetNaN(void);
+  static real32_T rtGetNaNF(void);
+}                                      // extern "C"
+
+#define NOT_USING_NONFINITE_LITERALS   1
+
+extern "C"
+{
+  extern real_T rtInf;
+  extern real_T rtMinusInf;
+  extern real_T rtNaN;
+  extern real32_T rtInfF;
+  extern real32_T rtMinusInfF;
+  extern real32_T rtNaNF;
+  static void rt_InitInfAndNaN(size_t realSize);
+  static boolean_T rtIsInf(real_T value);
+  static boolean_T rtIsInfF(real32_T value);
+  static boolean_T rtIsNaN(real_T value);
+  static boolean_T rtIsNaNF(real32_T value);
+  struct BigEndianIEEEDouble {
+    struct {
+      uint32_T wordH;
+      uint32_T wordL;
+    } words;
+  };
+
+  struct LittleEndianIEEEDouble {
+    struct {
+      uint32_T wordL;
+      uint32_T wordH;
+    } words;
+  };
+
+  struct IEEESingle {
+    union {
+      real32_T wordLreal;
+      uint32_T wordLuint;
+    } wordL;
+  };
+}                                      // extern "C"
+
 // Class declaration for model SupervisoryController
 class SupervisoryController final
 {
@@ -348,10 +345,10 @@ class SupervisoryController final
     d_controllib_internal_blocks_rl rlsEstimator;// '<S38>/RLS'
     real_T Product3[2];                // '<S107>/Product3'
     real_T last_mv_DSTATE[3];          // '<S8>/last_mv'
-    real_T MemoryX_DSTATE[2];          // '<S64>/MemoryX'
     real_T UnitDelay2_DSTATE[3];       // '<S6>/Unit Delay2'
     real_T delayTheta_DSTATE[4];       // '<S38>/delayTheta'
     real_T delayL_DSTATE[16];          // '<S38>/delayL'
+    real_T MemoryX_DSTATE[2];          // '<S64>/MemoryX'
     real_T MemoryP_DSTATE[4];          // '<S64>/MemoryP'
     real_T NextOutput[3];              // '<S2>/Measurement Noise'
     real_T dv[966];
@@ -359,11 +356,11 @@ class SupervisoryController final
     real_T UnitDelay3_DSTATE;          // '<S6>/Unit Delay3'
     uint32_T RandSeed[3];              // '<S2>/Measurement Noise'
     boolean_T Memory_PreviousInput[46];// '<S8>/Memory'
-    boolean_T icLoad;                  // '<S64>/MemoryX'
-    boolean_T icLoad_h;                // '<S38>/delayBuffery'
+    boolean_T icLoad;                  // '<S38>/delayBuffery'
     boolean_T icLoad_n;                // '<S38>/delayBufferH'
     boolean_T icLoad_m;                // '<S38>/delayTheta'
     boolean_T icLoad_e;                // '<S38>/delayL'
+    boolean_T icLoad_k;                // '<S64>/MemoryX'
     boolean_T icLoad_f;                // '<S64>/MemoryP'
     boolean_T rlsEstimator_not_empty;  // '<S38>/RLS'
     boolean_T MeasurementUpdate_MODE;  // '<S83>/MeasurementUpdate'
@@ -393,15 +390,15 @@ class SupervisoryController final
     DW_rarx sf_rarx;                   // '<S169>/rarx'
     real_T Product3[4];                // '<S251>/Product3'
     real_T last_mv_DSTATE[3];          // '<S113>/last_mv'
-    real_T MemoryX_DSTATE[4];          // '<S208>/MemoryX'
     real_T UnitDelay5_DSTATE[3];       // '<S111>/Unit Delay5'
     real_T UnitDelay4_DSTATE[2];       // '<S111>/Unit Delay4'
     real_T delayTheta_DSTATE[4];       // '<S146>/delayTheta'
-    real_T delayL_DSTATE[16];          // '<S146>/delayL'
     real_T delayPhi_DSTATE[7];         // '<S146>/delayPhi'
+    real_T delayL_DSTATE[16];          // '<S146>/delayL'
     real_T delayTheta_DSTATE_l[4];     // '<S147>/delayTheta'
-    real_T delayL_DSTATE_j[16];        // '<S147>/delayL'
     real_T delayPhi_DSTATE_j[7];       // '<S147>/delayPhi'
+    real_T delayL_DSTATE_j[16];        // '<S147>/delayL'
+    real_T MemoryX_DSTATE[4];          // '<S208>/MemoryX'
     real_T MemoryP_DSTATE[16];         // '<S208>/MemoryP'
     real_T NextOutput[3];              // '<S3>/Measurement Noise'
     real_T dv[1806];
@@ -413,17 +410,17 @@ class SupervisoryController final
     real_T delayBufferY_DSTATE_j;      // '<S147>/delayBufferY'
     uint32_T RandSeed[3];              // '<S3>/Measurement Noise'
     boolean_T Memory_PreviousInput[86];// '<S113>/Memory'
-    boolean_T icLoad;                  // '<S208>/MemoryX'
-    boolean_T icLoad_d;                // '<S146>/delayTheta'
-    boolean_T icLoad_n;                // '<S146>/delayL'
+    boolean_T icLoad;                  // '<S146>/delayTheta'
     boolean_T icLoad_o;                // '<S146>/delayPhi'
     boolean_T icLoad_a;                // '<S146>/delayBufferU'
     boolean_T icLoad_p;                // '<S146>/delayBufferY'
+    boolean_T icLoad_n;                // '<S146>/delayL'
     boolean_T icLoad_pm;               // '<S147>/delayTheta'
-    boolean_T icLoad_g;                // '<S147>/delayL'
-    boolean_T icLoad_dy;               // '<S147>/delayPhi'
+    boolean_T icLoad_d;                // '<S147>/delayPhi'
     boolean_T icLoad_nq;               // '<S147>/delayBufferU'
     boolean_T icLoad_k;                // '<S147>/delayBufferY'
+    boolean_T icLoad_g;                // '<S147>/delayL'
+    boolean_T icLoad_f;                // '<S208>/MemoryX'
     boolean_T icLoad_a3;               // '<S208>/MemoryP'
   };
 
@@ -440,15 +437,15 @@ class SupervisoryController final
     DW_rarx sf_rarx;                   // '<S313>/rarx'
     real_T Product3[4];                // '<S395>/Product3'
     real_T last_mv_DSTATE[3];          // '<S257>/last_mv'
-    real_T MemoryX_DSTATE[4];          // '<S352>/MemoryX'
     real_T UnitDelay5_DSTATE[3];       // '<S255>/Unit Delay5'
     real_T UnitDelay4_DSTATE[2];       // '<S255>/Unit Delay4'
     real_T delayTheta_DSTATE[4];       // '<S290>/delayTheta'
-    real_T delayL_DSTATE[16];          // '<S290>/delayL'
     real_T delayPhi_DSTATE[7];         // '<S290>/delayPhi'
+    real_T delayL_DSTATE[16];          // '<S290>/delayL'
     real_T delayTheta_DSTATE_h[4];     // '<S291>/delayTheta'
-    real_T delayL_DSTATE_i[16];        // '<S291>/delayL'
     real_T delayPhi_DSTATE_c[7];       // '<S291>/delayPhi'
+    real_T delayL_DSTATE_i[16];        // '<S291>/delayL'
+    real_T MemoryX_DSTATE[4];          // '<S352>/MemoryX'
     real_T MemoryP_DSTATE[16];         // '<S352>/MemoryP'
     real_T NextOutput[3];              // '<S4>/Measurement Noise'
     real_T dv[1806];
@@ -460,17 +457,17 @@ class SupervisoryController final
     real_T delayBufferY_DSTATE_f;      // '<S291>/delayBufferY'
     uint32_T RandSeed[3];              // '<S4>/Measurement Noise'
     boolean_T Memory_PreviousInput[86];// '<S257>/Memory'
-    boolean_T icLoad;                  // '<S352>/MemoryX'
-    boolean_T icLoad_p;                // '<S290>/delayTheta'
-    boolean_T icLoad_e;                // '<S290>/delayL'
+    boolean_T icLoad;                  // '<S290>/delayTheta'
     boolean_T icLoad_o;                // '<S290>/delayPhi'
-    boolean_T icLoad_e0;               // '<S290>/delayBufferU'
+    boolean_T icLoad_e;                // '<S290>/delayBufferU'
     boolean_T icLoad_d;                // '<S290>/delayBufferY'
+    boolean_T icLoad_e2;               // '<S290>/delayL'
     boolean_T icLoad_f;                // '<S291>/delayTheta'
-    boolean_T icLoad_j;                // '<S291>/delayL'
     boolean_T icLoad_ej;               // '<S291>/delayPhi'
-    boolean_T icLoad_j2;               // '<S291>/delayBufferU'
+    boolean_T icLoad_j;                // '<S291>/delayBufferU'
     boolean_T icLoad_i;                // '<S291>/delayBufferY'
+    boolean_T icLoad_jb;               // '<S291>/delayL'
+    boolean_T icLoad_l;                // '<S352>/MemoryX'
     boolean_T icLoad_h;                // '<S352>/MemoryP'
   };
 
@@ -485,10 +482,6 @@ class SupervisoryController final
     DW_State2controlLawAMPC2 State2controlLawAMPC2_l;// '<S1>/State2.controlLaw.AMPC2' 
     DW_State1controlLawAMPC1 State1controlLawAMPC1_g;// '<S1>/State1.controlLaw.AMPC1' 
     DW_State0controlLawAMPC0 State0controlLawAMPC0_n;// '<S1>/State0.controlLaw.AMPC0' 
-    event_bus slMsgMgr_memArray_event_bus;// synthesized block
-    event_bus nextEvent_msgData;       // '<Root>/SupervisoryController'
-    MemPool_event_bus slMsgMgr_MemPool_event_bus;// synthesized block
-    Msg_event_bus MsgBuffer;           // '<Root>/SupervisoryController'
     real_T traj[7200];                 // '<Root>/SupervisoryController'
     real_T yhat1[2];                   // '<Root>/SupervisoryController'
     real_T yhat2[2];                   // '<Root>/SupervisoryController'
@@ -504,10 +497,6 @@ class SupervisoryController final
     real_T tmp_data_m[7194];
     real_T holdT;                      // '<Root>/SupervisoryController'
     real_T yhat0;                      // '<Root>/SupervisoryController'
-    void* nextEvent_msgInterface;      // '<Root>/SupervisoryController'
-    void* nextEvent_msgHandle;         // '<Root>/SupervisoryController'
-    void* nextEvent_msgDataPtr;        // '<Root>/SupervisoryController'
-    event_bus* slMsgMgr_freeList_event_bus;// synthesized block
     uint16_T chs1[2];                  // '<Root>/SupervisoryController'
     uint16_T chs2[2];                  // '<Root>/SupervisoryController'
     uint16_T waypt;                    // '<Root>/SupervisoryController'
@@ -535,6 +524,7 @@ class SupervisoryController final
     real_T y_max[3];                   // '<Root>/y_max'
     real_T y_o[3];                     // '<Root>/y_o'
     real_T u_o[3];                     // '<Root>/u_o'
+    event_bus nextEv;                  // '<Root>/nextEv'
     real_T inputevents[2];             // '<Root>/input events'
   };
 
@@ -542,7 +532,7 @@ class SupervisoryController final
   struct ExtY {
     real_T u[3];                       // '<Root>/u'
     boolean_T inTransRegion;           // '<Root>/inTransRegion'
-    event_bus currEvent;               // '<Root>/currEvent'
+    event_bus currEv;                  // '<Root>/currEv'
     boolean_T requestEvent;            // '<Root>/requestEvent'
     real_T currTraj[3];                // '<Root>/currTraj'
     real_T yhat[3];                    // '<Root>/yhat'
@@ -558,12 +548,6 @@ class SupervisoryController final
 
     real_T yhat_Y0;                    // Computed Parameter: yhat_Y0
                                           //  Referenced by: '<S2>/yhat'
-
-    real_T E_zero_Value[3];            // Expression: zeros(1,3)
-                                          //  Referenced by: '<S5>/E_zero'
-
-    real_T F_zero_Value;               // Expression: zeros(1,1)
-                                          //  Referenced by: '<S5>/F_zero'
 
     real_T G_zero_Value;               // Expression: zeros(1,1)
                                           //  Referenced by: '<S5>/G_zero'
@@ -588,9 +572,6 @@ class SupervisoryController final
 
     real_T last_mv_InitialCondition[3];// Expression: lastu+uoff
                                           //  Referenced by: '<S8>/last_mv'
-
-    real_T X0_Value[2];                // Expression: pInitialization.X0
-                                          //  Referenced by: '<S64>/X0'
 
     real_T UnitDelay3_InitialCondition;// Expression: 0
                                           //  Referenced by: '<S6>/Unit Delay3'
@@ -618,11 +599,11 @@ class SupervisoryController final
     real_T InitialCovariance_Value[16];// Expression: initializationParams.L0
                                           //  Referenced by: '<S38>/InitialCovariance'
 
-    real_T Constant12_Value;           // Expression: G0.C
-                                          //  Referenced by: '<S6>/Constant12'
-
     real_T Constant13_Value[3];        // Expression: G0.D
                                           //  Referenced by: '<S6>/Constant13'
+
+    real_T Constant12_Value;           // Expression: G0.C
+                                          //  Referenced by: '<S6>/Constant12'
 
     real_T Constant11_Value;           // Expression: 1
                                           //  Referenced by: '<S6>/Constant11'
@@ -632,6 +613,9 @@ class SupervisoryController final
 
     real_T Constant_Value;             // Expression: 0
                                           //  Referenced by: '<S7>/Constant'
+
+    real_T X0_Value[2];                // Expression: pInitialization.X0
+                                          //  Referenced by: '<S64>/X0'
 
     real_T ym_zero_Value;              // Expression: zeros(nym,1)
                                           //  Referenced by: '<S8>/ym_zero'
@@ -651,8 +635,14 @@ class SupervisoryController final
     real_T ymax_zero_Value;            // Expression: zeros(1,1)
                                           //  Referenced by: '<S5>/ymax_zero'
 
+    real_T E_zero_Value[3];            // Expression: zeros(1,3)
+                                          //  Referenced by: '<S5>/E_zero'
+
     real_T umin_scale4_Gain[3];    // Expression: MVscale(:,ones(1,max(nCC,1)))'
                                       //  Referenced by: '<S8>/umin_scale4'
+
+    real_T F_zero_Value;               // Expression: zeros(1,1)
+                                          //  Referenced by: '<S5>/F_zero'
 
     real_T ymin_scale1_Gain;        // Expression: Yscale(:,ones(1,max(nCC,1)))'
                                        //  Referenced by: '<S8>/ymin_scale1'
@@ -675,11 +665,20 @@ class SupervisoryController final
     real_T ecrwt_zero_Value;           // Expression: zeros(1,1)
                                           //  Referenced by: '<S5>/ecr.wt_zero'
 
-    real_T u_scale_Gain[3];            // Expression: MVscale
-                                          //  Referenced by: '<S8>/u_scale'
+    real_T H_Value[2];                 // Expression: pInitialization.H
+                                          //  Referenced by: '<S64>/H'
+
+    real_T G_Value[4];                 // Expression: pInitialization.G
+                                          //  Referenced by: '<S64>/G'
 
     real_T Constant_Value_b;           // Expression: 1
                                           //  Referenced by: '<S2>/Constant'
+
+    real_T P0_Value[4];                // Expression: pInitialization.P0
+                                          //  Referenced by: '<S64>/P0'
+
+    real_T u_scale_Gain[3];            // Expression: MVscale
+                                          //  Referenced by: '<S8>/u_scale'
 
     real_T MeasurementNoise_Mean[3];   // Expression: [0 0 0]
                                           //  Referenced by: '<S2>/Measurement Noise'
@@ -691,15 +690,6 @@ class SupervisoryController final
     real_T MeasurementNoise_Seed;      // Expression: 12345
                                           //  Referenced by: '<S2>/Measurement Noise'
 
-    real_T G_Value[4];                 // Expression: pInitialization.G
-                                          //  Referenced by: '<S64>/G'
-
-    real_T H_Value[2];                 // Expression: pInitialization.H
-                                          //  Referenced by: '<S64>/H'
-
-    real_T P0_Value[4];                // Expression: pInitialization.P0
-                                          //  Referenced by: '<S64>/P0'
-
     int32_T FixedHorizonOptimizer_Ndis;// Expression: Ndis
                                           //  Referenced by: '<S36>/FixedHorizonOptimizer'
 
@@ -709,11 +699,11 @@ class SupervisoryController final
     boolean_T Delay_InitialCondition;  // Expression: true()
                                           //  Referenced by: '<S56>/Delay'
 
-    boolean_T Constant_Value_i;        // Expression: false()
-                                          //  Referenced by: '<S56>/Constant'
-
     boolean_T isSqrtUsed_Value;        // Expression: pInitialization.isSqrtUsed
                                           //  Referenced by: '<S105>/isSqrtUsed'
+
+    boolean_T Constant_Value_i;        // Expression: false()
+                                          //  Referenced by: '<S56>/Constant'
 
   };
 
@@ -731,12 +721,6 @@ class SupervisoryController final
 
     real_T yhat_Y0;                    // Computed Parameter: yhat_Y0
                                           //  Referenced by: '<S3>/yhat'
-
-    real_T E_zero_Value[3];            // Expression: zeros(1,3)
-                                          //  Referenced by: '<S110>/E_zero'
-
-    real_T F_zero_Value[2];            // Expression: zeros(1,2)
-                                          //  Referenced by: '<S110>/F_zero'
 
     real_T G_zero_Value;               // Expression: zeros(1,1)
                                           //  Referenced by: '<S110>/G_zero'
@@ -762,9 +746,6 @@ class SupervisoryController final
     real_T last_mv_InitialCondition[3];// Expression: lastu+uoff
                                           //  Referenced by: '<S113>/last_mv'
 
-    real_T X0_Value[4];                // Expression: pInitialization.X0
-                                          //  Referenced by: '<S208>/X0'
-
     real_T UnitDelay5_InitialCondition;// Expression: 0
                                           //  Referenced by: '<S111>/Unit Delay5'
 
@@ -780,9 +761,6 @@ class SupervisoryController final
     real_T InitialParameters_Value[4];// Expression: initializationParams.theta0
                                          //  Referenced by: '<S146>/InitialParameters'
 
-    real_T InitialCovariance_Value[16];// Expression: initializationParams.L0
-                                          //  Referenced by: '<S146>/InitialCovariance'
-
     real_T InitialPhiMemory_Value[7];
                                   // Expression: initializationParams.phiMemory0
                                      //  Referenced by: '<S146>/InitialPhiMemory'
@@ -794,6 +772,9 @@ class SupervisoryController final
                               // Expression: initializationParams.initialOutputs
                                  //  Referenced by: '<S146>/InitialOutputs'
 
+    real_T InitialCovariance_Value[16];// Expression: initializationParams.L0
+                                          //  Referenced by: '<S146>/InitialCovariance'
+
     real_T ForgettingFactor_Value_o;   // Expression: initializationParams.adg1
                                           //  Referenced by: '<S147>/Forgetting Factor'
 
@@ -803,9 +784,6 @@ class SupervisoryController final
     real_T InitialParameters_Value_n[4];
                                       // Expression: initializationParams.theta0
                                          //  Referenced by: '<S147>/InitialParameters'
-
-    real_T InitialCovariance_Value_a[16];// Expression: initializationParams.L0
-                                            //  Referenced by: '<S147>/InitialCovariance'
 
     real_T InitialPhiMemory_Value_o[7];
                                   // Expression: initializationParams.phiMemory0
@@ -819,6 +797,9 @@ class SupervisoryController final
                               // Expression: initializationParams.initialOutputs
                                  //  Referenced by: '<S147>/InitialOutputs'
 
+    real_T InitialCovariance_Value_a[16];// Expression: initializationParams.L0
+                                            //  Referenced by: '<S147>/InitialCovariance'
+
     real_T Constant1_Value;            // Expression: 1
                                           //  Referenced by: '<S111>/Constant1'
 
@@ -827,6 +808,9 @@ class SupervisoryController final
 
     real_T Constant_Value[2];          // Expression: [0;0]
                                           //  Referenced by: '<S112>/Constant'
+
+    real_T X0_Value[4];                // Expression: pInitialization.X0
+                                          //  Referenced by: '<S208>/X0'
 
     real_T ym_zero_Value[2];           // Expression: zeros(nym,1)
                                           //  Referenced by: '<S113>/ym_zero'
@@ -846,8 +830,14 @@ class SupervisoryController final
     real_T ymax_zero_Value[2];         // Expression: zeros(2,1)
                                           //  Referenced by: '<S110>/ymax_zero'
 
+    real_T E_zero_Value[3];            // Expression: zeros(1,3)
+                                          //  Referenced by: '<S110>/E_zero'
+
     real_T umin_scale4_Gain[3];    // Expression: MVscale(:,ones(1,max(nCC,1)))'
                                       //  Referenced by: '<S113>/umin_scale4'
+
+    real_T F_zero_Value[2];            // Expression: zeros(1,2)
+                                          //  Referenced by: '<S110>/F_zero'
 
     real_T ymin_scale1_Gain[2];     // Expression: Yscale(:,ones(1,max(nCC,1)))'
                                        //  Referenced by: '<S113>/ymin_scale1'
@@ -870,11 +860,20 @@ class SupervisoryController final
     real_T ecrwt_zero_Value;           // Expression: zeros(1,1)
                                           //  Referenced by: '<S110>/ecr.wt_zero'
 
-    real_T u_scale_Gain[3];            // Expression: MVscale
-                                          //  Referenced by: '<S113>/u_scale'
+    real_T P0_Value[16];               // Expression: pInitialization.P0
+                                          //  Referenced by: '<S208>/P0'
 
     real_T Constant_Value_f;           // Expression: 1
                                           //  Referenced by: '<S3>/Constant'
+
+    real_T H_Value[8];                 // Expression: pInitialization.H
+                                          //  Referenced by: '<S208>/H'
+
+    real_T G_Value[16];                // Expression: pInitialization.G
+                                          //  Referenced by: '<S208>/G'
+
+    real_T u_scale_Gain[3];            // Expression: MVscale
+                                          //  Referenced by: '<S113>/u_scale'
 
     real_T MeasurementNoise_Mean[3];   // Expression: [0 0 0]
                                           //  Referenced by: '<S3>/Measurement Noise'
@@ -885,15 +884,6 @@ class SupervisoryController final
 
     real_T MeasurementNoise_Seed;      // Expression: 12345
                                           //  Referenced by: '<S3>/Measurement Noise'
-
-    real_T G_Value[16];                // Expression: pInitialization.G
-                                          //  Referenced by: '<S208>/G'
-
-    real_T H_Value[8];                 // Expression: pInitialization.H
-                                          //  Referenced by: '<S208>/H'
-
-    real_T P0_Value[16];               // Expression: pInitialization.P0
-                                          //  Referenced by: '<S208>/P0'
 
     int32_T FixedHorizonOptimizer_Ndis;// Expression: Ndis
                                           //  Referenced by: '<S141>/FixedHorizonOptimizer'
@@ -907,14 +897,14 @@ class SupervisoryController final
     boolean_T Delay_InitialCondition_b;// Expression: true()
                                           //  Referenced by: '<S200>/Delay'
 
+    boolean_T isSqrtUsed_Value;        // Expression: pInitialization.isSqrtUsed
+                                          //  Referenced by: '<S249>/isSqrtUsed'
+
     boolean_T Constant_Value_c;        // Expression: false()
                                           //  Referenced by: '<S171>/Constant'
 
     boolean_T Constant_Value_m;        // Expression: false()
                                           //  Referenced by: '<S200>/Constant'
-
-    boolean_T isSqrtUsed_Value;        // Expression: pInitialization.isSqrtUsed
-                                          //  Referenced by: '<S249>/isSqrtUsed'
 
     P_MeasurementUpdate MeasurementUpdate_n;// '<S227>/MeasurementUpdate'
   };
@@ -926,12 +916,6 @@ class SupervisoryController final
 
     real_T yhat_Y0;                    // Computed Parameter: yhat_Y0
                                           //  Referenced by: '<S4>/yhat'
-
-    real_T E_zero_Value[3];            // Expression: zeros(1,3)
-                                          //  Referenced by: '<S254>/E_zero'
-
-    real_T F_zero_Value[2];            // Expression: zeros(1,2)
-                                          //  Referenced by: '<S254>/F_zero'
 
     real_T G_zero_Value;               // Expression: zeros(1,1)
                                           //  Referenced by: '<S254>/G_zero'
@@ -957,9 +941,6 @@ class SupervisoryController final
     real_T last_mv_InitialCondition[3];// Expression: lastu+uoff
                                           //  Referenced by: '<S257>/last_mv'
 
-    real_T X0_Value[4];                // Expression: pInitialization.X0
-                                          //  Referenced by: '<S352>/X0'
-
     real_T UnitDelay5_InitialCondition;// Expression: 0
                                           //  Referenced by: '<S255>/Unit Delay5'
 
@@ -975,9 +956,6 @@ class SupervisoryController final
     real_T InitialParameters_Value[4];// Expression: initializationParams.theta0
                                          //  Referenced by: '<S290>/InitialParameters'
 
-    real_T InitialCovariance_Value[16];// Expression: initializationParams.L0
-                                          //  Referenced by: '<S290>/InitialCovariance'
-
     real_T InitialPhiMemory_Value[7];
                                   // Expression: initializationParams.phiMemory0
                                      //  Referenced by: '<S290>/InitialPhiMemory'
@@ -989,6 +967,9 @@ class SupervisoryController final
                               // Expression: initializationParams.initialOutputs
                                  //  Referenced by: '<S290>/InitialOutputs'
 
+    real_T InitialCovariance_Value[16];// Expression: initializationParams.L0
+                                          //  Referenced by: '<S290>/InitialCovariance'
+
     real_T ForgettingFactor_Value_p;   // Expression: initializationParams.adg1
                                           //  Referenced by: '<S291>/Forgetting Factor'
 
@@ -998,9 +979,6 @@ class SupervisoryController final
     real_T InitialParameters_Value_j[4];
                                       // Expression: initializationParams.theta0
                                          //  Referenced by: '<S291>/InitialParameters'
-
-    real_T InitialCovariance_Value_m[16];// Expression: initializationParams.L0
-                                            //  Referenced by: '<S291>/InitialCovariance'
 
     real_T InitialPhiMemory_Value_n[7];
                                   // Expression: initializationParams.phiMemory0
@@ -1014,6 +992,9 @@ class SupervisoryController final
                               // Expression: initializationParams.initialOutputs
                                  //  Referenced by: '<S291>/InitialOutputs'
 
+    real_T InitialCovariance_Value_m[16];// Expression: initializationParams.L0
+                                            //  Referenced by: '<S291>/InitialCovariance'
+
     real_T Constant1_Value;            // Expression: 1
                                           //  Referenced by: '<S255>/Constant1'
 
@@ -1022,6 +1003,9 @@ class SupervisoryController final
 
     real_T Constant_Value[2];          // Expression: [0;0]
                                           //  Referenced by: '<S256>/Constant'
+
+    real_T X0_Value[4];                // Expression: pInitialization.X0
+                                          //  Referenced by: '<S352>/X0'
 
     real_T ym_zero_Value[2];           // Expression: zeros(nym,1)
                                           //  Referenced by: '<S257>/ym_zero'
@@ -1041,8 +1025,14 @@ class SupervisoryController final
     real_T ymax_zero_Value[2];         // Expression: zeros(2,1)
                                           //  Referenced by: '<S254>/ymax_zero'
 
+    real_T E_zero_Value[3];            // Expression: zeros(1,3)
+                                          //  Referenced by: '<S254>/E_zero'
+
     real_T umin_scale4_Gain[3];    // Expression: MVscale(:,ones(1,max(nCC,1)))'
                                       //  Referenced by: '<S257>/umin_scale4'
+
+    real_T F_zero_Value[2];            // Expression: zeros(1,2)
+                                          //  Referenced by: '<S254>/F_zero'
 
     real_T ymin_scale1_Gain[2];     // Expression: Yscale(:,ones(1,max(nCC,1)))'
                                        //  Referenced by: '<S257>/ymin_scale1'
@@ -1065,11 +1055,20 @@ class SupervisoryController final
     real_T ecrwt_zero_Value;           // Expression: zeros(1,1)
                                           //  Referenced by: '<S254>/ecr.wt_zero'
 
-    real_T u_scale_Gain[3];            // Expression: MVscale
-                                          //  Referenced by: '<S257>/u_scale'
+    real_T P0_Value[16];               // Expression: pInitialization.P0
+                                          //  Referenced by: '<S352>/P0'
 
     real_T Constant_Value_g;           // Expression: 1
                                           //  Referenced by: '<S4>/Constant'
+
+    real_T H_Value[8];                 // Expression: pInitialization.H
+                                          //  Referenced by: '<S352>/H'
+
+    real_T G_Value[16];                // Expression: pInitialization.G
+                                          //  Referenced by: '<S352>/G'
+
+    real_T u_scale_Gain[3];            // Expression: MVscale
+                                          //  Referenced by: '<S257>/u_scale'
 
     real_T MeasurementNoise_Mean[3];   // Expression: [0 0 0]
                                           //  Referenced by: '<S4>/Measurement Noise'
@@ -1080,15 +1079,6 @@ class SupervisoryController final
 
     real_T MeasurementNoise_Seed;      // Expression: 12345
                                           //  Referenced by: '<S4>/Measurement Noise'
-
-    real_T G_Value[16];                // Expression: pInitialization.G
-                                          //  Referenced by: '<S352>/G'
-
-    real_T H_Value[8];                 // Expression: pInitialization.H
-                                          //  Referenced by: '<S352>/H'
-
-    real_T P0_Value[16];               // Expression: pInitialization.P0
-                                          //  Referenced by: '<S352>/P0'
 
     int32_T FixedHorizonOptimizer_Ndis;// Expression: Ndis
                                           //  Referenced by: '<S285>/FixedHorizonOptimizer'
@@ -1102,20 +1092,23 @@ class SupervisoryController final
     boolean_T Delay_InitialCondition_c;// Expression: true()
                                           //  Referenced by: '<S344>/Delay'
 
+    boolean_T isSqrtUsed_Value;        // Expression: pInitialization.isSqrtUsed
+                                          //  Referenced by: '<S393>/isSqrtUsed'
+
     boolean_T Constant_Value_c;        // Expression: false()
                                           //  Referenced by: '<S315>/Constant'
 
     boolean_T Constant_Value_d;        // Expression: false()
                                           //  Referenced by: '<S344>/Constant'
 
-    boolean_T isSqrtUsed_Value;        // Expression: pInitialization.isSqrtUsed
-                                          //  Referenced by: '<S393>/isSqrtUsed'
-
     P_MeasurementUpdate MeasurementUpdate_a;// '<S371>/MeasurementUpdate'
   };
 
   // Parameters (default storage)
   struct P {
+    event_bus nullEv;                  // Variable: nullEv
+                                          //  Referenced by: '<Root>/SupervisoryController'
+
     real_T Aod0;                       // Variable: Aod0
                                           //  Referenced by: '<S7>/MATLAB Function'
 
@@ -1181,9 +1174,6 @@ class SupervisoryController final
   // Move Assignment Operator
   SupervisoryController& operator= (SupervisoryController &&) = delete;
 
-  // Constructor
-  SupervisoryController(RecvData_event_busT &nextEventRecvData_arg);
-
   // Root inports set method
   void setExternalInputs(const ExtU *pExtU)
   {
@@ -1205,6 +1195,9 @@ class SupervisoryController final
   // model terminate function
   static void terminate();
 
+  // Constructor
+  SupervisoryController();
+
   // Destructor
   ~SupervisoryController();
 
@@ -1224,7 +1217,6 @@ class SupervisoryController final
 
   // Triggered events
   PrevZCX rtPrevZCX;
-  RecvData_event_busT &nextEventRecvData;
 
   // private member function(s) for subsystem '<S1>/State0.controlLaw.AMPC0'
   void State0controlLawAMPC0_Init(real_T rty_u[3], real_T *rty_yhat,
@@ -1235,6 +1227,31 @@ class SupervisoryController final
     real_T rtu_u0[3], real_T rtu_paramEst, real_T rty_u[3], real_T *rty_yhat,
     DW_State0controlLawAMPC0 *localDW, P_State0controlLawAMPC0 *localP, P *rtP,
     ZCE_State0controlLawAMPC0 *localZCE);
+  real_T xnrm2_g(int32_T n, const real_T x[5], int32_T ix0);
+  real_T qrFactor(const real_T A[4], const real_T S[16], real_T Ns);
+  void trisolve_m(real_T A, real_T B_1[4]);
+  real_T xnrm2_gg(int32_T n, const real_T x[20], int32_T ix0);
+  void xgemv_m(int32_T m, int32_T n, const real_T A[20], int32_T ia0, const
+               real_T x[20], int32_T ix0, real_T y[4]);
+  void xgerc_n(int32_T m, int32_T n, real_T alpha1, int32_T ix0, const real_T y
+               [4], real_T A[20], int32_T ia0);
+  void sqrtMeasurementUpdate(real_T L[16], const real_T H[4], real_T a0, real_T
+    K[4]);
+  int32_T xpotrf(real_T b_A[16]);
+  real_T minimum(const real_T x[4]);
+  void trisolve(const real_T b_A[16], real_T b_B[16]);
+  real_T norm(const real_T x[4]);
+  real_T xnrm2(int32_T n, const real_T x[16], int32_T ix0);
+  void xgemv(int32_T b_m, int32_T n, const real_T b_A[16], int32_T ia0, const
+             real_T x[16], int32_T ix0, real_T y[4]);
+  void xgerc(int32_T b_m, int32_T n, real_T alpha1, int32_T ix0, const real_T y
+             [4], real_T b_A[16], int32_T ia0);
+  void KWIKfactor(const real_T b_Ac[184], const int32_T iC[46], int32_T nA,
+                  const real_T b_Linv[16], real_T b_D[16], real_T b_H[16],
+                  int32_T n, real_T RLinv[16], real_T *Status);
+  real_T maximum(const real_T x[4]);
+  void DropConstraint(int32_T kDrop, boolean_T iA[46], int32_T *nA, int32_T iC
+                      [46]);
   void qpkwik(const real_T b_Linv[16], const real_T b_Hinv[16], const real_T f[4],
               const real_T b_Ac[184], const real_T b[46], boolean_T iA[46],
               int32_T maxiter, real_T FeasTol, real_T x[4], real_T lambda[46],
@@ -1264,6 +1281,16 @@ class SupervisoryController final
             real_T rtu_adg1, real_T rty_A[2], real_T rty_B[6], real_T *rty_e,
             real_T rty_theta[4], real_T rty_L[16], real_T rty_phiMemory[7],
             DW_rarx *localDW);
+  real_T xnrm2_j(int32_T n, const real_T x[5], int32_T ix0);
+  real_T qrFactor_b(const real_T A[4], const real_T S[16], real_T Ns);
+  void trisolve_b(real_T A, real_T B_3[4]);
+  real_T xnrm2_ji(int32_T n, const real_T x[20], int32_T ix0);
+  void xgemv_mj(int32_T m, int32_T n, const real_T A[20], int32_T ia0, const
+                real_T x[20], int32_T ix0, real_T y[4]);
+  void xgerc_c(int32_T m, int32_T n, real_T alpha1, int32_T ix0, const real_T y
+               [4], real_T A[20], int32_T ia0);
+  void sqrtMeasurementUpdate_g(real_T L[16], const real_T H[4], real_T a0,
+    real_T K[4]);
 
   // private member function(s) for subsystem '<S208>/CalculatePL'
   void CalculatePL(const real_T rtu_Ak[16], const real_T rtu_Ck[8], const real_T
@@ -1271,6 +1298,7 @@ class SupervisoryController final
                    rtu_Nbark[8], boolean_T rtu_Enablek, const real_T rtu_Pk[16],
                    real_T rty_Mk[8], real_T rty_Lk[8], real_T rty_Zk[16], real_T
                    rty_Pk1[16]);
+  void mrdiv(const real_T A[8], const real_T B_4[4], real_T Y[8]);
 
   // private member function(s) for subsystem '<S249>/SqrtUsedFcn'
   static void SqrtUsedFcn(const real_T rtu_u[16], boolean_T rtu_isSqrtUsed,
@@ -1306,6 +1334,21 @@ class SupervisoryController final
     real_T rtu_y0[2], const real_T rtu_u0[3], real_T rtu_paramEst, real_T rty_u
     [3], real_T rty_yhat[2], DW_State1controlLawAMPC1 *localDW,
     P_State1controlLawAMPC1 *localP, P *rtP, ZCE_State1controlLawAMPC1 *localZCE);
+  int32_T xpotrf_n(real_T b_A[16]);
+  real_T minimum_i(const real_T x[4]);
+  void trisolve_i(const real_T b_A[16], real_T b_B[16]);
+  real_T norm_h(const real_T x[4]);
+  real_T xnrm2_n(int32_T n, const real_T x[16], int32_T ix0);
+  void xgemv_o(int32_T b_m, int32_T n, const real_T b_A[16], int32_T ia0, const
+               real_T x[16], int32_T ix0, real_T y[4]);
+  void xgerc_j(int32_T b_m, int32_T n, real_T alpha1, int32_T ix0, const real_T
+               y[4], real_T b_A[16], int32_T ia0);
+  void KWIKfactor_h(const real_T b_Ac[344], const int32_T iC[86], int32_T nA,
+                    const real_T b_Linv[16], real_T b_D[16], real_T b_H[16],
+                    int32_T n, real_T RLinv[16], real_T *Status);
+  real_T maximum_l(const real_T x[4]);
+  void DropConstraint_j(int32_T kDrop, boolean_T iA[86], int32_T *nA, int32_T
+                        iC[86]);
   void qpkwik_i(const real_T b_Linv[16], const real_T b_Hinv[16], const real_T
                 f[4], const real_T b_Ac[344], const real_T b[86], boolean_T iA
                 [86], int32_T maxiter, real_T FeasTol, real_T x[4], real_T
@@ -1329,6 +1372,21 @@ class SupervisoryController final
     real_T rtu_y0[2], const real_T rtu_u0[3], real_T rtu_paramEst, real_T rty_u
     [3], real_T rty_yhat[2], DW_State2controlLawAMPC2 *localDW,
     P_State2controlLawAMPC2 *localP, P *rtP, ZCE_State2controlLawAMPC2 *localZCE);
+  int32_T xpotrf_b(real_T b_A[16]);
+  real_T minimum_k(const real_T x[4]);
+  void trisolve_a(const real_T b_A[16], real_T b_B[16]);
+  real_T norm_i(const real_T x[4]);
+  real_T xnrm2_i(int32_T n, const real_T x[16], int32_T ix0);
+  void xgemv_b(int32_T b_m, int32_T n, const real_T b_A[16], int32_T ia0, const
+               real_T x[16], int32_T ix0, real_T y[4]);
+  void xgerc_h(int32_T b_m, int32_T n, real_T alpha1, int32_T ix0, const real_T
+               y[4], real_T b_A[16], int32_T ia0);
+  void KWIKfactor_g(const real_T b_Ac[344], const int32_T iC[86], int32_T nA,
+                    const real_T b_Linv[16], real_T b_D[16], real_T b_H[16],
+                    int32_T n, real_T RLinv[16], real_T *Status);
+  real_T maximum_m(const real_T x[4]);
+  void DropConstraint_a(int32_T kDrop, boolean_T iA[86], int32_T *nA, int32_T
+                        iC[86]);
   void qpkwik_l(const real_T b_Linv[16], const real_T b_Hinv[16], const real_T
                 f[4], const real_T b_Ac[344], const real_T b[86], boolean_T iA
                 [86], int32_T maxiter, real_T FeasTol, real_T x[4], real_T
@@ -1344,16 +1402,20 @@ class SupervisoryController final
     boolean_T iAout[86], DW_State2controlLawAMPC2 *localDW);
 
   // private member function(s) for subsystem '<Root>'
-  event_bus *SupervisoryController_allocMemPool(MemPool_event_bus *memPool,
-    int32_T width);
-  void SupervisoryController_freeMemPool(MemPool_event_bus *memPool, event_bus
-    *dataPtr);
-  void SupervisoryController_destroyMsg(Msg_event_bus *msg);
-  boolean_T sf_msg_pop_nextEvent(boolean_T *nextEvent_isValid);
+  boolean_T isequal(const event_bus varargin_1, const event_bus varargin_2);
+  real_T minimum_f(const real_T x_data[], const int32_T *x_size);
+  void computeProfileParams_n(real_T i, const real_T wayPoints_data[], const
+    int32_T wayPoints_size[2], const real_T Vel_data[], const int32_T *Vel_size,
+    const real_T TAc_data[], const int32_T *TAc_size, real_T *vParam, real_T
+    *aParam, real_T *tAParam, real_T *tFParam);
+  boolean_T checkPolyForMultipleBreaks(const real_T breakMat_data[], const
+    int32_T breakMat_size[2]);
   void processPolynomialResults(const real_T breakMat_data[], const int32_T
     breakMat_size[2], const real_T coeffMat_data[], const int32_T coeffMat_size
     [2], boolean_T hasMultipleBreaks, cell_wrap_5 breaksCell_data[], int32_T
     *breaksCell_size, cell_wrap_6 coeffCell_data[], int32_T *coeffCell_size);
+  real_T maximum_e(const real_T x_data[], const int32_T *x_size);
+  void linspace(real_T d2, uint16_T n, real_T y_data[], int32_T y_size[2]);
   void ppval(const s_vjEZ2dxatR8VOmLd9oOqoD *pp, const real_T x_data[], const
              int32_T x_size[2], real_T v_data[], int32_T v_size[2]);
   void generateTrajectoriesFromCoefs(const real_T breaks[4], const real_T
@@ -1364,6 +1426,9 @@ class SupervisoryController final
   void trapveltraj_p(const real_T wayPoints_data[], const int32_T
                      wayPoints_size[2], uint16_T numSamples, real_T varargin_2,
                      real_T q_data[], int32_T q_size[2]);
+  void computeProfileParams(real_T i, const real_T wayPoints_data[], const
+    int32_T wayPoints_size[2], const real_T Vel_data[], const int32_T *Vel_size,
+    real_T *vParam, real_T *aParam, real_T *tAParam, real_T *tFParam);
   void trapveltraj(const real_T wayPoints_data[], const int32_T wayPoints_size[2],
                    uint16_T numSamples, real_T varargin_2, real_T q_data[],
                    int32_T q_size[2]);
@@ -1374,11 +1439,8 @@ class SupervisoryController final
     const;
   void enter_internal_State1(void);
   void enter_internal_State0(void);
-  void State1(const int32_T *sfEvent, boolean_T *nextEvent_isValid);
-  void sf_msg_discard_nextEvent(boolean_T *nextEvent_isValid);
+  void State1(const int32_T *sfEvent);
   void chartstep_c6_SupervisoryControl(const int32_T *sfEvent);
-  void SupervisoryController_initMemPool(MemPool_event_bus *memPool, event_bus
-    *memArray, event_bus **freeList, int32_T size);
 };
 
 //-

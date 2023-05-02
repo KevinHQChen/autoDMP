@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.714
+// Model version                  : 1.720
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon May  1 13:52:35 2023
+// C/C++ source code generated on : Mon May  1 22:26:26 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -21,16 +21,7 @@
 #include <stdio.h>              // This example main program uses printf/fflush
 #include "SupervisoryController.h"     // Model header file
 
-class SupervisoryControllerRecvData_event_busT : public RecvData_event_busT{
- public:
-  void RecvData(event_bus* data, int32_T length, int32_T* status)
-  {
-    // Add receive data logic here
-  }
-};
-
-static SupervisoryControllerRecvData_event_busT nextEventRecvData_arg;
-static SupervisoryController rtObj{ nextEventRecvData_arg };// Instance of model class 
+static SupervisoryController rtObj;    // Instance of model class
 
 //
 // Associating rt_OneStep with a real-time clock or interrupt service routine

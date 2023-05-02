@@ -7,10 +7,18 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.713
+// Model version                  : 1.720
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon May  1 12:50:40 2023
+// C/C++ source code generated on : Mon May  1 22:26:26 2023
 //
+// Target selection: ert.tlc
+// Embedded hardware selection: Intel->x86-64 (Linux 64)
+// Code generation objectives:
+//    1. Execution efficiency
+//    2. RAM efficiency
+// Validation result: Not run
+//
+
 #ifndef ZERO_CROSSING_TYPES_H
 #define ZERO_CROSSING_TYPES_H
 #include "rtwtypes.h"
