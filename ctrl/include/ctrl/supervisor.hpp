@@ -18,14 +18,6 @@ struct Event {
 struct StateData;
 class State; // forward declaration
 
-class SupervisoryControllerRecvData_event_busT : public RecvData_event_busT{
- public:
-  void RecvData(event_bus* data, int32_T length, int32_T* status)
-  {
-    // Add receive data logic here
-  }
-};
-
 class Supervisor {
 
   StateData *currStateData_;
@@ -37,6 +29,8 @@ class Supervisor {
   void start();
   void startSysID();
 
+  static event_bus nullEv;
+
 public:
   ordered_value conf;
   bool simModeActive;
@@ -44,15 +38,16 @@ public:
 
   Pump *pump;
   ImProc *imProc;
+
   SupervisoryController *sup;
-  SupervisoryControllerRecvData_event_busT nextEventRecvData_arg;
   SupervisoryController::ExtU *supIn;
   SupervisoryController::ExtY *supOut;
+  event_bus *currEv_ = nullptr;
+  QueueFPS<event_bus> *evQueue_;
+
   State *currState_ = nullptr;
   Event *currEvent_ = nullptr;
   QueueFPS<Event *> *eventQueue_;
-  event_bus *currEv_ = nullptr;
-  QueueFPS<event_bus *> *evQueue_;
   QueueFPS<int> *ctrlDataQueuePtr;
 
   Supervisor(ImProc *imProc, Pump *pump);

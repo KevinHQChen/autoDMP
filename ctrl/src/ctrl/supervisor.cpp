@@ -3,13 +3,14 @@
 #include "ctrl/state/state2.hpp"
 #include "ctrl/state/sysidstate.hpp"
 
+event_bus Supervisor::nullEv = {};
+
 Supervisor::Supervisor(ImProc *imProc, Pump *pump)
     : conf(Config::conf), simModeActive(toml::get<bool>(conf["ctrl"]["simMode"])),
       dataPath(toml::get<std::string>(conf["ctrl"]["dataPath"])),
       confPath(toml::get<std::string>(conf["ctrl"]["confPath"])), pump(pump), imProc(imProc),
-      sup(new SupervisoryController(nextEventRecvData_arg)),
-      supIn(new SupervisoryController::ExtU()), supOut(new SupervisoryController::ExtY()),
-      currState_(new State0(this)),
+      sup(new SupervisoryController()), supIn(new SupervisoryController::ExtU()),
+      supOut(new SupervisoryController::ExtY()), currState_(new State0(this)),
       currEvent_(new Event(0, 0, Eigen::Vector3d(0.5, 0, 0), Eigen::Vector3d(10, 0, 0))),
       eventQueue_(new QueueFPS<Event *>(dataPath + "eventQueue.txt")),
       ctrlDataQueuePtr(new QueueFPS<int>(dataPath + "ctrlDataQueue.txt")) {}
@@ -25,6 +26,13 @@ void Supervisor::startThread() {
     info("Starting Supervisor...");
     startedCtrl = true;
     sup->initialize();
+    for (int ch = 0; ch < Config::numChans_; ++ch) {
+      supIn->y_max[ch] = yMax;
+      supIn->y_o[ch] = y0;
+    }
+    for (int pp = 0; pp < NUM_PUMPS; ++pp)
+      supIn->u_o[pp] = u0;
+
     imProc->clearProcFrameQueues();
     imProc->clearTempFrameQueues();
     imProc->clearProcDataQueues();
@@ -42,6 +50,7 @@ void Supervisor::stopThread() {
   if (startedCtrl) {
     info("Stopping Supervisor...");
     startedCtrl = false;
+    sup->terminate();
     if (ctrlThread.joinable())
       ctrlThread.join();
     imProc->clearProcFrameQueues();
@@ -52,14 +61,36 @@ void Supervisor::stopThread() {
 }
 
 bool Supervisor::measAvail() {
-  return true;
+  // inputs:
+  // measured outputs - y
+  // simulated outputs - supOut->yhat[3]
+  // current event - supOut->currEv
+
+  supIn->inputevents[0] = false;
+  supIn->inputevents[1] = false;
+  if (trueMeasAvailConditions) // depends on currEv and y
+    supIn->inputevents[0] = true;
+  else if (simMeasAvailConditions && supOut->inTransRegion) // depends on currEv and 25ms timer
+    supIn->inputevents[1] = true;
+
+  if (supIn->inputevents[0] || supIn->inputevents[1])
+    return true;
+  else
+    return false;
 }
 
 bool Supervisor::updateInputs() {
-  if (supIn->inputevents != *currEv_)
-  supIn->
+  for (int ch = 0; ch < Config::numChans_; ++ch) {
+    if (trueMeasAvail[ch])
+      supIn->y[ch] = imProc->procDataQArr[ch]->get();
+    else
+      supIn->y[ch] = supOut->yhat[ch];
+  }
 
-
+  if (supOut->requestEvent && !eventQueue_->empty())
+    supIn->nextEv = evQueue_->get();
+  else
+    supIn->nextEv = nullEv;
 
   return true;
 }
@@ -71,15 +102,6 @@ void Supervisor::start() {
       sup->setExternalInputs(supIn);
       sup->step();
       *supOut = sup->getExternalOutputs();
-
-      // events are pushed to a FIFO event queue by GUI
-      // get the first event in the queue and pop it
-      if (currEvent_ == nullptr && !eventQueue_->empty())
-        currEvent_ = eventQueue_->get();
-
-      // call the current state's trajectory generation function corresponding to the event
-      if (currEvent_ != nullptr)
-        currState_->handleEvent(currEvent_);
 
       // generate optimal control signals at current time step
       // and save to ctrlDataQueue
