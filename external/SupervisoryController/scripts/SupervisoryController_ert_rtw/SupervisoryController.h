@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.720
+// Model version                  : 1.721
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon May  1 22:26:26 2023
+// C/C++ source code generated on : Tue May  2 18:07:47 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -525,6 +525,7 @@ class SupervisoryController final
     real_T y_o[3];                     // '<Root>/y_o'
     real_T u_o[3];                     // '<Root>/u_o'
     event_bus nextEv;                  // '<Root>/nextEv'
+    real_T y_range[2];                 // '<Root>/y_range'
     real_T inputevents[2];             // '<Root>/input events'
   };
 
@@ -1174,17 +1175,11 @@ class SupervisoryController final
   // Move Assignment Operator
   SupervisoryController& operator= (SupervisoryController &&) = delete;
 
-  // Root inports set method
-  void setExternalInputs(const ExtU *pExtU)
-  {
-    rtU = *pExtU;
-  }
+  // External inputs
+  ExtU rtU;
 
-  // Root outports get method
-  const ExtY &getExternalOutputs() const
-  {
-    return rtY;
-  }
+  // External outputs
+  ExtY rtY;
 
   // model initialize function
   void initialize();
@@ -1203,12 +1198,6 @@ class SupervisoryController final
 
   // private data and function members
  private:
-  // External inputs
-  ExtU rtU;
-
-  // External outputs
-  ExtY rtY;
-
   // Block states
   DW rtDW;
 

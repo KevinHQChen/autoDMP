@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.720
+// Model version                  : 1.721
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon May  1 22:26:26 2023
+// C/C++ source code generated on : Tue May  2 18:07:47 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -14286,6 +14286,7 @@ void SupervisoryController::handleEvent(const event_bus event, boolean_T
   *inTransitionRegion, boolean_T *eventDone, uint16_T *waypoint, real_T
   *holdTime) const
 {
+  real_T tmp;
   int32_T c_size_idx_0;
   int32_T trueCount;
   int8_T b_data[3];
@@ -14298,7 +14299,7 @@ void SupervisoryController::handleEvent(const event_bus event, boolean_T
   boolean_T y;
 
   // MATLAB Function 'handleEvent': '<S1>:43'
-  // '<S1>:43:2' [inTransitionRegion, eventDone, waypoint, holdTime] = processEvent(event, waypt, holdT, y, trajSize, y_max, dt); 
+  // '<S1>:43:2' [inTransitionRegion, eventDone, waypoint, holdTime] = processEvent(event, waypt, holdT, y, trajSize, y_max, y_range, dt); 
   //  initialize flags
   // 'processEvent:4' evDone = false;
   *eventDone = false;
@@ -14324,7 +14325,7 @@ void SupervisoryController::handleEvent(const event_bus event, boolean_T
   }
 
   //  check if we're in transition region
-  // 'processEvent:19' if all(y(chs) < 0.9*y_max(chs)) && all(y(chs) > 0.1*y_max(chs)) 
+  // 'processEvent:19' if all(y(chs) < y_range(2)*y_max(chs)) && all(y(chs) > y_range(1)*y_max(chs)) 
   trueCount = 0;
   if (event.chs[0]) {
     b_data[0] = 1;
@@ -14369,12 +14370,14 @@ void SupervisoryController::handleEvent(const event_bus event, boolean_T
     c_data[trueCount] = 3;
   }
 
+  // Inport: '<Root>/y_range'
+  tmp = rtU.y_range[1];
   for (trueCount = 0; trueCount < c_size_idx_0; trueCount++) {
     // Inport: '<Root>/y' incorporates:
     //   Inport: '<Root>/y_max'
 
     x_data[trueCount] = (rtU.y[c_data[trueCount] - 1] <
-                         rtU.y_max[b_data[trueCount] - 1] * 0.9);
+                         rtU.y_max[b_data[trueCount] - 1] * tmp);
   }
 
   y = true;
@@ -14435,12 +14438,14 @@ void SupervisoryController::handleEvent(const event_bus event, boolean_T
       e_data[trueCount] = 3;
     }
 
+    // Inport: '<Root>/y_range'
+    tmp = rtU.y_range[0];
     for (trueCount = 0; trueCount < c_size_idx_0; trueCount++) {
       // Inport: '<Root>/y' incorporates:
       //   Inport: '<Root>/y_max'
 
       x_data[trueCount] = (rtU.y[e_data[trueCount] - 1] >
-                           rtU.y_max[d_data[trueCount] - 1] * 0.1);
+                           rtU.y_max[d_data[trueCount] - 1] * tmp);
     }
 
     trueCount = 1;
