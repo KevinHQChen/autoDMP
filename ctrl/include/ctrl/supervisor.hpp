@@ -46,7 +46,7 @@ public:
   QueueFPS<event_bus> *evQueue_;
   real_T y[3], y_max[3], y_o[3], u_o[3], y_range[3];
   boolean_T inTransRegion;
-  bool allMeasAvail, anyMeasAvail, simMeasAvail;
+  bool allMeasAvail, anyMeasAvail, simMeasAvail, firstMeasAvail;
   time_point<steady_clock> initTime{steady_clock::now()};
   time_point<steady_clock> prevCtrlTime = initTime;
 
@@ -64,7 +64,18 @@ public:
                         std::vector<float> maxVals, Eigen::MatrixXd &data);
   void stopSysIDThread();
 
+  /*
+  ** updates the following SupervisoryController inputs:
+  **  - inputevents = {trueMeasAvail, simMeasAvail}
+  **  - y
+   */
   bool measAvail();
+
+  /*
+  ** updates the following SupervisoryController inputs:
+  ** - initial y_o
+  ** - nextEv
+   */
   bool updateInputs();
 
   void addEvent(int srcState, int destState, Eigen::Vector3d pos, Eigen::Vector3d vel);

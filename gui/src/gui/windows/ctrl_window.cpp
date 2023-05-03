@@ -1,82 +1,18 @@
-#include "gui/gui.hpp"
-#include "ctrl/state/state.hpp"
+#include "gui/windows/ctrl_window.hpp"
 
-void GUI::imguiConfig() {
-  ImGuiIO &io = ImGui::GetIO();
-  (void)io;
-  if (guiConf.keyboardNav)
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
-  io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;       // Enable Docking
-  // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;     // Enable Multi-Viewport / Platform
-  // Windows
+namespace gui {
+
+CtrlWindow::CtrlWindow(Supervisor *sv) : sv_(sv) {
 }
 
-void GUI::imguiStyle() {
-  ImGuiIO &io = ImGui::GetIO();
-  (void)io;
-  guiConf.startDark ? ImGui::StyleColorsDark() : ImGui::StyleColorsLight();
-  // ImGui::StyleColorsClassic();
+CtrlWindow::~CtrlWindow() {}
 
-  ImGuiStyle &style = ImGui::GetStyle();
-  style = ImGuiTheme::ShadesOfGray(3.f, 1.f, 1.f); // GrayVariations
-  // style = ImGuiTheme::ShadesOfGray(3.f, 1.136f, 0.865f); // GrayVariations_Darker
-  style.ScaleAllSizes(guiConf.scale);
-}
+void CtrlWindow::render() {
+  if (ImGui::IsKeyPressed(ImGuiKey_U))
+      ctrlSetupVisible_ = !ctrlSetupVisible_;
 
-GUI::GUI(ImCap *imCap, ImProc *imProc, Pump *pump, Supervisor *sv)
-    : conf(Config::conf), guiConf(Config::guiConf), imCap_(imCap), imProc_(imProc), pump_(pump),
-      sv_(sv) {
-  sysIDWindow_ = std::make_shared<gui::SysIdWindow>(sv);
-  pumpWindow_ = std::make_shared<gui::PumpWindow>(pump);
-  imProcWindow_ = std::make_shared<gui::ImProcWindow>(imCap, imProc);
-
-  // for documentation on runnerParam members, go to the associated header file
-  runnerParams.appWindowParams.windowTitle = "autoDMP";
-  runnerParams.appWindowParams.windowGeometry.fullScreenMode =
-      HelloImGui::FullScreenMode::FullMonitorWorkArea;
-
-  // custom ImGui config/style/fonts
-  //   default config: ImGuiDefaultSettings::SetupDefaultImGuiConfig()
-  //   default style: ImGuiDefaultSettings::SetupDefaultImGuiStyle()
-  runnerParams.callbacks.SetupImGuiConfig = [this]() { imguiConfig(); };
-  runnerParams.callbacks.SetupImGuiStyle = [this]() { imguiStyle(); };
-  ImGuiTheme::ImGuiTweakedTheme theme;
-  theme.Theme = ImGuiTheme::ImGuiTheme_::ImGuiTheme_MaterialFlat;
-  runnerParams.imGuiWindowParams.tweakedTheme = theme;
-  // runnerParams.callbacks.LoadAdditionalFonts = [this]() { LoadFonts(); };
-
-  // STATUS BAR (disable for now): enable default + custom status bar
-  runnerParams.imGuiWindowParams.showStatusBar = false;
-  // runnerParams.imGuiWindowParams.showStatusFps = false;
-  runnerParams.fpsIdling.enableIdling = false;
-  runnerParams.callbacks.ShowStatus = nullptr; // GUI::renderStatusBar;
-
-  // MENU BAR: enable default (showMenu_App, showMenu_View) + custom menu bar
-  runnerParams.imGuiWindowParams.showMenuBar = true;
-  runnerParams.callbacks.ShowMenus = [this]() { renderMenu(); };
-
-  // define main GUI rendering function
-  runnerParams.callbacks.ShowGui = [this]() { render(); };
-
-  // enable docking, create MainDockSpace
-  runnerParams.imGuiWindowParams.defaultImGuiWindowType =
-      HelloImGui::DefaultImGuiWindowType::ProvideFullScreenDockSpace;
-  // runnerParams.imGuiWindowParams.enableViewports = true;
-
-  // define any external addons
-  addOnsParams.withNodeEditor = false;
-  addOnsParams.withImplot = true;
-}
-
-GUI::~GUI() {
-  sysIDWindow_.reset();
-  pumpWindow_.reset();
-  imProcWindow_.reset();
-}
-
-void GUI::showCtrlSetup() {
-  if (guiConf.startCtrlSetup) {
-    if (ImGui::Begin("Ctrl Setup", &guiConf.startCtrlSetup)) {
+  if (ctrlSetupVisible_) {
+    if (ImGui::Begin("Ctrl Setup", &ctrlSetupVisible_)) {
       // disable tree node indentation
       ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.0f);
 
@@ -97,7 +33,7 @@ void GUI::showCtrlSetup() {
           ImGui::TableSetupColumn("Value");
           ImGui::TableHeadersRow();
 
-          for (int row = 0; row < 4; ++row) {
+          for (int row = 0; row < sizeof(GUIEvent::props) / sizeof(GUIEvent::props[0]); ++row) {
             ImGui::TableNextRow();
             if (row == 0) {
               // Setup ItemWidth once (more efficient)
@@ -268,85 +204,7 @@ void GUI::showCtrlSetup() {
       ImGui::End();
     }
   }
+
 }
 
-void GUI::showCtrl() {
-  if (guiConf.startCtrl) {
-    sv_->startThread();
-    if (ImGui::Begin("Ctrl Data", &guiConf.startCtrl)) {
-      if (!guiConf.pauseCtrlDataViz) {
-        guiTime += ImGui::GetIO().DeltaTime;
-        u0.AddPoint(guiTime, sv_->supOut.u[0]);
-        u1.AddPoint(guiTime, sv_->supOut.u[1]);
-        u2.AddPoint(guiTime, sv_->supOut.u[2]);
-        y0.AddPoint(guiTime, sv_->supIn.y[0]);
-        y1.AddPoint(guiTime, sv_->supIn.y[1]);
-        y2.AddPoint(guiTime, sv_->supIn.y[2]);
-        yhat0.AddPoint(guiTime, sv_->supOut.yhat[0]);
-        yhat1.AddPoint(guiTime, sv_->supOut.yhat[1]);
-        yhat2.AddPoint(guiTime, sv_->supOut.yhat[2]);
-        yref0.AddPoint(guiTime, sv_->supOut.currTraj[0]);
-        yref1.AddPoint(guiTime, sv_->supOut.currTraj[1]);
-        yref2.AddPoint(guiTime, sv_->supOut.currTraj[2]);
-      }
-
-      ImGui::SliderFloat("History", &history, 1, 60, "%.1f s");
-      plotVector3d("##Control Input", "time (s)", "voltage (V)", 0, 250, ctrlVecs);
-      plotVector3d("##Measured Output", "time (s)", "position (px)", 0, 600, measVecs);
-      ImGui::End();
-    }
-  } else
-    sv_->stopThread();
-}
-
-void GUI::renderMenu() {
-  // called by imgui_bundle within BeginMenuBar()/EndMenuBar() context
-  if (ImGui::BeginMenu("File")) {
-    runnerParams.appShallExit = ImGui::MenuItem("Quit");
-    ImGui::EndMenu();
-  }
-  if (ImGui::BeginMenu("Setup")) {
-    ImGui::MenuItem("Start Image Capture", "c", &guiConf.startImCap);
-    ImGui::MenuItem("Setup Image Processing", "s", &guiConf.startImProcSetup);
-    ImGui::MenuItem("Start Image Processing", "i", &guiConf.startImProc);
-    ImGui::MenuItem("Start Pump Setup", "p", &pumpWindow_->visible_);
-    ImGui::MenuItem("Start Controller Setup", nullptr, &guiConf.startCtrlSetup);
-    ImGui::EndMenu();
-  }
-  if (ImGui::BeginMenu("Debug")) {
-    ImGui::MenuItem("Show Demo Window", nullptr, &guiConf.showDebug);
-    ImGui::EndMenu();
-  }
-}
-
-void GUI::render() {
-  if (ImGui::IsKeyPressed(ImGuiKey_Q))
-    runnerParams.appShallExit = true;
-  imProcWindow_->render();
-  pumpWindow_->render();
-  showCtrlSetup();
-  showCtrl();
-  sysIDWindow_->render();
-  if (guiConf.showDebug) {
-    ImGui::ShowDemoWindow(&guiConf.showDebug);
-    ImPlot::ShowDemoWindow(&guiConf.showDebug);
-  }
-}
-
-void GUI::startGUIThread() {
-  guiThread = std::thread([this]() { ImmApp::Run(runnerParams, addOnsParams); });
-  guiThread.join();
-}
-
-void GUI::plotVector3d(const char *plotName, const char *xAx, const char *yAx, double yMin,
-                       double yMax, std::vector<std::pair<ScrollingBuffer *, std::string>> &vecs) {
-  if (ImPlot::BeginPlot(plotName, ImVec2(-1, 300))) {
-    ImPlot::SetupAxes(xAx, yAx); //, implotFlags, implotFlags);
-    ImPlot::SetupAxisLimits(ImAxis_X1, guiTime - history, guiTime, ImGuiCond_Always);
-    ImPlot::SetupAxisLimits(ImAxis_Y1, yMin, yMax);
-    for (auto &vec : vecs)
-      ImPlot::PlotLine(vec.second.c_str(), &vec.first->Data[0].x, &vec.first->Data[0].y,
-                       vec.first->Data.size(), 0, vec.first->Offset, 2 * sizeof(float));
-    ImPlot::EndPlot();
-  }
-}
+} // namespace gui

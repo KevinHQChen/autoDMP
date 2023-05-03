@@ -19,6 +19,7 @@ Supervisor::Supervisor(ImProc *imProc, Pump *pump)
 
 Supervisor::~Supervisor() {
   delete eventQueue_;
+  delete evQueue_;
   delete currEvent_;
   delete currState_;
   delete sup;
@@ -29,17 +30,26 @@ void Supervisor::startThread() {
   if (!startedCtrl) {
     info("Starting Supervisor...");
     startedCtrl = true;
-    sup->initialize();
+    firstMeasAvail = false;
 
     imProc->clearProcFrameQueues();
     imProc->clearTempFrameQueues();
     imProc->clearProcDataQueues();
 
-    currEv_ = evQueue_->get();
-    y_range[0] = 0.1;
-    y_range[1] = 0.9;
+    // initialize SupervisoryController (y_range, y_max, y_o, u_o, yhat)
+    // - assume y_o is always y_max, and yhat is at y_max initially (TODO is this a good
+    // assumption?)
+    supIn.y_range[0] = 0.1;
+    supIn.y_range[1] = 0.9;
+    for (int ch = 0; ch < Config::numChans_; ++ch) {
+      supIn.y_max[ch] =
+          imProc->impConf.getChanBBox()[ch].height; // TODO add support for rotChanBBoxes
+      supIn.y_o[ch] = supIn.y_max[ch];
+      supOut.yhat[ch] = supIn.y_max[ch];
+    }
     for (int pp = 0; pp < NUM_PUMPS; ++pp)
-      u_o[pp] = pump->pumpVoltages[pp]; // TODO set current pump values once system is stable
+      supIn.u_o[pp] = pump->pumpVoltages[pp];
+    sup->initialize();
 
     if (!simModeActive)
       pump->setFreq(200);
@@ -52,7 +62,11 @@ void Supervisor::stopThread() {
   if (startedCtrl) {
     info("Stopping Supervisor...");
     startedCtrl = false;
+
+    supIn = {};
+    supOut = {};
     sup->terminate();
+
     if (ctrlThread.joinable())
       ctrlThread.join();
     imProc->clearProcFrameQueues();
@@ -66,49 +80,42 @@ bool Supervisor::measAvail() {
   supIn.inputevents[0] = false;
   supIn.inputevents[1] = false;
 
+  // first measurement should only check ch0
+  if (!firstMeasAvail)
+    supOut.currEv.chs[0] = true;
+
   bool currChMeasAvail = true;
   allMeasAvail = true;
   anyMeasAvail = false;
   for (int ch = 0; ch < Config::numChans_; ++ch) {
     if (supOut.currEv.chs[ch]) {
-      if(!simModeActive)
-        currChMeasAvail = !imProc->procDataQArr[ch]->empty();
-      else
-        currChMeasAvail = duration_cast<milliseconds>(steady_clock::now() - prevCtrlTime).count() >= 25;
+      currChMeasAvail =
+          !simModeActive
+              ? !imProc->procDataQArr[ch]->empty()
+              : duration_cast<milliseconds>(steady_clock::now() - prevCtrlTime).count() >= 25;
       allMeasAvail &= currChMeasAvail;
       anyMeasAvail |= currChMeasAvail;
 
-      if (currChMeasAvail) {
-        if(!simModeActive)
-          supIn.y[ch] = imProc->procDataQArr[ch]->get();
-        else
-          supIn.y[ch] = supOut.yhat[ch];
-      } else
+      if (currChMeasAvail)
+        supIn.y[ch] = !simModeActive ? imProc->procDataQArr[ch]->get().loc.y : supOut.yhat[ch];
+      else
         supIn.y[ch] = 0;
     }
   }
   simMeasAvail = duration_cast<milliseconds>(steady_clock::now() - prevCtrlTime).count() >= 25;
 
-  if (allMeasAvail)
+  if (allMeasAvail) {
+    firstMeasAvail = true;
     supIn.inputevents[0] = true;
-  else if (anyMeasAvail || simMeasAvail)
-    supIn.inputevents[1] = true;
-
-  if (supIn.inputevents[0] || supIn.inputevents[1])
     return true;
-  else
+  } else if (anyMeasAvail || simMeasAvail) {
+    supIn.inputevents[1] = true;
+    return true;
+  } else
     return false;
 }
 
 bool Supervisor::updateInputs() {
-  for (int ch = 0; ch < Config::numChans_; ++ch) {
-    if (supIn.y_max[ch] < supIn.y[ch]) {
-      supIn.y_max[ch] =
-          imProc->impConf.getChanBBox()[ch].height; // TODO add support for rotChanBBoxes
-      supIn.y_o[ch] = supIn.y[ch];
-    }
-  }
-
   if (supOut.requestEvent && !eventQueue_->empty())
     supIn.nextEv = evQueue_->get();
   else
@@ -121,16 +128,16 @@ void Supervisor::start() {
   while (startedCtrl) {
     if (measAvail()) {
       updateInputs();
-      sup->setExternalInputs(&supIn);
+      sup->rtU = supIn;
       sup->step();
-      supOut = sup->getExternalOutputs();
+      supOut = sup->rtY;
 
-      // generate optimal control signals at current time step
-      // and save to ctrlDataQueue
-      if (!simModeActive)
-        pump->sendSigs(currState_->step());
-      else
-        info(currState_->step());
+      // // generate optimal control signals at current time step
+      // // and save to ctrlDataQueue
+      // if (!simModeActive)
+      //   pump->sendSigs(currState_->step());
+      // else
+      //   info(currState_->step());
     }
   }
 }
