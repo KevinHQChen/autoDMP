@@ -3,14 +3,16 @@
 #include "ctrl/state/state2.hpp"
 #include "ctrl/state/sysidstate.hpp"
 
+#define NUM_PUMPS 4
+
 event_bus Supervisor::nullEv = {};
 
 Supervisor::Supervisor(ImProc *imProc, Pump *pump)
     : conf(Config::conf), simModeActive(toml::get<bool>(conf["ctrl"]["simMode"])),
       dataPath(toml::get<std::string>(conf["ctrl"]["dataPath"])),
       confPath(toml::get<std::string>(conf["ctrl"]["confPath"])), pump(pump), imProc(imProc),
-      sup(new SupervisoryController()), supIn(new SupervisoryController::ExtU()),
-      supOut(new SupervisoryController::ExtY()), currState_(new State0(this)),
+      sup(new SupervisoryController()), supIn({}), supOut({}),
+      evQueue_(new QueueFPS<event_bus>(dataPath + "evQueue.txt")), currState_(new State0(this)),
       currEvent_(new Event(0, 0, Eigen::Vector3d(0.5, 0, 0), Eigen::Vector3d(10, 0, 0))),
       eventQueue_(new QueueFPS<Event *>(dataPath + "eventQueue.txt")),
       ctrlDataQueuePtr(new QueueFPS<int>(dataPath + "ctrlDataQueue.txt")) {}
@@ -19,6 +21,8 @@ Supervisor::~Supervisor() {
   delete eventQueue_;
   delete currEvent_;
   delete currState_;
+  delete sup;
+  delete ctrlDataQueuePtr;
 }
 
 void Supervisor::startThread() {
@@ -26,19 +30,17 @@ void Supervisor::startThread() {
     info("Starting Supervisor...");
     startedCtrl = true;
     sup->initialize();
-    for (int ch = 0; ch < Config::numChans_; ++ch) {
-      supIn->y_max[ch] = yMax;
-      supIn->y_o[ch] = y0;
-    }
-    for (int pp = 0; pp < NUM_PUMPS; ++pp)
-      supIn->u_o[pp] = u0;
 
     imProc->clearProcFrameQueues();
     imProc->clearTempFrameQueues();
     imProc->clearProcDataQueues();
-    // updateState<State0>();
-    // updateState<State1>(Eigen::Vector3d(90, 60, 50));
-    // updateState<State2>(Eigen::Vector3d(135, 101, 101));
+
+    currEv_ = evQueue_->get();
+    y_range[0] = 0.1;
+    y_range[1] = 0.9;
+    for (int pp = 0; pp < NUM_PUMPS; ++pp)
+      u_o[pp] = pump->pumpVoltages[pp]; // TODO set current pump values once system is stable
+
     if (!simModeActive)
       pump->setFreq(200);
     ctrlThread = std::thread(&Supervisor::start, this);
@@ -61,19 +63,38 @@ void Supervisor::stopThread() {
 }
 
 bool Supervisor::measAvail() {
-  // inputs:
-  // measured outputs - y
-  // simulated outputs - supOut->yhat[3]
-  // current event - supOut->currEv
+  supIn.inputevents[0] = false;
+  supIn.inputevents[1] = false;
 
-  supIn->inputevents[0] = false;
-  supIn->inputevents[1] = false;
-  if (trueMeasAvailConditions) // depends on currEv and y
-    supIn->inputevents[0] = true;
-  else if (simMeasAvailConditions && supOut->inTransRegion) // depends on currEv and 25ms timer
-    supIn->inputevents[1] = true;
+  bool currChMeasAvail = true;
+  allMeasAvail = true;
+  anyMeasAvail = false;
+  for (int ch = 0; ch < Config::numChans_; ++ch) {
+    if (supOut.currEv.chs[ch]) {
+      if(!simModeActive)
+        currChMeasAvail = !imProc->procDataQArr[ch]->empty();
+      else
+        currChMeasAvail = duration_cast<milliseconds>(steady_clock::now() - prevCtrlTime).count() >= 25;
+      allMeasAvail &= currChMeasAvail;
+      anyMeasAvail |= currChMeasAvail;
 
-  if (supIn->inputevents[0] || supIn->inputevents[1])
+      if (currChMeasAvail) {
+        if(!simModeActive)
+          supIn.y[ch] = imProc->procDataQArr[ch]->get();
+        else
+          supIn.y[ch] = supOut.yhat[ch];
+      } else
+        supIn.y[ch] = 0;
+    }
+  }
+  simMeasAvail = duration_cast<milliseconds>(steady_clock::now() - prevCtrlTime).count() >= 25;
+
+  if (allMeasAvail)
+    supIn.inputevents[0] = true;
+  else if (anyMeasAvail || simMeasAvail)
+    supIn.inputevents[1] = true;
+
+  if (supIn.inputevents[0] || supIn.inputevents[1])
     return true;
   else
     return false;
@@ -81,16 +102,17 @@ bool Supervisor::measAvail() {
 
 bool Supervisor::updateInputs() {
   for (int ch = 0; ch < Config::numChans_; ++ch) {
-    if (trueMeasAvail[ch])
-      supIn->y[ch] = imProc->procDataQArr[ch]->get();
-    else
-      supIn->y[ch] = supOut->yhat[ch];
+    if (supIn.y_max[ch] < supIn.y[ch]) {
+      supIn.y_max[ch] =
+          imProc->impConf.getChanBBox()[ch].height; // TODO add support for rotChanBBoxes
+      supIn.y_o[ch] = supIn.y[ch];
+    }
   }
 
-  if (supOut->requestEvent && !eventQueue_->empty())
-    supIn->nextEv = evQueue_->get();
+  if (supOut.requestEvent && !eventQueue_->empty())
+    supIn.nextEv = evQueue_->get();
   else
-    supIn->nextEv = nullEv;
+    supIn.nextEv = nullEv;
 
   return true;
 }
@@ -99,9 +121,9 @@ void Supervisor::start() {
   while (startedCtrl) {
     if (measAvail()) {
       updateInputs();
-      sup->setExternalInputs(supIn);
+      sup->setExternalInputs(&supIn);
       sup->step();
-      *supOut = sup->getExternalOutputs();
+      supOut = sup->getExternalOutputs();
 
       // generate optimal control signals at current time step
       // and save to ctrlDataQueue

@@ -40,10 +40,15 @@ public:
   ImProc *imProc;
 
   SupervisoryController *sup;
-  SupervisoryController::ExtU *supIn;
-  SupervisoryController::ExtY *supOut;
-  event_bus *currEv_ = nullptr;
+  SupervisoryController::ExtU supIn;
+  SupervisoryController::ExtY supOut;
+  event_bus currEv_ = nullEv;
   QueueFPS<event_bus> *evQueue_;
+  real_T y[3], y_max[3], y_o[3], u_o[3], y_range[3];
+  boolean_T inTransRegion;
+  bool allMeasAvail, anyMeasAvail, simMeasAvail;
+  time_point<steady_clock> initTime{steady_clock::now()};
+  time_point<steady_clock> prevCtrlTime = initTime;
 
   State *currState_ = nullptr;
   Event *currEvent_ = nullptr;
