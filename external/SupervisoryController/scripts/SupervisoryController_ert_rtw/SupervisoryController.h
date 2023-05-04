@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.721
+// Model version                  : 1.738
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Tue May  2 18:07:47 2023
+// C/C++ source code generated on : Thu May  4 15:04:01 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -485,16 +485,11 @@ class SupervisoryController final
     real_T traj[7200];                 // '<Root>/SupervisoryController'
     real_T yhat1[2];                   // '<Root>/SupervisoryController'
     real_T yhat2[2];                   // '<Root>/SupervisoryController'
-    real_T f_data[7194];
-    real_T g_data[7194];
-    real_T h_data[7194];
-    real_T l_data[2398];
-    real_T b_data[7194];
-    real_T c_data[7194];
-    real_T d_data[7194];
-    real_T t_data[2398];
+    real_T b_data[3597];
+    real_T c_data[3597];
+    real_T d_data[3597];
+    real_T t_data[1199];
     real_T tmp_data[3597];
-    real_T tmp_data_m[7194];
     real_T holdT;                      // '<Root>/SupervisoryController'
     real_T yhat0;                      // '<Root>/SupervisoryController'
     uint16_T chs1[2];                  // '<Root>/SupervisoryController'
@@ -1392,18 +1387,13 @@ class SupervisoryController final
 
   // private member function(s) for subsystem '<Root>'
   boolean_T isequal(const event_bus varargin_1, const event_bus varargin_2);
-  real_T minimum_f(const real_T x_data[], const int32_T *x_size);
-  void computeProfileParams_n(real_T i, const real_T wayPoints_data[], const
+  void computeProfileParams(real_T i, const real_T wayPoints_data[], const
     int32_T wayPoints_size[2], const real_T Vel_data[], const int32_T *Vel_size,
-    const real_T TAc_data[], const int32_T *TAc_size, real_T *vParam, real_T
-    *aParam, real_T *tAParam, real_T *tFParam);
-  boolean_T checkPolyForMultipleBreaks(const real_T breakMat_data[], const
-    int32_T breakMat_size[2]);
+    real_T *vParam, real_T *aParam, real_T *tAParam, real_T *tFParam);
   void processPolynomialResults(const real_T breakMat_data[], const int32_T
     breakMat_size[2], const real_T coeffMat_data[], const int32_T coeffMat_size
     [2], boolean_T hasMultipleBreaks, cell_wrap_5 breaksCell_data[], int32_T
     *breaksCell_size, cell_wrap_6 coeffCell_data[], int32_T *coeffCell_size);
-  real_T maximum_e(const real_T x_data[], const int32_T *x_size);
   void linspace(real_T d2, uint16_T n, real_T y_data[], int32_T y_size[2]);
   void ppval(const s_vjEZ2dxatR8VOmLd9oOqoD *pp, const real_T x_data[], const
              int32_T x_size[2], real_T v_data[], int32_T v_size[2]);
@@ -1412,12 +1402,6 @@ class SupervisoryController final
     t_data[], const int32_T t_size[2], real_T q_data[], int32_T q_size[2],
     real_T qd_data[], int32_T qd_size[2], real_T qdd_data[], int32_T qdd_size[2],
     real_T pp_breaks[6], real_T pp_coefs_data[], int32_T pp_coefs_size[3]);
-  void trapveltraj_p(const real_T wayPoints_data[], const int32_T
-                     wayPoints_size[2], uint16_T numSamples, real_T varargin_2,
-                     real_T q_data[], int32_T q_size[2]);
-  void computeProfileParams(real_T i, const real_T wayPoints_data[], const
-    int32_T wayPoints_size[2], const real_T Vel_data[], const int32_T *Vel_size,
-    real_T *vParam, real_T *aParam, real_T *tAParam, real_T *tFParam);
   void trapveltraj(const real_T wayPoints_data[], const int32_T wayPoints_size[2],
                    uint16_T numSamples, real_T varargin_2, real_T q_data[],
                    int32_T q_size[2]);

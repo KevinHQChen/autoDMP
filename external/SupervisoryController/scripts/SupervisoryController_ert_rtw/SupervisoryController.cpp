@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.721
+// Model version                  : 1.738
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Tue May  2 18:07:47 2023
+// C/C++ source code generated on : Thu May  4 15:04:01 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -12586,74 +12586,11 @@ boolean_T SupervisoryController::isequal(const event_bus varargin_1, const
 }
 
 // Function for Chart: '<Root>/SupervisoryController'
-real_T SupervisoryController::minimum_f(const real_T x_data[], const int32_T
-  *x_size)
-{
-  real_T ex;
-  int32_T last;
-  last = *x_size;
-  if (static_cast<int32_T>(static_cast<uint8_T>(static_cast<int32_T>(*x_size - 1)))
-      + 1 <= 2) {
-    if (static_cast<int32_T>(static_cast<uint8_T>(static_cast<int32_T>(*x_size -
-           1))) + 1 == 1) {
-      ex = x_data[0];
-    } else {
-      ex = x_data[*x_size - 1];
-      if (x_data[0] > ex) {
-      } else if (std::isnan(x_data[0])) {
-        if (!std::isnan(ex)) {
-        } else {
-          ex = x_data[0];
-        }
-      } else {
-        ex = x_data[0];
-      }
-    }
-  } else {
-    int32_T idx;
-    int32_T k;
-    if (!std::isnan(x_data[0])) {
-      idx = 1;
-    } else {
-      boolean_T exitg1;
-      idx = 0;
-      k = 2;
-      exitg1 = false;
-      while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U)) ==
-              false) && (k <= *x_size)) {
-        if (!std::isnan(x_data[k - 1])) {
-          idx = k;
-          exitg1 = true;
-        } else {
-          k++;
-        }
-      }
-    }
-
-    if (idx == 0) {
-      ex = x_data[0];
-    } else {
-      ex = x_data[idx - 1];
-      for (k = idx + 1; k <= last; k++) {
-        real_T tmp;
-        tmp = x_data[k - 1];
-        if (ex > tmp) {
-          ex = tmp;
-        }
-      }
-    }
-  }
-
-  return ex;
-}
-
-// Function for Chart: '<Root>/SupervisoryController'
-void SupervisoryController::computeProfileParams_n(real_T i, const real_T
+void SupervisoryController::computeProfileParams(real_T i, const real_T
   wayPoints_data[], const int32_T wayPoints_size[2], const real_T Vel_data[],
-  const int32_T *Vel_size, const real_T TAc_data[], const int32_T *TAc_size,
-  real_T *vParam, real_T *aParam, real_T *tAParam, real_T *tFParam)
+  const int32_T *Vel_size, real_T *vParam, real_T *aParam, real_T *tAParam,
+  real_T *tFParam)
 {
-  real_T TAcSwitch_data[3];
   real_T VelSwitch_data[3];
   real_T tACandidates[2];
   real_T b_sF;
@@ -12663,7 +12600,6 @@ void SupervisoryController::computeProfileParams_n(real_T i, const real_T
   int32_T loop_ub;
   int8_T b_data[2];
   boolean_T inputCombo_idx_0;
-  boolean_T inputCombo_idx_3;
   *aParam = 0.0;
   *vParam = 0.0;
   *tAParam = 0.0;
@@ -12679,7 +12615,6 @@ void SupervisoryController::computeProfileParams_n(real_T i, const real_T
   }
 
   inputCombo_idx_0 = (*Vel_size != 0);
-  inputCombo_idx_3 = (*TAc_size != 0);
   if (inputCombo_idx_0) {
     if (*Vel_size - 1 >= 0) {
       (void)std::memcpy(&VelSwitch_data[0], &Vel_data[0], static_cast<uint32_T>(*
@@ -12692,27 +12627,7 @@ void SupervisoryController::computeProfileParams_n(real_T i, const real_T
     }
   }
 
-  if (inputCombo_idx_3) {
-    if (*TAc_size - 1 >= 0) {
-      (void)std::memcpy(&TAcSwitch_data[0], &TAc_data[0], static_cast<uint32_T>(*
-        TAc_size) * sizeof(real_T));
-    }
-  } else {
-    loop_ub = static_cast<int32_T>(i);
-    for (int32_T i_0{0}; i_0 < loop_ub; i_0++) {
-      TAcSwitch_data[i_0] = 1.0;
-    }
-  }
-
-  switch ((inputCombo_idx_0 << 3UL) + (inputCombo_idx_3 ? static_cast<int32_T>(1)
-           : static_cast<int32_T>(0))) {
-   case 9:
-    *vParam = VelSwitch_data[static_cast<int32_T>(i) - 1];
-    *tAParam = TAcSwitch_data[static_cast<int32_T>(i) - 1];
-    *aParam = *vParam / *tAParam;
-    *tFParam = ((*vParam * *tAParam + sF) - s0) / *vParam;
-    break;
-
+  switch (inputCombo_idx_0 << 3UL) {
    case 8:
     *vParam = VelSwitch_data[static_cast<int32_T>(i) - 1];
     *tFParam = (sF - s0) * 1.5 / *vParam;
@@ -12742,9 +12657,9 @@ void SupervisoryController::computeProfileParams_n(real_T i, const real_T
 
    case 5:
     *aParam = 1.0;
-    *tAParam = TAcSwitch_data[static_cast<int32_T>(i) - 1];
-    *vParam = *tAParam;
-    *tFParam = ((*tAParam * *tAParam + sF) - s0) / *tAParam;
+    *tAParam = 1.0;
+    *vParam = 1.0;
+    *tFParam = (sF + 1.0) - s0;
     break;
 
    case 4:
@@ -12757,9 +12672,9 @@ void SupervisoryController::computeProfileParams_n(real_T i, const real_T
 
    case 3:
     *tFParam = 1.0;
-    *tAParam = TAcSwitch_data[static_cast<int32_T>(i) - 1];
-    *vParam = (sF - s0) / (1.0 - *tAParam);
-    *aParam = *vParam / *tAParam;
+    *tAParam = 1.0;
+    *vParam = sF - s0 > 0.0 ? (rtInf) : sF - s0 < 0.0 ? (rtMinusInf) : (rtNaN);
+    *aParam = *vParam;
     break;
 
    case 2:
@@ -12770,15 +12685,11 @@ void SupervisoryController::computeProfileParams_n(real_T i, const real_T
     break;
 
    case 1:
-    {
-      real_T aParam_tmp;
-      *tAParam = TAcSwitch_data[static_cast<int32_T>(i) - 1];
-      b_sF = *tAParam * *tAParam;
-      aParam_tmp = sF - s0;
-      *aParam = aParam_tmp / (b_sF * 2.0);
-      *vParam = *tAParam * *aParam;
-      *tFParam = (b_sF * *aParam + aParam_tmp) / *vParam;
-    }
+    *tAParam = 1.0;
+    b_sF = sF - s0;
+    *aParam = b_sF / 2.0;
+    *vParam = *aParam;
+    *tFParam = (b_sF + *aParam) / *aParam;
     break;
 
    case 0:
@@ -12809,45 +12720,6 @@ void SupervisoryController::computeProfileParams_n(real_T i, const real_T
 
   *vParam *= static_cast<real_T>(deltaSign);
   *aParam *= static_cast<real_T>(deltaSign);
-}
-
-// Function for Chart: '<Root>/SupervisoryController'
-boolean_T SupervisoryController::checkPolyForMultipleBreaks(const real_T
-  breakMat_data[], const int32_T breakMat_size[2])
-{
-  real_T y[4];
-  int32_T b;
-  boolean_T hasMultipleBreaks;
-  hasMultipleBreaks = false;
-  b = breakMat_size[0];
-  for (int32_T i{0}; i <= b - 2; i++) {
-    int32_T k;
-    boolean_T b_y;
-    boolean_T exitg1;
-    y[0] = std::abs(breakMat_data[i] - breakMat_data[i + 1]);
-    y[1] = std::abs(breakMat_data[i + breakMat_size[0]] - breakMat_data[(i +
-      breakMat_size[0]) + 1]);
-    y[2] = std::abs(breakMat_data[(breakMat_size[0] << 1UL) + i] -
-                    breakMat_data[((breakMat_size[0] << 1UL) + i) + 1]);
-    y[3] = std::abs(breakMat_data[breakMat_size[0] * 3 + i] - breakMat_data
-                    [(breakMat_size[0] * 3 + i) + 1]);
-    b_y = false;
-    k = 0;
-    exitg1 = false;
-    while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U)) ==
-            false) && (k < 4)) {
-      if (y[k] > 2.2204460492503131E-16) {
-        b_y = true;
-        exitg1 = true;
-      } else {
-        k++;
-      }
-    }
-
-    hasMultipleBreaks = (b_y || hasMultipleBreaks);
-  }
-
-  return hasMultipleBreaks;
 }
 
 // Function for Chart: '<Root>/SupervisoryController'
@@ -12932,68 +12804,6 @@ void SupervisoryController::processPolynomialResults(const real_T breakMat_data[
       breaksCell_data[ii].f1[3] = breakMat_data[breakMat_size[0] * 3];
     }
   }
-}
-
-// Function for Chart: '<Root>/SupervisoryController'
-real_T SupervisoryController::maximum_e(const real_T x_data[], const int32_T
-  *x_size)
-{
-  real_T ex;
-  int32_T last;
-  last = *x_size;
-  if (static_cast<int32_T>(static_cast<uint8_T>(static_cast<int32_T>(*x_size - 1)))
-      + 1 <= 2) {
-    if (static_cast<int32_T>(static_cast<uint8_T>(static_cast<int32_T>(*x_size -
-           1))) + 1 == 1) {
-      ex = x_data[0];
-    } else {
-      ex = x_data[*x_size - 1];
-      if (x_data[0] < ex) {
-      } else if (std::isnan(x_data[0])) {
-        if (!std::isnan(ex)) {
-        } else {
-          ex = x_data[0];
-        }
-      } else {
-        ex = x_data[0];
-      }
-    }
-  } else {
-    int32_T idx;
-    int32_T k;
-    if (!std::isnan(x_data[0])) {
-      idx = 1;
-    } else {
-      boolean_T exitg1;
-      idx = 0;
-      k = 2;
-      exitg1 = false;
-      while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U)) ==
-              false) && (k <= *x_size)) {
-        if (!std::isnan(x_data[k - 1])) {
-          idx = k;
-          exitg1 = true;
-        } else {
-          k++;
-        }
-      }
-    }
-
-    if (idx == 0) {
-      ex = x_data[0];
-    } else {
-      ex = x_data[idx - 1];
-      for (k = idx + 1; k <= last; k++) {
-        real_T tmp;
-        tmp = x_data[k - 1];
-        if (ex < tmp) {
-          ex = tmp;
-        }
-      }
-    }
-  }
-
-  return ex;
 }
 
 // Function for Chart: '<Root>/SupervisoryController'
@@ -13427,384 +13237,6 @@ void SupervisoryController::generateTrajectoriesFromCoefs(const real_T breaks[4]
 }
 
 // Function for Chart: '<Root>/SupervisoryController'
-void SupervisoryController::trapveltraj_p(const real_T wayPoints_data[], const
-  int32_T wayPoints_size[2], uint16_T numSamples, real_T varargin_2, real_T
-  q_data[], int32_T q_size[2])
-{
-  cell_wrap_5 breaksCell_data[3];
-  emxArray_cell_wrap_6_3 coeffsCell;
-  emxArray_s_vjEZ2dxatR8VOmLd9oOq ppCell;
-  real_T coeffMat_data[27];
-  real_T parameterMat_data[18];
-  real_T breakMat_data[12];
-  real_T coefs[9];
-  real_T tAc_data[3];
-  real_T vel_data[3];
-  real_T segATime;
-  real_T segAcc;
-  real_T segFTime;
-  real_T segVel;
-  int32_T breakMat_size[2];
-  int32_T c_size[2];
-  int32_T coeffMat_size[2];
-  int32_T d_size[2];
-  int32_T cellSelection;
-  int32_T i;
-  int32_T indivPolyDim;
-  int32_T j_size_idx_0;
-  int32_T loop_ub;
-  int32_T n;
-  int32_T numComputedPolynomials;
-  int32_T parameterMat_size_idx_0;
-  int32_T tAc_size;
-  int32_T vel_size;
-  int8_T f_data[9];
-  int8_T j_data[9];
-  int8_T lspbSegIndices_data[9];
-  int8_T rowSelection_data[3];
-  int8_T j[2];
-  boolean_T coefIndex_data[9];
-  boolean_T hasMultipleBreaks;
-  n = wayPoints_size[0];
-  vel_size = static_cast<int32_T>(static_cast<int8_T>(wayPoints_size[0]));
-  cellSelection = static_cast<int32_T>(static_cast<int8_T>(wayPoints_size[0]));
-  for (int32_T c_i{0}; c_i < cellSelection; c_i++) {
-    vel_data[c_i] = varargin_2;
-  }
-
-  tAc_size = static_cast<int32_T>(static_cast<int8_T>(wayPoints_size[0]));
-  cellSelection = static_cast<int32_T>(static_cast<int8_T>(wayPoints_size[0]));
-  for (int32_T c_i{0}; c_i < cellSelection; c_i++) {
-    tAc_data[c_i] = 0.01;
-  }
-
-  q_size[0] = wayPoints_size[0];
-  q_size[1] = static_cast<int32_T>(numSamples);
-  cellSelection = wayPoints_size[0] * static_cast<int32_T>(numSamples);
-  if (cellSelection - 1 >= 0) {
-    (void)std::memset(&q_data[0], 0, static_cast<uint32_T>(cellSelection) *
-                      sizeof(real_T));
-  }
-
-  parameterMat_size_idx_0 = wayPoints_size[0];
-  cellSelection = wayPoints_size[0] * 6;
-  if (cellSelection - 1 >= 0) {
-    (void)std::memset(&parameterMat_data[0], 0, static_cast<uint32_T>
-                      (cellSelection) * sizeof(real_T));
-  }
-
-  coeffMat_size[0] = 3 * wayPoints_size[0];
-  coeffMat_size[1] = 3;
-  cellSelection = 3 * wayPoints_size[0] * 3;
-  if (cellSelection - 1 >= 0) {
-    (void)std::memset(&coeffMat_data[0], 0, static_cast<uint32_T>(cellSelection)
-                      * sizeof(real_T));
-  }
-
-  breakMat_size[0] = wayPoints_size[0];
-  breakMat_size[1] = 4;
-  cellSelection = wayPoints_size[0] << 2UL;
-  if (cellSelection - 1 >= 0) {
-    (void)std::memset(&breakMat_data[0], 0, static_cast<uint32_T>(cellSelection)
-                      * sizeof(real_T));
-  }
-
-  indivPolyDim = wayPoints_size[0];
-  if (wayPoints_size[0] - 1 >= 0) {
-    loop_ub = 3 * wayPoints_size[0];
-  }
-
-  for (i = 0; i < indivPolyDim; i++) {
-    real_T parameterMat_data_tmp;
-    computeProfileParams_n(static_cast<real_T>(i) + 1.0, wayPoints_data,
-      wayPoints_size, vel_data, &vel_size, tAc_data, &tAc_size, &segVel, &segAcc,
-      &segATime, &segFTime);
-    parameterMat_data_tmp = wayPoints_data[i];
-    parameterMat_data[i] = parameterMat_data_tmp;
-    parameterMat_data[i + parameterMat_size_idx_0] = wayPoints_data[i +
-      wayPoints_size[0]];
-    parameterMat_data[i + (parameterMat_size_idx_0 << 1UL)] = segVel;
-    parameterMat_data[i + parameterMat_size_idx_0 * 3] = segAcc;
-    parameterMat_data[i + (parameterMat_size_idx_0 << 2UL)] = segATime;
-    parameterMat_data[i + parameterMat_size_idx_0 * 5] = segFTime;
-    (void)std::memset(&coefs[0], 0, 9U * sizeof(real_T));
-    if (segVel == 0.0) {
-      coefs[6] = parameterMat_data_tmp;
-      coefs[7] = parameterMat_data_tmp;
-      coefs[8] = parameterMat_data_tmp;
-    } else {
-      real_T coefs_tmp;
-      coefs[0] = segAcc / 2.0;
-      coefs[3] = 0.0;
-      coefs[6] = parameterMat_data_tmp;
-      coefs[1] = 0.0;
-      coefs[4] = segVel;
-      coefs_tmp = segAcc / 2.0 * (segATime * segATime);
-      coefs[7] = coefs_tmp + parameterMat_data_tmp;
-      coefs[2] = -segAcc / 2.0;
-      coefs[5] = segVel;
-      coefs[8] = (wayPoints_data[i + wayPoints_size[0]] + coefs_tmp) - segVel *
-        segATime;
-    }
-
-    if (loop_ub - 1 >= 0) {
-      (void)std::memset(&coefIndex_data[0], 0, static_cast<uint32_T>(loop_ub) *
-                        sizeof(boolean_T));
-    }
-
-    segVel = static_cast<real_T>(static_cast<int32_T>((n << 1UL) + i)) + 1.0;
-    if ((n == 0) || (static_cast<int32_T>(segVel) < i + 1)) {
-      cellSelection = 0;
-    } else {
-      numComputedPolynomials = static_cast<int32_T>(static_cast<real_T>((segVel
-        - static_cast<real_T>(static_cast<int32_T>(i + 1))) / static_cast<real_T>
-        (n)));
-      cellSelection = numComputedPolynomials + 1;
-      for (int32_T c_i{0}; c_i <= numComputedPolynomials; c_i++) {
-        lspbSegIndices_data[c_i] = static_cast<int8_T>((n * c_i + i) + 1);
-      }
-    }
-
-    if (cellSelection - 1 >= 0) {
-      (void)std::memcpy(&f_data[0], &lspbSegIndices_data[0],
-                        static_cast<uint32_T>(cellSelection) * sizeof(int8_T));
-    }
-
-    for (int32_T c_i{0}; c_i < cellSelection; c_i++) {
-      coefIndex_data[f_data[c_i] - 1] = true;
-    }
-
-    numComputedPolynomials = 3 * n - 1;
-    cellSelection = 0;
-    for (int32_T c_i{0}; c_i <= numComputedPolynomials; c_i++) {
-      if (coefIndex_data[c_i]) {
-        cellSelection++;
-      }
-    }
-
-    j_size_idx_0 = cellSelection;
-    cellSelection = 0;
-    for (int32_T c_i{0}; c_i <= numComputedPolynomials; c_i++) {
-      if (coefIndex_data[c_i]) {
-        j_data[cellSelection] = static_cast<int8_T>(c_i + 1);
-        cellSelection++;
-      }
-    }
-
-    j[0] = static_cast<int8_T>(j_size_idx_0);
-    cellSelection = static_cast<int32_T>(static_cast<int8_T>(j_size_idx_0));
-    for (int32_T c_i{0}; c_i < 3; c_i++) {
-      for (j_size_idx_0 = 0; j_size_idx_0 < cellSelection; j_size_idx_0++) {
-        coeffMat_data[(static_cast<int32_T>(j_data[j_size_idx_0]) +
-                       coeffMat_size[0] * c_i) - 1] = coefs[static_cast<int32_T>
-          (j[0]) * c_i + j_size_idx_0];
-      }
-    }
-
-    segVel = breakMat_data[i];
-    breakMat_data[i + breakMat_size[0]] = segATime + segVel;
-    breakMat_data[i + (breakMat_size[0] << 1UL)] = (segFTime - segATime) +
-      segVel;
-    breakMat_data[i + breakMat_size[0] * 3] = segFTime + segVel;
-  }
-
-  hasMultipleBreaks = checkPolyForMultipleBreaks(breakMat_data, breakMat_size);
-  processPolynomialResults(breakMat_data, breakMat_size, coeffMat_data,
-    coeffMat_size, hasMultipleBreaks, breaksCell_data, &tAc_size,
-    coeffsCell.data, &coeffsCell.size);
-  if (wayPoints_size[0] == 0) {
-    vel_size = 0;
-  } else {
-    vel_size = wayPoints_size[0];
-    for (i = 0; i < parameterMat_size_idx_0; i++) {
-      vel_data[i] = parameterMat_data[parameterMat_size_idx_0 * 5 + i];
-    }
-  }
-
-  linspace(maximum_e(vel_data, &vel_size), numSamples, rtDW.t_data,
-           coeffMat_size);
-  if (hasMultipleBreaks) {
-    numComputedPolynomials = wayPoints_size[0];
-    indivPolyDim = 1;
-  } else {
-    numComputedPolynomials = 1;
-    indivPolyDim = wayPoints_size[0];
-  }
-
-  i = numComputedPolynomials;
-  for (numComputedPolynomials = 0; numComputedPolynomials < i;
-       numComputedPolynomials++) {
-    if (hasMultipleBreaks) {
-      rowSelection_data[0] = static_cast<int8_T>(numComputedPolynomials + 1);
-      cellSelection = numComputedPolynomials;
-    } else {
-      if (n < 1) {
-      } else {
-        cellSelection = n - 1;
-        for (int32_T c_i{0}; c_i <= cellSelection; c_i++) {
-          rowSelection_data[c_i] = static_cast<int8_T>(c_i + 1);
-        }
-      }
-
-      cellSelection = 0;
-    }
-
-    generateTrajectoriesFromCoefs(breaksCell_data[cellSelection].f1,
-      coeffsCell.data[cellSelection].f1.data, coeffsCell.data[cellSelection].
-      f1.size, static_cast<real_T>(indivPolyDim), rtDW.t_data, coeffMat_size,
-      rtDW.b_data, breakMat_size, rtDW.c_data, c_size, rtDW.d_data, d_size,
-      ppCell.data[numComputedPolynomials].breaks,
-      ppCell.data[numComputedPolynomials].coefs.data,
-      ppCell.data[numComputedPolynomials].coefs.size);
-    cellSelection = breakMat_size[1];
-    for (int32_T c_i{0}; c_i < cellSelection; c_i++) {
-      loop_ub = breakMat_size[0];
-      for (j_size_idx_0 = 0; j_size_idx_0 < loop_ub; j_size_idx_0++) {
-        q_data[(static_cast<int32_T>(rowSelection_data[j_size_idx_0]) + q_size[0]
-                * c_i) - 1] = rtDW.b_data[breakMat_size[0] * c_i + j_size_idx_0];
-      }
-    }
-  }
-}
-
-// Function for Chart: '<Root>/SupervisoryController'
-void SupervisoryController::computeProfileParams(real_T i, const real_T
-  wayPoints_data[], const int32_T wayPoints_size[2], const real_T Vel_data[],
-  const int32_T *Vel_size, real_T *vParam, real_T *aParam, real_T *tAParam,
-  real_T *tFParam)
-{
-  real_T VelSwitch_data[3];
-  real_T tACandidates[2];
-  real_T b_sF;
-  real_T s0;
-  real_T sF;
-  int32_T deltaSign;
-  int32_T loop_ub;
-  int8_T b_data[2];
-  boolean_T inputCombo_idx_0;
-  *aParam = 0.0;
-  *vParam = 0.0;
-  *tAParam = 0.0;
-  *tFParam = 0.0;
-  s0 = wayPoints_data[static_cast<int32_T>(i) - 1];
-  sF = wayPoints_data[(static_cast<int32_T>(i) + wayPoints_size[0]) - 1];
-  deltaSign = 1;
-  if (sF < s0) {
-    b_sF = s0;
-    s0 = sF;
-    sF = b_sF;
-    deltaSign = -1;
-  }
-
-  inputCombo_idx_0 = (*Vel_size != 0);
-  if (inputCombo_idx_0) {
-    if (*Vel_size - 1 >= 0) {
-      (void)std::memcpy(&VelSwitch_data[0], &Vel_data[0], static_cast<uint32_T>(*
-        Vel_size) * sizeof(real_T));
-    }
-  } else {
-    loop_ub = static_cast<int32_T>(i);
-    for (int32_T i_0{0}; i_0 < loop_ub; i_0++) {
-      VelSwitch_data[i_0] = 1.0;
-    }
-  }
-
-  switch (inputCombo_idx_0 << 3UL) {
-   case 8:
-    *vParam = VelSwitch_data[static_cast<int32_T>(i) - 1];
-    *tFParam = (sF - s0) * 1.5 / *vParam;
-    *tAParam = (*vParam * *tFParam + (s0 - sF)) / *vParam;
-    *aParam = *vParam / *tAParam;
-    break;
-
-   case 6:
-    *aParam = 1.0;
-    *tFParam = 1.0;
-    b_sF = std::sqrt((4.0 * s0 + 1.0) - 4.0 * sF) / 2.0;
-    tACandidates[0] = 0.5 - b_sF;
-    tACandidates[1] = b_sF + 0.5;
-    loop_ub = 0;
-    if (0.5 - b_sF > 0.0) {
-      b_data[0] = 1;
-      loop_ub = 1;
-    }
-
-    if (b_sF + 0.5 > 0.0) {
-      b_data[loop_ub] = 2;
-    }
-
-    *tAParam = tACandidates[b_data[0] - 1];
-    *vParam = (sF - s0) / (1.0 - *tAParam);
-    break;
-
-   case 5:
-    *aParam = 1.0;
-    *tAParam = 1.0;
-    *vParam = 1.0;
-    *tFParam = (sF + 1.0) - s0;
-    break;
-
-   case 4:
-    *aParam = 1.0;
-    b_sF = sF - s0;
-    *tAParam = std::sqrt(b_sF / 2.0);
-    *vParam = *tAParam;
-    *tFParam = (*tAParam * *tAParam + b_sF) / *tAParam;
-    break;
-
-   case 3:
-    *tFParam = 1.0;
-    *tAParam = 1.0;
-    *vParam = sF - s0 > 0.0 ? (rtInf) : sF - s0 < 0.0 ? (rtMinusInf) : (rtNaN);
-    *aParam = *vParam;
-    break;
-
-   case 2:
-    *tFParam = 1.0;
-    *vParam = (sF - s0) * 1.5;
-    *tAParam = ((s0 - sF) + *vParam) / *vParam;
-    *aParam = *vParam / *tAParam;
-    break;
-
-   case 1:
-    *tAParam = 1.0;
-    b_sF = sF - s0;
-    *aParam = b_sF / 2.0;
-    *vParam = *aParam;
-    *tFParam = (b_sF + *aParam) / *aParam;
-    break;
-
-   case 0:
-    *tFParam = 1.0;
-    *vParam = (sF - s0) * 1.5;
-    *tAParam = ((s0 - sF) + *vParam) / *vParam;
-    *aParam = *vParam / *tAParam;
-    break;
-
-   default:
-    // no actions
-    break;
-  }
-
-  if (s0 == sF) {
-    *aParam = 0.0;
-    *vParam = 0.0;
-    if (std::isnan(*tFParam)) {
-      *tFParam = 1.0;
-    } else if (*tFParam == 0.0) {
-      *tFParam = 1.0;
-    } else {
-      // no actions
-    }
-
-    *tAParam = *tFParam / 3.0;
-  }
-
-  *vParam *= static_cast<real_T>(deltaSign);
-  *aParam *= static_cast<real_T>(deltaSign);
-}
-
-// Function for Chart: '<Root>/SupervisoryController'
 void SupervisoryController::trapveltraj(const real_T wayPoints_data[], const
   int32_T wayPoints_size[2], uint16_T numSamples, real_T varargin_2, real_T
   q_data[], int32_T q_size[2])
@@ -13816,31 +13248,33 @@ void SupervisoryController::trapveltraj(const real_T wayPoints_data[], const
   real_T parameterMat_data[18];
   real_T breakMat_data[12];
   real_T coefs[9];
+  real_T y[4];
   real_T vel_data[3];
   real_T segATime;
   real_T segAcc;
   real_T segFTime;
   real_T segVel;
   int32_T breakMat_size[2];
+  int32_T c_size[2];
   int32_T coeffMat_size[2];
-  int32_T g_size[2];
-  int32_T h_size[2];
+  int32_T d_size[2];
   int32_T c_i;
   int32_T cellSelection;
-  int32_T i;
-  int32_T indivPolyDim;
+  int32_T idx;
   int32_T j_size_idx_0;
+  int32_T last;
   int32_T loop_ub;
   int32_T n;
   int32_T numComputedPolynomials;
   int32_T parameterMat_size_idx_0;
   int32_T vel_size;
-  int8_T c_data[9];
+  int8_T f_data[9];
   int8_T j_data[9];
   int8_T lspbSegIndices_data[9];
   int8_T rowSelection_data[3];
   int8_T j[2];
   boolean_T coefIndex_data[9];
+  boolean_T exitg1;
   boolean_T hasMultipleBreaks;
   n = wayPoints_size[0];
   vel_size = static_cast<int32_T>(static_cast<int8_T>(wayPoints_size[0]));
@@ -13880,42 +13314,40 @@ void SupervisoryController::trapveltraj(const real_T wayPoints_data[], const
                       * sizeof(real_T));
   }
 
-  indivPolyDim = wayPoints_size[0];
+  last = wayPoints_size[0];
   if (wayPoints_size[0] - 1 >= 0) {
     loop_ub = 3 * wayPoints_size[0];
   }
 
-  for (i = 0; i < indivPolyDim; i++) {
+  for (idx = 0; idx < last; idx++) {
     real_T parameterMat_data_tmp;
-    computeProfileParams(static_cast<real_T>(i) + 1.0, wayPoints_data,
+    computeProfileParams(static_cast<real_T>(idx) + 1.0, wayPoints_data,
                          wayPoints_size, vel_data, &vel_size, &segVel, &segAcc,
                          &segATime, &segFTime);
-    parameterMat_data_tmp = wayPoints_data[i];
-    parameterMat_data[i] = parameterMat_data_tmp;
-    parameterMat_data[i + parameterMat_size_idx_0] = wayPoints_data[i +
+    parameterMat_data_tmp = wayPoints_data[idx];
+    parameterMat_data[idx] = parameterMat_data_tmp;
+    parameterMat_data[idx + parameterMat_size_idx_0] = wayPoints_data[idx +
       wayPoints_size[0]];
-    parameterMat_data[i + (parameterMat_size_idx_0 << 1UL)] = segVel;
-    parameterMat_data[i + parameterMat_size_idx_0 * 3] = segAcc;
-    parameterMat_data[i + (parameterMat_size_idx_0 << 2UL)] = segATime;
-    parameterMat_data[i + parameterMat_size_idx_0 * 5] = segFTime;
+    parameterMat_data[idx + (parameterMat_size_idx_0 << 1UL)] = segVel;
+    parameterMat_data[idx + parameterMat_size_idx_0 * 3] = segAcc;
+    parameterMat_data[idx + (parameterMat_size_idx_0 << 2UL)] = segATime;
+    parameterMat_data[idx + parameterMat_size_idx_0 * 5] = segFTime;
     (void)std::memset(&coefs[0], 0, 9U * sizeof(real_T));
     if (segVel == 0.0) {
       coefs[6] = parameterMat_data_tmp;
       coefs[7] = parameterMat_data_tmp;
       coefs[8] = parameterMat_data_tmp;
     } else {
-      real_T coefs_tmp;
       coefs[0] = segAcc / 2.0;
       coefs[3] = 0.0;
       coefs[6] = parameterMat_data_tmp;
       coefs[1] = 0.0;
       coefs[4] = segVel;
-      coefs_tmp = segAcc / 2.0 * (segATime * segATime);
-      coefs[7] = coefs_tmp + parameterMat_data_tmp;
+      coefs[7] = segAcc / 2.0 * (segATime * segATime) + parameterMat_data_tmp;
       coefs[2] = -segAcc / 2.0;
       coefs[5] = segVel;
-      coefs[8] = (wayPoints_data[i + wayPoints_size[0]] + coefs_tmp) - segVel *
-        segATime;
+      coefs[8] = (segAcc / 2.0 * (segATime * segATime) + wayPoints_data[idx +
+                  wayPoints_size[0]]) - segVel * segATime;
     }
 
     if (loop_ub - 1 >= 0) {
@@ -13923,26 +13355,26 @@ void SupervisoryController::trapveltraj(const real_T wayPoints_data[], const
                         sizeof(boolean_T));
     }
 
-    segVel = static_cast<real_T>(static_cast<int32_T>((n << 1UL) + i)) + 1.0;
-    if ((n == 0) || (static_cast<int32_T>(segVel) < i + 1)) {
+    segVel = static_cast<real_T>(static_cast<int32_T>((n << 1UL) + idx)) + 1.0;
+    if ((n == 0) || (static_cast<int32_T>(segVel) < idx + 1)) {
       cellSelection = 0;
     } else {
       numComputedPolynomials = static_cast<int32_T>(static_cast<real_T>((segVel
-        - static_cast<real_T>(static_cast<int32_T>(i + 1))) / static_cast<real_T>
-        (n)));
+        - static_cast<real_T>(static_cast<int32_T>(idx + 1))) /
+        static_cast<real_T>(n)));
       cellSelection = numComputedPolynomials + 1;
       for (c_i = 0; c_i <= numComputedPolynomials; c_i++) {
-        lspbSegIndices_data[c_i] = static_cast<int8_T>((n * c_i + i) + 1);
+        lspbSegIndices_data[c_i] = static_cast<int8_T>((n * c_i + idx) + 1);
       }
     }
 
     if (cellSelection - 1 >= 0) {
-      (void)std::memcpy(&c_data[0], &lspbSegIndices_data[0],
+      (void)std::memcpy(&f_data[0], &lspbSegIndices_data[0],
                         static_cast<uint32_T>(cellSelection) * sizeof(int8_T));
     }
 
     for (c_i = 0; c_i < cellSelection; c_i++) {
-      coefIndex_data[c_data[c_i] - 1] = true;
+      coefIndex_data[f_data[c_i] - 1] = true;
     }
 
     numComputedPolynomials = 3 * n - 1;
@@ -13972,14 +13404,40 @@ void SupervisoryController::trapveltraj(const real_T wayPoints_data[], const
       }
     }
 
-    segVel = breakMat_data[i];
-    breakMat_data[i + breakMat_size[0]] = segATime + segVel;
-    breakMat_data[i + (breakMat_size[0] << 1UL)] = (segFTime - segATime) +
+    segVel = breakMat_data[idx];
+    breakMat_data[idx + breakMat_size[0]] = segATime + segVel;
+    breakMat_data[idx + (breakMat_size[0] << 1UL)] = (segFTime - segATime) +
       segVel;
-    breakMat_data[i + breakMat_size[0] * 3] = segFTime + segVel;
+    breakMat_data[idx + breakMat_size[0] * 3] = segFTime + segVel;
   }
 
-  hasMultipleBreaks = checkPolyForMultipleBreaks(breakMat_data, breakMat_size);
+  hasMultipleBreaks = false;
+  last = wayPoints_size[0];
+  for (idx = 0; idx <= last - 2; idx++) {
+    boolean_T b_y;
+    y[0] = std::abs(breakMat_data[idx] - breakMat_data[idx + 1]);
+    y[1] = std::abs(breakMat_data[idx + breakMat_size[0]] - breakMat_data[(idx +
+      breakMat_size[0]) + 1]);
+    y[2] = std::abs(breakMat_data[(breakMat_size[0] << 1UL) + idx] -
+                    breakMat_data[((breakMat_size[0] << 1UL) + idx) + 1]);
+    y[3] = std::abs(breakMat_data[breakMat_size[0] * 3 + idx] - breakMat_data
+                    [(breakMat_size[0] * 3 + idx) + 1]);
+    b_y = false;
+    numComputedPolynomials = 0;
+    exitg1 = false;
+    while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U)) ==
+            false) && (numComputedPolynomials < 4)) {
+      if (y[numComputedPolynomials] > 2.2204460492503131E-16) {
+        b_y = true;
+        exitg1 = true;
+      } else {
+        numComputedPolynomials++;
+      }
+    }
+
+    hasMultipleBreaks = (b_y || hasMultipleBreaks);
+  }
+
   processPolynomialResults(breakMat_data, breakMat_size, coeffMat_data,
     coeffMat_size, hasMultipleBreaks, breaksCell_data, &c_i, coeffsCell.data,
     &coeffsCell.size);
@@ -13987,23 +13445,71 @@ void SupervisoryController::trapveltraj(const real_T wayPoints_data[], const
     vel_size = 0;
   } else {
     vel_size = wayPoints_size[0];
-    for (i = 0; i < parameterMat_size_idx_0; i++) {
-      vel_data[i] = parameterMat_data[parameterMat_size_idx_0 * 5 + i];
+    for (idx = 0; idx < parameterMat_size_idx_0; idx++) {
+      vel_data[idx] = parameterMat_data[parameterMat_size_idx_0 * 5 + idx];
     }
   }
 
-  linspace(maximum_e(vel_data, &vel_size), numSamples, rtDW.l_data,
-           coeffMat_size);
-  if (hasMultipleBreaks) {
-    numComputedPolynomials = wayPoints_size[0];
-    indivPolyDim = 1;
+  if (static_cast<int32_T>(static_cast<uint8_T>(static_cast<int32_T>(vel_size -
+         1))) + 1 <= 2) {
+    if (static_cast<int32_T>(static_cast<uint8_T>(static_cast<int32_T>(vel_size
+           - 1))) + 1 == 1) {
+      segATime = vel_data[0];
+    } else {
+      segATime = vel_data[vel_size - 1];
+      if (vel_data[0] < segATime) {
+      } else if (std::isnan(vel_data[0])) {
+        if (!std::isnan(segATime)) {
+        } else {
+          segATime = vel_data[0];
+        }
+      } else {
+        segATime = vel_data[0];
+      }
+    }
   } else {
-    numComputedPolynomials = 1;
-    indivPolyDim = wayPoints_size[0];
+    if (!std::isnan(vel_data[0])) {
+      idx = 1;
+    } else {
+      idx = 0;
+      numComputedPolynomials = 2;
+      exitg1 = false;
+      while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U)) ==
+              false) && (numComputedPolynomials <= vel_size)) {
+        if (!std::isnan(vel_data[numComputedPolynomials - 1])) {
+          idx = numComputedPolynomials;
+          exitg1 = true;
+        } else {
+          numComputedPolynomials++;
+        }
+      }
+    }
+
+    if (idx == 0) {
+      segATime = vel_data[0];
+    } else {
+      segATime = vel_data[idx - 1];
+      for (numComputedPolynomials = idx + 1; numComputedPolynomials <= vel_size;
+           numComputedPolynomials++) {
+        segVel = vel_data[numComputedPolynomials - 1];
+        if (segATime < segVel) {
+          segATime = segVel;
+        }
+      }
+    }
   }
 
-  i = numComputedPolynomials;
-  for (numComputedPolynomials = 0; numComputedPolynomials < i;
+  linspace(segATime, numSamples, rtDW.t_data, coeffMat_size);
+  if (hasMultipleBreaks) {
+    numComputedPolynomials = wayPoints_size[0];
+    last = 1;
+  } else {
+    numComputedPolynomials = 1;
+    last = wayPoints_size[0];
+  }
+
+  idx = numComputedPolynomials;
+  for (numComputedPolynomials = 0; numComputedPolynomials < idx;
        numComputedPolynomials++) {
     if (hasMultipleBreaks) {
       rowSelection_data[0] = static_cast<int8_T>(numComputedPolynomials + 1);
@@ -14022,8 +13528,8 @@ void SupervisoryController::trapveltraj(const real_T wayPoints_data[], const
 
     generateTrajectoriesFromCoefs(breaksCell_data[cellSelection].f1,
       coeffsCell.data[cellSelection].f1.data, coeffsCell.data[cellSelection].
-      f1.size, static_cast<real_T>(indivPolyDim), rtDW.l_data, coeffMat_size,
-      rtDW.f_data, breakMat_size, rtDW.g_data, g_size, rtDW.h_data, h_size,
+      f1.size, static_cast<real_T>(last), rtDW.t_data, coeffMat_size,
+      rtDW.b_data, breakMat_size, rtDW.c_data, c_size, rtDW.d_data, d_size,
       ppCell.data[numComputedPolynomials].breaks,
       ppCell.data[numComputedPolynomials].coefs.data,
       ppCell.data[numComputedPolynomials].coefs.size);
@@ -14032,7 +13538,7 @@ void SupervisoryController::trapveltraj(const real_T wayPoints_data[], const
       loop_ub = breakMat_size[0];
       for (j_size_idx_0 = 0; j_size_idx_0 < loop_ub; j_size_idx_0++) {
         q_data[(static_cast<int32_T>(rowSelection_data[j_size_idx_0]) + q_size[0]
-                * c_i) - 1] = rtDW.f_data[breakMat_size[0] * c_i + j_size_idx_0];
+                * c_i) - 1] = rtDW.b_data[breakMat_size[0] * c_i + j_size_idx_0];
       }
     }
   }
@@ -14046,15 +13552,16 @@ void SupervisoryController::trajGen(const event_bus event, const real_T y_i[3],
   real_T trajectory[7200], uint16_T *trajectorySize)
 {
   real_T y_i_data[6];
-  real_T tmp_data[3];
+  real_T ex;
   real_T tmp;
   int32_T tmp_size[2];
   int32_T y_i_size[2];
-  int32_T g_size_idx_0;
-  int32_T h_size_idx_0;
-  int8_T g_data[3];
-  int8_T h_data[3];
-  int8_T i_data[3];
+  int32_T d_size_idx_0;
+  int32_T idx;
+  int32_T k;
+  int32_T last;
+  int8_T d_data[3];
+  int8_T e_data[3];
 
   // MATLAB Function 'trajGen': '<S1>:50'
   // '<S1>:50:2' [trajectory, trajectorySize] = trajectoryGen(event, y_i, y_max, dt); 
@@ -14075,205 +13582,129 @@ void SupervisoryController::trajGen(const event_bus event, const real_T y_i[3],
   }
 
   // 'trajectoryGen:6' assert(numWaypts < 1200);
-  // 'trajectoryGen:8' if event.srcState == event.destState
-  if (event.srcState == event.destState) {
-    int32_T trueCount;
+  // 'trajectoryGen:8' traj(chs, 1:numWaypts) = trapveltraj(...
+  // 'trajectoryGen:9'     [y(chs), y_max(chs).*event.destPos(chs)],...
+  // 'trajectoryGen:10'     numWaypts,...
+  // 'trajectoryGen:11'     PeakVelocity=min(y_max(chs))/event.moveTime);
+  last = 0;
+  if (event.chs[0]) {
+    last = 1;
+  }
 
-    // 'trajectoryGen:9' traj(chs, 1:numWaypts) = trapveltraj(...
-    // 'trajectoryGen:10'         [y(chs), y_max(chs).*event.destPos(chs)],...
-    // 'trajectoryGen:11'         numWaypts,...
-    // 'trajectoryGen:12'         PeakVelocity=min(y_max(chs))/event.moveTime);
-    trueCount = 0;
-    if (event.chs[0]) {
-      trueCount = 1;
-    }
+  if (event.chs[1]) {
+    last++;
+  }
 
-    if (event.chs[1]) {
-      trueCount++;
-    }
+  if (event.chs[2]) {
+    last++;
+  }
 
-    if (event.chs[2]) {
-      trueCount++;
-    }
+  d_size_idx_0 = last;
+  last = 0;
+  if (event.chs[0]) {
+    d_data[0] = 1;
+    last = 1;
+  }
 
-    g_size_idx_0 = trueCount;
-    trueCount = 0;
-    if (event.chs[0]) {
-      g_data[0] = 1;
-      trueCount = 1;
-    }
+  if (event.chs[1]) {
+    d_data[last] = 2;
+    last++;
+  }
 
-    if (event.chs[1]) {
-      g_data[trueCount] = 2;
-      trueCount++;
-    }
+  if (event.chs[2]) {
+    d_data[last] = 3;
+  }
 
-    if (event.chs[2]) {
-      g_data[trueCount] = 3;
-    }
-
-    trueCount = 0;
-    if (event.chs[0]) {
-      h_data[0] = 1;
-      trueCount = 1;
-    }
-
-    if (event.chs[1]) {
-      h_data[trueCount] = 2;
-      trueCount++;
-    }
-
-    if (event.chs[2]) {
-      h_data[trueCount] = 3;
-    }
-
-    for (trueCount = 0; trueCount < g_size_idx_0; trueCount++) {
+  if (static_cast<int32_T>(static_cast<uint8_T>(static_cast<int32_T>
+        (d_size_idx_0 - 1))) + 1 <= 2) {
+    if (static_cast<int32_T>(static_cast<uint8_T>(static_cast<int32_T>
+          (d_size_idx_0 - 1))) + 1 == 1) {
       // Inport: '<Root>/y_max'
-      tmp_data[trueCount] = rtU.y_max[g_data[trueCount] - 1];
-    }
-
-    y_i_size[0] = g_size_idx_0;
-    y_i_size[1] = 2;
-    for (trueCount = 0; trueCount < g_size_idx_0; trueCount++) {
-      y_i_data[trueCount] = y_i[g_data[trueCount] - 1];
-    }
-
-    for (trueCount = 0; trueCount < g_size_idx_0; trueCount++) {
-      h_size_idx_0 = static_cast<int32_T>(g_data[trueCount]) - 1;
-
+      ex = rtU.y_max[d_data[0] - 1];
+    } else {
       // Inport: '<Root>/y_max'
-      y_i_data[trueCount + g_size_idx_0] = rtU.y_max[h_size_idx_0] *
-        event.destPos[h_size_idx_0];
-    }
-
-    trapveltraj(y_i_data, y_i_size, *trajectorySize, minimum_f(tmp_data,
-      &g_size_idx_0) / event.moveTime, rtDW.tmp_data, tmp_size);
-    g_size_idx_0 = tmp_size[1];
-    for (trueCount = 0; trueCount < g_size_idx_0; trueCount++) {
-      int32_T y_i_0;
-      y_i_0 = tmp_size[0];
-      for (h_size_idx_0 = 0; h_size_idx_0 < y_i_0; h_size_idx_0++) {
-        trajectory[(static_cast<int32_T>(h_data[h_size_idx_0]) + 3 * trueCount)
-          - 1] = rtDW.tmp_data[tmp_size[0] * trueCount + h_size_idx_0];
+      ex = rtU.y_max[d_data[0] - 1];
+      tmp = rtU.y_max[d_data[d_size_idx_0 - 1] - 1];
+      if (ex > tmp) {
+        ex = tmp;
+      } else if (std::isnan(rtU.y_max[d_data[0] - 1])) {
+        if (!std::isnan(tmp)) {
+          ex = tmp;
+        }
+      } else {
+        // no actions
       }
     }
   } else {
-    int32_T trueCount;
-    uint16_T tmp_0;
-
-    // 'trajectoryGen:13' else
-    //  for state transition, use rectangular velocity profile
-    // 'trajectoryGen:14' traj(chs, 1:2*numWaypts) = trapveltraj(...
-    // 'trajectoryGen:15'         [y(chs), 2*y_max(chs).*event.destPos(chs)],... 
-    // 'trajectoryGen:16'         2*numWaypts,...
-    // 'trajectoryGen:17'         PeakVelocity=min(y_max(chs))/event.moveTime,... 
-    // 'trajectoryGen:18'         AccelTime=0.01);
-    trueCount = 0;
-    if (event.chs[0]) {
-      trueCount = 1;
-    }
-
-    if (event.chs[1]) {
-      trueCount++;
-    }
-
-    if (event.chs[2]) {
-      trueCount++;
-    }
-
-    g_size_idx_0 = trueCount;
-    trueCount = 0;
-    if (event.chs[0]) {
-      g_data[0] = 1;
-      trueCount = 1;
-    }
-
-    if (event.chs[1]) {
-      g_data[trueCount] = 2;
-      trueCount++;
-    }
-
-    if (event.chs[2]) {
-      g_data[trueCount] = 3;
-    }
-
-    trueCount = 0;
-    if (event.chs[0]) {
-      trueCount = 1;
-    }
-
-    if (event.chs[1]) {
-      trueCount++;
-    }
-
-    if (event.chs[2]) {
-      trueCount++;
-    }
-
-    h_size_idx_0 = trueCount;
-    trueCount = 0;
-    if (event.chs[0]) {
-      h_data[0] = 1;
-      trueCount = 1;
-    }
-
-    if (event.chs[1]) {
-      h_data[trueCount] = 2;
-      trueCount++;
-    }
-
-    if (event.chs[2]) {
-      h_data[trueCount] = 3;
-    }
-
-    trueCount = 0;
-    if (event.chs[0]) {
-      i_data[0] = 1;
-      trueCount = 1;
-    }
-
-    if (event.chs[1]) {
-      i_data[trueCount] = 2;
-      trueCount++;
-    }
-
-    if (event.chs[2]) {
-      i_data[trueCount] = 3;
-    }
-
-    for (trueCount = 0; trueCount < h_size_idx_0; trueCount++) {
-      // Inport: '<Root>/y_max'
-      tmp_data[trueCount] = rtU.y_max[h_data[trueCount] - 1];
-    }
-
-    y_i_size[0] = h_size_idx_0;
-    y_i_size[1] = 2;
-    for (trueCount = 0; trueCount < h_size_idx_0; trueCount++) {
-      y_i_data[trueCount] = y_i[h_data[trueCount] - 1];
-    }
-
-    for (trueCount = 0; trueCount < g_size_idx_0; trueCount++) {
-      // Inport: '<Root>/y_max'
-      y_i_data[trueCount + h_size_idx_0] = rtU.y_max[g_data[trueCount] - 1] *
-        2.0 * event.destPos[h_data[trueCount] - 1];
-    }
-
-    if (*trajectorySize > 32767UL) {
-      tmp_0 = MAX_uint16_T;
+    // Inport: '<Root>/y_max'
+    ex = rtU.y_max[d_data[0] - 1];
+    if (!std::isnan(ex)) {
+      idx = 1;
     } else {
-      tmp_0 = static_cast<uint16_T>(*trajectorySize << 1UL);
+      boolean_T exitg1;
+      idx = 0;
+      k = 2;
+      exitg1 = false;
+      while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U)) ==
+              false) && (k <= d_size_idx_0)) {
+        if (!std::isnan(rtU.y_max[d_data[k - 1] - 1])) {
+          idx = k;
+          exitg1 = true;
+        } else {
+          k++;
+        }
+      }
     }
 
-    trapveltraj_p(y_i_data, y_i_size, tmp_0, minimum_f(tmp_data, &h_size_idx_0) /
-                  event.moveTime, rtDW.tmp_data_m, tmp_size);
-    g_size_idx_0 = tmp_size[1];
-    for (trueCount = 0; trueCount < g_size_idx_0; trueCount++) {
-      int32_T y_i_0;
-      y_i_0 = tmp_size[0];
-      for (h_size_idx_0 = 0; h_size_idx_0 < y_i_0; h_size_idx_0++) {
-        trajectory[(static_cast<int32_T>(i_data[h_size_idx_0]) + 3 * trueCount)
-          - 1] = rtDW.tmp_data_m[tmp_size[0] * trueCount + h_size_idx_0];
+    if (idx != 0) {
+      // Inport: '<Root>/y_max'
+      ex = rtU.y_max[d_data[idx - 1] - 1];
+      for (k = idx + 1; k <= d_size_idx_0; k++) {
+        // Inport: '<Root>/y_max'
+        tmp = rtU.y_max[d_data[k - 1] - 1];
+        if (ex > tmp) {
+          ex = tmp;
+        }
       }
+    }
+  }
+
+  last = 0;
+  if (event.chs[0]) {
+    e_data[0] = 1;
+    last = 1;
+  }
+
+  if (event.chs[1]) {
+    e_data[last] = 2;
+    last++;
+  }
+
+  if (event.chs[2]) {
+    e_data[last] = 3;
+  }
+
+  y_i_size[0] = d_size_idx_0;
+  y_i_size[1] = 2;
+  for (last = 0; last < d_size_idx_0; last++) {
+    y_i_data[last] = y_i[d_data[last] - 1];
+  }
+
+  for (last = 0; last < d_size_idx_0; last++) {
+    k = static_cast<int32_T>(d_data[last]) - 1;
+
+    // Inport: '<Root>/y_max'
+    y_i_data[last + d_size_idx_0] = rtU.y_max[k] * event.destPos[k];
+  }
+
+  trapveltraj(y_i_data, y_i_size, *trajectorySize, ex / event.moveTime,
+              rtDW.tmp_data, tmp_size);
+  idx = tmp_size[1];
+  for (last = 0; last < idx; last++) {
+    d_size_idx_0 = tmp_size[0];
+    for (k = 0; k < d_size_idx_0; k++) {
+      trajectory[(static_cast<int32_T>(e_data[k]) + 3 * last) - 1] =
+        rtDW.tmp_data[tmp_size[0] * last + k];
     }
   }
 }
