@@ -78,7 +78,7 @@ public:
    */
   bool updateInputs();
 
-  void addEvent(int srcState, int destState, Eigen::Vector3d pos, Eigen::Vector3d vel);
+  void addEvent(event_bus e);
 
   // tmpl methods must be defined in headers (https://stackoverflow.com/a/10632266)
   template <typename T> void updateState() {

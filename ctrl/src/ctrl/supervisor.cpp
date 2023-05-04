@@ -187,6 +187,6 @@ void Supervisor::startSysID() {
   }
 }
 
-void Supervisor::addEvent(int srcState, int destState, Eigen::Vector3d pos, Eigen::Vector3d vel) {
-  eventQueue_->push(new Event(srcState, destState, pos, vel));
+void Supervisor::addEvent(event_bus e) {
+  evQueue_->push(e);
 }

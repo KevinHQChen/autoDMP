@@ -2,14 +2,13 @@
 
 namespace gui {
 
-CtrlWindow::CtrlWindow(Supervisor *sv) : sv_(sv) {
-}
+CtrlWindow::CtrlWindow(Supervisor *sv) : sv_(sv) {}
 
 CtrlWindow::~CtrlWindow() {}
 
 void CtrlWindow::render() {
   if (ImGui::IsKeyPressed(ImGuiKey_U))
-      ctrlSetupVisible_ = !ctrlSetupVisible_;
+    ctrlSetupVisible_ = !ctrlSetupVisible_;
 
   if (ctrlSetupVisible_) {
     if (ImGui::Begin("Ctrl Setup", &ctrlSetupVisible_)) {
@@ -33,55 +32,51 @@ void CtrlWindow::render() {
           ImGui::TableSetupColumn("Value");
           ImGui::TableHeadersRow();
 
-          for (int row = 0; row < sizeof(GUIEvent::props) / sizeof(GUIEvent::props[0]); ++row) {
-            ImGui::TableNextRow();
-            if (row == 0) {
-              // Setup ItemWidth once (more efficient)
-              ImGui::TableSetColumnIndex(1);
-              ImGui::PushItemWidth(-FLT_MIN); // Right-aligned
-            }
-            ImGui::TableSetColumnIndex(0);
-            ImGui::Text("%s", GUIEvent::props[row].c_str());
-            ImGui::TableSetColumnIndex(1);
-            if (row < 2)
-              ImGui::SliderInt(GUIEvent::props[row].c_str(), currEvent.data[row],
-                               GUIEvent::min[row], GUIEvent::max[row]);
-            else
-              ImGui::SliderInt3(GUIEvent::props[row].c_str(), currEvent.data[row],
-                                GUIEvent::min[row], GUIEvent::max[row]);
-          }
+          ImGui::TableNextRow();
+          ImGui::TableSetColumnIndex(0);
+          ImGui::Text("%s", "Src State");
+          ImGui::TableSetColumnIndex(1);
+          ImGui::PushItemWidth(-FLT_MIN); // Right-aligned (Setup ItemWidth once (more efficient))
+          ImGui::SliderInt("##srcState", &srcState, 0, 2);
+
+          ImGui::TableNextRow();
+          ImGui::TableSetColumnIndex(0);
+          ImGui::Text("%s", "Dest State");
+          ImGui::TableSetColumnIndex(1);
+          ImGui::SliderInt("##destState", &destState, 0, 2);
+
+          ImGui::TableNextRow();
+          ImGui::TableSetColumnIndex(0);
+          ImGui::Text("%s", "Target Pos [%]");
+          ImGui::TableSetColumnIndex(1);
+          ImGui::SliderInt3("##targetPos", targetPos, 0, 100);
+
+          ImGui::TableNextRow();
+          ImGui::TableSetColumnIndex(0);
+          ImGui::Text("%s", "Move Time [s]");
+          ImGui::TableSetColumnIndex(1);
+          ImGui::SliderInt("##moveTime", &moveTime, 0, 20);
+
+          ImGui::TableNextRow();
+          ImGui::TableSetColumnIndex(0);
+          ImGui::Text("%s", "Hold Time [s]");
+          ImGui::TableSetColumnIndex(1);
+          ImGui::SliderInt("##holdTime", &holdTime, 0, 20);
+
           ImGui::EndTable();
         }
 
-        Eigen::Vector3d posVec((double)currEvent.pos[0] / 100.0, (double)currEvent.pos[1] / 100.0,
-                               (double)currEvent.pos[2] / 100.0);
-        Eigen::Vector3d velVec((double)currEvent.vel[0], (double)currEvent.vel[1],
-                               (double)currEvent.vel[2]);
-        if (ImGui::Button("Add Event")) {
-          sv_->addEvent(currEvent.srcState, currEvent.destState, posVec, velVec);
-          guiEventQueue.push_back(currEvent);
-        }
+        if (ImGui::Button("Add Event"))
+          sv_->addEvent(getEvent(srcState, destState,
+                                 std::array<int, 3>{targetPos[0], targetPos[1], targetPos[2]},
+                                 moveTime, holdTime));
 
         ImGui::SliderInt("Droplet length", &dropletLength, 0, 85);
         if (ImGui::Button("Add Droplet Generation Event")) {
-          sv_->addEvent(0, 1, Eigen::Vector3d(200 / 100.0, 0, 0), Eigen::Vector3d(10, 0, 0));
-          guiEventQueue.push_back(
-              GUIEvent(0, 1, Eigen::Vector3d(200, 0, 0), Eigen::Vector3d(10, 0, 0)));
-
-          sv_->addEvent(1, 1, Eigen::Vector3d(0, 84 / 100.0, (85 - dropletLength) / 100.0),
-                        Eigen::Vector3d(0, 10, 10));
-          guiEventQueue.push_back(GUIEvent(1, 1, Eigen::Vector3d(0, 84, (85 - dropletLength)),
-                                           Eigen::Vector3d(0, 10, 10)));
-
-          sv_->addEvent(1, 2, Eigen::Vector3d(0, 200 / 100.0, (85 - dropletLength) / 100.0),
-                        Eigen::Vector3d(0, 10, 10));
-          guiEventQueue.push_back(GUIEvent(1, 2, Eigen::Vector3d(0, 200, (85 - dropletLength)),
-                                           Eigen::Vector3d(0, 10, 10)));
-
-          sv_->addEvent(2, 2, Eigen::Vector3d(80 / 100.0, 0, 80 / 100.0),
-                        Eigen::Vector3d(10, 0, 10));
-          guiEventQueue.push_back(
-              GUIEvent(2, 2, Eigen::Vector3d(80, 0, 80), Eigen::Vector3d(10, 0, 10)));
+          sv_->addEvent(getEvent(0, 1, std::array<int, 3>{100, 0, 0}, 10, 0));
+          sv_->addEvent(getEvent(1, 1, std::array<int, 3>{0, 84, 85 - dropletLength}, 10, 5));
+          sv_->addEvent(getEvent(1, 2, std::array<int, 3>{0, 100, 85 - dropletLength}, 10, 0));
+          sv_->addEvent(getEvent(2, 2, std::array<int, 3>{80, 0, 80}, 10, 0));
         }
 
         ImGui::TreePop();
@@ -111,7 +106,7 @@ void CtrlWindow::render() {
             ImGui::TableSetColumnIndex(2);
             ImGui::Text("%d", event.destState);
             ImGui::TableSetColumnIndex(3);
-            ImGui::Text("(%d, %d, %d)", event.pos[0], event.pos[1], event.pos[2]);
+            ImGui::Text("(%d, %d, %d)", event.destPos[0], event.destPos[1], event.destPos[2]);
             ImGui::TableSetColumnIndex(4);
             ImGui::Text("(%d, %d, %d)", event.vel[0], event.vel[1], event.vel[2]);
             ++eventNum;
@@ -204,7 +199,6 @@ void CtrlWindow::render() {
       ImGui::End();
     }
   }
-
 }
 
 } // namespace gui

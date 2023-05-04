@@ -6,6 +6,8 @@
 
 #include "ctrl/supervisor.hpp"
 
+#define NUM_CHANS 3
+
 inline void HelpMarker(const char *desc) {
   ImGui::TextDisabled("(?)");
   if (ImGui::IsItemHovered()) {
@@ -14,16 +16,6 @@ inline void HelpMarker(const char *desc) {
     ImGui::TextUnformatted(desc);
     ImGui::PopTextWrapPos();
     ImGui::EndTooltip();
-  }
-}
-
-inline void displayVector3d(const char *vecName, Eigen::Vector3d vec) {
-  ImGui::TableNextRow();
-  ImGui::TableSetColumnIndex(0);
-  ImGui::Text("%s", vecName);
-  for (int i = 0; i < 3; ++i) {
-    ImGui::TableSetColumnIndex(i + 1);
-    ImGui::Text("%f", vec(i));
   }
 }
 
@@ -39,41 +31,6 @@ inline void displayArray3b(const char *arrName, bool arr[3], const char *helpTex
   }
 }
 
-struct GUIEvent {
-  int srcState = 0;
-  int destState = 0;
-  int pos[3] = {0, 0, 0};
-  int vel[3] = {0, 0, 0};
-  int *data[4];
-  inline static const std::string props[4] = {"Src State", "Dest State", "Target Pos (ch0-2) [%]",
-                                              "Target Vel (ch0-2) [px/s]"};
-  inline static const int min[4] = {0, 0, 0, 0};
-  inline static const int max[4] = {3, 3, 100, 20};
-
-  GUIEvent() {
-    int i = 0;
-    data[i++] = &srcState;
-    data[i++] = &destState;
-    data[i++] = pos;
-    data[i++] = vel;
-  }
-
-  GUIEvent(int srcState, int destState, Eigen::Vector3d pos, Eigen::Vector3d vel) {
-    this->srcState = srcState;
-    this->destState = destState;
-    for (int i = 0; i < 3; i++) {
-      this->pos[i] = pos(i);
-      this->vel[i] = vel(i);
-    }
-
-    int i = 0;
-    data[i++] = &srcState;
-    data[i++] = &destState;
-    data[i++] = this->pos;
-    data[i++] = this->vel;
-  }
-};
-
 namespace gui {
 
 class CtrlWindow : public Window {
@@ -87,10 +44,48 @@ class CtrlWindow : public Window {
   ImGuiTableFlags tableFlags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH |
                                ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg |
                                ImGuiTableFlags_NoBordersInBody;
-  GUIEvent currEvent;
-  std::deque<GUIEvent> guiEventQueue;
+
+  int srcState, destState, moveTime, holdTime;
+  int targetPos[NUM_CHANS];
+  bool chs0[3] = {true, false, false}, chs1[3] = {false, true, true}, chs2[3] = {true, false, true};
+
   int openAction = -1;
   int dropletLength = 0;
+
+  event_bus getEvent(int srcState, int destState, std::array<int, NUM_CHANS> targetPos,
+                     int moveTime, int holdTime) {
+    event_bus e;
+    e.srcState = srcState;
+    e.destState = destState;
+    for (int i = 0; i < NUM_CHANS; ++i)
+      e.destPos[i] = targetPos[i] / 100.0;
+    e.moveTime = moveTime;
+    e.holdTime = holdTime;
+
+    switch (srcState) {
+    case 0: // [1 0 0]
+      std::memcpy(e.chs, chs0, sizeof(chs0));
+      break;
+    case 1: // [0 1 1]
+      std::memcpy(e.chs, chs1, sizeof(chs1));
+      break;
+    case 2: // [1 0 1]
+      std::memcpy(e.chs, chs2, sizeof(chs2));
+      break;
+    }
+    switch (destState) {
+    case 0: // [1 0 0]
+      std::memcpy(e.chs, chs0, sizeof(chs0));
+      break;
+    case 1: // [0 1 1]
+      std::memcpy(e.chs, chs1, sizeof(chs1));
+      break;
+    case 2: // [1 0 1]
+      std::memcpy(e.chs, chs2, sizeof(chs2));
+      break;
+    }
+    return e;
+  }
 
 public:
   CtrlWindow(Supervisor *sv);
