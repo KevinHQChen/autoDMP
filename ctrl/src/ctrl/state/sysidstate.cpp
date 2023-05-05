@@ -56,19 +56,8 @@ void SysIDState::updateMeasurement() {
 void SysIDState::handleEvent(Event *event) { return; }
 
 Eigen::Matrix<int16_t, 3, 1> SysIDState::step() {
-  // update control signal u based on new measurements
-
-  // apply updated control signal to pump
-
-  // std::cout << "the c++ value before calling the python script: " << stp << std::endl;
-
-  // if (!simMeas.is_none())
-  //   stp = simMeas(stp).cast<int>();
-
-  // std::cout << "the c++ value after calling the python script: " << stp << std::endl;
-
-  // 4 is the ideal clock period
-  if (stp / 4 < excitationSignal_.cols()) {
+  // apply new control signal to pump
+  if (stp / 4 < excitationSignal_.cols()) { // 4 is the ideal clock period
     du = excitationSignal_.col(stp / 4);
     u = uref + du;
     ++stp;

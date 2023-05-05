@@ -38,6 +38,8 @@ SysIdWindow::~SysIdWindow() {
 }
 
 void SysIdWindow::render() {
+  if (ImGui::IsKeyPressed(ImGuiKey_Y))
+    visible_ = !visible_;
   if (visible_) {
     if (ImGui::Begin("SysId Setup", &visible_)) {
       ImGui::Text("Configure Excitation Signal");
@@ -97,8 +99,8 @@ void SysIdWindow::render() {
 
       ImGui::SliderFloat("History", &history, 1, 60, "%.1f s");
 
-      plotVector3d("##Control Input", "time (s)", "voltage (V)", 0, 250, sysidCtrlVecs);
-      plotVector3d("##Measured Output", "time (s)", "position (px)", -500, 500, sysidMeasVecs);
+      plotVector3d("##Control Input", "time (s)", "voltage (V)", 0, 250, sysidCtrlVecs, guiTime, history);
+      plotVector3d("##Measured Output", "time (s)", "position (px)", -500, 500, sysidMeasVecs, guiTime, history);
       ImGui::End();
     }
   } else

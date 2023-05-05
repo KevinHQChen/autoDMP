@@ -48,7 +48,6 @@ endforeach ()
 
 # link dependencies
 target_link_libraries(ctrl PRIVATE
-  mpcmove
   supervisor
   ${Python_LIBRARY_RELEASE}
   pybind11::embed

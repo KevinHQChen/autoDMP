@@ -9,7 +9,6 @@ CtrlWindow::~CtrlWindow() {}
 void CtrlWindow::render() {
   if (ImGui::IsKeyPressed(ImGuiKey_U))
     ctrlSetupVisible_ = !ctrlSetupVisible_;
-
   if (ctrlSetupVisible_) {
     if (ImGui::Begin("Ctrl Setup", &ctrlSetupVisible_)) {
       // disable tree node indentation
@@ -76,7 +75,7 @@ void CtrlWindow::render() {
           sv_->addEvent(getEvent(0, 1, std::array<int, 3>{100, 0, 0}, 10, 0));
           sv_->addEvent(getEvent(1, 1, std::array<int, 3>{0, 84, 85 - dropletLength}, 10, 5));
           sv_->addEvent(getEvent(1, 2, std::array<int, 3>{0, 100, 85 - dropletLength}, 10, 0));
-          sv_->addEvent(getEvent(2, 2, std::array<int, 3>{80, 0, 80}, 10, 0));
+          sv_->addEvent(getEvent(2, 2, std::array<int, 3>{80, 0, 80}, 10, 5));
         }
 
         ImGui::TreePop();
@@ -86,29 +85,36 @@ void CtrlWindow::render() {
       if (openAction != -1)
         ImGui::SetNextItemOpen(openAction != 0);
       if (ImGui::TreeNode("Event Queue")) {
-        // sync gui event queue with supervisor
-        for (int i = 0; i < guiEventQueue.size() - sv_->eventQueue_->size(); ++i)
-          guiEventQueue.pop_front();
-
-        if (ImGui::BeginTable("eventQueueTable", 5, tableFlags)) {
+        if (ImGui::BeginTable("eventQueueTable", 8, tableFlags)) {
           ImGui::TableSetupColumn("#");
-          for (int col = 0; col < 4; ++col)
-            ImGui::TableSetupColumn(GUIEvent::props[col].c_str());
+          ImGui::TableSetupColumn("Src State");
+          ImGui::TableSetupColumn("Dest State");
+          ImGui::TableSetupColumn("Pos [%]");
+          ImGui::TableSetupColumn("Move Time [s]");
+          ImGui::TableSetupColumn("Hold Time [s]");
+          ImGui::TableSetupColumn("chs");
+          ImGui::TableSetupColumn("nextChs");
           ImGui::TableHeadersRow();
 
           int eventNum = 0;
-          for (auto &event : guiEventQueue) {
+          for (auto &event : *(sv_->evQueue_)) {
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0);
             ImGui::Text("%d", eventNum);
             ImGui::TableSetColumnIndex(1);
-            ImGui::Text("%d", event.srcState);
+            ImGui::Text("%f", event.srcState);
             ImGui::TableSetColumnIndex(2);
-            ImGui::Text("%d", event.destState);
+            ImGui::Text("%f", event.destState);
             ImGui::TableSetColumnIndex(3);
-            ImGui::Text("(%d, %d, %d)", event.destPos[0], event.destPos[1], event.destPos[2]);
+            ImGui::Text("(%f, %f, %f)", event.destPos[0], event.destPos[1], event.destPos[2]);
             ImGui::TableSetColumnIndex(4);
-            ImGui::Text("(%d, %d, %d)", event.vel[0], event.vel[1], event.vel[2]);
+            ImGui::Text("%f", event.moveTime);
+            ImGui::TableSetColumnIndex(5);
+            ImGui::Text("%f", event.holdTime);
+            ImGui::TableSetColumnIndex(6);
+            ImGui::Text("%d, %d, %d", event.chs[0], event.chs[1], event.chs[2]);
+            ImGui::TableSetColumnIndex(7);
+            ImGui::Text("%d, %d, %d", event.nextChs[0], event.nextChs[1], event.nextChs[2]);
             ++eventNum;
           }
           ImGui::EndTable();
@@ -121,24 +127,35 @@ void CtrlWindow::render() {
         ImGui::SetNextItemOpen(openAction != 0);
       if (ImGui::TreeNode("Supervisor Status")) {
         ImGui::Text("Current Event");
-        if (ImGui::BeginTable("currEventTable", 4, tableFlags)) {
-          for (int col = 0; col < 4; ++col)
-            ImGui::TableSetupColumn(GUIEvent::props[col].c_str());
+        if (ImGui::BeginTable("currEventTable", 7, tableFlags)) {
+          ImGui::TableSetupColumn("srcState");
+          ImGui::TableSetupColumn("destState");
+          ImGui::TableSetupColumn("Pos [%]");
+          ImGui::TableSetupColumn("moveTime [s]");
+          ImGui::TableSetupColumn("holdTime [s]");
+          ImGui::TableSetupColumn("chs");
+          ImGui::TableSetupColumn("nextChs");
           ImGui::TableHeadersRow();
 
-          if (sv_->currEvent_ != nullptr) {
+          if (std::memcmp(&sv_->supOut.currEv, &Supervisor::nullEv, sizeof(event_bus)) != 0) {
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0);
-            ImGui::Text("%d", sv_->currEvent_->srcState);
-            ImGui::TableSetColumnIndex(1);
-            ImGui::Text("%d", sv_->currEvent_->destState);
+            ImGui::Text("%f", sv_->supOut.currEv.srcState);
             ImGui::TableSetColumnIndex(2);
-            ImGui::Text("(%d, %d, %d)", (int)(sv_->currEvent_->destPos[0] * 100),
-                        (int)(sv_->currEvent_->destPos[1] * 100),
-                        (int)(sv_->currEvent_->destPos[2] * 100));
+            ImGui::Text("%f", sv_->supOut.currEv.destState);
             ImGui::TableSetColumnIndex(3);
-            ImGui::Text("(%d, %d, %d)", (int)sv_->currEvent_->vel[0], (int)sv_->currEvent_->vel[1],
-                        (int)sv_->currEvent_->vel[2]);
+            ImGui::Text("(%f, %f, %f)", sv_->supOut.currEv.destPos[0],
+                        sv_->supOut.currEv.destPos[1], sv_->supOut.currEv.destPos[2]);
+            ImGui::TableSetColumnIndex(4);
+            ImGui::Text("%f", sv_->supOut.currEv.moveTime);
+            ImGui::TableSetColumnIndex(5);
+            ImGui::Text("%f", sv_->supOut.currEv.holdTime);
+            ImGui::TableSetColumnIndex(6);
+            ImGui::Text("%d, %d, %d", sv_->supOut.currEv.chs[0], sv_->supOut.currEv.chs[1],
+                        sv_->supOut.currEv.chs[2]);
+            ImGui::TableSetColumnIndex(7);
+            ImGui::Text("%d, %d, %d", sv_->supOut.currEv.nextChs[0], sv_->supOut.currEv.nextChs[1],
+                        sv_->supOut.currEv.nextChs[2]);
           }
           ImGui::EndTable();
         }
@@ -152,46 +169,36 @@ void CtrlWindow::render() {
           ImGui::TableSetupColumn("ch2");
           ImGui::TableHeadersRow();
 
-          if (sv_->currState_ != nullptr) {
-            displayVector3d("u", sv_->currState_->u);
-            displayVector3d("u_sat", sv_->currState_->usat);
-            displayVector3d("u_ref", sv_->currState_->uref);
-            displayVector3d("y", sv_->currState_->y);
-            displayVector3d("y_ref", sv_->currState_->yref);
-            displayVector3d("y_refScale", sv_->currState_->yrefScale);
-            displayArray3b("obsv", sv_->currState_->obsv, "Boolean vector of observed channels");
-          }
+          displayArray3d("y", sv_->supIn.y);
+          displayArray3d("y_max", sv_->supIn.y_max);
+          displayArray3d("y0", sv_->supIn.y_o);
+          displayArray3d("u0", sv_->supIn.u_o);
+          displayArray3d("u", sv_->supOut.u);
+          displayArray3d("yhat", sv_->supOut.yhat);
+          displayArray3d("traj", sv_->supOut.currTraj);
           ImGui::EndTable();
         }
         ImGui::TreePop();
       }
       ImGui::Separator();
 
-      if (!sysIDWindow_->visible_)
-        if (ImGui::Button("Start System ID Setup"))
-          sysIDWindow_->visible_ = true;
-      if (sysIDWindow_->visible_)
-        if (ImGui::Button("Stop System ID Setup"))
-          sysIDWindow_->visible_ = false;
-
-      if (!guiConf.startCtrl)
+      if (!ctrlVisible_)
         if (ImGui::Button("Start Controller"))
-          guiConf.startCtrl = true;
-      if (guiConf.startCtrl)
+          ctrlVisible_ = true;
+      if (ctrlVisible_)
         if (ImGui::Button("Stop Controller"))
-          guiConf.startCtrl = false;
+          ctrlVisible_ = false;
 
-      if (!guiConf.pauseCtrlDataViz)
+      if (!pauseCtrlDataViz)
         if (ImGui::Button("Pause Data Display"))
-          guiConf.pauseCtrlDataViz = true;
-      if (guiConf.pauseCtrlDataViz)
+          pauseCtrlDataViz = true;
+      if (pauseCtrlDataViz)
         if (ImGui::Button("Start Data Display"))
-          guiConf.pauseCtrlDataViz = false;
+          pauseCtrlDataViz = false;
       if (ImGui::Button("Erase Data")) {
         guiTime = 0;
-        for (auto &vec :
-             std::vector<ScrollingBuffer>{u0, u1, u2, du0, du1, du2, y0, y1, y2, yref0, yref1,
-                                          yref2, dxhat0, dxhat1, dxhat2, z0, z1, z2})
+        for (auto &vec : std::vector<ScrollingBuffer>{u0, u1, u2, y0, y1, y2, yhat0, yhat1, yhat2,
+                                                      yref0, yref1, yref2})
           vec.Erase();
       }
 
@@ -199,6 +206,33 @@ void CtrlWindow::render() {
       ImGui::End();
     }
   }
+
+  if (ctrlVisible_) {
+    sv_->startThread();
+    if (ImGui::Begin("Ctrl Data", &ctrlVisible_)) {
+      if (!pauseCtrlDataViz) {
+        guiTime += ImGui::GetIO().DeltaTime;
+        u0.AddPoint(guiTime, sv_->supOut.u[0]);
+        u1.AddPoint(guiTime, sv_->supOut.u[1]);
+        u2.AddPoint(guiTime, sv_->supOut.u[2]);
+        y0.AddPoint(guiTime, sv_->supIn.y[0]);
+        y1.AddPoint(guiTime, sv_->supIn.y[1]);
+        y2.AddPoint(guiTime, sv_->supIn.y[2]);
+        yhat0.AddPoint(guiTime, sv_->supOut.yhat[0]);
+        yhat1.AddPoint(guiTime, sv_->supOut.yhat[1]);
+        yhat2.AddPoint(guiTime, sv_->supOut.yhat[2]);
+        yref0.AddPoint(guiTime, sv_->supOut.currTraj[0]);
+        yref1.AddPoint(guiTime, sv_->supOut.currTraj[1]);
+        yref2.AddPoint(guiTime, sv_->supOut.currTraj[2]);
+      }
+
+      ImGui::SliderFloat("History", &history, 1, 60, "%.1f s");
+      plotVector3d("##Control Input", "time (s)", "voltage (V)", 0, 250, ctrlVecs, guiTime, history);
+      plotVector3d("##Measured Output", "time (s)", "position (px)", 0, 600, measVecs, guiTime, history);
+      ImGui::End();
+    }
+  } else
+    sv_->stopThread();
 }
 
 } // namespace gui

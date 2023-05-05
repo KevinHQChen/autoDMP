@@ -12,13 +12,11 @@ Supervisor::Supervisor(ImProc *imProc, Pump *pump)
       dataPath(toml::get<std::string>(conf["ctrl"]["dataPath"])),
       confPath(toml::get<std::string>(conf["ctrl"]["confPath"])), pump(pump), imProc(imProc),
       sup(new SupervisoryController()), supIn({}), supOut({}),
-      evQueue_(new QueueFPS<event_bus>(dataPath + "evQueue.txt")), currState_(new State0(this)),
+      evQueue_(new QueueFPS<event_bus>(dataPath + "eventQueue.txt")), currState_(new State0(this)),
       currEvent_(new Event(0, 0, Eigen::Vector3d(0.5, 0, 0), Eigen::Vector3d(10, 0, 0))),
-      eventQueue_(new QueueFPS<Event *>(dataPath + "eventQueue.txt")),
       ctrlDataQueuePtr(new QueueFPS<int>(dataPath + "ctrlDataQueue.txt")) {}
 
 Supervisor::~Supervisor() {
-  delete eventQueue_;
   delete evQueue_;
   delete currEvent_;
   delete currState_;
@@ -116,7 +114,7 @@ bool Supervisor::measAvail() {
 }
 
 bool Supervisor::updateInputs() {
-  if (supOut.requestEvent && !eventQueue_->empty())
+  if (supOut.requestEvent && !evQueue_->empty())
     supIn.nextEv = evQueue_->get();
   else
     supIn.nextEv = nullEv;
@@ -132,15 +130,14 @@ void Supervisor::start() {
       sup->step();
       supOut = sup->rtY;
 
-      // // generate optimal control signals at current time step
-      // // and save to ctrlDataQueue
-      // if (!simModeActive)
-      //   pump->sendSigs(currState_->step());
-      // else
-      //   info(currState_->step());
+      !simModeActive ? pump->sendSigs(Eigen::Matrix<int16_t, 3, 1>(supOut.u[0], supOut.u[1], 0))
+                     : info("{}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
+      // TODO save data to ctrlDataQueue
     }
   }
 }
+
+void Supervisor::addEvent(event_bus e) { evQueue_->push_back(e); }
 
 void Supervisor::startSysIDThread(Eigen::Vector3d uref, bool *selChs, std::vector<float> minVals,
                                   std::vector<float> maxVals, Eigen::MatrixXd &data) {
@@ -162,10 +159,7 @@ void Supervisor::stopSysIDThread() {
     info("Stopping SysID...");
     startedSysIDFlag = false;
 
-    if (!simModeActive)
-      pump->sendSigs(currState_->uref.cast<int16_t>());
-    else
-      info(currState_->uref);
+    !simModeActive ? pump->sendSigs(currState_->uref.cast<int16_t>()) : info(currState_->uref);
 
     if (sysIDThread.joinable())
       sysIDThread.join();
@@ -176,17 +170,9 @@ void Supervisor::stopSysIDThread() {
 void Supervisor::startSysID() {
   while (startedSysIDFlag) {
     if (currState_->measurementAvailable()) {
-
       currState_->updateMeasurement();
       // send excitation signal to pump and save to ctrlDataQueue
-      if (!simModeActive)
-        pump->sendSigs(currState_->step());
-      else
-        info(currState_->step());
+      !simModeActive ? pump->sendSigs(currState_->step()) : info(currState_->step());
     }
   }
-}
-
-void Supervisor::addEvent(event_bus e) {
-  evQueue_->push(e);
 }

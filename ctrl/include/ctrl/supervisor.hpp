@@ -29,7 +29,6 @@ class Supervisor {
   void start();
   void startSysID();
 
-  static event_bus nullEv;
 
 public:
   ordered_value conf;
@@ -42,6 +41,7 @@ public:
   SupervisoryController *sup;
   SupervisoryController::ExtU supIn;
   SupervisoryController::ExtY supOut;
+  static event_bus nullEv;
   event_bus currEv_ = nullEv;
   QueueFPS<event_bus> *evQueue_;
   real_T y[3], y_max[3], y_o[3], u_o[3], y_range[3];
@@ -52,7 +52,6 @@ public:
 
   State *currState_ = nullptr;
   Event *currEvent_ = nullptr;
-  QueueFPS<Event *> *eventQueue_;
   QueueFPS<int> *ctrlDataQueuePtr;
 
   Supervisor(ImProc *imProc, Pump *pump);

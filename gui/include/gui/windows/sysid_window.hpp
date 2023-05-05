@@ -45,7 +45,6 @@ class SysIdWindow : public Window {
   std::vector<double> timeVec_, u0Vec_, u1Vec_, u2Vec_;
   // py::object prbs;
 
-  bool sysIDWindowVisible_ = false;
   int numSamples_ = 1000;
   const int numChans_ = toml::get<int>(Config::conf["improc"]["numChans"]);
   std::vector<float> minVal_{std::vector<float>(numChans_, 0.0f)};
@@ -61,22 +60,11 @@ class SysIdWindow : public Window {
       std::make_pair(&y0, "y0"), std::make_pair(&y1, "y1"), std::make_pair(&y2, "y2")};
 
 public:
+  bool sysIDWindowVisible_{false};
+
   SysIdWindow(Supervisor *sv);
   ~SysIdWindow();
   void render() override;
-
-  void plotVector3d(const char *plotName, const char *xAx, const char *yAx, double yMin,
-                    double yMax, std::vector<std::pair<ScrollingBuffer *, std::string>> &vecs) {
-    if (ImPlot::BeginPlot(plotName, ImVec2(-1, 300))) {
-      ImPlot::SetupAxes(xAx, yAx); //, implotFlags, implotFlags);
-      ImPlot::SetupAxisLimits(ImAxis_X1, guiTime - history, guiTime, ImGuiCond_Always);
-      ImPlot::SetupAxisLimits(ImAxis_Y1, yMin, yMax);
-      for (auto &vec : vecs)
-        ImPlot::PlotLine(vec.second.c_str(), &vec.first->Data[0].x, &vec.first->Data[0].y,
-                         vec.first->Data.size(), 0, vec.first->Offset, 2 * sizeof(float));
-      ImPlot::EndPlot();
-    }
-  }
 };
 
 } // namespace gui

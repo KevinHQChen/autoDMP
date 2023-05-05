@@ -14,8 +14,6 @@ namespace gui {
 class ImProcWindow : public Window {
   const int numChans_ = toml::get<int>(Config::conf["improc"]["numChans"]);
 
-  bool improcSetupVisible_{false}, improcVisible_{false};
-
   // ImGuiWindowFlags imCapFlags = 0;
   // ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
 
@@ -35,6 +33,8 @@ class ImProcWindow : public Window {
   std::vector<int> procWidths, procHeights;
 
 public:
+  bool improcSetupVisible_{false}, improcVisible_{false};
+
   ImProcWindow(ImCap *imCap, ImProc *imProc);
   ~ImProcWindow();
   void render() override;

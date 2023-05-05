@@ -146,8 +146,11 @@ void saveData(std::string fileName, Eigen::MatrixXd matrix);
 Eigen::MatrixXd openData(std::string fileToOpen);
 
 // create a generic type queue class template for storing frames
-template <typename T> class QueueFPS : public std::queue<T> {
+template <typename T> class QueueFPS : public std::deque<T> {
   std::string fileName;
+  cv::TickMeter tm, tmSinceLastPush;
+  std::mutex mutex;
+  unsigned int counter;
 
 public:
   // constructor:
@@ -163,7 +166,7 @@ public:
 
   void push(const T &entry) {
     std::lock_guard<std::mutex> lockGuard(mutex);
-    std::queue<T>::push(entry);
+    this->push_back(entry);
     out << std::fixed << std::setprecision(3);
     out << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() -
                                                                  startTime)
@@ -182,7 +185,7 @@ public:
   T get() {
     std::lock_guard<std::mutex> lockGuard(mutex);
     T entry = this->front();
-    this->pop();
+    this->pop_front();
     return entry;
   }
 
@@ -205,7 +208,7 @@ public:
   void clear() {
     std::lock_guard<std::mutex> lockGuard(mutex);
     while (!this->empty())
-      this->pop();
+      this->pop_front();
   }
 
   void clearFile() {
@@ -232,9 +235,4 @@ public:
 
   ffstream out;
   std::chrono::time_point<std::chrono::steady_clock> startTime;
-
-private:
-  cv::TickMeter tm, tmSinceLastPush;
-  std::mutex mutex;
-  unsigned int counter;
 };

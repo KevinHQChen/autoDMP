@@ -29,6 +29,7 @@ GUI::GUI(ImCap *imCap, ImProc *imProc, Pump *pump, Supervisor *sv)
   sysIDWindow_ = std::make_shared<gui::SysIdWindow>(sv);
   pumpWindow_ = std::make_shared<gui::PumpWindow>(pump);
   imProcWindow_ = std::make_shared<gui::ImProcWindow>(imCap, imProc);
+  ctrlWindow_ = std::make_shared<gui::CtrlWindow>(sv);
 
   // for documentation on runnerParam members, go to the associated header file
   runnerParams.appWindowParams.windowTitle = "autoDMP";
@@ -72,8 +73,10 @@ GUI::~GUI() {
   sysIDWindow_.reset();
   pumpWindow_.reset();
   imProcWindow_.reset();
+  ctrlWindow_.reset();
 }
 
+/*
 void GUI::showCtrlSetup() {
   if (guiConf.startCtrlSetup) {
     if (ImGui::Begin("Ctrl Setup", &guiConf.startCtrlSetup)) {
@@ -269,7 +272,9 @@ void GUI::showCtrlSetup() {
     }
   }
 }
+*/
 
+/*
 void GUI::showCtrl() {
   if (guiConf.startCtrl) {
     sv_->startThread();
@@ -298,6 +303,7 @@ void GUI::showCtrl() {
   } else
     sv_->stopThread();
 }
+*/
 
 void GUI::renderMenu() {
   // called by imgui_bundle within BeginMenuBar()/EndMenuBar() context
@@ -306,11 +312,13 @@ void GUI::renderMenu() {
     ImGui::EndMenu();
   }
   if (ImGui::BeginMenu("Setup")) {
-    ImGui::MenuItem("Start Image Capture", "c", &guiConf.startImCap);
-    ImGui::MenuItem("Setup Image Processing", "s", &guiConf.startImProcSetup);
-    ImGui::MenuItem("Start Image Processing", "i", &guiConf.startImProc);
+    // shortcuts are just for show, they are not implemented here (yet)
+    ImGui::MenuItem("Start Image Capture", "c", &imProcWindow_->visible_);
+    ImGui::MenuItem("Setup Image Processing", "s", &imProcWindow_->improcSetupVisible_);
+    ImGui::MenuItem("Start Image Processing", "i", &imProcWindow_->improcVisible_);
     ImGui::MenuItem("Start Pump Setup", "p", &pumpWindow_->visible_);
-    ImGui::MenuItem("Start Controller Setup", nullptr, &guiConf.startCtrlSetup);
+    ImGui::MenuItem("Setup System ID", "y", &sysIDWindow_->visible_);
+    ImGui::MenuItem("Setup Supervisory Control", "v", &ctrlWindow_->ctrlSetupVisible_);
     ImGui::EndMenu();
   }
   if (ImGui::BeginMenu("Debug")) {
@@ -324,8 +332,9 @@ void GUI::render() {
     runnerParams.appShallExit = true;
   imProcWindow_->render();
   pumpWindow_->render();
-  showCtrlSetup();
-  showCtrl();
+  ctrlWindow_->render();
+  // showCtrlSetup();
+  // showCtrl();
   sysIDWindow_->render();
   if (guiConf.showDebug) {
     ImGui::ShowDemoWindow(&guiConf.showDebug);
@@ -336,17 +345,4 @@ void GUI::render() {
 void GUI::startGUIThread() {
   guiThread = std::thread([this]() { ImmApp::Run(runnerParams, addOnsParams); });
   guiThread.join();
-}
-
-void GUI::plotVector3d(const char *plotName, const char *xAx, const char *yAx, double yMin,
-                       double yMax, std::vector<std::pair<ScrollingBuffer *, std::string>> &vecs) {
-  if (ImPlot::BeginPlot(plotName, ImVec2(-1, 300))) {
-    ImPlot::SetupAxes(xAx, yAx); //, implotFlags, implotFlags);
-    ImPlot::SetupAxisLimits(ImAxis_X1, guiTime - history, guiTime, ImGuiCond_Always);
-    ImPlot::SetupAxisLimits(ImAxis_Y1, yMin, yMax);
-    for (auto &vec : vecs)
-      ImPlot::PlotLine(vec.second.c_str(), &vec.first->Data[0].x, &vec.first->Data[0].y,
-                       vec.first->Data.size(), 0, vec.first->Offset, 2 * sizeof(float));
-    ImPlot::EndPlot();
-  }
 }

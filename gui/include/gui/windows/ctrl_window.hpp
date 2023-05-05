@@ -2,41 +2,17 @@
 
 #include "gui/components/button.hpp"
 #include "gui/components/slider.hpp"
+#include "gui/components/implot_helpers.hpp"
 #include "window.hpp"
 
 #include "ctrl/supervisor.hpp"
 
 #define NUM_CHANS 3
 
-inline void HelpMarker(const char *desc) {
-  ImGui::TextDisabled("(?)");
-  if (ImGui::IsItemHovered()) {
-    ImGui::BeginTooltip();
-    ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-    ImGui::TextUnformatted(desc);
-    ImGui::PopTextWrapPos();
-    ImGui::EndTooltip();
-  }
-}
-
-inline void displayArray3b(const char *arrName, bool arr[3], const char *helpText = "") {
-  ImGui::TableNextRow();
-  ImGui::TableSetColumnIndex(0);
-  ImGui::Text("%s", arrName);
-  ImGui::SameLine();
-  HelpMarker(helpText);
-  for (int i = 0; i < 3; ++i) {
-    ImGui::TableSetColumnIndex(i + 1);
-    ImGui::Text("%d", arr[i]);
-  }
-}
-
 namespace gui {
 
 class CtrlWindow : public Window {
   const int numChans_ = toml::get<int>(Config::conf["improc"]["numChans"]);
-
-  bool ctrlSetupVisible_{false}, ctrlVisible_{false};
 
   Supervisor *sv_;
 
@@ -44,6 +20,18 @@ class CtrlWindow : public Window {
   ImGuiTableFlags tableFlags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH |
                                ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg |
                                ImGuiTableFlags_NoBordersInBody;
+
+  float guiTime{0.0f}, history{30.0f};
+  ScrollingBuffer u0, u1, u2;
+  ScrollingBuffer y0, y1, y2, yhat0, yhat1, yhat2, yref0, yref1, yref2;
+  std::vector<std::pair<ScrollingBuffer *, std::string>> ctrlVecs{
+      std::make_pair(&u0, "u0"), std::make_pair(&u1, "u1"), std::make_pair(&u2, "u2")};
+  std::vector<std::pair<ScrollingBuffer *, std::string>> measVecs{
+      std::make_pair(&y0, "y0"),       std::make_pair(&y1, "y1"),
+      std::make_pair(&y2, "y2"),       std::make_pair(&yhat0, "yhat0"),
+      std::make_pair(&yhat1, "yhat1"), std::make_pair(&yhat2, "yhat2"),
+      std::make_pair(&yref0, "yref0"), std::make_pair(&yref1, "yref1"),
+      std::make_pair(&yref2, "yref2")};
 
   int srcState, destState, moveTime, holdTime;
   int targetPos[NUM_CHANS];
@@ -88,6 +76,8 @@ class CtrlWindow : public Window {
   }
 
 public:
+  bool ctrlSetupVisible_{false}, ctrlVisible_{false}, pauseCtrlDataViz{false};
+
   CtrlWindow(Supervisor *sv);
   ~CtrlWindow();
   void render() override;
