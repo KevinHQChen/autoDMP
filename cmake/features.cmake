@@ -1,4 +1,7 @@
-# good cmake resource: https://cliutils.gitlab.io/modern-cmake/, https://alexreinking.com/blog/how-to-use-cmake-without-the-agonizing-pain-part-1.html
+# cmake tips:
+# https://cliutils.gitlab.io/modern-cmake/, https://alexreinking.com/blog/how-to-use-cmake-without-the-agonizing-pain-part-1.html
+# release mode debugging: add "CMAKE_CXX_FLAGS_RELEASE": "-O0 -g" to CMakePresets.json/configurePresets/cacheVariables to disable optimizations and produce debug info
+
 # include guard
 if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
   message(

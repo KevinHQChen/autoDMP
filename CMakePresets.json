@@ -18,8 +18,7 @@
         "CMAKE_CXX_EXTENSIONS": "OFF",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
         "BUILD_TESTS": "OFF",
-        "BUILD_DOCS": "OFF",
-        "CMAKE_CXX_FLAGS_RELEASE": "-O0"
+        "BUILD_DOCS": "OFF"
       }
     },
     {
