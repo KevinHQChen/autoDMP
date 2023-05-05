@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include <cassert>
 #include <functional>
+#include <iostream>
 #include <string>
 #include <type_traits>
 

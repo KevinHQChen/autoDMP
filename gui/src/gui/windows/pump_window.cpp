@@ -32,13 +32,21 @@ void PumpWindow::render() {
     visible_ = !visible_;
   if (visible_) {
     if (ImGui::Begin("Pump Setup", &visible_)) {
+      info("Pump Setup");
       maxVoltageSlider_->render();
+      info("Max Voltage Slider Setup");
       voltageSlider_->render();
+      info("Voltage Slider Setup");
       syncToggle_->render();
+      info("Sync Toggle Setup");
       freqSlider_->render();
+      info("Freq Slider Setup");
       valveToggle_->render();
+      info("Valve Toggle Setup");
       controlToggle_->render();
+      info("Control Toggle Setup");
       resetBtn_->render();
+      info("Pump Setup End");
       ImGui::End();
     }
   }

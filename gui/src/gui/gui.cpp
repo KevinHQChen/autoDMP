@@ -333,8 +333,6 @@ void GUI::render() {
   imProcWindow_->render();
   pumpWindow_->render();
   ctrlWindow_->render();
-  // showCtrlSetup();
-  // showCtrl();
   sysIDWindow_->render();
   if (guiConf.showDebug) {
     ImGui::ShowDemoWindow(&guiConf.showDebug);
