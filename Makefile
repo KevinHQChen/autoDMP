@@ -79,5 +79,8 @@ docker-run-prebuild:	## Run ubuntu-cpp:prebuild container from current image.
 docker-run:	## Run ubuntu-cpp:latest container from current image.
 	./.devcontainer/run.bash "ubuntu-cpp:latest"
 
+docker-commit-prebuild:	## Commit ubuntu-cpp:prebuild container to ubuntu-cpp:latest.
+	docker commit ubuntu-cppprebuild ubuntu-cpp:latest
+
 docker-commit:	## Commit current container as ubuntu-cpp:latest.
 	docker commit ubuntu-cpplatest ubuntu-cpp:latest

@@ -2,96 +2,6 @@ ARG VARIANT
 FROM ${VARIANT}
 
 WORKDIR "/"
-
-RUN apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
-    apt-get install -y --no-install-recommends \
-    # common tools
-    make pkg-config wget curl tar unzip \
-    # X server dependencies for cpp GUI libs
-    libx11-dev libxext-dev libxrender-dev libxrandr-dev libxxf86vm-dev \
-    # additional dependencies for opencv
-    nasm \
-    # install dependencies of snap emacs 27.2 (current snap version of emacs)
-    # (ref: https://github.com/hubisan/emacs-wsl)
-    autoconf automake dbus-x11 debhelper dpkg-dev \
-    libacl1-dev libasound2-dev libdbus-1-dev libgif-dev libgnutls28-dev libgpm-dev \
-    libgtk-3-dev libjansson-dev libjpeg-dev liblcms2-dev liblockfile-dev libm17n-dev \
-    libncurses5-dev liboss4-salsa2 libotf-dev libpng-dev librsvg2-dev \
-    libselinux1-dev libsystemd-dev libtiff-dev libxml2-dev libxpm-dev procps quilt \
-    sharutils texinfo zlib1g-dev gvfs language-pack-en-base libasound2 libaspell15 \
-    libasyncns0 libatk-bridge2.0-0 libatk1.0-0 libatspi2.0-0 libbrotli1 \
-    libcairo-gobject2 libcairo2 libcanberra-gtk3-0 libcanberra-gtk3-module \
-    libcanberra0 libcroco3 libdatrie1 libdb5.3 libdrm2 libegl1 libenchant1c2a \
-    libepoxy0 libflac8 libfontconfig1 libfreetype6 libgbm1 libgdk-pixbuf2.0-0 \
-    libgif7 libgl1 libglvnd0 libglx0 libgpm2 libgraphite2-3 libgstreamer-gl1.0-0 \
-    libgstreamer-plugins-base1.0-0 libgstreamer1.0-0 libgtk-3-0 libgudev-1.0-0 \
-    libharfbuzz-icu0 libharfbuzz0b libhyphen0 libice6 libicu66 libjansson4 \
-    libjavascriptcoregtk-4.0-18 libjbig0 libjpeg-turbo8 liblcms2-2 liblockfile1 \
-    libltdl7 libm17n-0 libnotify4 libnss-mdns libnss-myhostname libnss-systemd \
-    libogg0 liborc-0.4-0 libotf0 libpango-1.0-0 libpangocairo-1.0-0 \
-    libpangoft2-1.0-0 libpixman-1-0 libpng16-16 libpulse0 librsvg2-2 libsasl2-2 \
-    libsecret-1-0 libsm6 libsndfile1 libsoup2.4-1 libssl1.1 libstdc++6 libtdb1 \
-    libthai0 libtiff5 libvorbis0a libvorbisenc2 libvorbisfile3 libwayland-client0 \
-    libwayland-cursor0 libwayland-egl1 libwayland-server0 libwebp6 libwebpdemux2 \
-    libwoff1 libx11-6 libx11-xcb1 libxau6 libxcb-render0 libxcb-shm0 libxcb1 \
-    libxcomposite1 libxcursor1 libxdamage1 libxdmcp6 libxext6 libxfixes3 libxi6 \
-    libxinerama1 libxkbcommon0 libxml2 libxpm4 libxrandr2 libxrender1 libxslt1.1 \
-    libyajl2 \
-    # install additional dependencies needed for native comp in emacs 28+
-    # (ref: https://emacs.stackexchange.com/a/60858)
-    gcc-10 g++-10 libgccjit0 libgccjit-10-dev libjansson4 libjansson-dev \
-    # install doom emacs prereqs
-    # (ref: https://elecming.medium.com/the-ultimate-emacs-hacking-tutorial-in-windows-10-wsl-2-cfd3ea3893e3)
-    ripgrep fd-find \
-    dvipng texlive latexmk texlive-plain-generic texlive-latex-extra texlive-bibtex-extra biber \
-    default-jre \
-    graphviz \
-    # prereqs to compile emacs vterm
-    libtool-bin libssl-dev \
-    # dev tools
-    python3-pip python3-venv meld gitk tree \
-    # pdf stuff
-    imagemagick \
-    # for llvm
-    lsb-release software-properties-common gnupg \
-    # convenience
-    firefox \
-    && rm -rf /var/lib/apt/lists/*
-
-# for converting from pdf to png
-# ghostscript <9.24 has a vulnerability related to imagemagick, so convert was disabled
-# since it's now been patched, run this to enable it again (https://stackoverflow.com/a/59193253)
-# now you can run 'convert input.pdf -trim output.png' to do what you want (trim removes whitespace, it's like magic)
-RUN sed -i '/disable ghostscript format types/,+6d' /etc/ImageMagick-6/policy.xml
-
-# get llvm (mainly for the static analysis tools) (this is missing clang-tidy)
-RUN bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
-# ARG LLVM_VER="13"
-# # Add clang-${LLVM_VER}
-# ARG LLVM_URL="http://apt.llvm.org/focal/"
-# ARG LLVM_PKG="llvm-toolchain-focal-${LLVM_VER}"
-# RUN wget https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - && \
-#     add-apt-repository -y "deb ${LLVM_URL} ${LLVM_PKG} main" && \
-#     apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
-#     apt-get install -y --no-install-recommends \
-#         clang-${LLVM_VER} lldb-${LLVM_VER} lld-${LLVM_VER} clangd-${LLVM_VER} \
-#         llvm-${LLVM_VER}-dev libclang-${LLVM_VER}-dev clang-tidy-${LLVM_VER}
-
-# Install necessary packages available from standard repos
-RUN apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
-    apt-get install -y --no-install-recommends \
-    software-properties-common wget apt-utils file zip unzip pkg-config \
-    openssh-client gpg-agent socat rsync \
-    make ninja-build git \
-    python3 python3-pip \
-    yaru-theme-gtk yaru-theme-sound yaru-theme-gnome-shell yaru-theme-icon yaru-theme-unity
-
-# setup access to ssh-agent on host
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends ssh retry
-# download public key for github.com
-RUN mkdir -p -m 0700 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
-
 #### get project-specific dependencies
 # clone private repos as needed for closed-source dependencies
 RUN --mount=type=ssh git clone git@github.com:KevinHQChen/andor_sdk.git
@@ -100,7 +10,7 @@ RUN apt-get install -y libusb-1.0-0
 # OpenGL, GLU, GLFW dependencies
 RUN apt-get install -y libxmu-dev libxi-dev libgl-dev libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev
 # X server dependencies for cpp GUI libs
-RUN apt-get install -y --no-install-recommends libx11-dev libxft-dev libxext-dev libxrender-dev libxrandr-dev libxxf86vm-dev \
+RUN apt-get install -y --no-install-recommends libx11-dev libxft-dev libxext-dev libxrender-dev libxrandr-dev libxxf86vm-dev
 # additional dependencies for opencv
 RUN apt-get install -y --no-install-recommends nasm libgtk2.0-dev bison gperf
 # additional dependencies for python
@@ -108,36 +18,6 @@ RUN apt-get install -y --no-install-recommends gfortran libblas-dev liblapack-de
 
 #run this manually in container: cd /andor_sdk && ./install_andor
 # restart PC after installing this (likely related to udev rules)
-
-# install dependencies specific to our cpp build system
-# (by default, anything you run in Docker is done as superuser, so we won't need sudo)
-RUN wget --no-verbose --no-check-certificate "https://github.com/aminya/setup-cpp/releases/download/v0.19.0/setup_cpp_linux"
-RUN chmod +x setup_cpp_linux
-RUN ./setup_cpp_linux --compiler gcc \ # llvm would be nice, but vcpkg's ffmpeg cannot be built with it
-    # build system tools
-    --cmake true --ninja true --make true \
-    # code analysis tools
-    --cppcheck true --clangtidy true --clangformat true \
-    # package management
-    --vcpkg true \
-    # code coverage
-    --gcovr true \
-    # cache
-    --ccache true
-    # documentation
-    --doxygen true
-
-# install MATLAB runtime R2022b Update 5 to /MATLAB_Runtime
-# RUN mkdir -p /MATLAB_Runtime && cd /MATLAB_Runtime && \
-#     wget https://ssd.mathworks.com/supportfiles/downloads/R2022b/Release/5/deployment_files/installer/complete/glnxa64/MATLAB_Runtime_R2022b_Update_5_glnxa64.zip && \
-#     unzip MATLAB_Runtime_R2022b_Update_5_glnxa64.zip && \
-#     ./install -mode silent -agreeToLicense yes && \
-#     rm MATLAB_Runtime_R2022b_Update_5_glnxa64.zip
-
-# get fonts
-RUN wget -P ~/.local/share/fonts/ https://www.1001fonts.com/download/jetbrains-mono.zip \
-    && unzip ~/.local/share/fonts/jetbrains-mono.zip -d ~/.local/share/fonts/ \
-    && rm ~/.local/share/fonts/jetbrains-mono.zip
 
 #### prepare project
 RUN --mount=type=ssh git clone git@github.com:KevinHQChen/autoDMP.git
