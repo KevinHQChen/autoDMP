@@ -3,6 +3,13 @@ import numpy as np
 from scipy.signal import max_len_seq, periodogram
 from numpy.fft import fft, ifft, fftshift, fftfreq
 
+# import matplotlib
+# matplotlib.use('qtagg')
+
+# import sysid
+# p = sysid.prbs.prbs([True, True, True], [-1, -1, -1], [1, 1, 1], 10)
+
+
 def prbs(selCh, minVal, maxVal, order, flip=True):
     """
     function that generates a PRBS sequence.
