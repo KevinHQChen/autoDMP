@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.738
+// Model version                  : 1.757
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Thu May  4 15:04:01 2023
+// C/C++ source code generated on : Sat May  6 19:51:51 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -37,7 +37,7 @@ const int32_T nu{ 3 };
 
 const int32_T p{ 20 };
 
-const real_T yoff{ 100.0 };
+const real_T yoff{ 200.0 };
 
 // Named constants for MATLAB Function: '<S141>/FixedHorizonOptimizer'
 const int32_T degrees_h{ 4 };
@@ -3062,12 +3062,12 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
     14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
     33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 101, 102, 103 };
 
-  static const int16_T d[46]{ 300, 300, 300, 300, 300, 300, 300, 300, 300, 300,
-    300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 100, 100, 100, 100, 100,
-    100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-    40, 40, 40, 40, 0, 0 };
-
   static const int8_T old_mvoff_0[3]{ 40, 0, 0 };
+
+  static const uint8_T d[46]{ 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
+    200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
+    200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
+    200U, 200U, 200U, 200U, 200U, 200U, 40U, 40U, 40U, 40U, 0U, 0U };
 
   __m128d tmp_2;
   __m128d tmp_3;
@@ -8115,16 +8115,17 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
     52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70,
     71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 141, 142, 143 };
 
-  static const int16_T e[86]{ 300, 300, 300, 300, 300, 300, 300, 300, 300, 300,
-    300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300,
-    300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300,
-    100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-    100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-    100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 40, 40, 40, 40, 0, 0 };
-
   static const int8_T d[8]{ 1, 0, 0, 1, 1, 0, 0, 1 };
 
   static const int8_T old_mvoff_0[3]{ 40, 0, 0 };
+
+  static const uint8_T e[86]{ 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
+    200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
+    200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
+    200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
+    200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
+    200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
+    200U, 200U, 200U, 200U, 200U, 200U, 200U, 40U, 40U, 40U, 40U, 0U, 0U };
 
   __m128d tmp_3;
   __m128d tmp_4;
@@ -8588,10 +8589,10 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
     rtb_e_a = b_Mlim[b_ct];
     i = b_Mrows[b_ct];
     if (i <= 40) {
-      rtb_e_a += 100.0 - Y[(i - (((i - 1) / static_cast<int32_T>(ny)) << 1UL)) -
+      rtb_e_a += 200.0 - Y[(i - (((i - 1) / static_cast<int32_T>(ny)) << 1UL)) -
         1];
     } else if (i <= 80) {
-      rtb_e_a -= 100.0 - Y[(i - (((i - 41) >> 1UL) << 1UL)) - 41];
+      rtb_e_a -= 200.0 - Y[(i - (((i - 41) >> 1UL) << 1UL)) - 41];
     } else if (i <= 140) {
       i = (i - div_nde_s32_floor(i - 81, static_cast<int32_T>(nu_g)) *
            static_cast<int32_T>(nu_g)) - 81;
@@ -11444,16 +11445,17 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
     52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70,
     71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 141, 142, 143 };
 
-  static const int16_T e[86]{ 300, 300, 300, 300, 300, 300, 300, 300, 300, 300,
-    300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300,
-    300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300, 300,
-    100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-    100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-    100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 40, 40, 40, 40, 0, 0 };
-
   static const int8_T d[8]{ 1, 0, 0, 1, 1, 0, 0, 1 };
 
   static const int8_T old_mvoff_0[3]{ 40, 0, 0 };
+
+  static const uint8_T e[86]{ 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
+    200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
+    200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
+    200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
+    200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
+    200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
+    200U, 200U, 200U, 200U, 200U, 200U, 200U, 40U, 40U, 40U, 40U, 0U, 0U };
 
   __m128d tmp_3;
   __m128d tmp_4;
@@ -11917,10 +11919,10 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
     rtb_e_m = b_Mlim[b_ct];
     i = b_Mrows[b_ct];
     if (i <= 40) {
-      rtb_e_m += 100.0 - Y[(i - (((i - 1) / static_cast<int32_T>(ny_i)) << 1UL))
+      rtb_e_m += 200.0 - Y[(i - (((i - 1) / static_cast<int32_T>(ny_i)) << 1UL))
         - 1];
     } else if (i <= 80) {
-      rtb_e_m -= 100.0 - Y[(i - (((i - 41) >> 1UL) << 1UL)) - 41];
+      rtb_e_m -= 200.0 - Y[(i - (((i - 41) >> 1UL) << 1UL)) - 41];
     } else if (i <= 140) {
       i = (i - div_nde_s32_floor(i - 81, static_cast<int32_T>(nu_h)) *
            static_cast<int32_T>(nu_h)) - 81;
@@ -14245,7 +14247,7 @@ void SupervisoryController::State1(const int32_T *sfEvent)
     // During 'controlLaw': '<S1>:162'
     // '<S1>:162:5' if trueMeasAvail
     if (*sfEvent == static_cast<int32_T>(event_trueMeasAvail)) {
-      // '<S1>:162:6' [u, yhat1] = AMPC1(traj(chs1, waypt), y(chs1), y_o(chs1), u_o, false); 
+      // '<S1>:162:6' [u, yhat1] = AMPC1(traj(chs1, waypt), y(chs1), y_o(chs1), u_o, enAdapt); 
       i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
       r_k[0] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs1[0])) - 1];
       y_i[0] = rtU.y[static_cast<int32_T>(rtDW.chs1[0]) - 1];
@@ -14256,12 +14258,14 @@ void SupervisoryController::State1(const int32_T *sfEvent)
 
       // Outputs for Function Call SubSystem: '<S1>/State1.controlLaw.AMPC1'
       // Outport: '<Root>/u' incorporates:
+      //   Inport: '<Root>/enAdapt'
       //   Inport: '<Root>/u_o'
       //   Inport: '<Root>/y'
       //   Inport: '<Root>/y_o'
 
       // Simulink Function 'AMPC1': '<S1>:175'
-      State1controlLawAMPC1(r_k, y_i, y0_g, rtU.u_o, 0.0, rtY.u, rtDW.yhat1,
+      State1controlLawAMPC1(r_k, y_i, y0_g, rtU.u_o, static_cast<real_T>
+                            (rtU.enAdapt ? 1.0 : 0.0), rtY.u, rtDW.yhat1,
                             &rtDW.State1controlLawAMPC1_g,
                             &rtP.State1controlLawAMPC1_g, &rtP,
                             &rtPrevZCX.State1controlLawAMPC1_g);
@@ -14527,18 +14531,19 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
           if (*sfEvent == static_cast<int32_T>(event_trueMeasAvail)) {
             // Outputs for Function Call SubSystem: '<S1>/State0.controlLaw.AMPC0' 
             // Outport: '<Root>/u' incorporates:
+            //   Inport: '<Root>/enAdapt'
             //   Inport: '<Root>/u_o'
             //   Inport: '<Root>/y'
             //   Inport: '<Root>/y_o'
 
-            // '<S1>:59:6' [u, yhat0] = AMPC0(traj(chs0, waypt), y(chs0), y_o(chs0), u_o, false); 
+            // '<S1>:59:6' [u, yhat0] = AMPC0(traj(chs0, waypt), y(chs0), y_o(chs0), u_o, enAdapt); 
             // Simulink Function 'AMPC0': '<S1>:5'
             State0controlLawAMPC0(rtDW.traj[(static_cast<int32_T>(rtDW.chs0) + 3
               * (static_cast<int32_T>(rtDW.waypt) - 1)) - 1], rtU.y
                                   [static_cast<int32_T>(rtDW.chs0) - 1],
                                   rtU.y_o[static_cast<int32_T>(rtDW.chs0) - 1],
-                                  rtU.u_o, 0.0, rtY.u, &rtDW.yhat0,
-                                  &rtDW.State0controlLawAMPC0_n,
+                                  rtU.u_o, static_cast<real_T>(rtU.enAdapt ? 1.0
+              : 0.0), rtY.u, &rtDW.yhat0, &rtDW.State0controlLawAMPC0_n,
                                   &rtP.State0controlLawAMPC0_n, &rtP,
                                   &rtPrevZCX.State0controlLawAMPC0_n);
 
@@ -14712,7 +14717,7 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
           // During 'controlLaw': '<S1>:203'
           // '<S1>:203:5' if trueMeasAvail
           if (*sfEvent == static_cast<int32_T>(event_trueMeasAvail)) {
-            // '<S1>:203:6' [u, yhat2] = AMPC2(traj(chs2, waypt), y(chs2), y_o(chs2), u_o, false); 
+            // '<S1>:203:6' [u, yhat2] = AMPC2(traj(chs2, waypt), y(chs2), y_o(chs2), u_o, enAdapt); 
             i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
             r_ki[0] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs2[0])) - 1];
             y_j[0] = rtU.y[static_cast<int32_T>(rtDW.chs2[0]) - 1];
@@ -14723,13 +14728,15 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
 
             // Outputs for Function Call SubSystem: '<S1>/State2.controlLaw.AMPC2' 
             // Outport: '<Root>/u' incorporates:
+            //   Inport: '<Root>/enAdapt'
             //   Inport: '<Root>/u_o'
             //   Inport: '<Root>/y'
             //   Inport: '<Root>/y_o'
 
             // Simulink Function 'AMPC2': '<S1>:202'
-            State2controlLawAMPC2(r_ki, y_j, y0_i, rtU.u_o, 0.0, rtY.u,
-                                  rtDW.yhat2, &rtDW.State2controlLawAMPC2_l,
+            State2controlLawAMPC2(r_ki, y_j, y0_i, rtU.u_o, static_cast<real_T>
+                                  (rtU.enAdapt ? 1.0 : 0.0), rtY.u, rtDW.yhat2,
+                                  &rtDW.State2controlLawAMPC2_l,
                                   &rtP.State2controlLawAMPC2_l, &rtP,
                                   &rtPrevZCX.State2controlLawAMPC2_l);
 

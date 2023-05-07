@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.738
+// Model version                  : 1.757
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Thu May  4 15:04:01 2023
+// C/C++ source code generated on : Sat May  6 19:51:51 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -521,6 +521,7 @@ class SupervisoryController final
     real_T u_o[3];                     // '<Root>/u_o'
     event_bus nextEv;                  // '<Root>/nextEv'
     real_T y_range[2];                 // '<Root>/y_range'
+    boolean_T enAdapt;                 // '<Root>/enAdapt'
     real_T inputevents[2];             // '<Root>/input events'
   };
 
