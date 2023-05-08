@@ -128,17 +128,6 @@ bool Supervisor::updateInputs() {
       supIn.y[ch] = 0;
   }
 
-  ctrlDataQueuePtr->out << "allMA: " << allMeasAvail << ", anyMA: " << anyMeasAvail
-                        << ", simMA: " << simMeasAvail << ", inTR: " << (bool)supOut.inTransRegion
-                        << ", y: " << (double)supIn.y[0] << ", " << (double)supIn.y[1] << ", "
-                        << (double)supIn.y[2] << ", yhat: " << (double)supOut.yhat[0] << ", "
-                        << (double)supOut.yhat[1] << ", " << (double)supOut.yhat[2]
-                        << ", u: " << (double)supOut.u[0] << ", " << (double)supOut.u[1] << ", "
-                        << (double)supOut.u[2] << ", chs: " << (bool)supOut.currEv.chs[0]
-                        << (bool)supOut.currEv.chs[1] << (bool)supOut.currEv.chs[2]
-                        << ", nextChs: " << (bool)supOut.currEv.nextChs[0]
-                        << (bool)supOut.currEv.nextChs[1] << (bool)supOut.currEv.nextChs[2] << "\n";
-
   if (supOut.requestEvent && !evQueue_->empty())
     supIn.nextEv = evQueue_->get();
   else
@@ -196,7 +185,17 @@ void Supervisor::start() {
 
       !simModeActive ? pump->sendSigs(Eigen::Matrix<int16_t, 3, 1>(supOut.u[0], supOut.u[1], 0))
                      : info("Pump inputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
-      // TODO save data to ctrlDataQueue
+
+      ctrlDataQueuePtr->out << "allMA: " << allMeasAvail << ", anyMA: " << anyMeasAvail
+                        << ", simMA: " << simMeasAvail << ", inTR: " << (bool)supOut.inTransRegion
+                        << ", y: " << (double)supIn.y[0] << ", " << (double)supIn.y[1] << ", "
+                        << (double)supIn.y[2] << ", yhat: " << (double)supOut.yhat[0] << ", "
+                        << (double)supOut.yhat[1] << ", " << (double)supOut.yhat[2]
+                        << ", u: " << (double)supOut.u[0] << ", " << (double)supOut.u[1] << ", "
+                        << (double)supOut.u[2] << ", chs: " << (bool)supOut.currEv.chs[0]
+                        << (bool)supOut.currEv.chs[1] << (bool)supOut.currEv.chs[2]
+                        << ", nextChs: " << (bool)supOut.currEv.nextChs[0]
+                        << (bool)supOut.currEv.nextChs[1] << (bool)supOut.currEv.nextChs[2] << "\n";
     }
   }
 }

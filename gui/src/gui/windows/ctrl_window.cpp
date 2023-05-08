@@ -71,11 +71,15 @@ void CtrlWindow::render() {
                                  moveTime, holdTime));
 
         ImGui::SliderInt("Droplet length", &dropletLength, 0, 85);
-        if (ImGui::Button("Add Droplet Generation Event")) {
-          sv_->addEvent(getEvent(0, 1, std::array<int, 3>{100, 0, 0}, 10, 0));
-          sv_->addEvent(getEvent(1, 1, std::array<int, 3>{0, 84, 85 - dropletLength}, 10, 5));
-          sv_->addEvent(getEvent(1, 2, std::array<int, 3>{0, 100, 85 - dropletLength}, 10, 0));
-          sv_->addEvent(getEvent(2, 2, std::array<int, 3>{80, 0, 80}, 10, 5));
+        ImGui::SliderInt("Number of Droplets", &numDroplets, 0, 85);
+        if (ImGui::Button("Generate Droplets")) {
+          sv_->addEvent(getEvent(0, 1, std::array<int, 3>{200, 0, 0}, 10, 0));
+          for (int i = 0; i < numDroplets; ++i) {
+            sv_->addEvent(getEvent(1, 1, std::array<int, 3>{0, 84, 85 - dropletLength}, 2, 1));
+            sv_->addEvent(getEvent(1, 2, std::array<int, 3>{0, 200, 85 - dropletLength}, 2, 0));
+            sv_->addEvent(getEvent(2, 2, std::array<int, 3>{80, 0, 80}, 2, 1));
+            sv_->addEvent(getEvent(2, 1, std::array<int, 3>{200, 0, 50}, 2, 1));
+          }
         }
 
         ImGui::TreePop();
@@ -154,7 +158,8 @@ void CtrlWindow::render() {
           //   ImGui::Text("%d, %d, %d", sv_->supOut.currEv.chs[0], sv_->supOut.currEv.chs[1],
           //               sv_->supOut.currEv.chs[2]);
           //   ImGui::TableSetColumnIndex(7);
-          //   ImGui::Text("%d, %d, %d", sv_->supOut.currEv.nextChs[0], sv_->supOut.currEv.nextChs[1],
+          //   ImGui::Text("%d, %d, %d", sv_->supOut.currEv.nextChs[0],
+          //   sv_->supOut.currEv.nextChs[1],
           //               sv_->supOut.currEv.nextChs[2]);
           // }
           ImGui::EndTable();
@@ -227,8 +232,10 @@ void CtrlWindow::render() {
       }
 
       ImGui::SliderFloat("History", &history, 1, 60, "%.1f s");
-      plotVector3d("##Control Input", "time (s)", "voltage (V)", 0, 250, ctrlVecs, guiTime, history);
-      plotVector3d("##Measured Output", "time (s)", "position (px)", 0, 600, measVecs, guiTime, history);
+      plotVector3d("##Control Input", "time (s)", "voltage (V)", 0, 250, ctrlVecs, guiTime,
+                   history);
+      plotVector3d("##Measured Output", "time (s)", "position (px)", 0, 600, measVecs, guiTime,
+                   history);
       ImGui::End();
     }
   } else

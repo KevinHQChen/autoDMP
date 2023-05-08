@@ -39,6 +39,7 @@ class CtrlWindow : public Window {
 
   int openAction = -1;
   int dropletLength = 0;
+  int numDroplets = 0;
 
   event_bus getEvent(int srcState, int destState, std::array<int, NUM_CHANS> targetPos,
                      int moveTime, int holdTime) {
