@@ -28,25 +28,32 @@ void Supervisor::startThread() {
   if (!startedCtrl) {
     info("Starting Supervisor...");
     startedCtrl = true;
-    firstMeasAvail = false;
 
     imProc->clearProcFrameQueues();
     imProc->clearTempFrameQueues();
     imProc->clearProcDataQueues();
 
-    // initialize SupervisoryController (y_range, y_max, y_o, u_o, yhat)
+    // initialize SupervisoryController (y_range, y_max, y_o, u_o, yhat, enAdapt)
     // - assume y_o is always y_max, and yhat is at y_max initially (TODO is this a good
     // assumption?)
+    supIn.enAdapt = false;
     supIn.y_range[0] = 0.1;
     supIn.y_range[1] = 0.9;
     for (int ch = 0; ch < Config::numChans_; ++ch) {
-      supIn.y_max[ch] =
-          imProc->impConf.getChanBBox()[ch].height; // TODO add support for rotChanBBoxes
+      // TODO add support for non-90-degree channels
+      if (ch == 0)
+        supIn.y_max[ch] = imProc->impConf.getChanBBox()[ch].height;
+      else
+        supIn.y_max[ch] = imProc->impConf.getChanBBox()[ch].width;
       supIn.y_o[ch] = supIn.y_max[ch];
       supOut.yhat[ch] = supIn.y_max[ch];
     }
-    for (int pp = 0; pp < NUM_PUMPS; ++pp)
-      supIn.u_o[pp] = pump->pumpVoltages[pp];
+    for (int pp = 0; pp < NUM_PUMPS; ++pp) {
+      if (pp < 2)
+        supIn.u_o[0] = pump->pumpVoltages[pp];
+      else
+        supIn.u_o[pp - 1] = pump->pumpVoltages[pp];
+    }
     sup->initialize();
 
     if (!simModeActive)
@@ -75,45 +82,50 @@ void Supervisor::stopThread() {
 }
 
 bool Supervisor::measAvail() {
-  supIn.inputevents[0] = false;
-  supIn.inputevents[1] = false;
-
-  // first measurement should only check ch0
-  if (!firstMeasAvail)
+  // if no channels are being observed, observe ch0
+  if (std::accumulate(supOut.currEv.chs, supOut.currEv.chs + Config::numChans_, 0) == 0)
     supOut.currEv.chs[0] = true;
 
-  bool currChMeasAvail = true;
   allMeasAvail = true;
   anyMeasAvail = false;
+  simMeasAvail = duration_cast<milliseconds>(steady_clock::now() - prevCtrlTime).count() >= 25;
   for (int ch = 0; ch < Config::numChans_; ++ch) {
+    trueMeasAvail[ch] = false;
     if (supOut.currEv.chs[ch]) {
-      currChMeasAvail =
+      trueMeasAvail[ch] =
           !simModeActive
               ? !imProc->procDataQArr[ch]->empty()
               : duration_cast<milliseconds>(steady_clock::now() - prevCtrlTime).count() >= 25;
-      allMeasAvail &= currChMeasAvail;
-      anyMeasAvail |= currChMeasAvail;
-
-      if (currChMeasAvail)
-        supIn.y[ch] = !simModeActive ? imProc->procDataQArr[ch]->get().loc.y : supOut.yhat[ch];
-      else
-        supIn.y[ch] = 0;
+      allMeasAvail &= trueMeasAvail[ch];
+      anyMeasAvail |= trueMeasAvail[ch];
     }
   }
-  simMeasAvail = duration_cast<milliseconds>(steady_clock::now() - prevCtrlTime).count() >= 25;
+
+  // info("allMeasAvail: {}, anyMeasAvail: {}, simMeasAvail: {}", allMeasAvail, anyMeasAvail,
+  //      simMeasAvail);
 
   if (allMeasAvail) {
-    firstMeasAvail = true;
-    supIn.inputevents[0] = true;
+    supIn.inputevents[0] = !supIn.inputevents[0];
     return true;
-  } else if (anyMeasAvail || simMeasAvail) {
-    supIn.inputevents[1] = true;
+  } else if (anyMeasAvail || (simMeasAvail && supOut.inTransRegion)) {
+    supIn.inputevents[1] = !supIn.inputevents[1];
     return true;
   } else
     return false;
 }
 
 bool Supervisor::updateInputs() {
+  for (int ch = 0; ch < Config::numChans_; ++ch) {
+    if (supOut.currEv.chs[ch]) {
+      if (trueMeasAvail[ch]) {
+        supIn.y[ch] = !simModeActive ? imProc->procDataQArr[ch]->get().loc.y : supOut.yhat[ch];
+      } else // simMeasAvail (set y to 0 to tell the observer to only predict for this channel)
+        supIn.y[ch] = 0;
+      info("y[{}]: {}", ch, supIn.y[ch]);
+    } else // we're not observing this channel
+      supIn.y[ch] = 0;
+  }
+
   if (supOut.requestEvent && !evQueue_->empty())
     supIn.nextEv = evQueue_->get();
   else
@@ -125,13 +137,52 @@ bool Supervisor::updateInputs() {
 void Supervisor::start() {
   while (startedCtrl) {
     if (measAvail()) {
+      prevCtrlTime = steady_clock::now();
+      info("Time: {}", duration_cast<milliseconds>(prevCtrlTime - initTime).count());
       updateInputs();
       sup->rtU = supIn;
+      info("y0: {}", sup->rtU.y[0]);
+      info("y1: {}", sup->rtU.y[1]);
+      info("y2: {}", sup->rtU.y[2]);
+      info("y_max0: {}", sup->rtU.y_max[0]);
+      info("y_max1: {}", sup->rtU.y_max[1]);
+      info("y_max2: {}", sup->rtU.y_max[2]);
+      info("y_o0: {}", sup->rtU.y_o[0]);
+      info("y_o1: {}", sup->rtU.y_o[1]);
+      info("y_o2: {}", sup->rtU.y_o[2]);
+      info("u_o0: {}", sup->rtU.u_o[0]);
+      info("u_o1: {}", sup->rtU.u_o[1]);
+      info("u_o2: {}", sup->rtU.u_o[2]);
+      info("y_range0: {}", sup->rtU.y_range[0]);
+      info("y_range1: {}", sup->rtU.y_range[1]);
+      info("enAdapt: {}", sup->rtU.enAdapt);
+      info("u0: {}", sup->rtY.u[0]);
+      info("u1: {}", sup->rtY.u[1]);
+      info("u2: {}", sup->rtY.u[2]);
+      info("yhat0: {}", sup->rtY.yhat[0]);
+      info("yhat1: {}", sup->rtY.yhat[1]);
+      info("yhat2: {}", sup->rtY.yhat[2]);
+      info("inTransRegion: {}", sup->rtY.inTransRegion);
+      info("requestEvent: {}", sup->rtY.requestEvent);
+      info("currEv srcState: {}", sup->rtY.currEv.srcState);
+      info("currEv destState: {}", sup->rtY.currEv.destState);
+      info("currEv destPos0: {}", sup->rtY.currEv.destPos[0]);
+      info("currEv destPos1: {}", sup->rtY.currEv.destPos[1]);
+      info("currEv destPos2: {}", sup->rtY.currEv.destPos[2]);
+      info("currEv moveTime: {}", sup->rtY.currEv.moveTime);
+      info("currEv holdTime: {}", sup->rtY.currEv.holdTime);
+      info("currEv chs0: {}", sup->rtY.currEv.chs[0]);
+      info("currEv chs1: {}", sup->rtY.currEv.chs[1]);
+      info("currEv chs2: {}", sup->rtY.currEv.chs[2]);
+      info("currEv nextChs0: {}", sup->rtY.currEv.nextChs[0]);
+      info("currEv nextChs1: {}", sup->rtY.currEv.nextChs[1]);
+      info("currEv nextChs2: {}", sup->rtY.currEv.nextChs[2]);
+
       sup->step();
       supOut = sup->rtY;
 
       !simModeActive ? pump->sendSigs(Eigen::Matrix<int16_t, 3, 1>(supOut.u[0], supOut.u[1], 0))
-                     : info("{}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
+                     : info("Pump inputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
       // TODO save data to ctrlDataQueue
     }
   }

@@ -5,6 +5,7 @@
 #include "pump/pump.hpp"
 #include "util/util.hpp"
 #include <pybind11/embed.h>
+#include <numeric>
 
 struct Event {
   int srcState, destState;
@@ -46,7 +47,8 @@ public:
   QueueFPS<event_bus> *evQueue_;
   real_T y[3], y_max[3], y_o[3], u_o[3], y_range[3];
   boolean_T inTransRegion;
-  bool allMeasAvail, anyMeasAvail, simMeasAvail, firstMeasAvail;
+  bool allMeasAvail, anyMeasAvail, simMeasAvail;
+  bool trueMeasAvail[3];
   time_point<steady_clock> initTime{steady_clock::now()};
   time_point<steady_clock> prevCtrlTime = initTime;
 

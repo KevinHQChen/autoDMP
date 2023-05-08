@@ -89,7 +89,7 @@ void GUI::renderMenu() {
     ImGui::MenuItem("Start Image Processing", "i", &imProcWindow_->improcVisible_);
     ImGui::MenuItem("Start Pump Setup", "p", &pumpWindow_->visible_);
     ImGui::MenuItem("Setup System ID", "y", &sysIDWindow_->visible_);
-    ImGui::MenuItem("Setup Supervisory Control", "v", &ctrlWindow_->ctrlSetupVisible_);
+    ImGui::MenuItem("Setup Supervisory Control", "u", &ctrlWindow_->ctrlSetupVisible_);
     ImGui::EndMenu();
   }
   if (ImGui::BeginMenu("Debug")) {

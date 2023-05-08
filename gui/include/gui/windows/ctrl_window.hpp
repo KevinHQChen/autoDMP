@@ -63,13 +63,13 @@ class CtrlWindow : public Window {
     }
     switch (destState) {
     case 0: // [1 0 0]
-      std::memcpy(e.chs, chs0, sizeof(chs0));
+      std::memcpy(e.nextChs, chs0, sizeof(chs0));
       break;
     case 1: // [0 1 1]
-      std::memcpy(e.chs, chs1, sizeof(chs1));
+      std::memcpy(e.nextChs, chs1, sizeof(chs1));
       break;
     case 2: // [1 0 1]
-      std::memcpy(e.chs, chs2, sizeof(chs2));
+      std::memcpy(e.nextChs, chs2, sizeof(chs2));
       break;
     }
     return e;
