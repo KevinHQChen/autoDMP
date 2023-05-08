@@ -23,7 +23,7 @@ showDebug = false
 
 [cam]
 # select camera source [string: "Webcam"/"USBcam"/"File"/"Andor"]
-source      = "USBcam"
+source      = "Andor"
 # if source = "File", the selected video file is used [string]
 file        = ""
 
@@ -41,7 +41,7 @@ MetadataEnable              = 0
 MetadataTimestamp           = 0
 MetadataFrameinfo           = 0
 [andor.float]
-ExposureTime                = 0.004     # seconds
+ExposureTime                = 0.0001     # seconds
 FrameRate                   = 40.0      # Hz
 ReadoutTime                 = 0.0
 RowReadTime                 = 0.0
@@ -63,8 +63,8 @@ BitDepth                    = "16 Bit"
 AOIBinning                  = "2x2"             # binning, intensity vs resolution
 [andor.int]
 # AOIHBin                     = 2                 # horizontal binning
-AOIWidth                    = 1776 # 1776/2      # units in superpixels (540 superpixels * 2 pixels/superpixel)
-                                                # 1776 for PDMS T-junction
+AOIWidth                    = 888 # 1776/2      # units in superpixels (540 superpixels * 2 pixels/superpixel)
+# AOIWidth                    = 1776              # 1776 for PDMS T-junction
 AOILeft                     = 1                 # units in sensor pixels
 # AOIVBin                     = 2                 # vertical binning
 AOIHeight                   = 1760              # units in superpixels
@@ -89,7 +89,8 @@ tmplThres   = 0.8
 numChans    = 3
 # number of templates to use for improc
 # 4 for Noura's PDMS chip, 2 for Y-junction glass chip
-numTmpls    = 4
+# numTmpls    = 4
+numTmpls    = 2
 
 [pump]
 # select pump [string: "BARTELS"/"FLUIGENT"]
@@ -100,7 +101,7 @@ type      = "FLUIGENT"
 confPath    = "/autoDMP/config/ctrl/"
 dataPath    = "/autoDMP/data/ctrl/"
 # perform all steps but don't send control signal to pump [bool]
-simMode         = true
+simMode         = false
 
 [postproc]
 # path for improc data
