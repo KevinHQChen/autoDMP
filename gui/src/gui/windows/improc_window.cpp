@@ -22,6 +22,50 @@ ImProcWindow::~ImProcWindow() {
   //   chImages_[i].reset();
 }
 
+ImVec2 clampToBounds(const ImVec2 &pos, float width, float height) {
+  ImVec2 clamped;
+  clamped.x = std::clamp(pos.x, 0.0f, width);
+  clamped.y = std::clamp(pos.y, 0.0f, height);
+  return clamped;
+}
+
+void ImProcWindow::draw() {
+  auto draw_list = ImGui::GetWindowDrawList();
+  ImVec2 mouse_pos = ImGui::GetIO().MousePos;
+
+  if (drawRect) {
+    if (ImGui::IsMouseDown(0) && !isDrawing) {
+      startPos = ImVec2(mouse_pos.x - imageOrigin.x, mouse_pos.y - imageOrigin.y);
+      startPos = clampToBounds(startPos, rawFrame.width, rawFrame.height);
+      isDrawing = true;
+    }
+
+    if (isDrawing) {
+      ImVec2 endPos = ImVec2(mouse_pos.x - imageOrigin.x, mouse_pos.y - imageOrigin.y);
+      endPos = clampToBounds(endPos, rawFrame.width, rawFrame.height);
+      draw_list->AddRect(ImVec2(startPos.x + imageOrigin.x, startPos.y + imageOrigin.y),
+                         ImVec2(endPos.x + imageOrigin.x, endPos.y + imageOrigin.y),
+                         IM_COL32(255, 0, 0, 255));
+    }
+
+    if (ImGui::IsMouseReleased(0) && isDrawing) {
+      ImVec2 endPos = ImVec2(mouse_pos.x - imageOrigin.x, mouse_pos.y - imageOrigin.y);
+      chBBoxes.push_back(
+          cv::Rect(startPos.x, startPos.y, endPos.x - startPos.x, endPos.y - startPos.y));
+      isDrawing = false;
+      drawRect = false;
+    }
+  }
+
+  if (drawPoint) {
+    if (ImGui::IsMouseClicked(0)) {
+      ImVec2 pointPos = ImVec2(mouse_pos.x - imageOrigin.x, mouse_pos.y - imageOrigin.y);
+      junction = cv::Point(pointPos.x, pointPos.y);
+      drawPoint = false;
+    }
+  }
+}
+
 void ImProcWindow::render() {
   // raw image
   if (ImGui::IsKeyPressed(ImGuiKey_C))
@@ -30,9 +74,76 @@ void ImProcWindow::render() {
     imCap_->startCaptureThread();
     if (ImGui::Begin("Image Processing", &visible_)) {
       rawFrame = imCap_->getRawFrame();
-      (rawFrame.empty)
-          ? ImGui::Text("No image available")
-          : ImGui::Image((ImTextureID)rawFrame.texture, ImVec2(rawFrame.width, rawFrame.height));
+      if (rawFrame.empty)
+        ImGui::Text("No image available");
+      else {
+        ImGui::Image((ImTextureID)rawFrame.texture, ImVec2(rawFrame.width, rawFrame.height));
+        imageOrigin = ImGui::GetItemRectMin();
+        if (ImGui::Button("Select Junction"))
+          drawPoint = true;
+        ImGui::SameLine();
+        if (ImGui::Button("Select Channel"))
+          drawRect = true;
+        if (drawPoint || drawRect)
+          draw();
+      }
+
+      // Add table to display and edit rectangle properties
+      if (ImGui::BeginTable("rectangles_table", 6)) {
+        ImGui::TableSetupColumn("Channel");
+        ImGui::TableSetupColumn("X");
+        ImGui::TableSetupColumn("Y");
+        ImGui::TableSetupColumn("Width");
+        ImGui::TableSetupColumn("Height");
+        ImGui::TableSetupColumn("Delete");
+        ImGui::TableHeadersRow();
+
+        std::vector<bool> deleteFlags(chBBoxes.size(), false);
+        int rowIndex = 0;
+        for (auto &chBBox : chBBoxes) {
+          ImGui::TableNextRow();
+          ImGui::TableSetColumnIndex(0);
+          std::string chLabel = "Channel " + std::to_string(rowIndex);
+          ImGui::Text("%s", chLabel.c_str());
+          ImGui::TableSetColumnIndex(1);
+          ImGui::PushID(rowIndex * 5 + 0); // Unique ID for each editable field
+          ImGui::InputInt("##x", &chBBox.x);
+          ImGui::PopID();
+          ImGui::TableSetColumnIndex(2);
+          ImGui::PushID(rowIndex * 5 + 1);
+          ImGui::InputInt("##y", &chBBox.y);
+          ImGui::PopID();
+          ImGui::TableSetColumnIndex(3);
+          ImGui::PushID(rowIndex * 5 + 2);
+          ImGui::InputInt("##width", &chBBox.width);
+          ImGui::PopID();
+          ImGui::TableSetColumnIndex(4);
+          ImGui::PushID(rowIndex * 5 + 3);
+          ImGui::InputInt("##height", &chBBox.height);
+          ImGui::PopID();
+          ImGui::TableSetColumnIndex(5);
+          std::string deleteBtnLbl = "Delete Row " + std::to_string(rowIndex);
+          if (ImGui::Button(deleteBtnLbl.c_str()))
+            deleteFlags[rowIndex] = true;
+          rowIndex++;
+        }
+        ImGui::EndTable();
+
+        // Delete flagged items
+        for (int i = deleteFlags.size() - 1; i >= 0; --i)
+          if (deleteFlags[i])
+            chBBoxes.erase(chBBoxes.begin() + i);
+      }
+      ImGui::InputInt("Junction x", &junction.x);
+      ImGui::InputInt("Junction y", &junction.y);
+
+      ImGui::Text("Size of chBBoxes: %d", chBBoxes.size());
+      ImGui::Text("Image dimensions: %dx%d", rawFrame.width, rawFrame.height);
+      ImGui::Text("Mouse position: (%.1f,%.1f)", ImGui::GetIO().MousePos.x,
+                  ImGui::GetIO().MousePos.y);
+      ImGui::Text("Canvas position: (%.1f,%.1f)", ImGui::GetCursorScreenPos().x,
+                  ImGui::GetCursorScreenPos().y);
+
       imProcSetupToggle_->render();
       ImGui::End();
     }
@@ -80,18 +191,19 @@ void ImProcWindow::render() {
       // update chanBBox, rotChanBBox (using bbox, junction, chanWidth, rotAngle)
       std::vector<cv::Rect> chanBBoxes = imProc_->impConf.getChanBBox();
       // for T-junction
-      if (NUM_TEMPLATES == 4) {
+      if (Config::numTmpls_ == 4) {
         chanBBoxes[0] = cv::Rect(junc[0] - chanWidth / 2, 0, chanWidth, junc[1]);
         chanBBoxes[1] = cv::Rect(0, junc[1] - chanWidth / 2, junc[0], chanWidth);
         chanBBoxes[2] = cv::Rect(junc[0], junc[1] - chanWidth / 2, junc[0], chanWidth);
       }
       // for Y-junction
-      if (NUM_TEMPLATES == 2) {
+      if (Config::numTmpls_ == 2) {
         chanBBoxes[0] = cv::Rect(junc[0] - chanWidth / 2, 0, chanWidth, junc[1]);
         chanBBoxes[1] = cv::Rect(0, junc[1], bbox[2] / 2, bbox[2] / 2);
         chanBBoxes[2] = cv::Rect(junc[0], junc[1], bbox[2] / 2, bbox[2] / 2);
       }
       imProc_->impConf.setChanBBox(chanBBoxes);
+
       std::vector<cv::Rect> rotChanBBoxes = imProc_->impConf.getRotChanBBox();
       // rotChanBBoxes[0] = cv::Rect(0, 0, 0, 0);
       // for (int i = 1; i < numChans; ++i)

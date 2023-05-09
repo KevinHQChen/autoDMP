@@ -1,8 +1,6 @@
 #pragma once
 #include "util/util.hpp"
 
-#define NUM_TEMPLATES 2
-
 // macros to generate from_toml/into_toml functions for cv::Point and cv::Rect
 TOML11_DEFINE_CONVERSION_NON_INTRUSIVE(cv::Point, x, y)
 TOML11_DEFINE_CONVERSION_NON_INTRUSIVE(cv::Rect, x, y, width, height)
@@ -18,21 +16,23 @@ public:
   mutable std::mutex tmplBBoxMtx;
   cv::Rect tmplBBox_;
   mutable std::mutex tmplMtx;
-  std::array<cv::Mat, NUM_TEMPLATES> tmplImg_;
+  std::vector<cv::Mat> tmplImg_;
   mutable std::mutex chanWidthMtx;
   int chanWidth_;
   mutable std::mutex chanBBoxMtx;
   std::vector<cv::Rect> chanBBox_;
   mutable std::mutex rotChanBBoxMtx;
   std::vector<cv::Rect> rotChanBBox_;
+  // mutable std::mutex chipTypeMtx;
+  // std::string chipType_;
 
   ImProcConfig()
       : rotAngle_{0, -90, 90}, junction_(cv::Point(200, 200)),
         bbox_(cv::Rect(0, 0, junction_.x * 2, junction_.y * 2)), tmplBBox_(cv::Rect(5, 5, 90, 90)),
         chanWidth_(100) {
     // generate sensible defaults
-    for (int i = 0; i < NUM_TEMPLATES; ++i)
-      tmplImg_[i] = cv::Mat::zeros(tmplBBox_.size(), CV_8UC1);
+    for (int i = 0; i < Config::numTmpls_; ++i)
+      tmplImg_.push_back(cv::Mat::zeros(tmplBBox_.size(), CV_8UC1));
     chanBBox_.push_back(cv::Rect(junction_.x - chanWidth_ / 2, 0, chanWidth_, bbox_.height / 2));
     chanBBox_.push_back(cv::Rect(0, junction_.y, bbox_.width / 2, bbox_.height / 2));
     chanBBox_.push_back(cv::Rect(junction_.x, junction_.y, bbox_.width / 2, bbox_.height / 2));
@@ -145,7 +145,7 @@ public:
     tmplImg_[idx] = tmplImg;
   }
 
-  void setTmplImg(const std::array<cv::Mat, NUM_TEMPLATES> &tmplImg) {
+  void setTmplImg(const std::vector<cv::Mat> &tmplImg) {
     std::lock_guard<std::mutex> lock(tmplMtx);
     tmplImg_ = tmplImg;
   }
@@ -185,7 +185,7 @@ public:
     return tmplBBox_;
   }
 
-  std::array<cv::Mat, NUM_TEMPLATES> getTmplImg() const {
+  std::vector<cv::Mat> getTmplImg() const {
     std::lock_guard<std::mutex> lock(tmplMtx);
     return tmplImg_;
   }
@@ -204,6 +204,11 @@ public:
     std::lock_guard<std::mutex> lock(rotChanBBoxMtx);
     return rotChanBBox_;
   }
+
+  // std::string getChipType() const {
+  //   std::lock_guard<std::mutex> lock(chipTypeMtx);
+  //   return chipType_;
+  // }
 };
 
 // ImProcConfig(const ImProcConfig &other) {

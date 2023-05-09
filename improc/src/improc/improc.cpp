@@ -38,7 +38,7 @@ void ImProc::loadConfig() {
   impConf.from_toml(v);
 
   // load template images from file
-  for (int i = 0; i < NUM_TEMPLATES; ++i)
+  for (int i = 0; i < Config::numTmpls_; ++i)
     impConf.tmplImg_[i] =
         cv::imread(confPath + "tmpl" + std::to_string(i) + ".png", cv::IMREAD_GRAYSCALE);
 }
@@ -51,7 +51,7 @@ void ImProc::saveConfig() {
   out.close();
 
   // save template images to file
-  for (int i = 0; i < NUM_TEMPLATES; ++i)
+  for (int i = 0; i < Config::numTmpls_; ++i)
     cv::imwrite(confPath + "tmpl" + std::to_string(i) + ".png", impConf.tmplImg_[i], compParams);
 }
 
@@ -127,7 +127,7 @@ void ImProc::start() {
             impConf.setTmplImg(0, tmplFrames[0].clone());
             impConf.setTmplImg(1, tmplFrames[1].clone());
           }
-          if (NUM_TEMPLATES == 4) {
+          if (Config::numTmpls_ == 4) {
             if (startedSetup && ch == 1) {
               tmplFrames[2] = tempProcFrame(impConf.getTmplBBox());
               cv::flip(tmplFrames[2], tmplFrames[3], -1); // 180deg CCW (flip around x & y-axis)
@@ -139,7 +139,7 @@ void ImProc::start() {
           // perform TM for each tmpl rotation, for each channel
           currMaxLoc.reset();
           int matchRot = 0;
-          for (int rot = 0; rot < NUM_TEMPLATES; ++rot) {
+          for (int rot = 0; rot < Config::numTmpls_; ++rot) {
             // outputs a 32-bit float matrix to result (we're using normed cross-correlation)
             cv::matchTemplate(tempProcFrame, impConf.getTmplImg()[rot], tempResultFrame[rot],
                               cv::TM_CCOEFF_NORMED);

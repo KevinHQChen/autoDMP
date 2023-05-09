@@ -28,9 +28,14 @@ class ImProcWindow : public Window {
 
   GUIFrame rawFrame, preFrame;
   GUIFrame procGUIFrames[3];
-  std::array<GUIFrame, NUM_TEMPLATES> tmplGUIFrames;
   std::vector<cv::Mat> procFrames;
   std::vector<int> procWidths, procHeights;
+
+  std::vector<cv::Rect> chBBoxes;
+  cv::Point junction;
+  ImVec2 startPos, imageOrigin;
+  bool isDrawing{false}, drawRect{false}, drawPoint{false};
+  void draw();
 
 public:
   bool improcSetupVisible_{false}, improcVisible_{false};

@@ -26,8 +26,8 @@ class ImProc {
       tempProcFrame{0, 0, CV_16UC1};
 
   // for tmpl matching
-  cv::Mat tmplFrames[NUM_TEMPLATES];
-  cv::Mat tempResultFrame[NUM_TEMPLATES];
+  std::vector<cv::Mat> tmplFrames;
+  std::vector<cv::Mat> tempResultFrame;
   cv::Point minLoc, maxLoc;
   std::optional<cv::Point> currMaxLoc;
   std::vector<cv::Point> maxLocs;
