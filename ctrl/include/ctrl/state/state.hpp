@@ -135,7 +135,7 @@ public:
    * @brief: generates control signals at each time step (only called when new measurements are
    * available)
    */
-  virtual Eigen::Matrix<int16_t, 3, 1> step() = 0;
+  virtual Eigen::Vector3d step() = 0;
 
   template <int dim> bool measurementAvailable(Eigen::Matrix<unsigned int, dim, 1> &ch) {
     bool tmpMeasAvail = true;
@@ -190,7 +190,7 @@ public:
   }
 
   template <int state, int numX, int numY, int numU>
-  Eigen::Matrix<int16_t, 3, 1> step(Eigen::Matrix<unsigned int, numY, 1> &ch,
+  Eigen::Vector3d step(Eigen::Matrix<unsigned int, numY, 1> &ch,
                                     MDL<state, numX, numY, numU> *mdl) {
     // update state x and control signal u based on new measurements
     // Kalman observer
@@ -221,6 +221,6 @@ public:
     }
     usat = uref + du;
 
-    return usat.cast<int16_t>();
+    return usat;
   }
 };

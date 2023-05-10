@@ -33,10 +33,9 @@ void Supervisor::startThread() {
     imProc->clearTempFrameQueues();
     imProc->clearProcDataQueues();
 
-    // initialize SupervisoryController (y_range, y_max, y_o, u_o, yhat, enAdapt)
+    // initialize SupervisoryController (y_range, y_max, y_o, u_o, yhat)
     // - assume y_o is always y_max, and yhat is at y_max initially (TODO is this a good
     // assumption?)
-    supIn.enAdapt = false;
     supIn.y_range[0] = 0.1;
     supIn.y_range[1] = 0.9;
     for (int ch = 0; ch < imProc->impConf.numChs_; ++ch) {
@@ -183,7 +182,7 @@ void Supervisor::start() {
       sup->step();
       supOut = sup->rtY;
 
-      !simModeActive ? pump->sendSigs(Eigen::Matrix<int16_t, 3, 1>(supOut.u[0], supOut.u[1], 0))
+      !simModeActive ? pump->sendSigs(Eigen::Vector3d(supOut.u[0], supOut.u[1], supOut.u[1]))
                      : info("Pump inputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
 
       ctrlDataQueuePtr->out << "allMA: " << allMeasAvail << ", anyMA: " << anyMeasAvail
@@ -224,7 +223,7 @@ void Supervisor::stopSysIDThread() {
     info("Stopping SysID...");
     startedSysIDFlag = false;
 
-    !simModeActive ? pump->sendSigs(currState_->uref.cast<int16_t>()) : info(currState_->uref);
+    !simModeActive ? pump->sendSigs(currState_->uref) : info(currState_->uref);
 
     if (sysIDThread.joinable())
       sysIDThread.join();

@@ -123,6 +123,6 @@ void State1::handleEvent(Event *event) {
   }
 }
 
-Eigen::Matrix<int16_t, 3, 1> State1::step() {
+Eigen::Vector3d State1::step() {
   return State::step<state, numX, numY, numU>(ch, mdl);
 }

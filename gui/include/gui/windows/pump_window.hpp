@@ -22,7 +22,7 @@ class PumpWindow : public Window {
   Pump *pp_;
 
   std::unique_ptr<Slider<int>> maxVoltageSlider_;
-  std::unique_ptr<SliderArray<int>> voltageSlider_;
+  std::unique_ptr<SliderArray<float>> voltageSlider_;
   std::unique_ptr<Toggle> syncToggle_;
   std::unique_ptr<Slider<int>> freqSlider_;
   std::unique_ptr<ToggleArray> valveToggle_;

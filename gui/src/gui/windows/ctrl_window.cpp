@@ -194,6 +194,13 @@ void CtrlWindow::render() {
         if (ImGui::Button("Stop Controller"))
           ctrlVisible_ = false;
 
+      if (!sv_->supIn.enAdapt)
+        if (ImGui::Button("Start Online Param Est"))
+          sv_->supIn.enAdapt = true;
+      if (sv_->supIn.enAdapt)
+        if (ImGui::Button("Stop Online Param Est"))
+          sv_->supIn.enAdapt = false;
+
       if (!pauseCtrlDataViz)
         if (ImGui::Button("Pause Data Display"))
           pauseCtrlDataViz = true;

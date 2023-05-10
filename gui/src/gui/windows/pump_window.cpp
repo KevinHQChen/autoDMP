@@ -5,9 +5,9 @@ namespace gui {
 PumpWindow::PumpWindow(Pump *pp) : pp_(pp) {
   maxVoltageSlider_ = std::make_unique<Slider<int>>(
       "Max\nVoltage", 30, 1000, nullptr, "%d V", ImVec2(0, 0), true, [this]() { setMaxVoltage(); });
-  voltageSlider_ =
-      std::make_unique<SliderArray<int>>("Pump\nVoltage", 0, 250, &pp_->pumpVoltages, NUM_PUMPS,
-                                         "%d V", ImVec2(40, 200), false, [this]() { setPumps(); });
+  voltageSlider_ = std::make_unique<SliderArray<float>>("Pump\nVoltage", 0, 250, &pp_->pumpVoltages,
+                                                        NUM_PUMPS, "%d V", ImVec2(40, 200), false,
+                                                        [this]() { setPumps(); });
   syncToggle_ = std::make_unique<Toggle>("Sync pump 1 & 2", nullptr, [this]() { syncPumps(); });
   freqSlider_ = std::make_unique<Slider<int>>("Frequency", 0, 800, &pp_->freq, "%d Hz",
                                               ImVec2(0, 0), true, [this]() { setFreq(); });
@@ -34,6 +34,12 @@ void PumpWindow::render() {
     if (ImGui::Begin("Pump Setup", &visible_)) {
       maxVoltageSlider_->render();
       voltageSlider_->render();
+      if (controlToggle_->get()) {
+        ImGui::InputFloat("P1", &pp_->pumpVoltages[0], 0, 0);
+        ImGui::InputFloat("P2", &pp_->pumpVoltages[1], 0, 0);
+        ImGui::InputFloat("P3", &pp_->pumpVoltages[2], 0, 0);
+        ImGui::InputFloat("P4", &pp_->pumpVoltages[3], 0, 0);
+      }
       syncToggle_->render();
       freqSlider_->render();
       valveToggle_->render();
@@ -48,7 +54,7 @@ void PumpWindow::setPumps() {
   if (!controlToggle_->get())
     return;
   for (int i = 0; i < NUM_PUMPS; i++)
-    pp_->setVoltage(i, (int16_t)voltageSlider_->get(i));
+    pp_->setVoltage(i, voltageSlider_->get(i));
 }
 
 void PumpWindow::syncPumps() {

@@ -22,5 +22,5 @@ public:
   virtual bool measurementAvailable() override;
   virtual void updateMeasurement() override;
   virtual void handleEvent(Event *event) override;
-  virtual Eigen::Matrix<int16_t, 3, 1> step() override;
+  virtual Eigen::Vector3d step() override;
 };

@@ -19,7 +19,7 @@ class Pump {
 
 public:
   // pump state (voltages are ints to work with imgui slider)
-  std::vector<int> pumpVoltages{0, 0, 0, 0}, prevPumpVoltages{0, 0, 0, 0};
+  std::vector<float> pumpVoltages{0, 0, 0, 0}, prevPumpVoltages{0, 0, 0, 0};
   bool valveState[4]{true, true, true, true}, prevValveState[4]{true, true, true, true};
   int freq{0}, prevFreq{0};
 
@@ -28,7 +28,7 @@ public:
   Pump();
   ~Pump();
 
-  bool setVoltage(unsigned int pumpIdx, int16_t voltage);
+  bool setVoltage(unsigned int pumpIdx, float voltage);
   int getVoltage(unsigned int pumpIdx);
 
   void setFreq(int freq);
@@ -40,7 +40,7 @@ public:
   void getValve(unsigned int pumpIdx);
 
   bool sendCmd(std::string cmd, int len);
-  void sendSigs(Eigen::Matrix<int16_t, 3, 1> u);
+  void sendSigs(Eigen::Vector3d u);
 
 private:
   std::mutex mutex;

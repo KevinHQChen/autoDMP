@@ -111,14 +111,14 @@ void State2::handleEvent(Event *event) {
   }
 }
 
-Eigen::Matrix<int16_t, 3, 1> State2::step() {
+Eigen::Vector3d State2::step() {
   if (!settled) {
     --settlingTime;
     if (settlingTime == 0) {
       settled = true;
       info("State 2 settled");
     }
-    return uref.cast<int16_t>();
+    return uref;
   } else
     return State::step<state, numX, numY, numU>(ch, mdl);
 }

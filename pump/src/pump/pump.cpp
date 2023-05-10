@@ -121,7 +121,7 @@ Pump::~Pump() {
   }
 }
 
-bool Pump::setVoltage(unsigned int pumpIdx, int16_t voltage) {
+bool Pump::setVoltage(unsigned int pumpIdx, float voltage) {
   std::lock_guard lock(mutex);
 
   if (pumpType_ == "FLUIGENT") {
@@ -236,10 +236,10 @@ bool Pump::sendCmd(std::string cmd, int len) {
   return ret;
 }
 
-void Pump::sendSigs(Eigen::Matrix<int16_t, 3, 1> u) {
+void Pump::sendSigs(Eigen::Vector3d u) {
   // channel -> pump mapping
   setVoltage(0, u(0)); // ch1 = P1, P2
-  setVoltage(1, u(0)); // ch1 = P1, P2
-  setVoltage(2, u(1)); // ch2 = P3
-  setVoltage(3, u(2)); // ch3 = P4
+  setVoltage(1, u(1)); // ch1 = P1, P2
+  setVoltage(2, u(2)); // ch2 = P3
+  setVoltage(3, 0); // ch3 = P4
 }

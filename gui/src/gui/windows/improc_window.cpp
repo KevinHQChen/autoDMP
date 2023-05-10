@@ -156,12 +156,18 @@ void ImProcWindow::render() {
         draw();
         renderImProcConfigTable();
 
+        for (const auto &tmplImg : imProc_->impConf.getTmplImg()) {
+          tmplFrame = tmplImg.clone();
+          ImGui::Image((ImTextureID)tmplFrame.texture, ImVec2(tmplFrame.width, tmplFrame.height));
+          ImGui::SameLine();
+        }
+
         if (ImGui::Button("Update ImProc Config")) {
           imProc_->impConf.setChROIs(chBBoxes);
-          imProc_->impConf.chWidth_ = chWidth;
-          imProc_->impConf.numChs_ = numChs;
-          imProc_->impConf.tmplThres_ = tmplThres;
-          imProc_->impConf.numTmpls_ = numTmpls;
+          imProc_->impConf.setChWidth(chWidth);
+          imProc_->impConf.setNumTmpls(numTmpls);
+          imProc_->impConf.setNumChs(numChs);
+          imProc_->impConf.setTmplThres(tmplThres);
           imProc_->impConf.clearTmplImgs();
           for (const auto &tmplBBox : tmplBBoxes) {
             cv::Mat tmplImg, tmplImgFlip;
@@ -178,15 +184,14 @@ void ImProcWindow::render() {
         if (ImGui::Button("Load ImProc Config")) {
           imProc_->loadConfig();
           chBBoxes = imProc_->impConf.getChROIs();
-          chWidth = imProc_->impConf.chWidth_;
-          numChs = imProc_->impConf.numChs_;
-          tmplThres = imProc_->impConf.tmplThres_;
-          numTmpls = imProc_->impConf.numTmpls_;
+          chWidth = imProc_->impConf.getChWidth();
+          numTmpls = imProc_->impConf.getNumTmpls();
+          numChs = imProc_->impConf.getNumChs();
+          tmplThres = imProc_->impConf.getTmplThres();
           tmplBBoxes.clear();
-          for (int i = 0; i < imProc_->impConf.getNumTmpls(); ++i)
+          for (int i = 0; i < imProc_->impConf.getNumTmpls() / 2; ++i)
             tmplBBoxes.push_back(cv::Rect(0, 0, 100, 100));
         }
-
       }
       ImGui::End();
     }
@@ -197,7 +202,7 @@ void ImProcWindow::render() {
   if (improcVisible_) {
     imProc_->startProcThread();
     if (ImGui::Begin("Channels", &improcVisible_)) {
-      for (int i = 0; i < imProc_->impConf.numChs_; ++i) {
+      for (int i = 0; i < imProc_->impConf.getNumChs(); ++i) {
         if (i != 0)
           ImGui::SameLine();
         procGUIFrames[i] = imProc_->getProcFrame(i);
@@ -206,11 +211,11 @@ void ImProcWindow::render() {
       }
       ImGui::End();
     }
-    if (ImGui::Begin("Proc Image", &improcVisible_)) {
-      preFrame = imProc_->getProcFrame();
-      ImGui::Image((ImTextureID)preFrame.texture, ImVec2(preFrame.width, preFrame.height));
-      ImGui::End();
-    }
+    // if (ImGui::Begin("Proc Image", &improcVisible_)) {
+    //   preFrame = imProc_->getProcFrame();
+    //   ImGui::Image((ImTextureID)preFrame.texture, ImVec2(preFrame.width, preFrame.height));
+    //   ImGui::End();
+    // }
   } else
     imProc_->stopProcThread();
 }

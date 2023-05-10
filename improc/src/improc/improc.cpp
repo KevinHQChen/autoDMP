@@ -62,6 +62,8 @@ void ImProc::startProcThread() {
   if (!started()) {
     info("Starting image processing...");
     startedImProc = true;
+    for (int rot = 0; rot < impConf.getNumTmpls(); ++rot)
+      tempResultFrame.push_back(cv::Mat());
     procThread = std::thread(&ImProc::start, this);
     procThread.detach();
   }
@@ -109,8 +111,11 @@ void ImProc::start() {
         // perform TM for each tmpl rotation, for each channel
         currMaxLoc.reset();
         int matchRot = 0;
-        for (int rot = 0; rot < impConf.numTmpls_; ++rot) {
+        for (int rot = 0; rot < impConf.getNumTmpls(); ++rot) {
           // outputs a 32-bit float matrix to result (we're using normed cross-correlation)
+          info("rot angle: {}", rot);
+          info("tempProcFrame size: {}x{}", tempProcFrame.cols, tempProcFrame.rows);
+          info("tmpl size: {}x{}", impConf.getTmplImg()[rot].cols, impConf.getTmplImg()[rot].rows);
           cv::matchTemplate(tempProcFrame, impConf.getTmplImg()[rot], tempResultFrame[rot],
                             cv::TM_CCOEFF_NORMED);
           cv::threshold(tempResultFrame[rot], tempResultFrame[rot], impConf.tmplThres_, 255,
@@ -145,7 +150,7 @@ void ImProc::start() {
         // info("tempProcFrame size: {}", tempProcFrame.size());
         // info("currPose rotChanBBox: {}", currPose.rotChanBBox[idx]);
       } // iterate over all channels
-      procFrameQueuePtr->push(tempFrame);
+      // procFrameQueuePtr->push(tempFrame);
       stopTime = high_resolution_clock::now();
       auto duration = duration_cast<milliseconds>(stopTime - startTime);
       // info("imProc duration: {}", duration.count());

@@ -31,7 +31,7 @@ class ImProcWindow : public Window {
   // std::array<std::unique_ptr<IMMImage>, numChans_> chImages_;
   // std::array<std::unique_ptr<IMMImage>, NUM_TEMPLATES> tmplImages_;
 
-  GUIFrame rawFrame, preFrame;
+  GUIFrame rawFrame, preFrame, tmplFrame;
   GUIFrame procGUIFrames[3];
 
   std::vector<RotRect> chBBoxes;

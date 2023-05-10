@@ -55,7 +55,7 @@ void SysIDState::updateMeasurement() {
 
 void SysIDState::handleEvent(Event *event) { return; }
 
-Eigen::Matrix<int16_t, 3, 1> SysIDState::step() {
+Eigen::Vector3d SysIDState::step() {
   // apply new control signal to pump
   if (stp / 4 < excitationSignal_.cols()) { // 4 is the ideal clock period
     du = excitationSignal_.col(stp / 4);
@@ -66,5 +66,5 @@ Eigen::Matrix<int16_t, 3, 1> SysIDState::step() {
 
   sv_->ctrlDataQueuePtr->out << u(0) << ", " << u(1) << ", " << u(2) << ", ";
   sv_->ctrlDataQueuePtr->out << y(0) << ", " << y(1) << ", " << y(2) << "\n";
-  return u.cast<int16_t>();
+  return u;
 }
