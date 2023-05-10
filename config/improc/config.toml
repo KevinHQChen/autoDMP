@@ -1,7 +1,7 @@
 chWidth = 69
 numTmpls = 2
 numChs = 3
-tmplThres = 0.80000001192092896
+tmplThres = 0.75
 
 chROIs = [
 {height=628,width=69,angle=180,chHeight=628.0,y=252,x=418},

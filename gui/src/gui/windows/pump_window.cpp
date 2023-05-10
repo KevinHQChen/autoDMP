@@ -35,10 +35,10 @@ void PumpWindow::render() {
       maxVoltageSlider_->render();
       voltageSlider_->render();
       if (controlToggle_->get()) {
-        ImGui::InputFloat("P1", &pp_->pumpVoltages[0], 0, 0);
-        ImGui::InputFloat("P2", &pp_->pumpVoltages[1], 0, 0);
-        ImGui::InputFloat("P3", &pp_->pumpVoltages[2], 0, 0);
-        ImGui::InputFloat("P4", &pp_->pumpVoltages[3], 0, 0);
+        ImGui::InputFloat("P1", &pp_->pumpVoltages[0], 0.1, 1);
+        ImGui::InputFloat("P2", &pp_->pumpVoltages[1], 0.1, 1);
+        ImGui::InputFloat("P3", &pp_->pumpVoltages[2], 0.1, 1);
+        ImGui::InputFloat("P4", &pp_->pumpVoltages[3], 0.1, 1);
       }
       syncToggle_->render();
       freqSlider_->render();
