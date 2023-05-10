@@ -9,7 +9,7 @@
 //
 // Model version                  : 1.757
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Sat May  6 19:51:51 2023
+// C/C++ source code generated on : Wed May 10 16:32:49 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -37,7 +37,7 @@ const int32_T nu{ 3 };
 
 const int32_T p{ 20 };
 
-const real_T yoff{ 200.0 };
+const real_T yoff{ 628.0 };
 
 // Named constants for MATLAB Function: '<S141>/FixedHorizonOptimizer'
 const int32_T degrees_h{ 4 };
@@ -3062,12 +3062,12 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
     14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
     33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 101, 102, 103 };
 
-  static const int8_T old_mvoff_0[3]{ 40, 0, 0 };
+  static const int16_T d[46]{ 628, 628, 628, 628, 628, 628, 628, 628, 628, 628,
+    628, 628, 628, 628, 628, 628, 628, 628, 628, 628, 628, 628, 628, 628, 628,
+    628, 628, 628, 628, 628, 628, 628, 628, 628, 628, 628, 628, 628, 628, 628,
+    10, 8, 10, 0, 2, 0 };
 
-  static const uint8_T d[46]{ 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
-    200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
-    200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
-    200U, 200U, 200U, 200U, 200U, 200U, 40U, 40U, 40U, 40U, 0U, 0U };
+  static const int8_T old_mvoff_0[3]{ 0, 2, 0 };
 
   __m128d tmp_2;
   __m128d tmp_3;
@@ -8115,17 +8115,16 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
     52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70,
     71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 141, 142, 143 };
 
+  static const int16_T e[86]{ 455, 433, 455, 433, 455, 433, 455, 433, 455, 433,
+    455, 433, 455, 433, 455, 433, 455, 433, 455, 433, 455, 433, 455, 433, 455,
+    433, 455, 433, 455, 433, 455, 433, 455, 433, 455, 433, 455, 433, 455, 433,
+    455, 433, 455, 433, 455, 433, 455, 433, 455, 433, 455, 433, 455, 433, 455,
+    433, 455, 433, 455, 433, 455, 433, 455, 433, 455, 433, 455, 433, 455, 433,
+    455, 433, 455, 433, 455, 433, 455, 433, 455, 433, 10, 8, 10, 0, 2, 0 };
+
   static const int8_T d[8]{ 1, 0, 0, 1, 1, 0, 0, 1 };
 
-  static const int8_T old_mvoff_0[3]{ 40, 0, 0 };
-
-  static const uint8_T e[86]{ 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
-    200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
-    200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
-    200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
-    200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
-    200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
-    200U, 200U, 200U, 200U, 200U, 200U, 200U, 40U, 40U, 40U, 40U, 0U, 0U };
+  static const int8_T old_mvoff_0[3]{ 0, 2, 0 };
 
   __m128d tmp_3;
   __m128d tmp_4;
@@ -8589,10 +8588,11 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
     rtb_e_a = b_Mlim[b_ct];
     i = b_Mrows[b_ct];
     if (i <= 40) {
-      rtb_e_a += 200.0 - Y[(i - (((i - 1) / static_cast<int32_T>(ny)) << 1UL)) -
-        1];
+      i = (i - (((i - 1) / static_cast<int32_T>(ny)) << 1UL)) - 1;
+      rtb_e_a += (-22.0 * static_cast<real_T>(i) + 455.0) - Y[i];
     } else if (i <= 80) {
-      rtb_e_a -= 200.0 - Y[(i - (((i - 41) >> 1UL) << 1UL)) - 41];
+      i = (i - (((i - 41) >> 1UL) << 1UL)) - 41;
+      rtb_e_a -= (-22.0 * static_cast<real_T>(i) + 455.0) - Y[i];
     } else if (i <= 140) {
       i = (i - div_nde_s32_floor(i - 81, static_cast<int32_T>(nu_g)) *
            static_cast<int32_T>(nu_g)) - 81;
@@ -11445,17 +11445,16 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
     52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70,
     71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 141, 142, 143 };
 
+  static const int16_T e[86]{ 628, 433, 628, 433, 628, 433, 628, 433, 628, 433,
+    628, 433, 628, 433, 628, 433, 628, 433, 628, 433, 628, 433, 628, 433, 628,
+    433, 628, 433, 628, 433, 628, 433, 628, 433, 628, 433, 628, 433, 628, 433,
+    628, 433, 628, 433, 628, 433, 628, 433, 628, 433, 628, 433, 628, 433, 628,
+    433, 628, 433, 628, 433, 628, 433, 628, 433, 628, 433, 628, 433, 628, 433,
+    628, 433, 628, 433, 628, 433, 628, 433, 628, 433, 10, 8, 10, 0, 2, 0 };
+
   static const int8_T d[8]{ 1, 0, 0, 1, 1, 0, 0, 1 };
 
-  static const int8_T old_mvoff_0[3]{ 40, 0, 0 };
-
-  static const uint8_T e[86]{ 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
-    200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
-    200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
-    200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
-    200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
-    200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U, 200U,
-    200U, 200U, 200U, 200U, 200U, 200U, 200U, 40U, 40U, 40U, 40U, 0U, 0U };
+  static const int8_T old_mvoff_0[3]{ 0, 2, 0 };
 
   __m128d tmp_3;
   __m128d tmp_4;
@@ -11919,10 +11918,11 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
     rtb_e_m = b_Mlim[b_ct];
     i = b_Mrows[b_ct];
     if (i <= 40) {
-      rtb_e_m += 200.0 - Y[(i - (((i - 1) / static_cast<int32_T>(ny_i)) << 1UL))
-        - 1];
+      i = (i - (((i - 1) / static_cast<int32_T>(ny_i)) << 1UL)) - 1;
+      rtb_e_m += (-195.0 * static_cast<real_T>(i) + 628.0) - Y[i];
     } else if (i <= 80) {
-      rtb_e_m -= 200.0 - Y[(i - (((i - 41) >> 1UL) << 1UL)) - 41];
+      i = (i - (((i - 41) >> 1UL) << 1UL)) - 41;
+      rtb_e_m -= (-195.0 * static_cast<real_T>(i) + 628.0) - Y[i];
     } else if (i <= 140) {
       i = (i - div_nde_s32_floor(i - 81, static_cast<int32_T>(nu_h)) *
            static_cast<int32_T>(nu_h)) - 81;

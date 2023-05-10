@@ -9,7 +9,7 @@
 //
 // Model version                  : 1.757
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Sat May  6 19:51:51 2023
+// C/C++ source code generated on : Wed May 10 16:32:49 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -169,7 +169,7 @@ SupervisoryController::P SupervisoryController::rtP{
     // Expression: lastu+uoff
     //  Referenced by: '<S257>/last_mv'
 
-    { 40.0, 0.0, 0.0 },
+    { 0.0, 2.0, 0.0 },
 
     // Expression: 0
     //  Referenced by: '<S255>/Unit Delay5'
@@ -504,7 +504,7 @@ SupervisoryController::P SupervisoryController::rtP{
     // Expression: lastu+uoff
     //  Referenced by: '<S113>/last_mv'
 
-    { 40.0, 0.0, 0.0 },
+    { 0.0, 2.0, 0.0 },
 
     // Expression: 0
     //  Referenced by: '<S111>/Unit Delay5'
@@ -843,7 +843,7 @@ SupervisoryController::P SupervisoryController::rtP{
     // Expression: lastu+uoff
     //  Referenced by: '<S8>/last_mv'
 
-    { 40.0, 0.0, 0.0 },
+    { 0.0, 2.0, 0.0 },
 
     // Expression: 0
     //  Referenced by: '<S6>/Unit Delay3'
