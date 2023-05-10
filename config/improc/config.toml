@@ -1,28 +1,11 @@
-rotAngle = [0,-90,90]
-chanWidth = 31
-junction = {y=441,x=215}
-bbox = {height=480,width=430,y=0,x=16}
-tmplBBox = {height=20,width=20,y=54,x=5}
+chWidth = 64
+numTmpls = 2
+numChs = 3
+tmplThres = 0.80000001192092896
 
-chanBBox = [
-{height=441,width=31,y=0,x=200},
-{height=31,width=215,y=426,x=0},
-{height=31,width=215,y=426,x=215},
+chROIs = [
+{height=256,width=64,angle=0,chHeight=256.0,y=0,x=281},
+{height=220,width=220,angle=135,chHeight=225.0,y=255,x=92},
+{height=220,width=220,angle=-135,chHeight=222.0,y=255,x=311},
 ]
-
-[[rotChanBBox]]
-height = 0
-width = 0
-y = 0
-x = 0
-[[rotChanBBox]]
-height = 267
-width = 31
-y = 0
-x = 118
-[[rotChanBBox]]
-height = 267
-width = 31
-y = 0
-x = 118
 

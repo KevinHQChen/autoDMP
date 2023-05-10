@@ -5,9 +5,9 @@ SysIDState::SysIDState(Supervisor *sv, Eigen::Vector3d uref, bool *selChs,
                        std::vector<float> minVals, std::vector<float> maxVals,
                        Eigen::MatrixXd &data)
     : State(sv, uref,
-            Eigen::Vector3d(sv->imProc->impConf.getChanBBox()[0].height,
-                            sv->imProc->impConf.getChanBBox()[1].width,
-                            sv->imProc->impConf.getChanBBox()[2].width)),
+            Eigen::Vector3d(sv->imProc->impConf.getChROIs()[0].chHeight,
+                            sv->imProc->impConf.getChROIs()[1].chHeight,
+                            sv->imProc->impConf.getChROIs()[2].chHeight)),
       selChs_(selChs), minVals_(minVals), maxVals_(maxVals), excitationSignal_(data) {
   // clear all improc queues
   sv_->imProc->clearProcDataQueues();

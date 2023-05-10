@@ -46,10 +46,9 @@ class SysIdWindow : public Window {
   // py::object prbs;
 
   int numSamples_ = 1000;
-  const int numChans_ = toml::get<int>(Config::conf["improc"]["numChans"]);
-  std::vector<float> minVal_{std::vector<float>(numChans_, 0.0f)};
-  std::vector<float> maxVal_{std::vector<float>(numChans_, 1.0f)};
-  std::vector<float> uref_{std::vector<float>(numChans_, 1.0f)};
+  std::vector<float> minVal_{std::vector<float>(NUM_CHANS, 0.0f)};
+  std::vector<float> maxVal_{std::vector<float>(NUM_CHANS, 1.0f)};
+  std::vector<float> uref_{std::vector<float>(NUM_CHANS, 1.0f)};
 
   float guiTime{0.0f}, history{30.0f};
   ScrollingBuffer u0, u1, u2, du0, du1, du2;

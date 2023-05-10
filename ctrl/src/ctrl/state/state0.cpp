@@ -4,7 +4,7 @@
 #include "ctrl/supervisor.hpp"
 
 State0::State0(Supervisor *sv, Eigen::Vector3d uref_)
-    : State(sv, uref_, Eigen::Vector3d(sv->imProc->impConf.getChanBBox()[0].height, 0, 0)),
+    : State(sv, uref_, Eigen::Vector3d(sv->imProc->impConf.getChROIs()[0].chHeight, 0, 0)),
       mdl(new MDL<state, numX, numY, numU>(sv)) {
   // clear all improc queues
   sv_->imProc->clearProcDataQueues();

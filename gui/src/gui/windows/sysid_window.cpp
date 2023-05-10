@@ -3,7 +3,7 @@
 namespace gui {
 
 SysIdWindow::SysIdWindow(Supervisor *sv) : sv_(sv) {
-  chSelect_ = std::make_unique<CheckboxArray>("Channel", numChans_);
+  chSelect_ = std::make_unique<CheckboxArray>("Channel", NUM_CHANS);
   numSampleSlider_ = std::make_unique<Slider<int>>("Num Samples", 0, 4000, &numSamples_);
   excitationSignalDropdown_ = std::make_unique<Dropdown>(
       "Excitation Signal Type:", excitationSignalTypes_, [this]() { generateExcitationSignal(); });
@@ -113,7 +113,7 @@ void SysIdWindow::generateExcitationSignal() {
     py::gil_scoped_acquire acquire;
     py::object prbs = py::module::import("prbs").attr("prbs");
     py::list chSel;
-    for (int i = 0; i < numChans_; i++)
+    for (int i = 0; i < NUM_CHANS; i++)
       chSel.append(chSelect_->get()[i]);
 
     excitationSignal_ = prbs(chSel, minValSlider_->get(), maxValSlider_->get(),

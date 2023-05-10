@@ -10,15 +10,6 @@ fontSize = 18.0
 scale = 2.0
 fontPath = "/root/.local/share/fonts/JetBrainsMono-1.0.2/ttf/JetBrainsMono-Medium.ttf"
 
-startImCap = false
-startImProc = false
-startImProcSetup = false
-startPumpSetup = false
-startCtrl = false
-startCtrlSetup = false
-startSysID = false
-startSysIDSetup = false
-pauseCtrlDataViz = false
 showDebug = false
 
 [cam]
@@ -82,15 +73,6 @@ TimeStampClockFrequency     = 0
 confPath    = "/autoDMP/config/improc/"
 # source for channel bounding boxes and droplet interface templates [string: "fromVideo"/"fromFile"]
 confSrc = "fromFile"
-# select template matching threshold: pxIntensity/255 (8-bit) [double]
-# 0.5 - 0.85 is a good range
-tmplThres   = 0.8
-# number of channels to observe for improc
-numChans    = 3
-# number of templates to use for improc
-# 4 for Noura's PDMS chip, 2 for Y-junction glass chip
-# numTmpls    = 4
-numTmpls    = 2
 
 [pump]
 # select pump [string: "BARTELS"/"FLUIGENT"]
@@ -101,7 +83,7 @@ type      = "FLUIGENT"
 confPath    = "/autoDMP/config/ctrl/"
 dataPath    = "/autoDMP/data/ctrl/"
 # perform all steps but don't send control signal to pump [bool]
-simMode         = false
+simMode         = true
 
 [postproc]
 # path for improc data

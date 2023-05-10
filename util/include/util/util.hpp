@@ -3,6 +3,7 @@
 #include <array>
 #include <chrono>
 #include <cmath>
+#include <condition_variable>
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -35,6 +36,8 @@ using Vector1ui = Eigen::Matrix<unsigned int, 1, 1>;
 using Vector2ui = Eigen::Matrix<unsigned int, 2, 1>;
 
 using ordered_value = toml::basic_value<toml::discard_comments, tsl::ordered_map, std::vector>;
+
+#define NUM_CHANS 3
 
 #define TOML11_PARSE_IN_ORDER(...)                                                                 \
   toml::parse<toml::discard_comments, tsl::ordered_map>(__VA_ARGS__)
@@ -72,15 +75,6 @@ struct guiConfig {
   float fontSize;
   float scale;
   std::string fontPath;
-  bool startImCap;
-  bool startImProc;
-  bool startImProcSetup;
-  bool startPumpSetup;
-  bool startCtrl;
-  bool startCtrlSetup;
-  bool startSysID;
-  bool startSysIDSetup;
-  bool pauseCtrlDataViz;
   bool showDebug;
 
   void from_toml(const ordered_value &v) {
@@ -94,23 +88,12 @@ struct guiConfig {
     fontSize = toml::find<float>(v, "fontSize");
     scale = toml::find<float>(v, "scale");
     fontPath = toml::find<std::string>(v, "fontPath");
-    startImCap = toml::find<bool>(v, "startImCap");
-    startImProc = toml::find<bool>(v, "startImProc");
-    startImProcSetup = toml::find<bool>(v, "startImProcSetup");
-    startPumpSetup = toml::find<bool>(v, "startPumpSetup");
-    startCtrl = toml::find<bool>(v, "startCtrl");
-    startCtrlSetup = toml::find<bool>(v, "startCtrlSetup");
-    startSysID = toml::find<bool>(v, "startSysID");
-    startSysIDSetup = toml::find<bool>(v, "startSysIDSetup");
-    pauseCtrlDataViz = toml::find<bool>(v, "pauseCtrlDataViz");
     showDebug = toml::find<bool>(v, "showDebug");
   }
 };
 
 namespace Config {
 static ordered_value conf = TOML11_PARSE_IN_ORDER("config/setup.toml");
-static int numChans_ = toml::get<int>(Config::conf["improc"]["numChans"]);
-static int numTmpls_ = toml::get<int>(Config::conf["improc"]["numTmpls"]);
 static guiConfig guiConf = toml::find<guiConfig>(conf, "gui");
 } // namespace Config
 
@@ -144,6 +127,31 @@ template <class T> mstream &operator<<(mstream &st, T val) {
 void saveData(std::string fileName, Eigen::MatrixXd matrix);
 
 Eigen::MatrixXd openData(std::string fileToOpen);
+
+template <typename T> class SharedBuffer {
+public:
+  T get() {
+    std::unique_lock<std::mutex> lock(mtx);
+    cond_var.wait(lock);
+    return item;
+  }
+
+  void set(const T &newItem) {
+    std::lock_guard<std::mutex> lock(mtx);
+    item = newItem;
+    cond_var.notify_all();
+  }
+
+  void clear() {
+    std::lock_guard<std::mutex> lock(mtx);
+    item = T();
+  }
+
+private:
+  T item;
+  std::mutex mtx;
+  std::condition_variable cond_var;
+};
 
 // create a generic type queue class template for storing frames
 template <typename T> class QueueFPS : public std::deque<T> {

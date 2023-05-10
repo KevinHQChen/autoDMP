@@ -39,12 +39,12 @@ void Supervisor::startThread() {
     supIn.enAdapt = false;
     supIn.y_range[0] = 0.1;
     supIn.y_range[1] = 0.9;
-    for (int ch = 0; ch < Config::numChans_; ++ch) {
+    for (int ch = 0; ch < imProc->impConf.numChs_; ++ch) {
       // TODO add support for non-90-degree channels
       if (ch == 0)
-        supIn.y_max[ch] = imProc->impConf.getChanBBox()[ch].height;
+        supIn.y_max[ch] = imProc->impConf.getChROIs()[ch].height;
       else
-        supIn.y_max[ch] = imProc->impConf.getChanBBox()[ch].width;
+        supIn.y_max[ch] = imProc->impConf.getChROIs()[ch].width;
       supIn.y_o[ch] = supIn.y_max[ch];
       supOut.yhat[ch] = supIn.y_max[ch];
     }
@@ -85,7 +85,7 @@ bool Supervisor::measAvail() {
   allMeasAvail = true;
   anyMeasAvail = false;
   simMeasAvail = duration_cast<milliseconds>(steady_clock::now() - prevCtrlTime).count() >= 25;
-  for (int ch = 0; ch < Config::numChans_; ++ch) {
+  for (int ch = 0; ch < imProc->impConf.numChs_; ++ch) {
     if (!simModeActive)
       trueMeasAvail[ch] = !imProc->procDataQArr[ch]->empty();
     else {
@@ -113,7 +113,7 @@ bool Supervisor::measAvail() {
 }
 
 bool Supervisor::updateInputs() {
-  for (int ch = 0; ch < Config::numChans_; ++ch) {
+  for (int ch = 0; ch < imProc->impConf.numChs_; ++ch) {
     if (trueMeasAvail[ch]) {
       if (!simModeActive)
         supIn.y[ch] = imProc->procDataQArr[ch]->get().loc.y;

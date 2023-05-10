@@ -7,13 +7,9 @@
 
 #include "ctrl/supervisor.hpp"
 
-#define NUM_CHANS 3
-
 namespace gui {
 
 class CtrlWindow : public Window {
-  const int numChans_ = toml::get<int>(Config::conf["improc"]["numChans"]);
-
   Supervisor *sv_;
 
   // displaying/modifying events, states
@@ -35,7 +31,7 @@ class CtrlWindow : public Window {
 
   int srcState, destState, moveTime, holdTime;
   int targetPos[NUM_CHANS];
-  bool chs0[3] = {true, false, false}, chs1[3] = {false, true, true}, chs2[3] = {true, false, true};
+  bool chs0[NUM_CHANS] = {true, false, false}, chs1[NUM_CHANS] = {false, true, true}, chs2[NUM_CHANS] = {true, false, true};
 
   int openAction = -1;
   int dropletLength = 0;
