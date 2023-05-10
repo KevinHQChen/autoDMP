@@ -36,9 +36,9 @@ void ImProc::loadConfig() {
   impConf.from_toml(v);
 
   // load template images from file
-  info("Number of templates: {}", impConf.numTmpls_);
+  info("Number of templates: {}", impConf.getNumTmpls());
   impConf.clearTmplImgs();
-  for (int i = 0; i < impConf.numTmpls_; ++i)
+  for (int i = 0; i < impConf.getNumTmpls(); ++i)
     impConf.setTmplImg(
         cv::imread(confPath + "tmpl" + std::to_string(i) + ".png", cv::IMREAD_GRAYSCALE));
 }

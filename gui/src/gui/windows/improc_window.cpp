@@ -183,6 +183,8 @@ void ImProcWindow::render() {
           tmplThres = imProc_->impConf.tmplThres_;
           numTmpls = imProc_->impConf.numTmpls_;
           tmplBBoxes.clear();
+          for (int i = 0; i < imProc_->impConf.getNumTmpls(); ++i)
+            tmplBBoxes.push_back(cv::Rect(0, 0, 100, 100));
         }
 
       }
