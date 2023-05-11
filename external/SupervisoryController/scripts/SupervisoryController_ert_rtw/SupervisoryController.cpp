@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.759
+// Model version                  : 1.760
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Thu May 11 14:28:28 2023
+// C/C++ source code generated on : Thu May 11 15:14:33 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -13720,13 +13720,13 @@ void SupervisoryController::handleEvent(const event_bus event, boolean_T
   *holdTime) const
 {
   real_T tmp;
-  int32_T c_size_idx_0;
+  int32_T d_size_idx_0;
   int32_T trueCount;
-  int8_T b_data[3];
   int8_T c_data[3];
   int8_T d_data[3];
   int8_T e_data[3];
   int8_T f_data[3];
+  int8_T g_data[3];
   boolean_T x_data[3];
   boolean_T exitg1;
   boolean_T y;
@@ -13761,35 +13761,6 @@ void SupervisoryController::handleEvent(const event_bus event, boolean_T
   // 'processEvent:19' if all(y(chs) < y_range(2)*y_max(chs)) && all(y(chs) > y_range(1)*y_max(chs)) 
   trueCount = 0;
   if (event.chs[0]) {
-    b_data[0] = 1;
-    trueCount = 1;
-  }
-
-  if (event.chs[1]) {
-    b_data[trueCount] = 2;
-    trueCount++;
-  }
-
-  if (event.chs[2]) {
-    b_data[trueCount] = 3;
-  }
-
-  trueCount = 0;
-  if (event.chs[0]) {
-    trueCount = 1;
-  }
-
-  if (event.chs[1]) {
-    trueCount++;
-  }
-
-  if (event.chs[2]) {
-    trueCount++;
-  }
-
-  c_size_idx_0 = trueCount;
-  trueCount = 0;
-  if (event.chs[0]) {
     c_data[0] = 1;
     trueCount = 1;
   }
@@ -13803,21 +13774,50 @@ void SupervisoryController::handleEvent(const event_bus event, boolean_T
     c_data[trueCount] = 3;
   }
 
+  trueCount = 0;
+  if (event.chs[0]) {
+    trueCount = 1;
+  }
+
+  if (event.chs[1]) {
+    trueCount++;
+  }
+
+  if (event.chs[2]) {
+    trueCount++;
+  }
+
+  d_size_idx_0 = trueCount;
+  trueCount = 0;
+  if (event.chs[0]) {
+    d_data[0] = 1;
+    trueCount = 1;
+  }
+
+  if (event.chs[1]) {
+    d_data[trueCount] = 2;
+    trueCount++;
+  }
+
+  if (event.chs[2]) {
+    d_data[trueCount] = 3;
+  }
+
   // Inport: '<Root>/y_range'
   tmp = rtU.y_range[1];
-  for (trueCount = 0; trueCount < c_size_idx_0; trueCount++) {
+  for (trueCount = 0; trueCount < d_size_idx_0; trueCount++) {
     // Inport: '<Root>/y' incorporates:
     //   Inport: '<Root>/y_max'
 
-    x_data[trueCount] = (rtU.y[c_data[trueCount] - 1] <
-                         rtU.y_max[b_data[trueCount] - 1] * tmp);
+    x_data[trueCount] = (rtU.y[d_data[trueCount] - 1] <
+                         rtU.y_max[c_data[trueCount] - 1] * tmp);
   }
 
   y = true;
   trueCount = 1;
   exitg1 = false;
   while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U)) ==
-          false) && (trueCount <= c_size_idx_0)) {
+          false) && (trueCount <= d_size_idx_0)) {
     if (!x_data[trueCount - 1]) {
       y = false;
       exitg1 = true;
@@ -13827,35 +13827,6 @@ void SupervisoryController::handleEvent(const event_bus event, boolean_T
   }
 
   if (y) {
-    trueCount = 0;
-    if (event.chs[0]) {
-      d_data[0] = 1;
-      trueCount = 1;
-    }
-
-    if (event.chs[1]) {
-      d_data[trueCount] = 2;
-      trueCount++;
-    }
-
-    if (event.chs[2]) {
-      d_data[trueCount] = 3;
-    }
-
-    trueCount = 0;
-    if (event.chs[0]) {
-      trueCount = 1;
-    }
-
-    if (event.chs[1]) {
-      trueCount++;
-    }
-
-    if (event.chs[2]) {
-      trueCount++;
-    }
-
-    c_size_idx_0 = trueCount;
     trueCount = 0;
     if (event.chs[0]) {
       e_data[0] = 1;
@@ -13871,20 +13842,49 @@ void SupervisoryController::handleEvent(const event_bus event, boolean_T
       e_data[trueCount] = 3;
     }
 
+    trueCount = 0;
+    if (event.chs[0]) {
+      trueCount = 1;
+    }
+
+    if (event.chs[1]) {
+      trueCount++;
+    }
+
+    if (event.chs[2]) {
+      trueCount++;
+    }
+
+    d_size_idx_0 = trueCount;
+    trueCount = 0;
+    if (event.chs[0]) {
+      f_data[0] = 1;
+      trueCount = 1;
+    }
+
+    if (event.chs[1]) {
+      f_data[trueCount] = 2;
+      trueCount++;
+    }
+
+    if (event.chs[2]) {
+      f_data[trueCount] = 3;
+    }
+
     // Inport: '<Root>/y_range'
     tmp = rtU.y_range[0];
-    for (trueCount = 0; trueCount < c_size_idx_0; trueCount++) {
+    for (trueCount = 0; trueCount < d_size_idx_0; trueCount++) {
       // Inport: '<Root>/y' incorporates:
       //   Inport: '<Root>/y_max'
 
-      x_data[trueCount] = (rtU.y[e_data[trueCount] - 1] >
-                           rtU.y_max[d_data[trueCount] - 1] * tmp);
+      x_data[trueCount] = (rtU.y[f_data[trueCount] - 1] >
+                           rtU.y_max[e_data[trueCount] - 1] * tmp);
     }
 
     trueCount = 1;
     exitg1 = false;
     while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U)) ==
-            false) && (trueCount <= c_size_idx_0)) {
+            false) && (trueCount <= d_size_idx_0)) {
       if (!x_data[trueCount - 1]) {
         y = false;
         exitg1 = true;
@@ -13918,45 +13918,54 @@ void SupervisoryController::handleEvent(const event_bus event, boolean_T
 
     //  transition to new state
   } else {
+    boolean_T b_idx_0;
+    boolean_T b_idx_1;
+
     // 'processEvent:32' else
     //  event.srcState ~= event.destState
-    // 'processEvent:33' if all(y(nextChs))
+    // 'processEvent:33' if any(y(bitxor(chs, nextChs) & nextChs))
     trueCount = 0;
-    if (event.nextChs[0]) {
+    y = (event.chs[0] != event.nextChs[0]);
+    if (y && event.nextChs[0]) {
       trueCount = 1;
     }
 
-    if (event.nextChs[1]) {
+    b_idx_0 = y;
+    y = (event.chs[1] != event.nextChs[1]);
+    if (y && event.nextChs[1]) {
       trueCount++;
     }
 
-    if (event.nextChs[2]) {
+    b_idx_1 = y;
+    y = (event.chs[2] != event.nextChs[2]);
+    if (y && event.nextChs[2]) {
       trueCount++;
     }
 
-    c_size_idx_0 = trueCount;
+    d_size_idx_0 = trueCount;
     trueCount = 0;
-    if (event.nextChs[0]) {
-      f_data[0] = 1;
+    if (b_idx_0 && event.nextChs[0]) {
+      g_data[0] = 1;
       trueCount = 1;
     }
 
-    if (event.nextChs[1]) {
-      f_data[trueCount] = 2;
+    if (b_idx_1 && event.nextChs[1]) {
+      g_data[trueCount] = 2;
       trueCount++;
     }
 
-    if (event.nextChs[2]) {
-      f_data[trueCount] = 3;
+    if (y && event.nextChs[2]) {
+      g_data[trueCount] = 3;
     }
 
-    y = true;
-    trueCount = 1;
+    y = false;
+    trueCount = 0;
     exitg1 = false;
     while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U)) ==
-            false) && (trueCount <= c_size_idx_0)) {
-      if (rtU.y[f_data[trueCount - 1] - 1] == 0.0) {
-        y = false;
+            false) && (trueCount + 1 <= d_size_idx_0)) {
+      tmp = rtU.y[g_data[trueCount] - 1];
+      if ((!(tmp == 0.0)) && (!std::isnan(tmp))) {
+        y = true;
         exitg1 = true;
       } else {
         trueCount++;
@@ -13964,7 +13973,7 @@ void SupervisoryController::handleEvent(const event_bus event, boolean_T
     }
 
     if (y) {
-      //  measurements are available in all state1 channels
+      //  measurements are available in any new channels in destState
       // 'processEvent:34' evDone = true;
       *eventDone = true;
     }
