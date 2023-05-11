@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.757
+// Model version                  : 1.759
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Wed May 10 16:32:49 2023
+// C/C++ source code generated on : Thu May 11 14:28:28 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -522,6 +522,7 @@ class SupervisoryController final
     event_bus nextEv;                  // '<Root>/nextEv'
     real_T y_range[2];                 // '<Root>/y_range'
     boolean_T enAdapt;                 // '<Root>/enAdapt'
+    real_T excitation;                 // '<Root>/excitation'
     real_T inputevents[2];             // '<Root>/input events'
   };
 
@@ -1209,9 +1210,9 @@ class SupervisoryController final
   static void State0controlLawAMPC0_Disable(DW_State0controlLawAMPC0 *localDW,
     P_State0controlLawAMPC0 *localP);
   void State0controlLawAMPC0(real_T rtu_r, real_T rtu_y, real_T rtu_y0, const
-    real_T rtu_u0[3], real_T rtu_paramEst, real_T rty_u[3], real_T *rty_yhat,
-    DW_State0controlLawAMPC0 *localDW, P_State0controlLawAMPC0 *localP, P *rtP,
-    ZCE_State0controlLawAMPC0 *localZCE);
+    real_T rtu_u0[3], real_T rtu_paramEst, real_T rtu_excitationVal, real_T
+    rty_u[3], real_T *rty_yhat, DW_State0controlLawAMPC0 *localDW,
+    P_State0controlLawAMPC0 *localP, P *rtP, ZCE_State0controlLawAMPC0 *localZCE);
   real_T xnrm2_g(int32_T n, const real_T x[5], int32_T ix0);
   real_T qrFactor(const real_T A[4], const real_T S[16], real_T Ns);
   void trisolve_m(real_T A, real_T B_1[4]);
@@ -1316,9 +1317,10 @@ class SupervisoryController final
   static void State1controlLawAMPC1_Disable(DW_State1controlLawAMPC1 *localDW,
     P_State1controlLawAMPC1 *localP);
   void State1controlLawAMPC1(const real_T rtu_r[2], const real_T rtu_y[2], const
-    real_T rtu_y0[2], const real_T rtu_u0[3], real_T rtu_paramEst, real_T rty_u
-    [3], real_T rty_yhat[2], DW_State1controlLawAMPC1 *localDW,
-    P_State1controlLawAMPC1 *localP, P *rtP, ZCE_State1controlLawAMPC1 *localZCE);
+    real_T rtu_y0[2], const real_T rtu_u0[3], real_T rtu_paramEst, real_T
+    rtu_excitationVal, real_T rty_u[3], real_T rty_yhat[2],
+    DW_State1controlLawAMPC1 *localDW, P_State1controlLawAMPC1 *localP, P *rtP,
+    ZCE_State1controlLawAMPC1 *localZCE);
   int32_T xpotrf_n(real_T b_A[16]);
   real_T minimum_i(const real_T x[4]);
   void trisolve_i(const real_T b_A[16], real_T b_B[16]);
@@ -1354,9 +1356,10 @@ class SupervisoryController final
   static void State2controlLawAMPC2_Disable(DW_State2controlLawAMPC2 *localDW,
     P_State2controlLawAMPC2 *localP);
   void State2controlLawAMPC2(const real_T rtu_r[2], const real_T rtu_y[2], const
-    real_T rtu_y0[2], const real_T rtu_u0[3], real_T rtu_paramEst, real_T rty_u
-    [3], real_T rty_yhat[2], DW_State2controlLawAMPC2 *localDW,
-    P_State2controlLawAMPC2 *localP, P *rtP, ZCE_State2controlLawAMPC2 *localZCE);
+    real_T rtu_y0[2], const real_T rtu_u0[3], real_T rtu_paramEst, real_T
+    rtu_excitationVal, real_T rty_u[3], real_T rty_yhat[2],
+    DW_State2controlLawAMPC2 *localDW, P_State2controlLawAMPC2 *localP, P *rtP,
+    ZCE_State2controlLawAMPC2 *localZCE);
   int32_T xpotrf_b(real_T b_A[16]);
   real_T minimum_k(const real_T x[4]);
   void trisolve_a(const real_T b_A[16], real_T b_B[16]);

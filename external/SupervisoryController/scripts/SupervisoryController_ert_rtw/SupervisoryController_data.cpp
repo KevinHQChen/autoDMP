@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.757
+// Model version                  : 1.759
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Wed May 10 16:32:49 2023
+// C/C++ source code generated on : Thu May 11 14:28:28 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -169,7 +169,7 @@ SupervisoryController::P SupervisoryController::rtP{
     // Expression: lastu+uoff
     //  Referenced by: '<S257>/last_mv'
 
-    { 0.0, 2.0, 0.0 },
+    { 10.0, 10.0, 10.0 },
 
     // Expression: 0
     //  Referenced by: '<S255>/Unit Delay5'
@@ -390,7 +390,7 @@ SupervisoryController::P SupervisoryController::rtP{
     // Computed Parameter: MeasurementNoise_StdDev
     //  Referenced by: '<S4>/Measurement Noise'
 
-    { 0.70710678118654757, 0.70710678118654757, 0.70710678118654757 },
+    { 1.0, 1.0, 1.0 },
 
     // Expression: 12345
     //  Referenced by: '<S4>/Measurement Noise'
@@ -504,7 +504,7 @@ SupervisoryController::P SupervisoryController::rtP{
     // Expression: lastu+uoff
     //  Referenced by: '<S113>/last_mv'
 
-    { 0.0, 2.0, 0.0 },
+    { 10.0, 10.0, 10.0 },
 
     // Expression: 0
     //  Referenced by: '<S111>/Unit Delay5'
@@ -725,7 +725,7 @@ SupervisoryController::P SupervisoryController::rtP{
     // Computed Parameter: MeasurementNoise_StdDev
     //  Referenced by: '<S3>/Measurement Noise'
 
-    { 0.70710678118654757, 0.70710678118654757, 0.70710678118654757 },
+    { 1.0, 1.0, 1.0 },
 
     // Expression: 12345
     //  Referenced by: '<S3>/Measurement Noise'
@@ -843,7 +843,7 @@ SupervisoryController::P SupervisoryController::rtP{
     // Expression: lastu+uoff
     //  Referenced by: '<S8>/last_mv'
 
-    { 0.0, 2.0, 0.0 },
+    { 10.0, 10.0, 10.0 },
 
     // Expression: 0
     //  Referenced by: '<S6>/Unit Delay3'
@@ -1030,7 +1030,7 @@ SupervisoryController::P SupervisoryController::rtP{
     // Computed Parameter: MeasurementNoise_StdDev
     //  Referenced by: '<S2>/Measurement Noise'
 
-    { 0.70710678118654757, 0.70710678118654757, 0.70710678118654757 },
+    { 1.0, 1.0, 1.0 },
 
     // Expression: 12345
     //  Referenced by: '<S2>/Measurement Noise'
