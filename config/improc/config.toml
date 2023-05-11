@@ -5,7 +5,7 @@ tmplThres = 0.75
 
 chROIs = [
 {height=628,width=69,angle=180,chHeight=628.0,y=252,x=418},
-{height=66,width=455,angle=90,chHeight=66.0,y=220,x=0},
-{height=66,width=433,angle=-90,chHeight=68.0,y=220,x=455},
+{height=66,width=455,angle=-90,chHeight=66.0,y=220,x=0},
+{height=66,width=433,angle=90,chHeight=68.0,y=220,x=455},
 ]
 

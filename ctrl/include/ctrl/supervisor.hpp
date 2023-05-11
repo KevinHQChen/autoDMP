@@ -4,8 +4,8 @@
 #include "improc/improc.hpp"
 #include "pump/pump.hpp"
 #include "util/util.hpp"
-#include <pybind11/embed.h>
 #include <numeric>
+#include <pybind11/embed.h>
 
 struct Event {
   int srcState, destState;
@@ -16,20 +16,15 @@ struct Event {
       : srcState(srcState), destState(destState), destPos(destPos), vel(vel) {}
 };
 
-struct StateData;
 class State; // forward declaration
 
 class Supervisor {
-
-  StateData *currStateData_;
-
   std::atomic<bool> startedCtrl{false}, startedSysIDFlag{false};
   std::thread ctrlThread, sysIDThread;
 
   // Called within thread context
   void start();
   void startSysID();
-
 
 public:
   ordered_value conf;
@@ -38,6 +33,8 @@ public:
 
   Pump *pump;
   ImProc *imProc;
+
+  std::vector<Pose> poses;
 
   SupervisoryController *sup;
   SupervisoryController::ExtU supIn;
@@ -69,14 +66,14 @@ public:
   ** updates the following SupervisoryController inputs:
   **  - inputevents = {trueMeasAvail, simMeasAvail}
   **  - y
-   */
+  */
   bool measAvail();
 
   /*
   ** updates the following SupervisoryController inputs:
   ** - initial y_o
   ** - nextEv
-   */
+  */
   bool updateInputs();
 
   void addEvent(event_bus e);
@@ -106,6 +103,5 @@ public:
 
   std::string getDataPath() const { return dataPath; }
   std::string getConfPath() const { return confPath; }
-  StateData getCurrStateData();
   void clearCtrlDataQueue();
 };

@@ -10,11 +10,9 @@ ImProc::ImProc(ImCap *imCap)
       procFrameQueueArr({new QueueFPS<cv::Mat>(dataPath + "procFramesQueue1.txt"),
                          new QueueFPS<cv::Mat>(dataPath + "procFramesQueue2.txt"),
                          new QueueFPS<cv::Mat>(dataPath + "procFramesQueue3.txt")}),
-      procDataQArr({new QueueFPS<Pose>(dataPath + "procDataQueue1.txt"),
-                    new QueueFPS<Pose>(dataPath + "procDataQueue2.txt"),
-                    new QueueFPS<Pose>(dataPath + "procDataQueue3.txt")}) {
+      procData(new QueueFPS<std::vector<Pose>>(dataPath + "procDataQueue.txt")) {
   for (int ch = 0; ch < impConf.numChs_; ch++)
-    procDataQArr[ch]->out << "time (ms), maxLoc.x (px), maxLoc.y (px)\n";
+    procData->out << "time (ms), maxLoc.x (px), maxLoc.y (px)\n";
 
   // save images with proper format PNG, CV_16UC1
   compParams.push_back(cv::IMWRITE_PNG_COMPRESSION);
@@ -64,6 +62,10 @@ void ImProc::startProcThread() {
     startedImProc = true;
     for (int rot = 0; rot < impConf.getNumTmpls(); ++rot)
       tempResultFrame.push_back(cv::Mat());
+    for (int ch = 0; ch < impConf.numChs_; ch++) {
+      tempProcFrameArr.push_back(cv::Mat());
+      poseData.push_back(Pose());
+    }
     procThread = std::thread(&ImProc::start, this);
     procThread.detach();
   }
@@ -73,6 +75,8 @@ void ImProc::stopProcThread() {
   if (started()) {
     info("Stopping image processing...");
     startedImProc = false;
+    tempResultFrame.clear();
+    tempProcFrameArr.clear();
     if (procThread.joinable())
       procThread.join();
     this->clearProcFrameQueues();
@@ -113,9 +117,10 @@ void ImProc::start() {
         int matchRot = 0;
         for (int rot = 0; rot < impConf.getNumTmpls(); ++rot) {
           // outputs a 32-bit float matrix to result (we're using normed cross-correlation)
-          info("rot angle: {}", rot);
-          info("tempProcFrame size: {}x{}", tempProcFrame.cols, tempProcFrame.rows);
-          info("tmpl size: {}x{}", impConf.getTmplImg()[rot].cols, impConf.getTmplImg()[rot].rows);
+          // info("rot angle: {}", rot);
+          // info("tempProcFrame size: {}x{}", tempProcFrame.cols, tempProcFrame.rows);
+          // info("tmpl size: {}x{}", impConf.getTmplImg()[rot].cols,
+          // impConf.getTmplImg()[rot].rows);
           cv::matchTemplate(tempProcFrame, impConf.getTmplImg()[rot], tempResultFrame[rot],
                             cv::TM_CCOEFF_NORMED);
           cv::threshold(tempResultFrame[rot], tempResultFrame[rot], impConf.tmplThres_, 255,
@@ -131,25 +136,28 @@ void ImProc::start() {
 
         if (currMaxLoc.has_value()) {
           // save timestamp and maxLoc to file
-          Pose p = {matchRot, *currMaxLoc};
-          procDataQArr[ch]->push(p);
-          procDataQArr[ch]->out << currMaxLoc->x << ", " << currMaxLoc->y << "\n";
+          poseData[ch] = {matchRot, *currMaxLoc, true};
+          procData->out << currMaxLoc->x << ", " << currMaxLoc->y << "\n";
           // draw tmpl match for each channel
           cv::rectangle(tempProcFrame, *currMaxLoc,
                         cv::Point(currMaxLoc->x + impConf.getTmplImg()[0].cols,
                                   currMaxLoc->y + impConf.getTmplImg()[0].rows),
                         cv::Scalar(0, 255, 0), 2, 8, 0);
-        }
+        } else
+          poseData[ch].found = false;
 
         // push processed frame to queue for display
         // tempResultQueueArr[ch]->push(tempResultFrame[i]);
-        procFrameQueueArr[ch]->push(tempProcFrame);
+        // procFrameQueueArr[ch]->push(tempProcFrame);
+        tempProcFrameArr[ch] = tempProcFrame;
 
         // debug info
         // info("tempPreFrame size: {}", tempPreFrame.size());
         // info("tempProcFrame size: {}", tempProcFrame.size());
         // info("currPose rotChanBBox: {}", currPose.rotChanBBox[idx]);
       } // iterate over all channels
+      procData->push(poseData);
+      procFrameBuf.set(tempProcFrameArr);
       // procFrameQueuePtr->push(tempFrame);
       stopTime = high_resolution_clock::now();
       auto duration = duration_cast<milliseconds>(stopTime - startTime);
@@ -170,22 +178,12 @@ std::vector<cv::Mat> ImProc::getTempFrames() {
   return tempFrames;
 }
 
-cv::Mat ImProc::getProcFrame(int idx) {
-  if (!procFrameQueueArr[idx]->empty())
-    return procFrameQueueArr[idx]->get();
-  return cv::Mat();
-}
+cv::Mat ImProc::getProcFrame(int idx) { return procFrameBuf.get()[idx]; }
 
 cv::Mat ImProc::getProcFrame() {
   if (!procFrameQueuePtr->empty())
     return procFrameQueuePtr->get();
   return cv::Mat();
-}
-
-cv::Point ImProc::getProcData(int idx) {
-  if (!procDataQArr[idx]->empty())
-    return procDataQArr[idx]->get().loc;
-  return cv::Point();
 }
 
 void ImProc::clearTempFrameQueues() {
@@ -198,7 +196,6 @@ void ImProc::clearProcFrameQueues() {
     q->clear();
 }
 
-void ImProc::clearProcDataQueues() {
-  for (auto &q : procDataQArr)
-    q->clear();
+void ImProc::clearProcData() {
+  procData->clear();
 }

@@ -6,6 +6,7 @@
 struct Pose {
   int rot;
   cv::Point loc;
+  bool found;
 };
 
 class RotRect : public cv::Rect {
@@ -96,13 +97,17 @@ class ImProc {
   ImCap *imCap;
   QueueFPS<cv::Mat> *procFrameQueuePtr;
   std::vector<QueueFPS<cv::Mat> *> tempResultQueueArr, procFrameQueueArr;
+  SharedBuffer<std::vector<cv::Mat>> procFrameBuf;
+
   std::vector<int> compParams;
 
   cv::Mat preFrame{0, 0, CV_16UC1}, tempFrame{0, 0, CV_16UC1}, tempPreFrame{0, 0, CV_16UC1},
       tempProcFrame{0, 0, CV_16UC1};
 
   // for tmpl matching
-  std::vector<cv::Mat> tempResultFrame;
+  std::vector<cv::Mat> tempResultFrame, tempProcFrameArr;
+  std::vector<Pose> poseData;
+  std::vector<bool> procDataAvail;
   cv::Point minLoc, maxLoc;
   std::optional<cv::Point> currMaxLoc;
   double minVal, maxVal;
@@ -115,7 +120,7 @@ class ImProc {
 
 public:
   ImProcConfig impConf;
-  std::vector<QueueFPS<Pose> *> procDataQArr;
+  QueueFPS<std::vector<Pose>> *procData;
 
   ImProc(ImCap *imCap);
   ~ImProc();
@@ -131,8 +136,7 @@ public:
   std::vector<cv::Mat> getTempFrames();
   cv::Mat getProcFrame(int idx);
   cv::Mat getProcFrame();
-  cv::Point getProcData(int idx);
   void clearTempFrameQueues();
   void clearProcFrameQueues();
-  void clearProcDataQueues();
+  void clearProcData();
 };

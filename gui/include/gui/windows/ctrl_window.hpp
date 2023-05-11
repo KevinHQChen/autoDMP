@@ -32,6 +32,7 @@ class CtrlWindow : public Window {
   int srcState, destState, moveTime, holdTime;
   int targetPos[NUM_CHANS];
   bool chs0[NUM_CHANS] = {true, false, false}, chs1[NUM_CHANS] = {false, true, true}, chs2[NUM_CHANS] = {true, false, true};
+  float excitationAmp;
 
   int openAction = -1;
   int dropletLength = 0;

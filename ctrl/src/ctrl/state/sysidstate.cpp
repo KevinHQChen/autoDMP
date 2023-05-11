@@ -10,7 +10,7 @@ SysIDState::SysIDState(Supervisor *sv, Eigen::Vector3d uref, bool *selChs,
                             sv->imProc->impConf.getChROIs()[2].chHeight)),
       selChs_(selChs), minVals_(minVals), maxVals_(maxVals), excitationSignal_(data) {
   // clear all improc queues
-  sv_->imProc->clearProcDataQueues();
+  sv_->imProc->clearProcData();
   // py::gil_scoped_acquire acquire;
   // simMeas = py::module::import("sim_meas").attr("sim_meas");
 }
@@ -27,7 +27,7 @@ bool SysIDState::measurementAvailable() {
     if (selChs_[i]) {
       simMeasAvail_ &=
           duration_cast<milliseconds>(steady_clock::now() - prevCtrlTime[i]).count() >= 25;
-      trueMeasAvail_ &= !sv_->imProc->procDataQArr[i]->empty();
+      trueMeasAvail_ &= !sv_->poses[i].found;
     }
   }
   if (sv_->simModeActive)
@@ -40,7 +40,7 @@ void SysIDState::updateMeasurement() {
   if (trueMeasAvail_) { // update true measurement y
     for (int i = 0; i < 3; ++i)
       if (selChs_[i])
-        y(i) = sv_->imProc->procDataQArr[i]->get().loc.y;
+        y(i) = sv_->poses[i].loc.y;
   } else
     for (int i = 0; i < 3; ++i)
       if (selChs_[i])

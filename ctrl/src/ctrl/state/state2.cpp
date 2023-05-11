@@ -9,7 +9,7 @@ State2::State2(Supervisor *sv, Eigen::Vector3d uref_)
                             sv->imProc->impConf.getChROIs()[2].chHeight)),
       mdl(new MDL<state, numX, numY, numU>(sv)) {
   // clear all improc queues
-  sv_->imProc->clearProcDataQueues();
+  sv_->imProc->clearProcData();
   stateTransitionCondition = false;
   settled = true;
   settlingTime = 40; // 40 * 25ms = 1s
@@ -24,7 +24,7 @@ bool State2::measurementAvailable() { return State::measurementAvailable<numY>(c
 
 void State2::updateMeasurement() {
   if (!settled) {
-    sv_->imProc->clearProcDataQueues();
+    sv_->imProc->clearProcData();
     for (int i = 0; i != ch.rows(); ++i)
       prevCtrlTime[ch(i)] = steady_clock::now();
     return;
@@ -97,13 +97,13 @@ void State2::handleEvent(Event *event) {
     // ch0 90%, ch2 85% to junction
     if (yref(0) > 0.9 * yrefScale(0) && yref(2) > 0.85 * yrefScale(2) &&
         !stateTransitionCondition) {
-      sv_->imProc->clearProcDataQueues();
+      sv_->imProc->clearProcData();
       stateTransitionCondition = true;
     }
     // we're in sim mode and ch0 & ch2 are 95% to junction
     // or ch1 is observable
     if ((yref(0) > 0.95 * yrefScale(1) && yref(2) > 0.95 * yrefScale(2) && sv_->simModeActive) ||
-        (stateTransitionCondition && !sv_->imProc->procDataQArr[1]->empty())) {
+        (stateTransitionCondition && !sv_->poses[1].found)) {
       delete sv_->currEvent_;
       sv_->currEvent_ = nullptr;
       sv_->updateState<State1>(usat);

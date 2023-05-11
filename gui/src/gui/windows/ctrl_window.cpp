@@ -201,6 +201,10 @@ void CtrlWindow::render() {
         if (ImGui::Button("Stop Online Param Est"))
           sv_->supIn.enAdapt = false;
 
+      excitationAmp = sv_->supIn.excitation;
+      ImGui::SliderFloat("Excitation Amplitude", &excitationAmp, 0.0f, 10.0f);
+      sv_->supIn.excitation = excitationAmp;
+
       if (!pauseCtrlDataViz)
         if (ImGui::Button("Pause Data Display"))
           pauseCtrlDataViz = true;

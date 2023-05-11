@@ -10,7 +10,7 @@ State1::State1(Supervisor *sv, Eigen::Vector3d uref_)
                             sv->imProc->impConf.getChROIs()[2].chHeight)),
       mdl(new MDL<state, numX, numY, numU>(sv)) {
   // clear all improc queues
-  sv_->imProc->clearProcDataQueues();
+  sv_->imProc->clearProcData();
   stateTransitionCondition = true;
 }
 
@@ -88,13 +88,13 @@ void State1::handleEvent(Event *event) {
     // ch1 & ch2 are 85% to junction
     if (yref(1) > 0.85 * yrefScale(1) && yref(2) > 0.85 * yrefScale(2) &&
         !stateTransitionCondition) {
-      sv_->imProc->clearProcDataQueues();
+      sv_->imProc->clearProcData();
       stateTransitionCondition = true;
     }
     // we're in sim mode and ch1 & ch2 are 95% to junction
     // or ch0 is observable
     if ((yref(1) > 0.95 * yrefScale(1) && yref(2) > 0.95 * yrefScale(2) && sv_->simModeActive) ||
-        (stateTransitionCondition && !sv_->imProc->procDataQArr[0]->empty())) {
+        (stateTransitionCondition && !sv_->poses[0].found)) {
       delete sv_->currEvent_;
       sv_->currEvent_ = nullptr;
       sv_->updateState<State0>(usat);
@@ -109,13 +109,13 @@ void State1::handleEvent(Event *event) {
   if (event->destState == 2) {
     // ch1 is 85% to junction
     if (yref(1) > 0.85 * yrefScale(1) && !stateTransitionCondition) {
-      sv_->imProc->clearProcDataQueues();
+      sv_->imProc->clearProcData();
       stateTransitionCondition = true;
     }
     // we're in sim mode and ch1 is 95% to junction
     // or ch0 is observable
     if ((yref(1) > 0.95 * yrefScale(1) && sv_->simModeActive) ||
-        (stateTransitionCondition && !sv_->imProc->procDataQArr[0]->empty())) {
+        (stateTransitionCondition && !sv_->poses[0].found)) {
       delete sv_->currEvent_;
       sv_->currEvent_ = nullptr;
       sv_->updateState<State2>(usat);

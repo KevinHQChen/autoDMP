@@ -31,11 +31,12 @@ void Supervisor::startThread() {
 
     imProc->clearProcFrameQueues();
     imProc->clearTempFrameQueues();
-    imProc->clearProcDataQueues();
+    imProc->clearProcData();
 
     // initialize SupervisoryController (y_range, y_max, y_o, u_o, yhat)
     // - assume y_o is always y_max, and yhat is at y_max initially (TODO is this a good
     // assumption?)
+    supIn.excitation = 5;
     supIn.y_range[0] = 0.1;
     supIn.y_range[1] = 0.9;
     for (int ch = 0; ch < imProc->impConf.numChs_; ++ch) {
@@ -75,18 +76,25 @@ void Supervisor::stopThread() {
       ctrlThread.join();
     imProc->clearProcFrameQueues();
     imProc->clearTempFrameQueues();
-    imProc->clearProcDataQueues();
+    imProc->clearProcData();
     // this->clearCtrlDataQueue();
   }
 }
 
 bool Supervisor::measAvail() {
+  if (imProc->procData->empty()) {
+    allMeasAvail = false;
+    anyMeasAvail = false;
+    simMeasAvail = duration_cast<milliseconds>(steady_clock::now() - prevCtrlTime).count() >= 25;
+    return false;
+  }
+  poses = imProc->procData->get();
   allMeasAvail = true;
   anyMeasAvail = false;
   simMeasAvail = duration_cast<milliseconds>(steady_clock::now() - prevCtrlTime).count() >= 25;
   for (int ch = 0; ch < imProc->impConf.numChs_; ++ch) {
     if (!simModeActive)
-      trueMeasAvail[ch] = !imProc->procDataQArr[ch]->empty();
+      trueMeasAvail[ch] = poses[ch].found;
     else {
       if (supOut.currEv.chs[ch] == supOut.currEv.nextChs[ch])
         trueMeasAvail[ch] = simMeasAvail && supOut.currEv.chs[ch];
@@ -115,14 +123,13 @@ bool Supervisor::updateInputs() {
   for (int ch = 0; ch < imProc->impConf.numChs_; ++ch) {
     if (trueMeasAvail[ch]) {
       if (!simModeActive)
-        supIn.y[ch] = imProc->procDataQArr[ch]->get().loc.y;
+        supIn.y[ch] = poses[ch].loc.y;
       else {
         if (supOut.currEv.chs[ch] == supOut.currEv.nextChs[ch])
           supIn.y[ch] = supOut.yhat[ch];
         else
           supIn.y[ch] = !supOut.inTransRegion ? supOut.yhat[ch] : supIn.y_o[ch];
       }
-
     } else // simMeasAvail (set y to 0 to tell the observer to only predict for this channel)
       supIn.y[ch] = 0;
   }
