@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.785
+// Model version                  : 1.793
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Fri May 12 14:03:59 2023
+// C/C++ source code generated on : Fri May 12 15:16:02 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -480,6 +480,11 @@ SupervisoryController::P SupervisoryController::rtP{
 
     0.0,
 
+    // Computed Parameter: params_Y0
+    //  Referenced by: '<S3>/params'
+
+    0.0,
+
     // Expression: zeros(1,1)
     //  Referenced by: '<S110>/G_zero'
 
@@ -842,6 +847,11 @@ SupervisoryController::P SupervisoryController::rtP{
 
     // Computed Parameter: yhat_Y0
     //  Referenced by: '<S2>/yhat'
+
+    0.0,
+
+    // Computed Parameter: params_Y0
+    //  Referenced by: '<S2>/params'
 
     0.0,
 

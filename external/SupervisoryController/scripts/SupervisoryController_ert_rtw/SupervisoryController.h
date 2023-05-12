@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.785
+// Model version                  : 1.793
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Fri May 12 14:03:59 2023
+// C/C++ source code generated on : Fri May 12 15:16:02 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -468,6 +468,8 @@ class SupervisoryController final
     boolean_T requestEvent;            // '<Root>/requestEvent'
     real_T currTraj[3];                // '<Root>/currTraj'
     real_T yhat[3];                    // '<Root>/yhat'
+    real_T params0[3];                 // '<Root>/params0'
+    real_T params1[8];                 // '<Root>/params1'
   };
 
   // Parameters for system: '<S1>/State0.controlLaw.AMPC0'
@@ -480,6 +482,9 @@ class SupervisoryController final
 
     real_T yhat_Y0;                    // Computed Parameter: yhat_Y0
                                           //  Referenced by: '<S2>/yhat'
+
+    real_T params_Y0;                  // Computed Parameter: params_Y0
+                                          //  Referenced by: '<S2>/params'
 
     real_T G_zero_Value;               // Expression: zeros(1,1)
                                           //  Referenced by: '<S5>/G_zero'
@@ -653,6 +658,9 @@ class SupervisoryController final
 
     real_T yhat_Y0;                    // Computed Parameter: yhat_Y0
                                           //  Referenced by: '<S3>/yhat'
+
+    real_T params_Y0;                  // Computed Parameter: params_Y0
+                                          //  Referenced by: '<S3>/params'
 
     real_T G_zero_Value;               // Expression: zeros(1,1)
                                           //  Referenced by: '<S110>/G_zero'
@@ -1161,14 +1169,16 @@ class SupervisoryController final
   PrevZCX rtPrevZCX;
 
   // private member function(s) for subsystem '<S1>/State0.controlLaw.AMPC0'
-  void State0controlLawAMPC0_Init(real_T rty_u[3], real_T *rty_yhat,
-    DW_State0controlLawAMPC0 *localDW, P_State0controlLawAMPC0 *localP);
+  void State0controlLawAMPC0_Init(real_T rty_u[3], real_T *rty_yhat, real_T
+    rty_params[3], DW_State0controlLawAMPC0 *localDW, P_State0controlLawAMPC0
+    *localP);
   static void State0controlLawAMPC0_Disable(DW_State0controlLawAMPC0 *localDW,
     P_State0controlLawAMPC0 *localP);
   void State0controlLawAMPC0(real_T rtu_r, real_T rtu_y, real_T rtu_y0, const
     real_T rtu_u0[3], real_T rtu_paramEst, real_T rtu_excitationVal, real_T
-    rty_u[3], real_T *rty_yhat, DW_State0controlLawAMPC0 *localDW,
-    P_State0controlLawAMPC0 *localP, P *rtP, ZCE_State0controlLawAMPC0 *localZCE);
+    rty_u[3], real_T *rty_yhat, real_T rty_params[3], DW_State0controlLawAMPC0
+    *localDW, P_State0controlLawAMPC0 *localP, P *rtP, ZCE_State0controlLawAMPC0
+    *localZCE);
   real_T xnrm2_g(int32_T n, const real_T x[4], int32_T ix0);
   real_T qrFactor(const real_T A[3], const real_T S[9], real_T Ns);
   void trisolve_m(real_T A, real_T B_1[3]);
@@ -1263,15 +1273,16 @@ class SupervisoryController final
   static void ScalarExpansionR(const real_T rtu_u[4], real_T rty_y[4]);
 
   // private member function(s) for subsystem '<S1>/State1.controlLaw.AMPC1'
-  void State1controlLawAMPC1_Init(real_T rty_u[3], real_T rty_yhat[2],
-    DW_State1controlLawAMPC1 *localDW, P_State1controlLawAMPC1 *localP);
+  void State1controlLawAMPC1_Init(real_T rty_u[3], real_T rty_yhat[2], real_T
+    rty_params[8], DW_State1controlLawAMPC1 *localDW, P_State1controlLawAMPC1
+    *localP);
   static void State1controlLawAMPC1_Disable(DW_State1controlLawAMPC1 *localDW,
     P_State1controlLawAMPC1 *localP);
   void State1controlLawAMPC1(const real_T rtu_r[2], const real_T rtu_y[2], const
     real_T rtu_y0[2], const real_T rtu_u0[3], const real_T rtu_paramEst[2],
-    real_T rtu_excitationVal, real_T rty_u[3], real_T rty_yhat[2],
-    DW_State1controlLawAMPC1 *localDW, P_State1controlLawAMPC1 *localP, P *rtP,
-    ZCE_State1controlLawAMPC1 *localZCE);
+    real_T rtu_excitationVal, real_T rty_u[3], real_T rty_yhat[2], real_T
+    rty_params[8], DW_State1controlLawAMPC1 *localDW, P_State1controlLawAMPC1
+    *localP, P *rtP, ZCE_State1controlLawAMPC1 *localZCE);
   int32_T xpotrf_n(real_T b_A[16]);
   real_T minimum_i(const real_T x[4]);
   void trisolve_i(const real_T b_A[16], real_T b_B[16]);

@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.785
+// Model version                  : 1.793
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Fri May 12 14:03:59 2023
+// C/C++ source code generated on : Fri May 12 15:16:02 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -2724,7 +2724,8 @@ void SupervisoryController::mpcblock_optimizer(const real_T rseq[20], const
 
 // System initialize for function-call system: '<S1>/State0.controlLaw.AMPC0'
 void SupervisoryController::State0controlLawAMPC0_Init(real_T rty_u[3], real_T
-  *rty_yhat, DW_State0controlLawAMPC0 *localDW, P_State0controlLawAMPC0 *localP)
+  *rty_yhat, real_T rty_params[3], DW_State0controlLawAMPC0 *localDW,
+  P_State0controlLawAMPC0 *localP)
 {
   int32_T i;
   int32_T t_tmp;
@@ -2841,13 +2842,26 @@ void SupervisoryController::State0controlLawAMPC0_Init(real_T rty_u[3], real_T
 
   // End of SystemInitialize for SubSystem: '<S83>/MeasurementUpdate'
 
-  // SystemInitialize for Outport: '<S2>/u'
-  rty_u[0] = localP->u_Y0;
-  rty_u[1] = localP->u_Y0;
-  rty_u[2] = localP->u_Y0;
-
   // SystemInitialize for Outport: '<S2>/yhat'
   *rty_yhat = localP->yhat_Y0;
+
+  // SystemInitialize for Outport: '<S2>/u'
+  rty_u[0] = localP->u_Y0;
+
+  // SystemInitialize for Outport: '<S2>/params'
+  rty_params[0] = localP->params_Y0;
+
+  // SystemInitialize for Outport: '<S2>/u'
+  rty_u[1] = localP->u_Y0;
+
+  // SystemInitialize for Outport: '<S2>/params'
+  rty_params[1] = localP->params_Y0;
+
+  // SystemInitialize for Outport: '<S2>/u'
+  rty_u[2] = localP->u_Y0;
+
+  // SystemInitialize for Outport: '<S2>/params'
+  rty_params[2] = localP->params_Y0;
 }
 
 // Disable for function-call system: '<S1>/State0.controlLaw.AMPC0'
@@ -2870,9 +2884,9 @@ void SupervisoryController::State0controlLawAMPC0_Disable
 // Output and update for function-call system: '<S1>/State0.controlLaw.AMPC0'
 void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
   real_T rtu_y0, const real_T rtu_u0[3], real_T rtu_paramEst, real_T
-  rtu_excitationVal, real_T rty_u[3], real_T *rty_yhat, DW_State0controlLawAMPC0
-  *localDW, P_State0controlLawAMPC0 *localP, P *rtP, ZCE_State0controlLawAMPC0
-  *localZCE)
+  rtu_excitationVal, real_T rty_u[3], real_T *rty_yhat, real_T rty_params[3],
+  DW_State0controlLawAMPC0 *localDW, P_State0controlLawAMPC0 *localP, P *rtP,
+  ZCE_State0controlLawAMPC0 *localZCE)
 {
   static const real_T h[184]{ -0.7084943675087555, -1.4170115739006484,
     -2.1255516199119082, -2.8341145062787887, -3.5427002337375666,
@@ -3052,7 +3066,6 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
   real_T rtb_y_k[4];
   real_T U[3];
   real_T rtb_Sum1[3];
-  real_T rtb_x[3];
   real_T tmp[3];
   real_T tmp_0[3];
   real_T tmp_1[3];
@@ -3084,10 +3097,6 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
     localDW->delayTheta_DSTATE[2] = localP->InitialParameters_Value[2];
   }
 
-  rtb_x[0] = localDW->delayTheta_DSTATE[0];
-  rtb_x[1] = localDW->delayTheta_DSTATE[1];
-  rtb_x[2] = localDW->delayTheta_DSTATE[2];
-
   // Delay: '<S38>/delayL' incorporates:
   //   Constant: '<S38>/InitialCovariance'
 
@@ -3117,6 +3126,10 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
   //   Delay: '<S38>/delayTheta'
   //   Sum: '<S6>/Add1'
 
+  rty_params[0] = localDW->delayTheta_DSTATE[0];
+  rty_params[1] = localDW->delayTheta_DSTATE[1];
+  rty_params[2] = localDW->delayTheta_DSTATE[2];
+
   //  % I/O data
   //  % Helper variables
   //  % States
@@ -3144,11 +3157,11 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
     localDW->rlsEstimator.DataIterator.IteratorPosition = 2;
   }
 
-  rtb_Product1_p4 = rtb_Add1_tmp - ((rty_u[0] * localDW->delayTheta_DSTATE[0] +
-    rty_u[1] * localDW->delayTheta_DSTATE[1]) + rty_u[2] *
-    localDW->delayTheta_DSTATE[2]);
+  rtb_Product1_p4 = rtb_Add1_tmp - ((rty_u[0] * rty_params[0] + rty_u[1] *
+    rty_params[1]) + rty_u[2] * rty_params[2]);
   if (rtu_paramEst != 0.0) {
-    sqrtMeasurementUpdate(rtb_L_i, rty_u, localP->ForgettingFactor_Value, rtb_x);
+    sqrtMeasurementUpdate(rtb_L_i, rty_u, localP->ForgettingFactor_Value,
+                          rtb_Sum1);
     sqrtFF = std::sqrt(localP->ForgettingFactor_Value);
     for (kk = 0; kk < 3; kk++) {
       for (i = 0; i <= kk; i++) {
@@ -3200,7 +3213,7 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
         rtb_L_i[kk + 6] = u * 1.7976931348623157E+308;
       }
 
-      rtb_x[kk] = rtb_x[kk] * rtb_Product1_p4 + localDW->delayTheta_DSTATE[kk];
+      rty_params[kk] += rtb_Sum1[kk] * rtb_Product1_p4;
     }
   }
 
@@ -3208,9 +3221,9 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
   //  % states
   //  % new IO data
   //  helper variables
-  rty_u[0] = rtb_x[1];
-  rty_u[1] = rtb_x[2];
-  rty_u[2] = rtb_x[2];
+  rty_u[0] = rty_params[1];
+  rty_u[1] = rty_params[2];
+  rty_u[2] = rty_params[2];
 
   // Product: '<S6>/Product' incorporates:
   //   Constant: '<S6>/Constant11'
@@ -3415,7 +3428,7 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
   (void)std::memcpy(&b_B[0], &c[0], 12U * sizeof(real_T));
   rtb_C[1] = 1.0;
   rtb_C[0] = localP->Constant12_Value;
-  rtb_A[0] = rtb_x[0];
+  rtb_A[0] = rty_params[0];
   i = 0;
   for (rtb_L_k_tmp = 0; rtb_L_k_tmp < 3; rtb_L_k_tmp++) {
     b_B[i] = rty_u[rtb_L_k_tmp];
@@ -3618,7 +3631,7 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
   //  combine plant and output disturbance model
   // 'stateEstimator:19' A = [Ap, zeros(nsp,no);
   // 'stateEstimator:20'      zeros(no,nsp), Aod];
-  rtb_A[0] = rtb_x[0];
+  rtb_A[0] = rty_params[0];
   rtb_A[2] = 0.0;
   rtb_A[1] = 0.0;
   rtb_A[3] = rtP->Aod0;
@@ -3960,7 +3973,7 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
     rtb_Z_idx_3 = rtb_Z_idx_3 * rtb_Bkuk[1] + rtb_y_e[3];
     rtb_Bkuk[0] = u / rtb_Product1_p4;
     rtb_Bkuk[1] = rtb_Product2_gf / rtb_Product1_p4;
-    rtb_y_k[0] = rtb_x[0] - rtb_Bkuk[0] * localP->Constant12_Value;
+    rtb_y_k[0] = rty_params[0] - rtb_Bkuk[0] * localP->Constant12_Value;
     rtb_y_k[1] = 0.0 - localP->Constant12_Value * rtb_Bkuk[1];
     rtb_y_k[2] = 0.0 - rtb_Bkuk[0] * rtP->Cod0;
     rtb_y_k[3] = rtP->Aod0 - rtb_Bkuk[1] * rtP->Cod0;
@@ -4156,7 +4169,7 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
   localDW->UnitDelay2_DSTATE[0] = rty_u[0] - rtu_u0[0];
 
   // Update for Delay: '<S38>/delayTheta'
-  localDW->delayTheta_DSTATE[0] = rtb_x[0];
+  localDW->delayTheta_DSTATE[0] = rty_params[0];
 
   // Update for UnitDelay: '<S8>/last_mv'
   localDW->last_mv_DSTATE[1] = U[1];
@@ -4167,7 +4180,7 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
   localDW->UnitDelay2_DSTATE[1] = rty_u[1] - rtu_u0[1];
 
   // Update for Delay: '<S38>/delayTheta'
-  localDW->delayTheta_DSTATE[1] = rtb_x[1];
+  localDW->delayTheta_DSTATE[1] = rty_params[1];
 
   // Update for UnitDelay: '<S8>/last_mv'
   localDW->last_mv_DSTATE[2] = U[2];
@@ -4176,7 +4189,7 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
   localDW->UnitDelay2_DSTATE[2] = u;
 
   // Update for Delay: '<S38>/delayTheta'
-  localDW->delayTheta_DSTATE[2] = rtb_x[2];
+  localDW->delayTheta_DSTATE[2] = rty_params[2];
 
   // Sum: '<S7>/Sum3' incorporates:
   //   BusCreator: '<S6>/Bus Creator1'
@@ -7536,8 +7549,8 @@ void SupervisoryController::mpcblock_optimizer_d(const real_T rseq[40], const
 
 // System initialize for function-call system: '<S1>/State1.controlLaw.AMPC1'
 void SupervisoryController::State1controlLawAMPC1_Init(real_T rty_u[3], real_T
-  rty_yhat[2], DW_State1controlLawAMPC1 *localDW, P_State1controlLawAMPC1
-  *localP)
+  rty_yhat[2], real_T rty_params[8], DW_State1controlLawAMPC1 *localDW,
+  P_State1controlLawAMPC1 *localP)
 {
   int32_T i;
   int32_T t_tmp;
@@ -7670,6 +7683,13 @@ void SupervisoryController::State1controlLawAMPC1_Init(real_T rty_u[3], real_T
   // SystemInitialize for Outport: '<S3>/yhat'
   rty_yhat[0] = localP->yhat_Y0;
   rty_yhat[1] = localP->yhat_Y0;
+
+  // SystemInitialize for Outport: '<S3>/params'
+  for (i = 0; i < 8; i++) {
+    rty_params[i] = localP->params_Y0;
+  }
+
+  // End of SystemInitialize for Outport: '<S3>/params'
 }
 
 // Disable for function-call system: '<S1>/State1.controlLaw.AMPC1'
@@ -7689,8 +7709,8 @@ void SupervisoryController::State1controlLawAMPC1_Disable
 void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   real_T rtu_y[2], const real_T rtu_y0[2], const real_T rtu_u0[3], const real_T
   rtu_paramEst[2], real_T rtu_excitationVal, real_T rty_u[3], real_T rty_yhat[2],
-  DW_State1controlLawAMPC1 *localDW, P_State1controlLawAMPC1 *localP, P *rtP,
-  ZCE_State1controlLawAMPC1 *localZCE)
+  real_T rty_params[8], DW_State1controlLawAMPC1 *localDW,
+  P_State1controlLawAMPC1 *localP, P *rtP, ZCE_State1controlLawAMPC1 *localZCE)
 {
   static const real_T f[344]{ -1.0000306206339091, -1.9691324621873285E-5,
     -1.000061241772034, -3.9382763869063235E-5, -1.0000918634143874,
@@ -8013,15 +8033,18 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   real_T rtb_R_h_tmp[14];
   real_T rtb_B_m[12];
   real_T rtb_C[8];
-  real_T rtb_L_d[8];
+  real_T rtb_M_pk[8];
   real_T rtb_N[8];
   real_T rtb_Product2_o[8];
   real_T rtb_B[6];
+  real_T rtb_D_d[6];
   real_T rtb_A[4];
-  real_T rtb_A_o[4];
+  real_T rtb_MemoryX_c[4];
   real_T rtb_R_o[4];
   real_T rtb_x[4];
-  real_T rtb_x_n[4];
+  real_T rtb_x_l[4];
+  real_T U[3];
+  real_T b_uoff[3];
   real_T rtb_Switch[3];
   real_T rtb_Switch1[3];
   real_T tmp[3];
@@ -8029,7 +8052,7 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   real_T tmp_1[3];
   real_T Y[2];
   real_T rtb_Add1_k1_tmp[2];
-  real_T rtb_C_o[2];
+  real_T rtb_D_b[2];
   real_T b_Mlim_0;
   real_T rtb_HBuffer_l;
   real_T rtb_HBuffer_pe;
@@ -8076,10 +8099,10 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
     localDW->delayTheta_DSTATE[3] = localP->InitialParameters_Value[3];
   }
 
-  rtb_x[0] = localDW->delayTheta_DSTATE[0];
-  rtb_x[1] = localDW->delayTheta_DSTATE[1];
-  rtb_x[2] = localDW->delayTheta_DSTATE[2];
-  rtb_x[3] = localDW->delayTheta_DSTATE[3];
+  rtb_x_l[0] = localDW->delayTheta_DSTATE[0];
+  rtb_x_l[1] = localDW->delayTheta_DSTATE[1];
+  rtb_x_l[2] = localDW->delayTheta_DSTATE[2];
+  rtb_x_l[3] = localDW->delayTheta_DSTATE[3];
 
   // Delay: '<S144>/delayL' incorporates:
   //   Constant: '<S144>/InitialCovariance'
@@ -8107,7 +8130,7 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
       rtu_paramEst[0] != 0.0, localP->ForgettingFactor_Value,
       localDW->delayBuffery_DSTATE, localDW->delayBufferH_DSTATE,
       localDW->delayTheta_DSTATE, localDW->delayL_DSTATE, &rtb_e_f,
-      &rtb_yBuffer_o, &rtb_HBuffer_l, rtb_x, rtb_L_f, &localDW->sf_RLS);
+      &rtb_yBuffer_o, &rtb_HBuffer_l, rtb_x_l, rtb_L_f, &localDW->sf_RLS);
 
   // Delay: '<S145>/delayBuffery' incorporates:
   //   Constant: '<S145>/InitialOutputs'
@@ -8137,10 +8160,10 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
     localDW->delayTheta_DSTATE_i[3] = localP->InitialParameters_Value_l[3];
   }
 
-  rtb_x_n[0] = localDW->delayTheta_DSTATE_i[0];
-  rtb_x_n[1] = localDW->delayTheta_DSTATE_i[1];
-  rtb_x_n[2] = localDW->delayTheta_DSTATE_i[2];
-  rtb_x_n[3] = localDW->delayTheta_DSTATE_i[3];
+  rtb_x[0] = localDW->delayTheta_DSTATE_i[0];
+  rtb_x[1] = localDW->delayTheta_DSTATE_i[1];
+  rtb_x[2] = localDW->delayTheta_DSTATE_i[2];
+  rtb_x[3] = localDW->delayTheta_DSTATE_i[3];
 
   // Delay: '<S145>/delayL' incorporates:
   //   Constant: '<S145>/InitialCovariance'
@@ -8168,36 +8191,36 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
       rtu_paramEst[1] != 0.0, localP->ForgettingFactor_Value_k,
       localDW->delayBuffery_DSTATE_i, localDW->delayBufferH_DSTATE_h,
       localDW->delayTheta_DSTATE_i, localDW->delayL_DSTATE_o, &rtb_e_o, &rtb_e_f,
-      &rtb_HBuffer_pe, rtb_x_n, rtb_L_j5, &localDW->sf_RLS_g);
+      &rtb_HBuffer_pe, rtb_x, rtb_L_j5, &localDW->sf_RLS_g);
 
   // Switch: '<S111>/Switch1'
   if (rtu_paramEst[0] > localP->Switch1_Threshold) {
-    rtb_Switch1[0] = rtb_x[1];
-    rtb_Switch1[1] = rtb_x[2];
-    rtb_Switch1[2] = rtb_x[3];
+    rtb_Switch1[0] = rtb_x_l[1];
+    rtb_Switch1[1] = rtb_x_l[2];
+    rtb_Switch1[2] = rtb_x_l[3];
   } else {
-    rtb_Switch1[0] = rtb_x_n[1];
-    rtb_Switch1[1] = rtb_x_n[3];
-    rtb_Switch1[2] = rtb_x_n[2];
+    rtb_Switch1[0] = rtb_x[1];
+    rtb_Switch1[1] = rtb_x[3];
+    rtb_Switch1[2] = rtb_x[2];
   }
 
   // End of Switch: '<S111>/Switch1'
 
   // Switch: '<S111>/Switch'
   if (rtu_paramEst[1] > localP->Switch_Threshold) {
-    rtb_Switch[0] = rtb_x_n[1];
-    rtb_Switch[1] = rtb_x_n[2];
-    rtb_Switch[2] = rtb_x_n[3];
-  } else {
     rtb_Switch[0] = rtb_x[1];
-    rtb_Switch[1] = rtb_x[3];
-    rtb_Switch[2] = rtb_x[2];
+    rtb_Switch[1] = rtb_x[2];
+    rtb_Switch[2] = rtb_x[3];
+  } else {
+    rtb_Switch[0] = rtb_x_l[1];
+    rtb_Switch[1] = rtb_x_l[3];
+    rtb_Switch[2] = rtb_x_l[2];
   }
 
   // End of Switch: '<S111>/Switch'
 
   // MATLAB Function: '<S111>/MATLAB Function1'
-  MATLABFunction1(rtb_x[0], rtb_Switch1, rtb_x_n[0], rtb_Switch, rtb_A, rtb_B);
+  MATLABFunction1(rtb_x_l[0], rtb_Switch1, rtb_x[0], rtb_Switch, rtb_A, rtb_B);
 
   // Product: '<S111>/Product' incorporates:
   //   Constant: '<S111>/Constant11'
@@ -8219,6 +8242,11 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
     localDW->MemoryX_DSTATE[2] = localP->X0_Value[2];
     localDW->MemoryX_DSTATE[3] = localP->X0_Value[3];
   }
+
+  rtb_MemoryX_c[0] = localDW->MemoryX_DSTATE[0];
+  rtb_MemoryX_c[1] = localDW->MemoryX_DSTATE[1];
+  rtb_MemoryX_c[2] = localDW->MemoryX_DSTATE[2];
+  rtb_MemoryX_c[3] = localDW->MemoryX_DSTATE[3];
 
   // MATLAB Function: '<S141>/FixedHorizonOptimizer' incorporates:
   //   BusCreator: '<S111>/Bus Creator1'
@@ -8450,14 +8478,14 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   }
 
   (void)std::memset(&b_utarget[0], 0, 60U * sizeof(real_T));
-  rtb_Switch[0] = rtu_u0[0];
-  rtb_Switch[1] = rtu_u0[1];
-  rtb_Switch[2] = rtu_u0[2];
+  U[0] = rtu_u0[0];
+  U[1] = rtu_u0[1];
+  U[2] = rtu_u0[2];
   Y[0] = rtu_y0[0];
   Y[1] = rtu_y0[1];
-  rtb_Switch1[0] = rtu_u0[0];
-  rtb_Switch1[1] = rtu_u0[1];
-  rtb_Switch1[2] = rtu_u0[2];
+  b_uoff[0] = rtu_u0[0];
+  b_uoff[1] = rtu_u0[1];
+  b_uoff[2] = rtu_u0[2];
   for (int32_T i{0}; i < 86; i++) {
     b_Mlim_0 = b_Mlim[i];
     b_Mrows = b_Mrows_0[i];
@@ -8469,10 +8497,10 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
       b_Mrows = (b_Mrows - (((b_Mrows - 41) >> 1UL) << 1UL)) - 41;
       b_Mlim_0 -= (-22.0 * static_cast<real_T>(b_Mrows) + 455.0) - Y[b_Mrows];
     } else if (b_Mrows <= 140) {
-      b_Mlim_0 += 0.0 - rtb_Switch[(b_Mrows - div_nde_s32_floor(b_Mrows - 81,
+      b_Mlim_0 += 0.0 - U[(b_Mrows - div_nde_s32_floor(b_Mrows - 81,
         static_cast<int32_T>(nu_g)) * static_cast<int32_T>(nu_g)) - 81];
     } else {
-      b_Mlim_0 -= 0.0 - rtb_Switch[(b_Mrows - div_nde_s32_floor(b_Mrows - 141,
+      b_Mlim_0 -= 0.0 - U[(b_Mrows - div_nde_s32_floor(b_Mrows - 141,
         static_cast<int32_T>(nu_g)) * static_cast<int32_T>(nu_g)) - 141];
     }
 
@@ -8480,7 +8508,7 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   }
 
   for (int32_T i{0}; i < 3; i++) {
-    b_Mlim_0 = rtb_Switch[i];
+    b_Mlim_0 = U[i];
     b_Mrows = 0;
     for (i_0 = 0; i_0 < 20; i_0++) {
       b_utarget_tmp = b_Mrows + i;
@@ -8576,10 +8604,10 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   //   MATLAB Function: '<S141>/FixedHorizonOptimizer'
 
   mpcblock_optimizer_d(rseq, vseq, rtb_R_o, tmp, tmp_6, b_Mlim, f_0, g_0,
-                       localDW->dv, b_utarget, rtb_Switch1, rtb_Q, k_0, Y, tmp_0,
-                       l, tmp_1, n, rtb_A_cy, Bu, Bv, rtb_C, Dv, b_Mrows_0,
-                       rtb_Switch, rtb_useq, &rtb_e_o,
-                       localDW->Memory_PreviousInput, localDW);
+                       localDW->dv, b_utarget, b_uoff, rtb_Q, k_0, Y, tmp_0, l,
+                       tmp_1, n, rtb_A_cy, Bu, Bv, rtb_C, Dv, b_Mrows_0, U,
+                       rtb_useq, &rtb_e_o, localDW->Memory_PreviousInput,
+                       localDW);
 
   // Delay: '<S196>/MemoryP' incorporates:
   //   Constant: '<S196>/P0'
@@ -8670,6 +8698,10 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   rtb_C[7] = rtP->Cod1[3];
 
   // 'stateEstimator:24' D = Dp;
+  for (int32_T i{0}; i < 6; i++) {
+    rtb_D_d[i] = localP->Constant13_Value[i];
+  }
+
   // 'stateEstimator:26' B_est = [ [Bp; zeros(no,ni)] [zeros(size(Bp,1), size(Cp,1)); Bod] [zeros(size(Bp,1) + size(Bod,1), size(Cp,1))] ]; 
   b_Mrows = 0;
   i_0 = 0;
@@ -8782,8 +8814,8 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   //   Delay: '<S196>/MemoryP'
 
   CalculatePL(rtb_A_cy, rtb_C, rtb_Product_on, rtb_R_o, rtb_Product2_o,
-              localP->Constant_Value_f != 0.0, localDW->MemoryP_DSTATE, rtb_N,
-              rtb_L_d, rtb_Z_c, rtb_Q);
+              localP->Constant_Value_f != 0.0, localDW->MemoryP_DSTATE, rtb_M_pk,
+              rtb_N, rtb_Z_c, rtb_Q);
 
   // End of Outputs for SubSystem: '<S196>/CalculatePL'
 
@@ -8791,6 +8823,16 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   //   Constant: '<S237>/isSqrtUsed'
 
   SqrtUsedFcn(rtb_Z_c, localP->isSqrtUsed_Value, rtb_Product_on);
+
+  // SignalConversion: '<S111>/Signal Conversion'
+  rty_params[0] = rtb_x_l[0];
+  rty_params[4] = rtb_x[0];
+  rty_params[1] = rtb_Switch1[0];
+  rty_params[5] = rtb_Switch[0];
+  rty_params[2] = rtb_Switch1[1];
+  rty_params[6] = rtb_Switch[1];
+  rty_params[3] = rtb_Switch1[2];
+  rty_params[7] = rtb_Switch[2];
 
   // RelationalOperator: '<S3>/Relational Operator1' incorporates:
   //   Constant: '<S3>/Constant1'
@@ -8814,7 +8856,7 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   //   Product: '<S3>/Product1'
 
   rty_u[0] = static_cast<real_T>(rtb_RelationalOperator1 ? 1.0 : 0.0) * rty_u[0]
-    * rtu_excitationVal + localP->u_scale_Gain[0] * rtb_Switch[0];
+    * rtu_excitationVal + localP->u_scale_Gain[0] * U[0];
 
   // Sum: '<S112>/Sum1' incorporates:
   //   BusCreator: '<S111>/Bus Creator1'
@@ -8830,7 +8872,7 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   //   Product: '<S3>/Product1'
 
   rty_u[1] = static_cast<real_T>(rtb_RelationalOperator1 ? 1.0 : 0.0) * rty_u[1]
-    * rtu_excitationVal + localP->u_scale_Gain[1] * rtb_Switch[1];
+    * rtu_excitationVal + localP->u_scale_Gain[1] * U[1];
 
   // Sum: '<S112>/Sum1' incorporates:
   //   BusCreator: '<S111>/Bus Creator1'
@@ -8846,7 +8888,7 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   //   Product: '<S3>/Product1'
 
   rty_u[2] = static_cast<real_T>(rtb_RelationalOperator1 ? 1.0 : 0.0) * rty_u[2]
-    * rtu_excitationVal + localP->u_scale_Gain[2] * rtb_Switch[2];
+    * rtu_excitationVal + localP->u_scale_Gain[2] * U[2];
 
   // Sum: '<S112>/Sum1' incorporates:
   //   BusCreator: '<S111>/Bus Creator1'
@@ -8857,14 +8899,12 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
 
   // Outputs for Enabled SubSystem: '<S215>/MeasurementUpdate'
   // DataTypeConversion: '<S196>/DataTypeConversionEnable' incorporates:
-  //   Constant: '<S111>/Constant13'
   //   Constant: '<S3>/Constant'
-  //   Delay: '<S196>/MemoryX'
 
-  MeasurementUpdate(localP->Constant_Value_f != 0.0, rtb_L_d, rtb_Add1_k1_tmp,
-                    rtb_C, localDW->MemoryX_DSTATE, localP->Constant13_Value,
-                    rtb_Switch1, localDW->Product3,
-                    &localDW->MeasurementUpdate_n, &localP->MeasurementUpdate_n);
+  MeasurementUpdate(localP->Constant_Value_f != 0.0, rtb_N, rtb_Add1_k1_tmp,
+                    rtb_C, rtb_MemoryX_c, rtb_D_d, rtb_Switch1,
+                    localDW->Product3, &localDW->MeasurementUpdate_n,
+                    &localP->MeasurementUpdate_n);
 
   // End of Outputs for SubSystem: '<S215>/MeasurementUpdate'
 
@@ -8887,106 +8927,107 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
     //   Sum: '<S112>/Sum1'
 
     tmp_5 = _mm_set1_pd(0.0);
-    (void)_mm_storeu_pd(&rtb_R_o[b_Mrows], tmp_5);
+    (void)_mm_storeu_pd(&rtb_A[b_Mrows], tmp_5);
     tmp_3 = _mm_loadu_pd(&rtb_B_m[b_Mrows]);
-    tmp_4 = _mm_loadu_pd(&rtb_R_o[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_R_o[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3,
+    tmp_4 = _mm_loadu_pd(&rtb_A[b_Mrows]);
+    (void)_mm_storeu_pd(&rtb_A[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3,
       _mm_set1_pd(rtb_Switch1[0])), tmp_4));
     tmp_3 = _mm_loadu_pd(&rtb_B_m[b_Mrows + 4]);
-    tmp_4 = _mm_loadu_pd(&rtb_R_o[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_R_o[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3,
+    tmp_4 = _mm_loadu_pd(&rtb_A[b_Mrows]);
+    (void)_mm_storeu_pd(&rtb_A[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3,
       _mm_set1_pd(rtb_Switch1[1])), tmp_4));
     tmp_3 = _mm_loadu_pd(&rtb_B_m[b_Mrows + 8]);
-    tmp_4 = _mm_loadu_pd(&rtb_R_o[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_R_o[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3,
+    tmp_4 = _mm_loadu_pd(&rtb_A[b_Mrows]);
+    (void)_mm_storeu_pd(&rtb_A[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3,
       _mm_set1_pd(rtb_e_o)), tmp_4));
 
     // Product: '<S215>/A[k]*xhat[k|k-1]' incorporates:
-    //   Delay: '<S196>/MemoryX'
     //   Product: '<S215>/B[k]*u[k]'
 
-    (void)_mm_storeu_pd(&rtb_A_o[b_Mrows], tmp_5);
+    (void)_mm_storeu_pd(&rtb_R_o[b_Mrows], tmp_5);
     tmp_5 = _mm_loadu_pd(&rtb_A_cy[b_Mrows]);
-    tmp_3 = _mm_loadu_pd(&rtb_A_o[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_A_o[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_5,
-      _mm_set1_pd(localDW->MemoryX_DSTATE[0])), tmp_3));
+    tmp_3 = _mm_loadu_pd(&rtb_R_o[b_Mrows]);
+    (void)_mm_storeu_pd(&rtb_R_o[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_5,
+      _mm_set1_pd(rtb_MemoryX_c[0])), tmp_3));
     tmp_5 = _mm_loadu_pd(&rtb_A_cy[b_Mrows + 4]);
-    tmp_3 = _mm_loadu_pd(&rtb_A_o[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_A_o[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_5,
-      _mm_set1_pd(localDW->MemoryX_DSTATE[1])), tmp_3));
+    tmp_3 = _mm_loadu_pd(&rtb_R_o[b_Mrows]);
+    (void)_mm_storeu_pd(&rtb_R_o[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_5,
+      _mm_set1_pd(rtb_MemoryX_c[1])), tmp_3));
     tmp_5 = _mm_loadu_pd(&rtb_A_cy[b_Mrows + 8]);
-    tmp_3 = _mm_loadu_pd(&rtb_A_o[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_A_o[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_5,
-      _mm_set1_pd(localDW->MemoryX_DSTATE[2])), tmp_3));
+    tmp_3 = _mm_loadu_pd(&rtb_R_o[b_Mrows]);
+    (void)_mm_storeu_pd(&rtb_R_o[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_5,
+      _mm_set1_pd(rtb_MemoryX_c[2])), tmp_3));
     tmp_5 = _mm_loadu_pd(&rtb_A_cy[b_Mrows + 12]);
-    tmp_3 = _mm_loadu_pd(&rtb_A_o[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_A_o[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_5,
-      _mm_set1_pd(localDW->MemoryX_DSTATE[3])), tmp_3));
+    tmp_3 = _mm_loadu_pd(&rtb_R_o[b_Mrows]);
+    (void)_mm_storeu_pd(&rtb_R_o[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_5,
+      _mm_set1_pd(rtb_MemoryX_c[3])), tmp_3));
 
     // Product: '<S215>/B[k]*u[k]'
-    tmp_5 = _mm_loadu_pd(&rtb_R_o[b_Mrows]);
+    tmp_5 = _mm_loadu_pd(&rtb_A[b_Mrows]);
 
     // Product: '<S215>/A[k]*xhat[k|k-1]' incorporates:
     //   Product: '<S215>/B[k]*u[k]'
 
-    tmp_3 = _mm_loadu_pd(&rtb_A_o[b_Mrows]);
+    tmp_3 = _mm_loadu_pd(&rtb_R_o[b_Mrows]);
 
     // Sum: '<S215>/Add' incorporates:
     //   Product: '<S215>/B[k]*u[k]'
 
     tmp_4 = _mm_loadu_pd(&localDW->Product3[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_A[b_Mrows], _mm_add_pd(_mm_add_pd(tmp_5, tmp_3),
-      tmp_4));
+
+    // Update for Delay: '<S196>/MemoryX' incorporates:
+    //   Product: '<S215>/B[k]*u[k]'
+
+    (void)_mm_storeu_pd(&localDW->MemoryX_DSTATE[b_Mrows], _mm_add_pd(_mm_add_pd
+      (tmp_5, tmp_3), tmp_4));
   }
 
   for (b_Mrows = 0; b_Mrows <= 0; b_Mrows += 2) {
-    // Product: '<S199>/Product' incorporates:
-    //   Delay: '<S196>/MemoryX'
-
+    // Product: '<S199>/Product'
     tmp_5 = _mm_set1_pd(0.0);
-    (void)_mm_storeu_pd(&rtb_C_o[b_Mrows], tmp_5);
+    (void)_mm_storeu_pd(&Y[b_Mrows], tmp_5);
     tmp_3 = _mm_loadu_pd(&rtb_C[b_Mrows]);
-    tmp_4 = _mm_loadu_pd(&rtb_C_o[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_C_o[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3,
-      _mm_set1_pd(localDW->MemoryX_DSTATE[0])), tmp_4));
+    tmp_4 = _mm_loadu_pd(&Y[b_Mrows]);
+    (void)_mm_storeu_pd(&Y[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3, _mm_set1_pd
+      (rtb_MemoryX_c[0])), tmp_4));
     tmp_3 = _mm_loadu_pd(&rtb_C[b_Mrows + 2]);
-    tmp_4 = _mm_loadu_pd(&rtb_C_o[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_C_o[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3,
-      _mm_set1_pd(localDW->MemoryX_DSTATE[1])), tmp_4));
+    tmp_4 = _mm_loadu_pd(&Y[b_Mrows]);
+    (void)_mm_storeu_pd(&Y[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3, _mm_set1_pd
+      (rtb_MemoryX_c[1])), tmp_4));
     tmp_3 = _mm_loadu_pd(&rtb_C[b_Mrows + 4]);
-    tmp_4 = _mm_loadu_pd(&rtb_C_o[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_C_o[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3,
-      _mm_set1_pd(localDW->MemoryX_DSTATE[2])), tmp_4));
+    tmp_4 = _mm_loadu_pd(&Y[b_Mrows]);
+    (void)_mm_storeu_pd(&Y[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3, _mm_set1_pd
+      (rtb_MemoryX_c[2])), tmp_4));
     tmp_3 = _mm_loadu_pd(&rtb_C[b_Mrows + 6]);
-    tmp_4 = _mm_loadu_pd(&rtb_C_o[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_C_o[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3,
-      _mm_set1_pd(localDW->MemoryX_DSTATE[3])), tmp_4));
+    tmp_4 = _mm_loadu_pd(&Y[b_Mrows]);
+    (void)_mm_storeu_pd(&Y[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3, _mm_set1_pd
+      (rtb_MemoryX_c[3])), tmp_4));
 
     // Product: '<S199>/Product1' incorporates:
-    //   Constant: '<S111>/Constant13'
-    //   Delay: '<S196>/MemoryX'
     //   Product: '<S199>/Product'
     //   Sum: '<S112>/Sum1'
 
-    (void)_mm_storeu_pd(&Y[b_Mrows], tmp_5);
-    tmp_5 = _mm_loadu_pd(&Y[b_Mrows]);
-    (void)_mm_storeu_pd(&Y[b_Mrows], _mm_add_pd(_mm_mul_pd(_mm_loadu_pd
-      (&localP->Constant13_Value[b_Mrows]), _mm_set1_pd(rtb_Switch1[0])), tmp_5));
-    tmp_5 = _mm_loadu_pd(&Y[b_Mrows]);
-    (void)_mm_storeu_pd(&Y[b_Mrows], _mm_add_pd(_mm_mul_pd(_mm_loadu_pd
-      (&localP->Constant13_Value[b_Mrows + 2]), _mm_set1_pd(rtb_Switch1[1])),
-      tmp_5));
-    tmp_5 = _mm_loadu_pd(&Y[b_Mrows]);
-    (void)_mm_storeu_pd(&Y[b_Mrows], _mm_add_pd(_mm_mul_pd(_mm_loadu_pd
-      (&localP->Constant13_Value[b_Mrows + 4]), _mm_set1_pd(rtb_e_o)), tmp_5));
+    (void)_mm_storeu_pd(&rtb_D_b[b_Mrows], tmp_5);
+    tmp_5 = _mm_loadu_pd(&rtb_D_d[b_Mrows]);
+    tmp_3 = _mm_loadu_pd(&rtb_D_b[b_Mrows]);
+    (void)_mm_storeu_pd(&rtb_D_b[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_5,
+      _mm_set1_pd(rtb_Switch1[0])), tmp_3));
+    tmp_5 = _mm_loadu_pd(&rtb_D_d[b_Mrows + 2]);
+    tmp_3 = _mm_loadu_pd(&rtb_D_b[b_Mrows]);
+    (void)_mm_storeu_pd(&rtb_D_b[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_5,
+      _mm_set1_pd(rtb_Switch1[1])), tmp_3));
+    tmp_5 = _mm_loadu_pd(&rtb_D_d[b_Mrows + 4]);
+    tmp_3 = _mm_loadu_pd(&rtb_D_b[b_Mrows]);
+    (void)_mm_storeu_pd(&rtb_D_b[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_5,
+      _mm_set1_pd(rtb_e_o)), tmp_3));
 
     // Product: '<S199>/Product'
-    tmp_5 = _mm_loadu_pd(&rtb_C_o[b_Mrows]);
+    tmp_5 = _mm_loadu_pd(&Y[b_Mrows]);
 
     // Product: '<S199>/Product1' incorporates:
     //   Product: '<S199>/Product'
 
-    tmp_3 = _mm_loadu_pd(&Y[b_Mrows]);
+    tmp_3 = _mm_loadu_pd(&rtb_D_b[b_Mrows]);
 
     // BusCreator: '<S111>/Bus Creator1' incorporates:
     //   Product: '<S199>/Product'
@@ -9006,7 +9047,7 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   localDW->UnitDelay3_DSTATE = rtb_Add1_k1_tmp[0];
 
   // Update for UnitDelay: '<S113>/last_mv'
-  localDW->last_mv_DSTATE[0] = rtb_Switch[0];
+  localDW->last_mv_DSTATE[0] = U[0];
 
   // Update for UnitDelay: '<S111>/Unit Delay2' incorporates:
   //   Sum: '<S111>/Add3'
@@ -9014,7 +9055,7 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   localDW->UnitDelay2_DSTATE[0] = rty_u[0] - rtu_u0[0];
 
   // Update for UnitDelay: '<S113>/last_mv'
-  localDW->last_mv_DSTATE[1] = rtb_Switch[1];
+  localDW->last_mv_DSTATE[1] = U[1];
 
   // Update for UnitDelay: '<S111>/Unit Delay2' incorporates:
   //   Sum: '<S111>/Add3'
@@ -9022,7 +9063,7 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   localDW->UnitDelay2_DSTATE[1] = rty_u[1] - rtu_u0[1];
 
   // Update for UnitDelay: '<S113>/last_mv'
-  localDW->last_mv_DSTATE[2] = rtb_Switch[2];
+  localDW->last_mv_DSTATE[2] = U[2];
 
   // Update for UnitDelay: '<S111>/Unit Delay2'
   localDW->UnitDelay2_DSTATE[2] = rtb_e_o;
@@ -9037,10 +9078,10 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
 
   // Update for Delay: '<S144>/delayTheta'
   localDW->icLoad_b = false;
-  localDW->delayTheta_DSTATE[0] = rtb_x[0];
-  localDW->delayTheta_DSTATE[1] = rtb_x[1];
-  localDW->delayTheta_DSTATE[2] = rtb_x[2];
-  localDW->delayTheta_DSTATE[3] = rtb_x[3];
+  localDW->delayTheta_DSTATE[0] = rtb_x_l[0];
+  localDW->delayTheta_DSTATE[1] = rtb_x_l[1];
+  localDW->delayTheta_DSTATE[2] = rtb_x_l[2];
+  localDW->delayTheta_DSTATE[3] = rtb_x_l[3];
 
   // Update for Delay: '<S144>/delayL'
   localDW->icLoad_d = false;
@@ -9060,20 +9101,16 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
 
   // Update for Delay: '<S145>/delayTheta'
   localDW->icLoad_c = false;
-  localDW->delayTheta_DSTATE_i[0] = rtb_x_n[0];
-  localDW->delayTheta_DSTATE_i[1] = rtb_x_n[1];
-  localDW->delayTheta_DSTATE_i[2] = rtb_x_n[2];
-  localDW->delayTheta_DSTATE_i[3] = rtb_x_n[3];
+  localDW->delayTheta_DSTATE_i[0] = rtb_x[0];
+  localDW->delayTheta_DSTATE_i[1] = rtb_x[1];
+  localDW->delayTheta_DSTATE_i[2] = rtb_x[2];
+  localDW->delayTheta_DSTATE_i[3] = rtb_x[3];
 
   // Update for Delay: '<S145>/delayL'
   localDW->icLoad_e = false;
 
   // Update for Delay: '<S196>/MemoryX'
   localDW->icLoad_f = false;
-  localDW->MemoryX_DSTATE[0] = rtb_A[0];
-  localDW->MemoryX_DSTATE[1] = rtb_A[1];
-  localDW->MemoryX_DSTATE[2] = rtb_A[2];
-  localDW->MemoryX_DSTATE[3] = rtb_A[3];
 
   // Update for Delay: '<S196>/MemoryP'
   localDW->icLoad_a = false;
@@ -11384,8 +11421,8 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
   real_T B_est[28];
   real_T vseq[21];
   real_T rtb_A_m[16];
-  real_T rtb_L_i[16];
-  real_T rtb_L_p[16];
+  real_T rtb_L_ci[16];
+  real_T rtb_L_j[16];
   real_T rtb_Product_d[16];
   real_T rtb_Q[16];
   real_T rtb_Z_b[16];
@@ -11469,7 +11506,7 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
       localDW->delayL_DSTATE[i] = localP->InitialCovariance_Value[i];
     }
 
-    rtb_L_p[i] = localDW->delayL_DSTATE[i];
+    rtb_L_j[i] = localDW->delayL_DSTATE[i];
   }
 
   // MATLAB Function: '<S276>/RLS' incorporates:
@@ -11487,7 +11524,7 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
       rtu_paramEst[0] != 0.0, localP->ForgettingFactor_Value,
       localDW->delayBuffery_DSTATE, localDW->delayBufferH_DSTATE,
       localDW->delayTheta_DSTATE, localDW->delayL_DSTATE, &rtb_e_e,
-      &rtb_yBuffer_o, &rtb_HBuffer_m, rtb_x, rtb_L_p, &localDW->sf_RLS);
+      &rtb_yBuffer_o, &rtb_HBuffer_m, rtb_x, rtb_L_j, &localDW->sf_RLS);
 
   // Delay: '<S277>/delayBuffery' incorporates:
   //   Constant: '<S277>/InitialOutputs'
@@ -11530,7 +11567,7 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
       localDW->delayL_DSTATE_d[i] = localP->InitialCovariance_Value_h[i];
     }
 
-    rtb_L_i[i] = localDW->delayL_DSTATE_d[i];
+    rtb_L_ci[i] = localDW->delayL_DSTATE_d[i];
   }
 
   // MATLAB Function: '<S277>/RLS' incorporates:
@@ -11548,7 +11585,7 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
       rtu_paramEst[1] != 0.0, localP->ForgettingFactor_Value_e,
       localDW->delayBuffery_DSTATE_o, localDW->delayBufferH_DSTATE_g,
       localDW->delayTheta_DSTATE_p, localDW->delayL_DSTATE_d, &rtb_e_j, &rtb_e_e,
-      &rtb_HBuffer_o, rtb_x_b, rtb_L_i, &localDW->sf_RLS_n);
+      &rtb_HBuffer_o, rtb_x_b, rtb_L_ci, &localDW->sf_RLS_n);
 
   // MATLAB Function: '<S243>/MATLAB Function1'
   MATLABFunction1(rtb_x[0], &rtb_x[1], rtb_x_b[0], &rtb_x_b[1], rtb_A, rtb_B);
@@ -12432,13 +12469,13 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
   localDW->icLoad_h4 = false;
 
   // Update for Delay: '<S276>/delayL'
-  (void)std::memcpy(&localDW->delayL_DSTATE[0], &rtb_L_p[0], sizeof(real_T) <<
+  (void)std::memcpy(&localDW->delayL_DSTATE[0], &rtb_L_j[0], sizeof(real_T) <<
                     4UL);
 
   // Update for Delay: '<S277>/delayL' incorporates:
   //   Delay: '<S276>/delayL'
 
-  (void)std::memcpy(&localDW->delayL_DSTATE_d[0], &rtb_L_i[0], sizeof(real_T) <<
+  (void)std::memcpy(&localDW->delayL_DSTATE_d[0], &rtb_L_ci[0], sizeof(real_T) <<
                     4UL);
 
   // Update for Delay: '<S328>/MemoryP' incorporates:
@@ -14015,10 +14052,10 @@ void SupervisoryController::enter_internal_State0(void)
 // Function for Chart: '<Root>/SupervisoryController'
 void SupervisoryController::State1(const int32_T *sfEvent)
 {
-  real_T paramEst_k[2];
-  real_T r_m[2];
-  real_T y0_f[2];
-  real_T y_p[2];
+  real_T paramEst_o[2];
+  real_T r_c[2];
+  real_T y0_d[2];
+  real_T y_f[2];
   real_T holdT;
   uint16_T waypt;
   int8_T b_data[2];
@@ -14198,17 +14235,17 @@ void SupervisoryController::State1(const int32_T *sfEvent)
     // During 'controlLaw': '<S1>:162'
     // '<S1>:162:5' if trueMeasAvail
     if (*sfEvent == static_cast<int32_T>(event_trueMeasAvail)) {
-      // '<S1>:162:6' [u, yhat1] = AMPC1(traj(chs1, waypt), y(chs1), y_o(chs1), u_o, enAdapt(chs1), excitation); 
+      // '<S1>:162:6' [u, yhat1, params1] = AMPC1(traj(chs1, waypt), y(chs1), y_o(chs1), u_o, enAdapt(chs1), excitation); 
       i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
-      r_m[0] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs1[0])) - 1];
-      y_p[0] = rtU.y[static_cast<int32_T>(rtDW.chs1[0]) - 1];
-      y0_f[0] = rtU.y_o[static_cast<int32_T>(rtDW.chs1[0]) - 1];
-      paramEst_k[0] = rtU.enAdapt[static_cast<int32_T>(rtDW.chs1[0]) - 1] ? 1.0 :
+      r_c[0] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs1[0])) - 1];
+      y_f[0] = rtU.y[static_cast<int32_T>(rtDW.chs1[0]) - 1];
+      y0_d[0] = rtU.y_o[static_cast<int32_T>(rtDW.chs1[0]) - 1];
+      paramEst_o[0] = rtU.enAdapt[static_cast<int32_T>(rtDW.chs1[0]) - 1] ? 1.0 :
         0.0;
-      r_m[1] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs1[1])) - 1];
-      y_p[1] = rtU.y[static_cast<int32_T>(rtDW.chs1[1]) - 1];
-      y0_f[1] = rtU.y_o[static_cast<int32_T>(rtDW.chs1[1]) - 1];
-      paramEst_k[1] = rtU.enAdapt[static_cast<int32_T>(rtDW.chs1[1]) - 1] ? 1.0 :
+      r_c[1] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs1[1])) - 1];
+      y_f[1] = rtU.y[static_cast<int32_T>(rtDW.chs1[1]) - 1];
+      y0_d[1] = rtU.y_o[static_cast<int32_T>(rtDW.chs1[1]) - 1];
+      paramEst_o[1] = rtU.enAdapt[static_cast<int32_T>(rtDW.chs1[1]) - 1] ? 1.0 :
         0.0;
 
       // Outputs for Function Call SubSystem: '<S1>/State1.controlLaw.AMPC1'
@@ -14218,17 +14255,19 @@ void SupervisoryController::State1(const int32_T *sfEvent)
       //   Inport: '<Root>/u_o'
       //   Inport: '<Root>/y'
       //   Inport: '<Root>/y_o'
+      //   Outport: '<Root>/params1'
 
       // Simulink Function 'AMPC1': '<S1>:175'
-      State1controlLawAMPC1(r_m, y_p, y0_f, rtU.u_o, paramEst_k, rtU.excitation,
-                            rtY.u, rtDW.yhat1, &rtDW.State1controlLawAMPC1_g,
+      State1controlLawAMPC1(r_c, y_f, y0_d, rtU.u_o, paramEst_o, rtU.excitation,
+                            rtY.u, rtDW.yhat1, rtY.params1,
+                            &rtDW.State1controlLawAMPC1_g,
                             &rtP.State1controlLawAMPC1_g, &rtP,
                             &rtPrevZCX.State1controlLawAMPC1_g);
 
       // End of Outputs for SubSystem: '<S1>/State1.controlLaw.AMPC1'
     } else if ((*sfEvent == static_cast<int32_T>(event_simMeasAvail)) &&
                rtY.inTransRegion) {
-      real_T y_p_tmp;
+      real_T y_f_tmp;
       int32_T c_size_idx_0;
 
       // '<S1>:162:7' elseif simMeasAvail & inTransRegion
@@ -14237,16 +14276,16 @@ void SupervisoryController::State1(const int32_T *sfEvent)
       // '<S1>:162:10' ymax1 = y_max(chs1);
       // '<S1>:162:11' ysim1(find(ysim1 == 0)) = ymax1(find(ysim1 == 0));
       holdT = rtU.y[static_cast<int32_T>(rtDW.chs1[0]) - 1];
-      y_p[0] = holdT;
-      y_p_tmp = rtU.y[static_cast<int32_T>(rtDW.chs1[1]) - 1];
-      y_p[1] = y_p_tmp;
+      y_f[0] = holdT;
+      y_f_tmp = rtU.y[static_cast<int32_T>(rtDW.chs1[1]) - 1];
+      y_f[1] = y_f_tmp;
       i = 0;
       if (holdT == 0.0) {
         b_data[0] = 1;
         i = 1;
       }
 
-      if (y_p_tmp == 0.0) {
+      if (y_f_tmp == 0.0) {
         b_data[i] = 2;
       }
 
@@ -14255,34 +14294,34 @@ void SupervisoryController::State1(const int32_T *sfEvent)
         i = 1;
       }
 
-      if (y_p_tmp == 0.0) {
+      if (y_f_tmp == 0.0) {
         i++;
       }
 
       c_size_idx_0 = i;
       i = 0;
       if (holdT == 0.0) {
-        r_m[0] = rtU.y_max[static_cast<int32_T>(rtDW.chs1[0]) - 1];
+        r_c[0] = rtU.y_max[static_cast<int32_T>(rtDW.chs1[0]) - 1];
         i = 1;
       }
 
-      if (y_p_tmp == 0.0) {
-        r_m[i] = rtU.y_max[static_cast<int32_T>(rtDW.chs1[1]) - 1];
+      if (y_f_tmp == 0.0) {
+        r_c[i] = rtU.y_max[static_cast<int32_T>(rtDW.chs1[1]) - 1];
       }
 
       for (i = 0; i < c_size_idx_0; i++) {
-        y_p[b_data[i] - 1] = r_m[i];
+        y_f[b_data[i] - 1] = r_c[i];
       }
 
-      // '<S1>:162:12' [u, yhat1] = AMPC1(traj(chs1, waypt), ysim1, y_o(chs1), u_o, y(chs1)~=0, excitation); 
+      // '<S1>:162:12' [u, yhat1, params1] = AMPC1(traj(chs1, waypt), ysim1, y_o(chs1), u_o, y(chs1)~=0, excitation); 
       i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
-      r_m[0] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs1[0])) - 1];
-      y0_f[0] = rtU.y_o[static_cast<int32_T>(rtDW.chs1[0]) - 1];
-      paramEst_k[0] = static_cast<real_T>(holdT != 0.0 ? static_cast<int32_T>(1)
+      r_c[0] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs1[0])) - 1];
+      y0_d[0] = rtU.y_o[static_cast<int32_T>(rtDW.chs1[0]) - 1];
+      paramEst_o[0] = static_cast<real_T>(holdT != 0.0 ? static_cast<int32_T>(1)
         : static_cast<int32_T>(0));
-      r_m[1] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs1[1])) - 1];
-      y0_f[1] = rtU.y_o[static_cast<int32_T>(rtDW.chs1[1]) - 1];
-      paramEst_k[1] = static_cast<real_T>(y_p_tmp != 0.0 ? static_cast<int32_T>
+      r_c[1] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs1[1])) - 1];
+      y0_d[1] = rtU.y_o[static_cast<int32_T>(rtDW.chs1[1]) - 1];
+      paramEst_o[1] = static_cast<real_T>(y_f_tmp != 0.0 ? static_cast<int32_T>
         (1) : static_cast<int32_T>(0));
 
       // Outputs for Function Call SubSystem: '<S1>/State1.controlLaw.AMPC1'
@@ -14292,10 +14331,12 @@ void SupervisoryController::State1(const int32_T *sfEvent)
       //   Inport: '<Root>/y'
       //   Inport: '<Root>/y_max'
       //   Inport: '<Root>/y_o'
+      //   Outport: '<Root>/params1'
 
       // Simulink Function 'AMPC1': '<S1>:175'
-      State1controlLawAMPC1(r_m, y_p, y0_f, rtU.u_o, paramEst_k, rtU.excitation,
-                            rtY.u, rtDW.yhat1, &rtDW.State1controlLawAMPC1_g,
+      State1controlLawAMPC1(r_c, y_f, y0_d, rtU.u_o, paramEst_o, rtU.excitation,
+                            rtY.u, rtDW.yhat1, rtY.params1,
+                            &rtDW.State1controlLawAMPC1_g,
                             &rtP.State1controlLawAMPC1_g, &rtP,
                             &rtPrevZCX.State1controlLawAMPC1_g);
 
@@ -14323,10 +14364,10 @@ void SupervisoryController::State1(const int32_T *sfEvent)
 void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
   *sfEvent)
 {
-  real_T paramEst_o[2];
-  real_T r_j[2];
-  real_T y0_c[2];
-  real_T y_a[2];
+  real_T paramEst_l[2];
+  real_T r_ch[2];
+  real_T y0_f[2];
+  real_T y_j[2];
   real_T ysim0;
   uint16_T waypt;
   int8_T b_data[2];
@@ -14501,8 +14542,9 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
             //   Inport: '<Root>/u_o'
             //   Inport: '<Root>/y'
             //   Inport: '<Root>/y_o'
+            //   Outport: '<Root>/params0'
 
-            // '<S1>:59:6' [u, yhat0] = AMPC0(traj(chs0, waypt), y(chs0), y_o(chs0), u_o, enAdapt(chs0), excitation); 
+            // '<S1>:59:6' [u, yhat0, params0] = AMPC0(traj(chs0, waypt), y(chs0), y_o(chs0), u_o, enAdapt(chs0), excitation); 
             // Simulink Function 'AMPC0': '<S1>:5'
             State0controlLawAMPC0(rtDW.traj[(static_cast<int32_T>(rtDW.chs0) + 3
               * (static_cast<int32_T>(rtDW.waypt) - 1)) - 1], rtU.y
@@ -14510,7 +14552,7 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
                                   rtU.y_o[static_cast<int32_T>(rtDW.chs0) - 1],
                                   rtU.u_o, static_cast<real_T>(rtU.enAdapt[
               static_cast<int32_T>(rtDW.chs0) - 1] ? 1.0 : 0.0), rtU.excitation,
-                                  rtY.u, &rtDW.yhat0,
+                                  rtY.u, &rtDW.yhat0, rtY.params0,
                                   &rtDW.State0controlLawAMPC0_n,
                                   &rtP.State0controlLawAMPC0_n, &rtP,
                                   &rtPrevZCX.State0controlLawAMPC0_n);
@@ -14542,14 +14584,15 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
             //   Inport: '<Root>/y'
             //   Inport: '<Root>/y_max'
             //   Inport: '<Root>/y_o'
+            //   Outport: '<Root>/params0'
 
-            // '<S1>:59:12' [u, yhat0] = AMPC0(traj(chs0, waypt), ysim0, y_o(chs0), u_o, false, excitation); 
+            // '<S1>:59:12' [u, yhat0, params0] = AMPC0(traj(chs0, waypt), ysim0, y_o(chs0), u_o, false, excitation); 
             // Simulink Function 'AMPC0': '<S1>:5'
             State0controlLawAMPC0(rtDW.traj[(static_cast<int32_T>(rtDW.chs0) + 3
               * (static_cast<int32_T>(rtDW.waypt) - 1)) - 1], ysim0, rtU.y_o[
                                   static_cast<int32_T>(rtDW.chs0) - 1], rtU.u_o,
                                   0.0, rtU.excitation, rtY.u, &rtDW.yhat0,
-                                  &rtDW.State0controlLawAMPC0_n,
+                                  rtY.params0, &rtDW.State0controlLawAMPC0_n,
                                   &rtP.State0controlLawAMPC0_n, &rtP,
                                   &rtPrevZCX.State0controlLawAMPC0_n);
 
@@ -14690,15 +14733,15 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
           if (*sfEvent == static_cast<int32_T>(event_trueMeasAvail)) {
             // '<S1>:203:6' [u, yhat2] = AMPC2(traj(chs2, waypt), y(chs2), y_o(chs2), u_o, enAdapt(chs2), excitation); 
             i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
-            r_j[0] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs2[0])) - 1];
-            y_a[0] = rtU.y[static_cast<int32_T>(rtDW.chs2[0]) - 1];
-            y0_c[0] = rtU.y_o[static_cast<int32_T>(rtDW.chs2[0]) - 1];
-            paramEst_o[0] = rtU.enAdapt[static_cast<int32_T>(rtDW.chs2[0]) - 1] ?
+            r_ch[0] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs2[0])) - 1];
+            y_j[0] = rtU.y[static_cast<int32_T>(rtDW.chs2[0]) - 1];
+            y0_f[0] = rtU.y_o[static_cast<int32_T>(rtDW.chs2[0]) - 1];
+            paramEst_l[0] = rtU.enAdapt[static_cast<int32_T>(rtDW.chs2[0]) - 1] ?
               1.0 : 0.0;
-            r_j[1] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs2[1])) - 1];
-            y_a[1] = rtU.y[static_cast<int32_T>(rtDW.chs2[1]) - 1];
-            y0_c[1] = rtU.y_o[static_cast<int32_T>(rtDW.chs2[1]) - 1];
-            paramEst_o[1] = rtU.enAdapt[static_cast<int32_T>(rtDW.chs2[1]) - 1] ?
+            r_ch[1] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs2[1])) - 1];
+            y_j[1] = rtU.y[static_cast<int32_T>(rtDW.chs2[1]) - 1];
+            y0_f[1] = rtU.y_o[static_cast<int32_T>(rtDW.chs2[1]) - 1];
+            paramEst_l[1] = rtU.enAdapt[static_cast<int32_T>(rtDW.chs2[1]) - 1] ?
               1.0 : 0.0;
 
             // Outputs for Function Call SubSystem: '<S1>/State2.controlLaw.AMPC2' 
@@ -14710,7 +14753,7 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
             //   Inport: '<Root>/y_o'
 
             // Simulink Function 'AMPC2': '<S1>:202'
-            State2controlLawAMPC2(r_j, y_a, y0_c, rtU.u_o, paramEst_o,
+            State2controlLawAMPC2(r_ch, y_j, y0_f, rtU.u_o, paramEst_l,
                                   rtU.excitation, rtY.u, rtDW.yhat2,
                                   &rtDW.State2controlLawAMPC2_l,
                                   &rtP.State2controlLawAMPC2_l, &rtP,
@@ -14719,7 +14762,7 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
             // End of Outputs for SubSystem: '<S1>/State2.controlLaw.AMPC2'
           } else if ((*sfEvent == static_cast<int32_T>(event_simMeasAvail)) &&
                      rtY.inTransRegion) {
-            real_T y_a_tmp;
+            real_T y_j_tmp;
             int32_T c_size_idx_0;
 
             // '<S1>:203:7' elseif simMeasAvail & inTransRegion
@@ -14728,16 +14771,16 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
             // '<S1>:203:10' ymax2 = y_max(chs2);
             // '<S1>:203:11' ysim2(find(ysim2 == 0)) = ymax2(find(ysim2 == 0));
             ysim0 = rtU.y[static_cast<int32_T>(rtDW.chs2[0]) - 1];
-            y_a[0] = ysim0;
-            y_a_tmp = rtU.y[static_cast<int32_T>(rtDW.chs2[1]) - 1];
-            y_a[1] = y_a_tmp;
+            y_j[0] = ysim0;
+            y_j_tmp = rtU.y[static_cast<int32_T>(rtDW.chs2[1]) - 1];
+            y_j[1] = y_j_tmp;
             i = 0;
             if (ysim0 == 0.0) {
               b_data[0] = 1;
               i = 1;
             }
 
-            if (y_a_tmp == 0.0) {
+            if (y_j_tmp == 0.0) {
               b_data[i] = 2;
             }
 
@@ -14746,34 +14789,34 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
               i = 1;
             }
 
-            if (y_a_tmp == 0.0) {
+            if (y_j_tmp == 0.0) {
               i++;
             }
 
             c_size_idx_0 = i;
             i = 0;
             if (ysim0 == 0.0) {
-              r_j[0] = rtU.y_max[static_cast<int32_T>(rtDW.chs2[0]) - 1];
+              r_ch[0] = rtU.y_max[static_cast<int32_T>(rtDW.chs2[0]) - 1];
               i = 1;
             }
 
-            if (y_a_tmp == 0.0) {
-              r_j[i] = rtU.y_max[static_cast<int32_T>(rtDW.chs2[1]) - 1];
+            if (y_j_tmp == 0.0) {
+              r_ch[i] = rtU.y_max[static_cast<int32_T>(rtDW.chs2[1]) - 1];
             }
 
             for (i = 0; i < c_size_idx_0; i++) {
-              y_a[b_data[i] - 1] = r_j[i];
+              y_j[b_data[i] - 1] = r_ch[i];
             }
 
             // '<S1>:203:12' [u, yhat2] = AMPC2(traj(chs2, waypt), ysim2, y_o(chs2), u_o, y(chs2)~=0, excitation); 
             i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
-            r_j[0] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs2[0])) - 1];
-            y0_c[0] = rtU.y_o[static_cast<int32_T>(rtDW.chs2[0]) - 1];
-            paramEst_o[0] = static_cast<real_T>(ysim0 != 0.0 ?
+            r_ch[0] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs2[0])) - 1];
+            y0_f[0] = rtU.y_o[static_cast<int32_T>(rtDW.chs2[0]) - 1];
+            paramEst_l[0] = static_cast<real_T>(ysim0 != 0.0 ?
               static_cast<int32_T>(1) : static_cast<int32_T>(0));
-            r_j[1] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs2[1])) - 1];
-            y0_c[1] = rtU.y_o[static_cast<int32_T>(rtDW.chs2[1]) - 1];
-            paramEst_o[1] = static_cast<real_T>(y_a_tmp != 0.0 ?
+            r_ch[1] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs2[1])) - 1];
+            y0_f[1] = rtU.y_o[static_cast<int32_T>(rtDW.chs2[1]) - 1];
+            paramEst_l[1] = static_cast<real_T>(y_j_tmp != 0.0 ?
               static_cast<int32_T>(1) : static_cast<int32_T>(0));
 
             // Outputs for Function Call SubSystem: '<S1>/State2.controlLaw.AMPC2' 
@@ -14785,7 +14828,7 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
             //   Inport: '<Root>/y_o'
 
             // Simulink Function 'AMPC2': '<S1>:202'
-            State2controlLawAMPC2(r_j, y_a, y0_c, rtU.u_o, paramEst_o,
+            State2controlLawAMPC2(r_ch, y_j, y0_f, rtU.u_o, paramEst_l,
                                   rtU.excitation, rtY.u, rtDW.yhat2,
                                   &rtDW.State2controlLawAMPC2_l,
                                   &rtP.State2controlLawAMPC2_l, &rtP,
@@ -14857,7 +14900,9 @@ void SupervisoryController::initialize()
   rt_InitInfAndNaN(sizeof(real_T));
 
   {
+    real_T SignalConversion[8];
     real_T Sum_b[3];
+    real_T x[3];
     real_T Sum3_m[2];
     real_T Sum3_l;
     rtPrevZCX.SupervisoryController_Trig_ZCE[0] = UNINITIALIZED_ZCSIG;
@@ -14892,14 +14937,14 @@ void SupervisoryController::initialize()
     // SystemInitialize for Chart: '<Root>/SupervisoryController' incorporates:
     //   SubSystem: '<S1>/State0.controlLaw.AMPC0'
 
-    State0controlLawAMPC0_Init(Sum_b, &Sum3_l, &rtDW.State0controlLawAMPC0_n,
+    State0controlLawAMPC0_Init(Sum_b, &Sum3_l, x, &rtDW.State0controlLawAMPC0_n,
       &rtP.State0controlLawAMPC0_n);
 
     // SystemInitialize for Chart: '<Root>/SupervisoryController' incorporates:
     //   SubSystem: '<S1>/State1.controlLaw.AMPC1'
 
-    State1controlLawAMPC1_Init(Sum_b, Sum3_m, &rtDW.State1controlLawAMPC1_g,
-      &rtP.State1controlLawAMPC1_g);
+    State1controlLawAMPC1_Init(Sum_b, Sum3_m, SignalConversion,
+      &rtDW.State1controlLawAMPC1_g, &rtP.State1controlLawAMPC1_g);
 
     // SystemInitialize for Chart: '<Root>/SupervisoryController' incorporates:
     //   SubSystem: '<S1>/State2.controlLaw.AMPC2'
