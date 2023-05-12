@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.780
+// Model version                  : 1.783
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Fri May 12 12:46:04 2023
+// C/C++ source code generated on : Fri May 12 13:35:40 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -14098,6 +14098,7 @@ void SupervisoryController::State1(const int32_T *sfEvent)
   //   Inport: '<Root>/enAdapt'
   //   Inport: '<Root>/nextEv'
   //   Inport: '<Root>/y'
+  //   Inport: '<Root>/y_max'
   //   Inport: '<Root>/y_o'
   //   Outport: '<Root>/currTraj'
   //   Outport: '<Root>/inTransRegion'
@@ -14304,7 +14305,8 @@ void SupervisoryController::State1(const int32_T *sfEvent)
       // '<S1>:162:7' elseif simMeasAvail & inTransRegion
       //  use yhat instead of y for ch's w/o measurements
       // '<S1>:162:9' ysim1 = y(chs1);
-      // '<S1>:162:10' ysim1(find(ysim1 == 0)) = yhat1(find(ysim1 == 0));
+      // '<S1>:162:10' ymax1 = y_max(chs1);
+      // '<S1>:162:11' ysim1(find(ysim1 == 0)) = ymax1(find(ysim1 == 0));
       holdT = rtU.y[static_cast<int32_T>(rtDW.chs1[0]) - 1];
       y_p[0] = holdT;
       y_p_tmp = rtU.y[static_cast<int32_T>(rtDW.chs1[1]) - 1];
@@ -14331,19 +14333,19 @@ void SupervisoryController::State1(const int32_T *sfEvent)
       c_size_idx_0 = i;
       i = 0;
       if (holdT == 0.0) {
-        r_m[0] = rtDW.yhat1[0];
+        r_m[0] = rtU.y_max[static_cast<int32_T>(rtDW.chs1[0]) - 1];
         i = 1;
       }
 
       if (y_p_tmp == 0.0) {
-        r_m[i] = rtDW.yhat1[1];
+        r_m[i] = rtU.y_max[static_cast<int32_T>(rtDW.chs1[1]) - 1];
       }
 
       for (i = 0; i < c_size_idx_0; i++) {
         y_p[b_data[i] - 1] = r_m[i];
       }
 
-      // '<S1>:162:11' [u, yhat1] = AMPC1(traj(chs1, waypt), ysim1, y_o(chs1), u_o, y(chs1)~=0, excitation); 
+      // '<S1>:162:12' [u, yhat1] = AMPC1(traj(chs1, waypt), ysim1, y_o(chs1), u_o, y(chs1)~=0, excitation); 
       i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
       r_m[0] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs1[0])) - 1];
       y0_f[0] = rtU.y_o[static_cast<int32_T>(rtDW.chs1[0]) - 1];
@@ -14359,6 +14361,7 @@ void SupervisoryController::State1(const int32_T *sfEvent)
       //   Inport: '<Root>/excitation'
       //   Inport: '<Root>/u_o'
       //   Inport: '<Root>/y'
+      //   Inport: '<Root>/y_max'
       //   Inport: '<Root>/y_o'
 
       // Simulink Function 'AMPC1': '<S1>:175'
@@ -14372,12 +14375,12 @@ void SupervisoryController::State1(const int32_T *sfEvent)
       // no actions
     }
 
-    // '<S1>:162:13' yhat = [0; yhat1];
+    // '<S1>:162:14' yhat = [0; yhat1];
     rtY.yhat[0] = 0.0;
     rtY.yhat[1] = rtDW.yhat1[0];
     rtY.yhat[2] = rtDW.yhat1[1];
 
-    // '<S1>:162:14' currTraj = traj(:, waypt);
+    // '<S1>:162:15' currTraj = traj(:, waypt);
     rtY.currTraj[0] = rtDW.traj[(static_cast<int32_T>(rtDW.waypt) - 1) * 3];
     i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
     rtY.currTraj[1] = rtDW.traj[i + 1];
@@ -14403,6 +14406,7 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
   //   Inport: '<Root>/enAdapt'
   //   Inport: '<Root>/nextEv'
   //   Inport: '<Root>/y'
+  //   Inport: '<Root>/y_max'
   //   Inport: '<Root>/y_o'
   //   Outport: '<Root>/currEv'
   //   Outport: '<Root>/currTraj'
@@ -14590,7 +14594,8 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
             // '<S1>:59:7' elseif simMeasAvail & inTransRegion
             //  use yhat instead of y for ch's w/o measurements
             // '<S1>:59:9' ysim0 = y(chs0);
-            // '<S1>:59:10' ysim0(find(ysim0 == 0)) = yhat0(find(ysim0 == 0));
+            // '<S1>:59:10' ymax0 = y_max(chs0);
+            // '<S1>:59:11' ysim0(find(ysim0 == 0)) = ymax0(find(ysim0 == 0));
             i = -1;
             ysim0 = rtU.y[static_cast<int32_T>(rtDW.chs0) - 1];
             if (ysim0 == 0.0) {
@@ -14598,7 +14603,7 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
             }
 
             if (i >= 0) {
-              ysim0 = rtDW.yhat0;
+              ysim0 = rtU.y_max[static_cast<int32_T>(rtDW.chs0) - 1];
             }
 
             // Outputs for Function Call SubSystem: '<S1>/State0.controlLaw.AMPC0' 
@@ -14606,9 +14611,10 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
             //   Inport: '<Root>/excitation'
             //   Inport: '<Root>/u_o'
             //   Inport: '<Root>/y'
+            //   Inport: '<Root>/y_max'
             //   Inport: '<Root>/y_o'
 
-            // '<S1>:59:11' [u, yhat0] = AMPC0(traj(chs0, waypt), ysim0, y_o(chs0), u_o, false, excitation); 
+            // '<S1>:59:12' [u, yhat0] = AMPC0(traj(chs0, waypt), ysim0, y_o(chs0), u_o, false, excitation); 
             // Simulink Function 'AMPC0': '<S1>:5'
             State0controlLawAMPC0(rtDW.traj[(static_cast<int32_T>(rtDW.chs0) + 3
               * (static_cast<int32_T>(rtDW.waypt) - 1)) - 1], ysim0, rtU.y_o[
@@ -14623,12 +14629,12 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
             // no actions
           }
 
-          // '<S1>:59:13' yhat = [yhat0; 0; 0];
+          // '<S1>:59:14' yhat = [yhat0; 0; 0];
           rtY.yhat[0] = rtDW.yhat0;
           rtY.yhat[1] = 0.0;
           rtY.yhat[2] = 0.0;
 
-          // '<S1>:59:14' currTraj = traj(:, waypt);
+          // '<S1>:59:15' currTraj = traj(:, waypt);
           rtY.currTraj[0] = rtDW.traj[(static_cast<int32_T>(rtDW.waypt) - 1) * 3];
           c_size_idx_0 = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
           rtY.currTraj[1] = rtDW.traj[c_size_idx_0 + 1];
@@ -14790,7 +14796,8 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
             // '<S1>:203:7' elseif simMeasAvail & inTransRegion
             //  use yhat instead of y for ch's w/o measurements
             // '<S1>:203:9' ysim2 = y(chs2);
-            // '<S1>:203:10' ysim2(find(ysim2 == 0)) = yhat1(find(ysim2 == 0));
+            // '<S1>:203:10' ymax2 = y_max(chs2);
+            // '<S1>:203:11' ysim2(find(ysim2 == 0)) = ymax2(find(ysim2 == 0));
             ysim0 = rtU.y[static_cast<int32_T>(rtDW.chs2[0]) - 1];
             y_a[0] = ysim0;
             y_a_tmp = rtU.y[static_cast<int32_T>(rtDW.chs2[1]) - 1];
@@ -14817,26 +14824,26 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
             c_size_idx_0 = i;
             i = 0;
             if (ysim0 == 0.0) {
-              r_j[0] = rtDW.yhat1[0];
+              r_j[0] = rtU.y_max[static_cast<int32_T>(rtDW.chs2[0]) - 1];
               i = 1;
             }
 
             if (y_a_tmp == 0.0) {
-              r_j[i] = rtDW.yhat1[1];
+              r_j[i] = rtU.y_max[static_cast<int32_T>(rtDW.chs2[1]) - 1];
             }
 
             for (i = 0; i < c_size_idx_0; i++) {
               y_a[b_data[i] - 1] = r_j[i];
             }
 
-            // '<S1>:203:11' [u, yhat2] = AMPC2(traj(chs2, waypt), ysim2, y_o(chs1), u_o, y(chs2)~=0, excitation); 
+            // '<S1>:203:12' [u, yhat2] = AMPC2(traj(chs2, waypt), ysim2, y_o(chs2), u_o, y(chs2)~=0, excitation); 
             i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
             r_j[0] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs2[0])) - 1];
-            y0_c[0] = rtU.y_o[static_cast<int32_T>(rtDW.chs1[0]) - 1];
+            y0_c[0] = rtU.y_o[static_cast<int32_T>(rtDW.chs2[0]) - 1];
             paramEst_o[0] = static_cast<real_T>(ysim0 != 0.0 ?
               static_cast<int32_T>(1) : static_cast<int32_T>(0));
             r_j[1] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs2[1])) - 1];
-            y0_c[1] = rtU.y_o[static_cast<int32_T>(rtDW.chs1[1]) - 1];
+            y0_c[1] = rtU.y_o[static_cast<int32_T>(rtDW.chs2[1]) - 1];
             paramEst_o[1] = static_cast<real_T>(y_a_tmp != 0.0 ?
               static_cast<int32_T>(1) : static_cast<int32_T>(0));
 
@@ -14845,6 +14852,7 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
             //   Inport: '<Root>/excitation'
             //   Inport: '<Root>/u_o'
             //   Inport: '<Root>/y'
+            //   Inport: '<Root>/y_max'
             //   Inport: '<Root>/y_o'
 
             // Simulink Function 'AMPC2': '<S1>:202'
@@ -14859,12 +14867,12 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
             // no actions
           }
 
-          // '<S1>:203:13' yhat = [yhat2(1); 0; yhat2(2)];
+          // '<S1>:203:14' yhat = [yhat2(1); 0; yhat2(2)];
           rtY.yhat[0] = rtDW.yhat2[0];
           rtY.yhat[1] = 0.0;
           rtY.yhat[2] = rtDW.yhat2[1];
 
-          // '<S1>:203:14' currTraj = traj(:, waypt);
+          // '<S1>:203:15' currTraj = traj(:, waypt);
           rtY.currTraj[0] = rtDW.traj[(static_cast<int32_T>(rtDW.waypt) - 1) * 3];
           i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
           rtY.currTraj[1] = rtDW.traj[i + 1];
