@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.777
+// Model version                  : 1.778
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Fri May 12 10:53:28 2023
+// C/C++ source code generated on : Fri May 12 11:56:31 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -37,7 +37,7 @@ const int32_T nu{ 3 };
 
 const int32_T p{ 20 };
 
-const real_T yoff{ 100.0 };
+const real_T yoff{ 628.0 };
 
 // Named constants for MATLAB Function: '<S141>/FixedHorizonOptimizer'
 const int32_T degrees_h{ 4 };
@@ -3063,10 +3063,10 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
     14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
     33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 101, 102, 103 };
 
-  static const int8_T d[46]{ 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-    100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-    100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-    70, 70, 70, 10, 10, 10 };
+  static const int16_T d[46]{ 628, 628, 628, 628, 628, 628, 628, 628, 628, 628,
+    628, 628, 628, 628, 628, 628, 628, 628, 628, 628, 628, 628, 628, 628, 628,
+    628, 628, 628, 628, 628, 628, 628, 628, 628, 628, 628, 628, 628, 628, 628,
+    80, 80, 80, 0, 0, 0 };
 
   __m128d tmp_2;
   __m128d tmp_3;
@@ -3514,11 +3514,11 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
     } else if (i <= 40) {
       u -= yoff - rtu_y0;
     } else if (i <= 100) {
-      u += 10.0 - U[(i - div_nde_s32_floor(i - 41, static_cast<int32_T>(nu)) *
-                     static_cast<int32_T>(nu)) - 41];
+      u += 0.0 - U[(i - div_nde_s32_floor(i - 41, static_cast<int32_T>(nu)) *
+                    static_cast<int32_T>(nu)) - 41];
     } else {
-      u -= 10.0 - U[(i - div_nde_s32_floor(i - 101, static_cast<int32_T>(nu)) *
-                     static_cast<int32_T>(nu)) - 101];
+      u -= 0.0 - U[(i - div_nde_s32_floor(i - 101, static_cast<int32_T>(nu)) *
+                    static_cast<int32_T>(nu)) - 101];
     }
 
     b_Mlim[kk] = u;
@@ -3529,7 +3529,7 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
     i = 0;
     for (rtb_L_k_tmp = 0; rtb_L_k_tmp < 20; rtb_L_k_tmp++) {
       b_utarget_tmp = i + kk;
-      b_utarget[b_utarget_tmp] = (b_utarget[b_utarget_tmp] + 10.0) - u;
+      b_utarget[b_utarget_tmp] -= u;
       i += 3;
     }
   }
@@ -8032,12 +8032,12 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
     52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70,
     71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 141, 142, 143 };
 
-  static const int8_T e[86]{ 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-    100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-    100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-    100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-    100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-    100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 70, 70, 70, 10, 10, 10 };
+  static const int16_T e[86]{ 455, 433, 455, 433, 455, 433, 455, 433, 455, 433,
+    455, 433, 455, 433, 455, 433, 455, 433, 455, 433, 455, 433, 455, 433, 455,
+    433, 455, 433, 455, 433, 455, 433, 455, 433, 455, 433, 455, 433, 455, 433,
+    455, 433, 455, 433, 455, 433, 455, 433, 455, 433, 455, 433, 455, 433, 455,
+    433, 455, 433, 455, 433, 455, 433, 455, 433, 455, 433, 455, 433, 455, 433,
+    455, 433, 455, 433, 455, 433, 455, 433, 455, 433, 80, 80, 80, 0, 0, 0 };
 
   static const int8_T d[8]{ 1, 0, 0, 1, 1, 0, 0, 1 };
 
@@ -8497,15 +8497,17 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
     b_Mlim_0 = b_Mlim[i];
     b_Mrows = b_Mrows_0[i];
     if (b_Mrows <= 40) {
-      b_Mlim_0 += 100.0 - Y[(b_Mrows - (((b_Mrows - 1) / static_cast<int32_T>(ny))
-        << 1UL)) - 1];
+      b_Mrows = (b_Mrows - (((b_Mrows - 1) / static_cast<int32_T>(ny)) << 1UL))
+        - 1;
+      b_Mlim_0 += (-22.0 * static_cast<real_T>(b_Mrows) + 455.0) - Y[b_Mrows];
     } else if (b_Mrows <= 80) {
-      b_Mlim_0 -= 100.0 - Y[(b_Mrows - (((b_Mrows - 41) >> 1UL) << 1UL)) - 41];
+      b_Mrows = (b_Mrows - (((b_Mrows - 41) >> 1UL) << 1UL)) - 41;
+      b_Mlim_0 -= (-22.0 * static_cast<real_T>(b_Mrows) + 455.0) - Y[b_Mrows];
     } else if (b_Mrows <= 140) {
-      b_Mlim_0 += 10.0 - U[(b_Mrows - div_nde_s32_floor(b_Mrows - 81,
+      b_Mlim_0 += 0.0 - U[(b_Mrows - div_nde_s32_floor(b_Mrows - 81,
         static_cast<int32_T>(nu_g)) * static_cast<int32_T>(nu_g)) - 81];
     } else {
-      b_Mlim_0 -= 10.0 - U[(b_Mrows - div_nde_s32_floor(b_Mrows - 141,
+      b_Mlim_0 -= 0.0 - U[(b_Mrows - div_nde_s32_floor(b_Mrows - 141,
         static_cast<int32_T>(nu_g)) * static_cast<int32_T>(nu_g)) - 141];
     }
 
@@ -8517,7 +8519,7 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
     b_Mrows = 0;
     for (i_0 = 0; i_0 < 20; i_0++) {
       b_utarget_tmp = b_Mrows + i;
-      b_utarget[b_utarget_tmp] = (b_utarget[b_utarget_tmp] + 10.0) - b_Mlim_0;
+      b_utarget[b_utarget_tmp] -= b_Mlim_0;
       b_Mrows += 3;
     }
   }
@@ -11391,12 +11393,12 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
     52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70,
     71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 141, 142, 143 };
 
-  static const int8_T e[86]{ 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-    100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-    100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-    100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-    100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-    100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 70, 70, 70, 10, 10, 10 };
+  static const int16_T e[86]{ 628, 433, 628, 433, 628, 433, 628, 433, 628, 433,
+    628, 433, 628, 433, 628, 433, 628, 433, 628, 433, 628, 433, 628, 433, 628,
+    433, 628, 433, 628, 433, 628, 433, 628, 433, 628, 433, 628, 433, 628, 433,
+    628, 433, 628, 433, 628, 433, 628, 433, 628, 433, 628, 433, 628, 433, 628,
+    433, 628, 433, 628, 433, 628, 433, 628, 433, 628, 433, 628, 433, 628, 433,
+    628, 433, 628, 433, 628, 433, 628, 433, 628, 433, 80, 80, 80, 0, 0, 0 };
 
   static const int8_T d[8]{ 1, 0, 0, 1, 1, 0, 0, 1 };
 
@@ -11856,15 +11858,17 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
     b_Mlim_0 = b_Mlim[i];
     b_Mrows = b_Mrows_0[i];
     if (b_Mrows <= 40) {
-      b_Mlim_0 += 100.0 - Y[(b_Mrows - (((b_Mrows - 1) / static_cast<int32_T>
-        (ny_i)) << 1UL)) - 1];
+      b_Mrows = (b_Mrows - (((b_Mrows - 1) / static_cast<int32_T>(ny_i)) << 1UL))
+        - 1;
+      b_Mlim_0 += (-195.0 * static_cast<real_T>(b_Mrows) + 628.0) - Y[b_Mrows];
     } else if (b_Mrows <= 80) {
-      b_Mlim_0 -= 100.0 - Y[(b_Mrows - (((b_Mrows - 41) >> 1UL) << 1UL)) - 41];
+      b_Mrows = (b_Mrows - (((b_Mrows - 41) >> 1UL) << 1UL)) - 41;
+      b_Mlim_0 -= (-195.0 * static_cast<real_T>(b_Mrows) + 628.0) - Y[b_Mrows];
     } else if (b_Mrows <= 140) {
-      b_Mlim_0 += 10.0 - U[(b_Mrows - div_nde_s32_floor(b_Mrows - 81,
+      b_Mlim_0 += 0.0 - U[(b_Mrows - div_nde_s32_floor(b_Mrows - 81,
         static_cast<int32_T>(nu_h)) * static_cast<int32_T>(nu_h)) - 81];
     } else {
-      b_Mlim_0 -= 10.0 - U[(b_Mrows - div_nde_s32_floor(b_Mrows - 141,
+      b_Mlim_0 -= 0.0 - U[(b_Mrows - div_nde_s32_floor(b_Mrows - 141,
         static_cast<int32_T>(nu_h)) * static_cast<int32_T>(nu_h)) - 141];
     }
 
@@ -11876,7 +11880,7 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
     b_Mrows = 0;
     for (i_0 = 0; i_0 < 20; i_0++) {
       b_utarget_tmp = b_Mrows + i;
-      b_utarget[b_utarget_tmp] = (b_utarget[b_utarget_tmp] + 10.0) - b_Mlim_0;
+      b_utarget[b_utarget_tmp] -= b_Mlim_0;
       b_Mrows += 3;
     }
   }
