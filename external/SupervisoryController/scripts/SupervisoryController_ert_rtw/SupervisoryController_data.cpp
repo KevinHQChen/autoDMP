@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.778
+// Model version                  : 1.780
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Fri May 12 11:56:31 2023
+// C/C++ source code generated on : Fri May 12 12:46:04 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -599,6 +599,16 @@ SupervisoryController::P SupervisoryController::rtP{
 
     { 100.0, 0.0, 0.0, 0.0, 0.0, 100.0, 0.0, 0.0, 0.0, 0.0, 100.0, 0.0, 0.0, 0.0,
       0.0, 100.0 },
+
+    // Expression: 0
+    //  Referenced by: '<S111>/Switch1'
+
+    0.0,
+
+    // Expression: 0
+    //  Referenced by: '<S111>/Switch'
+
+    0.0,
 
     // Expression: G1.C
     //  Referenced by: '<S111>/Constant12'

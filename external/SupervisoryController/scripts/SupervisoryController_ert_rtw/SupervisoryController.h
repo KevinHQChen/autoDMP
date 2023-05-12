@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.778
+// Model version                  : 1.780
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Fri May 12 11:56:31 2023
+// C/C++ source code generated on : Fri May 12 12:46:04 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -727,6 +727,12 @@ class SupervisoryController final
 
     real_T InitialCovariance_Value_o[16];// Expression: initializationParams.L0
                                             //  Referenced by: '<S145>/InitialCovariance'
+
+    real_T Switch1_Threshold;          // Expression: 0
+                                          //  Referenced by: '<S111>/Switch1'
+
+    real_T Switch_Threshold;           // Expression: 0
+                                          //  Referenced by: '<S111>/Switch'
 
     real_T Constant12_Value[4];        // Expression: G1.C
                                           //  Referenced by: '<S111>/Constant12'
