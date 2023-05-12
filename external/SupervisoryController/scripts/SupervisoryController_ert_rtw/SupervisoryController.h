@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.783
+// Model version                  : 1.785
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Fri May 12 13:35:40 2023
+// C/C++ source code generated on : Fri May 12 14:03:59 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -286,8 +286,8 @@ class SupervisoryController final
     real_T Product3[2];                // '<S107>/Product3'
     real_T last_mv_DSTATE[3];          // '<S8>/last_mv'
     real_T UnitDelay2_DSTATE[3];       // '<S6>/Unit Delay2'
-    real_T delayTheta_DSTATE[4];       // '<S38>/delayTheta'
-    real_T delayL_DSTATE[16];          // '<S38>/delayL'
+    real_T delayTheta_DSTATE[3];       // '<S38>/delayTheta'
+    real_T delayL_DSTATE[9];           // '<S38>/delayL'
     real_T MemoryX_DSTATE[2];          // '<S64>/MemoryX'
     real_T MemoryP_DSTATE[4];          // '<S64>/MemoryP'
     real_T NextOutput[3];              // '<S2>/Measurement Noise'
@@ -525,10 +525,10 @@ class SupervisoryController final
                            // Expression: initializationParams.initialRegressors
                               //  Referenced by: '<S38>/InitialRegressors'
 
-    real_T InitialParameters_Value[4];// Expression: initializationParams.theta0
+    real_T InitialParameters_Value[3];// Expression: initializationParams.theta0
                                          //  Referenced by: '<S38>/InitialParameters'
 
-    real_T InitialCovariance_Value[16];// Expression: initializationParams.L0
+    real_T InitialCovariance_Value[9]; // Expression: initializationParams.L0
                                           //  Referenced by: '<S38>/InitialCovariance'
 
     real_T Constant13_Value[3];        // Expression: G0.D
@@ -1169,16 +1169,16 @@ class SupervisoryController final
     real_T rtu_u0[3], real_T rtu_paramEst, real_T rtu_excitationVal, real_T
     rty_u[3], real_T *rty_yhat, DW_State0controlLawAMPC0 *localDW,
     P_State0controlLawAMPC0 *localP, P *rtP, ZCE_State0controlLawAMPC0 *localZCE);
-  real_T xnrm2_g(int32_T n, const real_T x[5], int32_T ix0);
-  real_T qrFactor(const real_T A[4], const real_T S[16], real_T Ns);
-  void trisolve_m(real_T A, real_T B_1[4]);
-  real_T xnrm2_gg(int32_T n, const real_T x[20], int32_T ix0);
-  void xgemv_m(int32_T m, int32_T n, const real_T A[20], int32_T ia0, const
-               real_T x[20], int32_T ix0, real_T y[4]);
+  real_T xnrm2_g(int32_T n, const real_T x[4], int32_T ix0);
+  real_T qrFactor(const real_T A[3], const real_T S[9], real_T Ns);
+  void trisolve_m(real_T A, real_T B_1[3]);
+  real_T xnrm2_gg(int32_T n, const real_T x[12], int32_T ix0);
+  void xgemv_m(int32_T m, int32_T n, const real_T A[12], int32_T ia0, const
+               real_T x[12], int32_T ix0, real_T y[3]);
   void xgerc_n(int32_T m, int32_T n, real_T alpha1, int32_T ix0, const real_T y
-               [4], real_T A[20], int32_T ia0);
-  void sqrtMeasurementUpdate(real_T L[16], const real_T H[4], real_T a0, real_T
-    K[4]);
+               [3], real_T A[12], int32_T ia0);
+  void sqrtMeasurementUpdate(real_T L[9], const real_T H[3], real_T a0, real_T
+    K[3]);
   int32_T xpotrf(real_T b_A[16]);
   real_T minimum(const real_T x[4]);
   void trisolve(const real_T b_A[16], real_T b_B[16]);

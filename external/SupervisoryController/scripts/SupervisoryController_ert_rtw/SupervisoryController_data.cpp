@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.783
+// Model version                  : 1.785
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Fri May 12 13:35:40 2023
+// C/C++ source code generated on : Fri May 12 14:03:59 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -918,14 +918,12 @@ SupervisoryController::P SupervisoryController::rtP{
     // Expression: initializationParams.theta0
     //  Referenced by: '<S38>/InitialParameters'
 
-    { 1.000032235800572, 0.7084943675087555, -0.34693844974269455,
-      -0.3458694000362138 },
+    { 1.000032235800572, 0.7084943675087555, -0.34693844974269455 },
 
     // Expression: initializationParams.L0
     //  Referenced by: '<S38>/InitialCovariance'
 
-    { 100.0, 0.0, 0.0, 0.0, 0.0, 100.0, 0.0, 0.0, 0.0, 0.0, 100.0, 0.0, 0.0, 0.0,
-      0.0, 100.0 },
+    { 100.0, 0.0, 0.0, 0.0, 100.0, 0.0, 0.0, 0.0, 100.0 },
 
     // Expression: G0.D
     //  Referenced by: '<S6>/Constant13'
