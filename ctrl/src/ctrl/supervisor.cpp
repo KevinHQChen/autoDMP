@@ -189,7 +189,7 @@ void Supervisor::start() {
       sup->step();
       supOut = sup->rtY;
 
-      !simModeActive ? pump->sendSigs(Eigen::Vector3d(supOut.u[0], supOut.u[1], supOut.u[1]))
+      !simModeActive ? pump->sendSigs(Eigen::Vector3d(supOut.u[0], supOut.u[1], supOut.u[2]))
                      : info("Pump inputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
 
       ctrlDataQueuePtr->out << "allMA: " << allMeasAvail << ", anyMA: " << anyMeasAvail
@@ -204,6 +204,12 @@ void Supervisor::start() {
                             << ", nextChs: " << (bool)supOut.currEv.nextChs[0]
                             << (bool)supOut.currEv.nextChs[1] << (bool)supOut.currEv.nextChs[2]
                             << "\n";
+      ctrlDataQueuePtr->out << "params: " << supOut.params0[0] << ", " << supOut.params0[1] << ", "
+                            << supOut.params0[2] << ", " << supOut.params1[0] << ", "
+                            << supOut.params1[1] << ", " << supOut.params1[2] << ", "
+                            << supOut.params1[3] << ", " << supOut.params1[4] << ", "
+                            << supOut.params1[5] << ", " << supOut.params1[6] << ", "
+                            << supOut.params1[7] << "\n";
     }
   }
 }

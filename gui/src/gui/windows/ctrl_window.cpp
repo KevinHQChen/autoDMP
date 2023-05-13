@@ -194,12 +194,14 @@ void CtrlWindow::render() {
         if (ImGui::Button("Stop Controller"))
           ctrlVisible_ = false;
 
-      if (!sv_->supIn.enAdapt)
-        if (ImGui::Button("Start Online Param Est"))
-          sv_->supIn.enAdapt = true;
-      if (sv_->supIn.enAdapt)
-        if (ImGui::Button("Stop Online Param Est"))
-          sv_->supIn.enAdapt = false;
+      for (int ch = 0; ch < sv_->imProc->impConf.getNumChs(); ++ch) {
+        if (!sv_->supIn.enAdapt[ch])
+          if (ImGui::Button(("Start Online Param Est Ch" + std::to_string(ch)).c_str()))
+            sv_->supIn.enAdapt[ch] = true;
+        if (sv_->supIn.enAdapt[ch])
+          if (ImGui::Button(("Stop Online Param Est Ch" + std::to_string(ch)).c_str()))
+            sv_->supIn.enAdapt[ch] = false;
+      }
 
       excitationAmp = sv_->supIn.excitation;
       ImGui::SliderFloat("Excitation Amplitude", &excitationAmp, 0.0f, 10.0f);
