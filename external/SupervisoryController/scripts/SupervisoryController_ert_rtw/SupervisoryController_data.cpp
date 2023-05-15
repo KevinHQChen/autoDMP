@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.854
+// Model version                  : 1.943
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Sun May 14 23:58:51 2023
+// C/C++ source code generated on : Mon May 15 02:27:04 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -179,15 +179,16 @@ SupervisoryController::P SupervisoryController::rtP{
     // Expression: G2.A
     //  Referenced by: '<S246>/Constant10'
 
-    { 1.0, 0.0, 0.0, 1.0 },
+    { 0.99996947351391963, -1.9978365398021225E-5, -3.3626770675199147E-5,
+      0.99995521109485208 },
 
     // Expression: 0
-    //  Referenced by: '<S246>/Unit Delay7'
+    //  Referenced by: '<S246>/Unit Delay1'
 
     0.0,
 
     // Expression: 0
-    //  Referenced by: '<S246>/Unit Delay1'
+    //  Referenced by: '<S246>/Unit Delay7'
 
     0.0,
 
@@ -216,11 +217,6 @@ SupervisoryController::P SupervisoryController::rtP{
 
     10000.0,
 
-    // Expression: G2.B(1,:)
-    //  Referenced by: '<S246>/Constant7'
-
-    { 1.0, -0.5, -0.5 },
-
     // Expression: initializationParams.adg1
     //  Referenced by: '<S280>/Forgetting Factor'
 
@@ -240,11 +236,6 @@ SupervisoryController::P SupervisoryController::rtP{
     //  Referenced by: '<S280>/InitialRegressors'
 
     0.0,
-
-    // Expression: G2.B(2,:)
-    //  Referenced by: '<S246>/Constant8'
-
-    { -0.5, -0.5, 1.0 },
 
     // Expression: G2.C
     //  Referenced by: '<S246>/Constant4'
@@ -525,15 +516,16 @@ SupervisoryController::P SupervisoryController::rtP{
     // Expression: G1.A
     //  Referenced by: '<S112>/Constant5'
 
-    { 1.0, 0.0, 0.0, 1.0 },
+    { 1.0000306206339091, 1.9691324621873285E-5, -2.2010078492673557E-5,
+      0.99997520047355148 },
 
     // Expression: 0
-    //  Referenced by: '<S112>/Unit Delay3'
+    //  Referenced by: '<S112>/Unit Delay2'
 
     0.0,
 
     // Expression: 0
-    //  Referenced by: '<S112>/Unit Delay2'
+    //  Referenced by: '<S112>/Unit Delay3'
 
     0.0,
 
@@ -562,11 +554,6 @@ SupervisoryController::P SupervisoryController::rtP{
 
     10000.0,
 
-    // Expression: G1.B(1,:)
-    //  Referenced by: '<S112>/Constant3'
-
-    { -0.5, 1.0, -0.5 },
-
     // Expression: initializationParams.adg1
     //  Referenced by: '<S146>/Forgetting Factor'
 
@@ -586,11 +573,6 @@ SupervisoryController::P SupervisoryController::rtP{
     //  Referenced by: '<S146>/InitialRegressors'
 
     0.0,
-
-    // Expression: G1.B(2,:)
-    //  Referenced by: '<S112>/Constant4'
-
-    { -0.5, -0.5, 1.0 },
 
     // Expression: G1.C
     //  Referenced by: '<S112>/Constant12'
@@ -907,11 +889,6 @@ SupervisoryController::P SupervisoryController::rtP{
 
     10000.0,
 
-    // Expression: G0.B
-    //  Referenced by: '<S6>/Constant1'
-
-    { 1.0, -0.5, -0.5 },
-
     // Expression: G0.D
     //  Referenced by: '<S6>/Constant13'
 
@@ -920,7 +897,7 @@ SupervisoryController::P SupervisoryController::rtP{
     // Expression: G0.A
     //  Referenced by: '<S6>/Constant2'
 
-    1.0,
+    1.000032235800572,
 
     // Expression: G0.C
     //  Referenced by: '<S6>/Constant12'

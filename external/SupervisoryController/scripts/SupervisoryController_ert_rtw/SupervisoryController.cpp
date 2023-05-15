@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.854
+// Model version                  : 1.943
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Sun May 14 23:58:51 2023
+// C/C++ source code generated on : Mon May 15 02:27:04 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -415,7 +415,7 @@ real_T rt_nrand_Upu32_Yd_f_pw_snf(uint32_T *u)
 }
 
 // Function for MATLAB Function: '<S38>/RLS'
-real_T SupervisoryController::xnrm2_g(int32_T n, const real_T x[2], int32_T ix0)
+real_T SupervisoryController::xnrm2_g(int32_T n, const real_T x[3], int32_T ix0)
 {
   real_T y;
   y = 0.0;
@@ -472,54 +472,510 @@ real_T rt_hypotd_snf(real_T u0, real_T u1)
 }
 
 // Function for MATLAB Function: '<S38>/RLS'
-void SupervisoryController::qrFactor(real_T A, real_T *S, real_T Ns)
+real_T SupervisoryController::qrFactor(const real_T A[2], const real_T S[4],
+  real_T Ns)
 {
-  real_T b_A[2];
-  real_T atmp;
-  real_T beta1;
-  b_A[0] = *S * A;
-  b_A[1] = Ns;
-  atmp = b_A[0];
-  beta1 = xnrm2_g(1, b_A, 2);
-  if (beta1 != 0.0) {
-    beta1 = rt_hypotd_snf(b_A[0], beta1);
-    if (b_A[0] >= 0.0) {
-      beta1 = -beta1;
+  real_T b_A[3];
+  real_T b_S;
+  real_T s;
+  b_S = S[0] * A[0] + S[1] * A[1];
+  b_A[0] = b_S;
+  b_A[1] = A[0] * S[2] + A[1] * S[3];
+  b_A[2] = Ns;
+  s = xnrm2_g(2, b_A, 2);
+  if (s != 0.0) {
+    s = rt_hypotd_snf(b_S, s);
+    if (b_S >= 0.0) {
+      s = -s;
     }
 
-    if (std::abs(beta1) < 1.0020841800044864E-292) {
-      int32_T knt;
-      knt = 0;
+    if (std::abs(s) < 1.0020841800044864E-292) {
+      int32_T aoffset;
+      aoffset = 0;
       do {
-        knt++;
+        aoffset++;
         b_A[1] *= 9.9792015476736E+291;
-        beta1 *= 9.9792015476736E+291;
-        atmp *= 9.9792015476736E+291;
-      } while ((std::abs(beta1) < 1.0020841800044864E-292) && (knt < 20));
+        b_A[2] *= 9.9792015476736E+291;
+        s *= 9.9792015476736E+291;
+        b_S *= 9.9792015476736E+291;
+      } while ((std::abs(s) < 1.0020841800044864E-292) && (aoffset < 20));
 
-      beta1 = rt_hypotd_snf(atmp, xnrm2_g(1, b_A, 2));
-      if (atmp >= 0.0) {
-        beta1 = -beta1;
+      s = rt_hypotd_snf(b_S, xnrm2_g(2, b_A, 2));
+      if (b_S >= 0.0) {
+        s = -s;
       }
 
-      for (int32_T b_k{0}; b_k < knt; b_k++) {
-        beta1 *= 1.0020841800044864E-292;
+      for (int32_T k{0}; k < aoffset; k++) {
+        s *= 1.0020841800044864E-292;
       }
 
-      atmp = beta1;
+      b_S = s;
     } else {
-      atmp = beta1;
+      b_S = s;
     }
   }
 
-  *S = atmp;
+  return b_S;
 }
 
 // Function for MATLAB Function: '<S38>/RLS'
-void SupervisoryController::trisolve_m(real_T A, real_T *B_0)
+void SupervisoryController::trisolve_m(real_T A, real_T B_1[2])
 {
-  if (*B_0 != 0.0) {
-    *B_0 /= A;
+  if (B_1[0] != 0.0) {
+    B_1[0] /= A;
+  }
+
+  if (B_1[1] != 0.0) {
+    B_1[1] /= A;
+  }
+}
+
+// Function for MATLAB Function: '<S38>/RLS'
+real_T SupervisoryController::xnrm2_gg(int32_T n, const real_T x[6], int32_T ix0)
+{
+  real_T y;
+  y = 0.0;
+  if (n >= 1) {
+    if (n == 1) {
+      y = std::abs(x[ix0 - 1]);
+    } else {
+      real_T scale;
+      int32_T kend;
+      scale = 3.3121686421112381E-170;
+      kend = (ix0 + n) - 1;
+      for (int32_T k{ix0}; k <= kend; k++) {
+        real_T absxk;
+        absxk = std::abs(x[k - 1]);
+        if (absxk > scale) {
+          real_T t;
+          t = scale / absxk;
+          y = y * t * t + 1.0;
+          scale = absxk;
+        } else {
+          real_T t;
+          t = absxk / scale;
+          y += t * t;
+        }
+      }
+
+      y = scale * std::sqrt(y);
+    }
+  }
+
+  return y;
+}
+
+// Function for MATLAB Function: '<S38>/RLS'
+void SupervisoryController::xgemv_m(int32_T m, int32_T n, const real_T A[6],
+  int32_T ia0, const real_T x[6], int32_T ix0, real_T y[2])
+{
+  if ((m != 0) && (n != 0)) {
+    int32_T b;
+    if (n - 1 >= 0) {
+      (void)std::memset(&y[0], 0, static_cast<uint32_T>(n) * sizeof(real_T));
+    }
+
+    b = (n - 1) * 3 + ia0;
+    for (int32_T b_iy{ia0}; b_iy <= b; b_iy += 3) {
+      real_T c;
+      int32_T d;
+      int32_T iyend;
+      c = 0.0;
+      d = b_iy + m;
+      for (iyend = b_iy; iyend < d; iyend++) {
+        c += x[((ix0 + iyend) - b_iy) - 1] * A[iyend - 1];
+      }
+
+      iyend = div_nde_s32_floor(b_iy - ia0, 3);
+      y[iyend] += c;
+    }
+  }
+}
+
+// Function for MATLAB Function: '<S38>/RLS'
+void SupervisoryController::xgerc_n(int32_T m, int32_T n, real_T alpha1, int32_T
+  ix0, const real_T y[2], real_T A[6], int32_T ia0)
+{
+  if (!(alpha1 == 0.0)) {
+    int32_T jA;
+    jA = ia0;
+    for (int32_T j{0}; j < n; j++) {
+      real_T temp;
+      temp = y[j];
+      if (temp != 0.0) {
+        int32_T b;
+        temp *= alpha1;
+        b = m + jA;
+        for (int32_T ijA{jA}; ijA < b; ijA++) {
+          A[ijA - 1] += A[((ix0 + ijA) - jA) - 1] * temp;
+        }
+      }
+
+      jA += 3;
+    }
+  }
+}
+
+// Function for MATLAB Function: '<S38>/RLS'
+void SupervisoryController::sqrtMeasurementUpdate(real_T L[4], const real_T H[2],
+  real_T a0, real_T K[2])
+{
+  real_T c_A[6];
+  real_T A[4];
+  real_T y[4];
+  real_T B_0[2];
+  real_T Pxy[2];
+  real_T Pxy_0;
+  real_T Sy;
+  real_T prodVal;
+  real_T y_tmp;
+  int32_T coffset;
+  int32_T ii;
+  for (int32_T b_i{0}; b_i < 2; b_i++) {
+    A[b_i] = 0.0;
+    A[b_i] += L[b_i] * L[0];
+    Sy = L[b_i + 2];
+    A[b_i] += Sy * L[2];
+    if (std::isinf(A[b_i])) {
+      prodVal = A[b_i];
+      if (std::isnan(prodVal)) {
+        y_tmp = (rtNaN);
+      } else if (prodVal < 0.0) {
+        y_tmp = -1.0;
+      } else {
+        y_tmp = static_cast<real_T>(prodVal > 0.0 ? static_cast<int32_T>(1) :
+          static_cast<int32_T>(0));
+      }
+
+      A[b_i] = y_tmp * 1.7976931348623157E+308;
+    }
+
+    prodVal = A[b_i] * H[0];
+    if (std::isinf(prodVal)) {
+      if (std::isnan(prodVal)) {
+        y_tmp = (rtNaN);
+      } else if (prodVal < 0.0) {
+        y_tmp = -1.0;
+      } else {
+        y_tmp = static_cast<real_T>(prodVal > 0.0 ? static_cast<int32_T>(1) :
+          static_cast<int32_T>(0));
+      }
+
+      prodVal = y_tmp * 1.7976931348623157E+308;
+    }
+
+    if (std::isinf(prodVal)) {
+      if (std::isnan(prodVal)) {
+        y_tmp = (rtNaN);
+      } else if (prodVal < 0.0) {
+        y_tmp = -1.0;
+      } else {
+        y_tmp = static_cast<real_T>(prodVal > 0.0 ? static_cast<int32_T>(1) :
+          static_cast<int32_T>(0));
+      }
+
+      prodVal = y_tmp * 1.7976931348623157E+308;
+    }
+
+    Pxy_0 = prodVal;
+    A[b_i + 2] = 0.0;
+    A[b_i + 2] += L[b_i] * L[1];
+    A[b_i + 2] += Sy * L[3];
+    if (std::isinf(A[b_i + 2])) {
+      Sy = A[b_i + 2];
+      if (std::isnan(Sy)) {
+        y_tmp = (rtNaN);
+      } else if (Sy < 0.0) {
+        y_tmp = -1.0;
+      } else {
+        y_tmp = static_cast<real_T>(Sy > 0.0 ? static_cast<int32_T>(1) :
+          static_cast<int32_T>(0));
+      }
+
+      A[b_i + 2] = y_tmp * 1.7976931348623157E+308;
+    }
+
+    prodVal = A[b_i + 2] * H[1];
+    if (std::isinf(prodVal)) {
+      if (std::isnan(prodVal)) {
+        y_tmp = (rtNaN);
+      } else if (prodVal < 0.0) {
+        y_tmp = -1.0;
+      } else {
+        y_tmp = static_cast<real_T>(prodVal > 0.0 ? static_cast<int32_T>(1) :
+          static_cast<int32_T>(0));
+      }
+
+      prodVal = y_tmp * 1.7976931348623157E+308;
+    }
+
+    prodVal += Pxy_0;
+    if (std::isinf(prodVal)) {
+      if (std::isnan(prodVal)) {
+        y_tmp = (rtNaN);
+      } else if (prodVal < 0.0) {
+        y_tmp = -1.0;
+      } else {
+        y_tmp = static_cast<real_T>(prodVal > 0.0 ? static_cast<int32_T>(1) :
+          static_cast<int32_T>(0));
+      }
+
+      prodVal = y_tmp * 1.7976931348623157E+308;
+    }
+
+    Pxy[b_i] = prodVal;
+  }
+
+  prodVal = std::sqrt(a0);
+  Sy = qrFactor(H, L, prodVal);
+  B_0[0] = Pxy[0];
+  B_0[1] = Pxy[1];
+  trisolve_m(Sy, B_0);
+  K[0] = B_0[0];
+  K[1] = B_0[1];
+  trisolve_m(Sy, K);
+  Sy = K[0];
+  if (std::isinf(K[0])) {
+    if (std::isnan(K[0])) {
+      y_tmp = (rtNaN);
+    } else if (K[0] < 0.0) {
+      y_tmp = -1.0;
+    } else {
+      y_tmp = static_cast<real_T>(K[0] > 0.0 ? static_cast<int32_T>(1) :
+        static_cast<int32_T>(0));
+    }
+
+    Sy = y_tmp * 1.7976931348623157E+308;
+  }
+
+  Pxy_0 = -Sy;
+  K[0] = Sy;
+  Sy = K[1];
+  if (std::isinf(K[1])) {
+    if (std::isnan(K[1])) {
+      y_tmp = (rtNaN);
+    } else if (K[1] < 0.0) {
+      y_tmp = -1.0;
+    } else {
+      y_tmp = static_cast<real_T>(K[1] > 0.0 ? static_cast<int32_T>(1) :
+        static_cast<int32_T>(0));
+    }
+
+    Sy = y_tmp * 1.7976931348623157E+308;
+  }
+
+  K[1] = Sy;
+  A[0] = Pxy_0 * H[0];
+  A[1] = -Sy * H[0];
+  A[2] = Pxy_0 * H[1];
+  A[3] = -Sy * H[1];
+  A[0]++;
+  A[3]++;
+  for (int32_T b_i{0}; b_i < 2; b_i++) {
+    coffset = b_i << 1UL;
+    y_tmp = A[b_i + 2];
+    y[coffset] = y_tmp * L[1] + L[0] * A[b_i];
+    y[coffset + 1] = y_tmp * L[3] + L[2] * A[b_i];
+  }
+
+  c_A[0] = y[0];
+  c_A[1] = y[1];
+  c_A[2] = K[0] * prodVal;
+  B_0[0] = 0.0;
+  Pxy[0] = 0.0;
+  c_A[3] = y[2];
+  c_A[4] = y[3];
+  c_A[5] = Sy * prodVal;
+  Pxy[1] = 0.0;
+  for (int32_T b_i{0}; b_i < 2; b_i++) {
+    int32_T aoffset;
+    int32_T lastv;
+    ii = b_i * 3 + b_i;
+    Sy = c_A[ii];
+    lastv = ii + 2;
+    B_0[b_i] = 0.0;
+    Pxy_0 = xnrm2_gg(2 - b_i, c_A, ii + 2);
+    if (Pxy_0 != 0.0) {
+      prodVal = rt_hypotd_snf(c_A[ii], Pxy_0);
+      if (c_A[ii] >= 0.0) {
+        prodVal = -prodVal;
+      }
+
+      if (std::abs(prodVal) < 1.0020841800044864E-292) {
+        __m128d tmp;
+        int32_T scalarLB;
+        int32_T scalarLB_tmp;
+        int32_T vectorUB;
+        coffset = 0;
+        scalarLB = (ii - b_i) + 3;
+        do {
+          coffset++;
+          scalarLB_tmp = (((((scalarLB - ii) - 1) / 2) << 1UL) + ii) + 2;
+          vectorUB = scalarLB_tmp - 2;
+          for (aoffset = lastv; aoffset <= vectorUB; aoffset += 2) {
+            tmp = _mm_loadu_pd(&c_A[aoffset - 1]);
+            (void)_mm_storeu_pd(&c_A[aoffset - 1], _mm_mul_pd(tmp, _mm_set1_pd
+              (9.9792015476736E+291)));
+          }
+
+          for (aoffset = scalarLB_tmp; aoffset <= scalarLB; aoffset++) {
+            c_A[aoffset - 1] *= 9.9792015476736E+291;
+          }
+
+          prodVal *= 9.9792015476736E+291;
+          Sy *= 9.9792015476736E+291;
+        } while ((std::abs(prodVal) < 1.0020841800044864E-292) && (coffset < 20));
+
+        prodVal = rt_hypotd_snf(Sy, xnrm2_gg(2 - b_i, c_A, ii + 2));
+        if (Sy >= 0.0) {
+          prodVal = -prodVal;
+        }
+
+        B_0[b_i] = (prodVal - Sy) / prodVal;
+        Sy = 1.0 / (Sy - prodVal);
+        vectorUB = scalarLB_tmp - 2;
+        for (aoffset = lastv; aoffset <= vectorUB; aoffset += 2) {
+          tmp = _mm_loadu_pd(&c_A[aoffset - 1]);
+          (void)_mm_storeu_pd(&c_A[aoffset - 1], _mm_mul_pd(tmp, _mm_set1_pd(Sy)));
+        }
+
+        for (aoffset = scalarLB_tmp; aoffset <= scalarLB; aoffset++) {
+          c_A[aoffset - 1] *= Sy;
+        }
+
+        for (lastv = 0; lastv < coffset; lastv++) {
+          prodVal *= 1.0020841800044864E-292;
+        }
+
+        Sy = prodVal;
+      } else {
+        int32_T scalarLB;
+        int32_T vectorUB;
+        B_0[b_i] = (prodVal - c_A[ii]) / prodVal;
+        Sy = 1.0 / (c_A[ii] - prodVal);
+        aoffset = (ii - b_i) + 3;
+        scalarLB = (((((aoffset - ii) - 1) / 2) << 1UL) + ii) + 2;
+        vectorUB = scalarLB - 2;
+        for (coffset = lastv; coffset <= vectorUB; coffset += 2) {
+          __m128d tmp;
+          tmp = _mm_loadu_pd(&c_A[coffset - 1]);
+          (void)_mm_storeu_pd(&c_A[coffset - 1], _mm_mul_pd(tmp, _mm_set1_pd(Sy)));
+        }
+
+        for (coffset = scalarLB; coffset <= aoffset; coffset++) {
+          c_A[coffset - 1] *= Sy;
+        }
+
+        Sy = prodVal;
+      }
+    }
+
+    c_A[ii] = Sy;
+    if (b_i + 1 < 2) {
+      prodVal = c_A[ii];
+      c_A[ii] = 1.0;
+      if (B_0[0] != 0.0) {
+        lastv = 3;
+        coffset = ii + 2;
+        while ((lastv > 0) && (c_A[coffset] == 0.0)) {
+          lastv--;
+          coffset--;
+        }
+
+        coffset = 1;
+        aoffset = ii;
+        int32_T exitg1;
+        do {
+          exitg1 = 0;
+          if (aoffset + 4 <= (ii + lastv) + 3) {
+            if (c_A[aoffset + 3] != 0.0) {
+              exitg1 = 1;
+            } else {
+              aoffset++;
+            }
+          } else {
+            coffset = 0;
+            exitg1 = 1;
+          }
+        } while (exitg1 == 0);
+      } else {
+        lastv = 0;
+        coffset = 0;
+      }
+
+      if (lastv > 0) {
+        xgemv_m(lastv, coffset, c_A, ii + 4, c_A, ii + 1, Pxy);
+        xgerc_n(lastv, coffset, -B_0[0], ii + 1, Pxy, c_A, ii + 4);
+      }
+
+      c_A[ii] = prodVal;
+    }
+  }
+
+  for (int32_T b_i{0}; b_i < 2; b_i++) {
+    for (ii = 0; ii <= b_i; ii++) {
+      A[ii + (b_i << 1UL)] = c_A[3 * b_i + ii];
+    }
+
+    if (b_i + 2 <= 2) {
+      A[(b_i << 1UL) + 1] = 0.0;
+    }
+  }
+
+  L[0] = A[0];
+  L[1] = A[2];
+  L[2] = A[1];
+  L[3] = A[3];
+  if (std::isinf(L[0])) {
+    if (std::isnan(L[0])) {
+      y_tmp = (rtNaN);
+    } else if (L[0] < 0.0) {
+      y_tmp = -1.0;
+    } else {
+      y_tmp = static_cast<real_T>(L[0] > 0.0 ? static_cast<int32_T>(1) :
+        static_cast<int32_T>(0));
+    }
+
+    L[0] = y_tmp * 1.7976931348623157E+308;
+  }
+
+  if (std::isinf(L[1])) {
+    if (std::isnan(L[1])) {
+      y_tmp = (rtNaN);
+    } else if (L[1] < 0.0) {
+      y_tmp = -1.0;
+    } else {
+      y_tmp = static_cast<real_T>(L[1] > 0.0 ? static_cast<int32_T>(1) :
+        static_cast<int32_T>(0));
+    }
+
+    L[1] = y_tmp * 1.7976931348623157E+308;
+  }
+
+  if (std::isinf(L[2])) {
+    if (std::isnan(L[2])) {
+      y_tmp = (rtNaN);
+    } else if (L[2] < 0.0) {
+      y_tmp = -1.0;
+    } else {
+      y_tmp = static_cast<real_T>(L[2] > 0.0 ? static_cast<int32_T>(1) :
+        static_cast<int32_T>(0));
+    }
+
+    L[2] = y_tmp * 1.7976931348623157E+308;
+  }
+
+  if (std::isinf(L[3])) {
+    if (std::isnan(L[3])) {
+      y_tmp = (rtNaN);
+    } else if (L[3] < 0.0) {
+      y_tmp = -1.0;
+    } else {
+      y_tmp = static_cast<real_T>(L[3] > 0.0 ? static_cast<int32_T>(1) :
+        static_cast<int32_T>(0));
+    }
+
+    L[3] = y_tmp * 1.7976931348623157E+308;
   }
 }
 
@@ -2269,7 +2725,7 @@ void SupervisoryController::mpcblock_optimizer(const real_T rseq[20], const
 
 // System initialize for function-call system: '<S1>/State0.controlLaw.AMPC0'
 void SupervisoryController::State0controlLawAMPC0_Init(real_T rty_u[3], real_T
-  *rty_yhat, real_T *rty_params, DW_State0controlLawAMPC0 *localDW,
+  *rty_yhat, real_T rty_params[3], DW_State0controlLawAMPC0 *localDW,
   P_State0controlLawAMPC0 *localP)
 {
   int32_T i;
@@ -2387,16 +2843,26 @@ void SupervisoryController::State0controlLawAMPC0_Init(real_T rty_u[3], real_T
 
   // End of SystemInitialize for SubSystem: '<S84>/MeasurementUpdate'
 
-  // SystemInitialize for Outport: '<S2>/u'
-  rty_u[0] = localP->u_Y0;
-  rty_u[1] = localP->u_Y0;
-  rty_u[2] = localP->u_Y0;
-
   // SystemInitialize for Outport: '<S2>/yhat'
   *rty_yhat = localP->yhat_Y0;
 
+  // SystemInitialize for Outport: '<S2>/u'
+  rty_u[0] = localP->u_Y0;
+
   // SystemInitialize for Outport: '<S2>/params'
-  *rty_params = localP->params_Y0;
+  rty_params[0] = localP->params_Y0;
+
+  // SystemInitialize for Outport: '<S2>/u'
+  rty_u[1] = localP->u_Y0;
+
+  // SystemInitialize for Outport: '<S2>/params'
+  rty_params[1] = localP->params_Y0;
+
+  // SystemInitialize for Outport: '<S2>/u'
+  rty_u[2] = localP->u_Y0;
+
+  // SystemInitialize for Outport: '<S2>/params'
+  rty_params[2] = localP->params_Y0;
 }
 
 // Disable for function-call system: '<S1>/State0.controlLaw.AMPC0'
@@ -2418,10 +2884,10 @@ void SupervisoryController::State0controlLawAMPC0_Disable
 
 // Output and update for function-call system: '<S1>/State0.controlLaw.AMPC0'
 void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
-  real_T rtu_y0, const real_T rtu_u0[3], real_T rtu_initParam, real_T
+  real_T rtu_y0, const real_T rtu_u0[3], const real_T rtu_initParam[3], real_T
   rtu_paramEst, real_T rtu_excitationVal, real_T rty_u[3], real_T *rty_yhat,
-  real_T *rty_params, DW_State0controlLawAMPC0 *localDW, P_State0controlLawAMPC0
-  *localP, P *rtP, ZCE_State0controlLawAMPC0 *localZCE)
+  real_T rty_params[3], DW_State0controlLawAMPC0 *localDW,
+  P_State0controlLawAMPC0 *localP, P *rtP, ZCE_State0controlLawAMPC0 *localZCE)
 {
   static const real_T h[184]{ -0.7084943675087555, -1.4170115739006484,
     -2.1255516199119082, -2.8341145062787887, -3.5427002337375666,
@@ -2591,38 +3057,33 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
   real_T g_0[16];
   real_T b_B[12];
   real_T B_est[10];
-  real_T rtb_B[6];
+  real_T rty_params_0[6];
   real_T D_est[5];
   real_T Abar[4];
   real_T rtb_A[4];
   real_T rtb_Q[4];
+  real_T rtb_y_a[4];
   real_T rtb_y_e[4];
-  real_T rtb_y_k[4];
+  real_T rtb_y_l[4];
   real_T U[3];
   real_T rtb_Sum1_gd[3];
   real_T tmp[3];
   real_T tmp_0[3];
   real_T tmp_1[3];
   real_T rtb_Bkuk[2];
-  real_T rtb_C[2];
   real_T rtb_N[2];
-  real_T Sy;
+  real_T rtb_Transpose[2];
+  real_T rtb_x[2];
   real_T b_Mlim_0;
-  real_T prodVal;
   real_T rtb_Add1_tmp;
   real_T rtb_Product2_gf;
-  real_T rtb_Sum1;
-  int32_T b_ct;
+  real_T rtb_X;
+  real_T sqrtFF;
   int32_T b_utarget_tmp;
   int32_T i;
-  int32_T i_0;
+  int32_T kk;
+  int32_T rtb_y_h_tmp;
   boolean_T tmp_5[46];
-
-  // Sum: '<S6>/Sum1' incorporates:
-  //   UnitDelay: '<S6>/Unit Delay2'
-
-  rtb_Sum1 = (localDW->UnitDelay2_DSTATE[0] - localDW->UnitDelay2_DSTATE[1]) -
-    localDW->UnitDelay2_DSTATE[2];
 
   // Sum: '<S6>/Add1' incorporates:
   //   Sum: '<S7>/Sum6'
@@ -2631,14 +3092,18 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
 
   // Delay: '<S38>/delayTheta'
   if (localDW->icLoad_m) {
-    localDW->delayTheta_DSTATE = rtu_initParam;
+    localDW->delayTheta_DSTATE[0] = rtu_initParam[0];
+    localDW->delayTheta_DSTATE[1] = rtu_initParam[1];
   }
+
+  rtb_x[0] = localDW->delayTheta_DSTATE[0];
+  rtb_x[1] = localDW->delayTheta_DSTATE[1];
 
   // Outputs for Atomic SubSystem: '<S38>/ProcessInitialCovariance'
   // MATLAB Function: '<S57>/ScalarExpansion' incorporates:
   //   Constant: '<S6>/Constant'
 
-  Sy = localP->Constant_Value;
+  rtb_X = localP->Constant_Value;
 
   //  ctrlScalarExpansion Helper function for scalar expansion.
   //
@@ -2654,8 +3119,10 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
   //    Copyright 2014-2015 The MathWorks, Inc.
   // '<S64>:1:16' y = ctrlScalarExpansion(u,n,IsStrictPositiveDefinite,OutputSquareRootY); 
   if (localP->Constant_Value <= 0.0) {
-    Sy = 2.2204460492503131E-16;
+    rtb_X = 2.2204460492503131E-16;
   }
+
+  rtb_X = std::sqrt(rtb_X);
 
   // End of Outputs for SubSystem: '<S38>/ProcessInitialCovariance'
 
@@ -2664,21 +3131,43 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
 
   if (localDW->icLoad_e) {
     // Outputs for Atomic SubSystem: '<S38>/ProcessInitialCovariance'
-    localDW->delayL_DSTATE = std::sqrt(Sy);
+    localDW->delayL_DSTATE[0] = rtb_X;
+
+    // End of Outputs for SubSystem: '<S38>/ProcessInitialCovariance'
+    localDW->delayL_DSTATE[1] = 0.0;
+    localDW->delayL_DSTATE[2] = 0.0;
+
+    // Outputs for Atomic SubSystem: '<S38>/ProcessInitialCovariance'
+    localDW->delayL_DSTATE[3] = rtb_X;
 
     // End of Outputs for SubSystem: '<S38>/ProcessInitialCovariance'
   }
 
+  rtb_y_a[0] = localDW->delayL_DSTATE[0];
+  rtb_y_a[1] = localDW->delayL_DSTATE[1];
+  rtb_y_a[2] = localDW->delayL_DSTATE[2];
+  rtb_y_a[3] = localDW->delayL_DSTATE[3];
+
+  // End of Delay: '<S38>/delayL'
+
+  // SignalConversion generated from: '<S61>/ SFunction ' incorporates:
+  //   MATLAB Function: '<S38>/RLS'
+  //   Sum: '<S6>/Sum1'
+  //   UnitDelay: '<S6>/Unit Delay2'
+
+  rtb_Transpose[0] = localDW->UnitDelay2_DSTATE[0];
+  rtb_Transpose[1] = localDW->UnitDelay2_DSTATE[1] + localDW->UnitDelay2_DSTATE
+    [2];
+
   // MATLAB Function: '<S38>/RLS' incorporates:
   //   Constant: '<S38>/Forgetting Factor'
   //   DataTypeConversion: '<S38>/DataTypeConversionEnable'
-  //   Delay: '<S38>/delayL'
   //   Delay: '<S38>/delayTheta'
+  //   SignalConversion generated from: '<S61>/ SFunction '
   //   Sum: '<S6>/Add1'
   //   Sum: '<S6>/Sum'
+  //   UnitDelay: '<S6>/Unit Delay2'
   //   UnitDelay: '<S6>/Unit Delay3'
-
-  *rty_params = localDW->delayTheta_DSTATE;
 
   //  % I/O data
   //  % Helper variables
@@ -2700,7 +3189,6 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
   // '<S61>:1:25'     yBuffer, HBuffer, x, L,... % states
   // '<S61>:1:26'     y, H,... % new IO data
   // '<S61>:1:27'     isEnabled, adg1, adg2, algorithmParams);
-  Sy = localDW->delayL_DSTATE;
   localDW->rlsEstimator.DataIterator.IteratorPosition = 1;
   if (localDW->rlsEstimator.DataIterator.IteratorPosition + 1 <= 2) {
     localDW->rlsEstimator.DataIterator.IteratorPosition++;
@@ -2708,113 +3196,88 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
     localDW->rlsEstimator.DataIterator.IteratorPosition = 2;
   }
 
+  rtb_X = (rtb_Add1_tmp - localDW->UnitDelay3_DSTATE) -
+    (localDW->UnitDelay2_DSTATE[0] * localDW->delayTheta_DSTATE[0] +
+     rtb_Transpose[1] * localDW->delayTheta_DSTATE[1]);
   if (rtu_paramEst != 0.0) {
-    Sy = localDW->delayL_DSTATE * localDW->delayL_DSTATE;
-    if (std::isinf(Sy)) {
-      if (std::isnan(Sy)) {
-        Sy = (rtNaN);
-      } else if (Sy < 0.0) {
-        Sy = -1.0;
-      } else {
-        Sy = static_cast<real_T>(Sy > 0.0 ? static_cast<int32_T>(1) :
-          static_cast<int32_T>(0));
+    sqrtMeasurementUpdate(rtb_y_a, rtb_Transpose, localP->ForgettingFactor_Value,
+                          rtb_x);
+    sqrtFF = std::sqrt(localP->ForgettingFactor_Value);
+    for (kk = 0; kk < 2; kk++) {
+      for (i = 0; i <= kk; i++) {
+        rtb_y_h_tmp = ((((1 - kk) << 1UL) + i) - kk) + 1;
+        rtb_y_a[rtb_y_h_tmp] /= sqrtFF;
       }
-
-      Sy *= 1.7976931348623157E+308;
     }
 
-    prodVal = Sy * rtb_Sum1;
-    if (std::isinf(prodVal)) {
-      if (std::isnan(prodVal)) {
-        Sy = (rtNaN);
-      } else if (prodVal < 0.0) {
-        Sy = -1.0;
+    if (std::isinf(rtb_y_a[0])) {
+      if (std::isnan(rtb_y_a[0])) {
+        b_Mlim_0 = (rtNaN);
+      } else if (rtb_y_a[0] < 0.0) {
+        b_Mlim_0 = -1.0;
       } else {
-        Sy = static_cast<real_T>(prodVal > 0.0 ? static_cast<int32_T>(1) :
-          static_cast<int32_T>(0));
+        b_Mlim_0 = static_cast<real_T>(rtb_y_a[0] > 0.0 ? static_cast<int32_T>(1)
+          : static_cast<int32_T>(0));
       }
 
-      prodVal = Sy * 1.7976931348623157E+308;
+      rtb_y_a[0] = b_Mlim_0 * 1.7976931348623157E+308;
     }
 
-    if (std::isinf(prodVal)) {
-      if (std::isnan(prodVal)) {
-        Sy = (rtNaN);
-      } else if (prodVal < 0.0) {
-        Sy = -1.0;
+    if (std::isinf(rtb_y_a[2])) {
+      if (std::isnan(rtb_y_a[2])) {
+        b_Mlim_0 = (rtNaN);
+      } else if (rtb_y_a[2] < 0.0) {
+        b_Mlim_0 = -1.0;
       } else {
-        Sy = static_cast<real_T>(prodVal > 0.0 ? static_cast<int32_T>(1) :
-          static_cast<int32_T>(0));
+        b_Mlim_0 = static_cast<real_T>(rtb_y_a[2] > 0.0 ? static_cast<int32_T>(1)
+          : static_cast<int32_T>(0));
       }
 
-      prodVal = Sy * 1.7976931348623157E+308;
+      rtb_y_a[2] = b_Mlim_0 * 1.7976931348623157E+308;
     }
 
-    Sy = localDW->delayL_DSTATE;
-    qrFactor(rtb_Sum1, &Sy, std::sqrt(localP->ForgettingFactor_Value));
-    trisolve_m(Sy, &prodVal);
-    trisolve_m(Sy, &prodVal);
-    if (std::isinf(prodVal)) {
-      if (std::isnan(prodVal)) {
-        Sy = (rtNaN);
-      } else if (prodVal < 0.0) {
-        Sy = -1.0;
+    rtb_x[0] = rtb_x[0] * rtb_X + localDW->delayTheta_DSTATE[0];
+    if (std::isinf(rtb_y_a[1])) {
+      if (std::isnan(rtb_y_a[1])) {
+        b_Mlim_0 = (rtNaN);
+      } else if (rtb_y_a[1] < 0.0) {
+        b_Mlim_0 = -1.0;
       } else {
-        Sy = static_cast<real_T>(prodVal > 0.0 ? static_cast<int32_T>(1) :
-          static_cast<int32_T>(0));
+        b_Mlim_0 = static_cast<real_T>(rtb_y_a[1] > 0.0 ? static_cast<int32_T>(1)
+          : static_cast<int32_T>(0));
       }
 
-      prodVal = Sy * 1.7976931348623157E+308;
+      rtb_y_a[1] = b_Mlim_0 * 1.7976931348623157E+308;
     }
 
-    Sy = localDW->delayL_DSTATE;
-    qrFactor(-prodVal * rtb_Sum1 + 1.0, &Sy, prodVal * std::sqrt
-             (localP->ForgettingFactor_Value));
-    if (std::isinf(Sy)) {
-      if (std::isnan(Sy)) {
-        Sy = (rtNaN);
-      } else if (Sy < 0.0) {
-        Sy = -1.0;
+    if (std::isinf(rtb_y_a[3])) {
+      if (std::isnan(rtb_y_a[3])) {
+        b_Mlim_0 = (rtNaN);
+      } else if (rtb_y_a[3] < 0.0) {
+        b_Mlim_0 = -1.0;
       } else {
-        Sy = static_cast<real_T>(Sy > 0.0 ? static_cast<int32_T>(1) :
-          static_cast<int32_T>(0));
+        b_Mlim_0 = static_cast<real_T>(rtb_y_a[3] > 0.0 ? static_cast<int32_T>(1)
+          : static_cast<int32_T>(0));
       }
 
-      Sy *= 1.7976931348623157E+308;
+      rtb_y_a[3] = b_Mlim_0 * 1.7976931348623157E+308;
     }
 
-    Sy /= std::sqrt(localP->ForgettingFactor_Value);
-    if (std::isinf(Sy)) {
-      if (std::isnan(Sy)) {
-        Sy = (rtNaN);
-      } else if (Sy < 0.0) {
-        Sy = -1.0;
-      } else {
-        Sy = static_cast<real_T>(Sy > 0.0 ? static_cast<int32_T>(1) :
-          static_cast<int32_T>(0));
-      }
-
-      Sy *= 1.7976931348623157E+308;
-    }
-
-    *rty_params += ((rtb_Add1_tmp - localDW->UnitDelay3_DSTATE) - rtb_Sum1 *
-                    *rty_params) * prodVal;
+    rtb_x[1] = rtb_x[1] * rtb_X + localDW->delayTheta_DSTATE[1];
   }
 
-  // Product: '<S6>/Product1' incorporates:
-  //   Constant: '<S6>/Constant1'
-
+  // SignalConversion generated from: '<S6>/Bus Creator1'
   //  % states
   //  % new IO data
   //  helper variables
-  rty_u[0] = *rty_params * localP->Constant1_Value[0];
-  rty_u[1] = *rty_params * localP->Constant1_Value[1];
-  rty_u[2] = *rty_params * localP->Constant1_Value[2];
+  rty_params[0] = rtb_x[0];
+  rty_params[1] = rtb_x[1];
+  rty_params[2] = rtb_x[1];
 
   // Product: '<S6>/Product' incorporates:
   //   Constant: '<S6>/Constant11'
 
-  rtb_Sum1 = localP->Constant11_Value * rtu_y0;
+  rtb_X = localP->Constant11_Value * rtu_y0;
 
   // Delay: '<S65>/MemoryX' incorporates:
   //   Constant: '<S65>/X0'
@@ -2834,6 +3297,7 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
   //   Constant: '<S6>/Constant12'
   //   Constant: '<S6>/Constant2'
   //   RandomNumber: '<S2>/Measurement Noise'
+  //   SignalConversion generated from: '<S6>/Bus Creator1'
   //
   // MATLAB Function 'Adaptive MPC Controller/MPC/optimizer/FixedHorizonOptimizer': '<S37>:1' 
   // '<S37>:1:18' coder.extrinsic('mpcblock_optimizer_double_mex');
@@ -3013,12 +3477,12 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
   rtb_A[2] = 0.0;
   rtb_A[3] = 1.0;
   (void)std::memcpy(&b_B[0], &c[0], 12U * sizeof(real_T));
-  rtb_C[1] = 1.0;
-  rtb_C[0] = localP->Constant12_Value;
+  rtb_Transpose[1] = 1.0;
+  rtb_Transpose[0] = localP->Constant12_Value;
   rtb_A[0] = localP->Constant2_Value;
   i = 0;
-  for (i_0 = 0; i_0 < 3; i_0++) {
-    b_B[i] = rty_u[i_0];
+  for (rtb_y_h_tmp = 0; rtb_y_h_tmp < 3; rtb_y_h_tmp++) {
+    b_B[i] = rty_params[rtb_y_h_tmp];
     Bu[i] = b_B[i];
     Bu[i + 1] = b_B[i + 1];
     i += 2;
@@ -3045,9 +3509,9 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
   rtb_Sum1_gd[1] = rtu_u0[1];
   U[2] = rtu_u0[2];
   rtb_Sum1_gd[2] = rtu_u0[2];
-  for (b_ct = 0; b_ct < 46; b_ct++) {
-    b_Mlim_0 = b_Mlim[b_ct];
-    i = b_Mrows[b_ct];
+  for (kk = 0; kk < 46; kk++) {
+    b_Mlim_0 = b_Mlim[kk];
+    i = b_Mrows[kk];
     if (i <= 20) {
       b_Mlim_0 += yoff - rtu_y0;
     } else if (i <= 40) {
@@ -3060,14 +3524,14 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
         (nu)) * static_cast<int32_T>(nu)) - 101];
     }
 
-    b_Mlim[b_ct] = b_Mlim_0;
+    b_Mlim[kk] = b_Mlim_0;
   }
 
-  for (b_ct = 0; b_ct < 3; b_ct++) {
-    b_Mlim_0 = U[b_ct];
+  for (kk = 0; kk < 3; kk++) {
+    b_Mlim_0 = U[kk];
     i = 0;
-    for (i_0 = 0; i_0 < 20; i_0++) {
-      b_utarget_tmp = i + b_ct;
+    for (rtb_y_h_tmp = 0; rtb_y_h_tmp < 20; rtb_y_h_tmp++) {
+      b_utarget_tmp = i + kk;
       b_utarget[b_utarget_tmp] -= b_Mlim_0;
       i += 3;
     }
@@ -3082,12 +3546,12 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
   // '<S37>:1:190' else
   //  When doing code generation, use M code directly
   // '<S37>:1:192' [rseq, vseq, v] = mpcblock_refmd(ref,md,nv,ny,p,yoff,voff,no_md,no_ref,openloopflag, RYscale, RMDscale); 
-  for (b_ct = 0; b_ct < 21; b_ct++) {
-    vseq[b_ct] = 1.0;
+  for (kk = 0; kk < 21; kk++) {
+    vseq[kk] = 1.0;
   }
 
-  for (b_ct = 0; b_ct < 20; b_ct++) {
-    rseq[b_ct] = rtu_r - rtu_y0;
+  for (kk = 0; kk < 20; kk++) {
+    rseq[kk] = rtu_r - rtu_y0;
   }
 
   // Sum: '<S7>/Sum2' incorporates:
@@ -3130,7 +3594,7 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
   // '<S37>:1:290'             Wy, Wdu, Jm, SuJm, Su1, Sx, Hv, Wu, I1, ...
   // '<S37>:1:291'             isAdaptive, isLTV, A, Bu, Bv, C, Dv, ...
   // '<S37>:1:292'             Mrows, nCC, Ecc, Fcc, Scc, Gcc, RYscale, RMVscale, m, isHyb, Mdis, Ndis, Vdis, numdis, maxdis); 
-  rtb_N[0] = (localDW->MemoryX_DSTATE[0] + rtb_Sum1) - rtb_Sum1;
+  rtb_N[0] = (localDW->MemoryX_DSTATE[0] + rtb_X) - rtb_X;
   rtb_N[1] = localDW->MemoryX_DSTATE[1] + localP->Constant_Value_n;
 
   // MATLAB Function: '<S36>/FixedHorizonOptimizer' incorporates:
@@ -3149,7 +3613,7 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
   tmp_1[2] = 0.0;
 
   // Memory: '<S8>/Memory'
-  for (i_0 = 0; i_0 < 46; i_0++) {
+  for (int32_T i_0{0}; i_0 < 46; i_0++) {
     tmp_5[i_0] = localDW->Memory_PreviousInput[i_0];
   }
 
@@ -3166,8 +3630,8 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
 
   mpcblock_optimizer(rseq, vseq, rtb_N, tmp, tmp_5, b_Mlim, e_0, f_0,
                      localDW->dv, b_utarget, rtb_Sum1_gd, g_0, h_0, tmp_0, j,
-                     tmp_1, k, rtb_A, Bu, Bv, rtb_C, Dv, b_Mrows, U, rtb_useq,
-                     &prodVal, localDW->Memory_PreviousInput, localDW);
+                     tmp_1, k, rtb_A, Bu, Bv, rtb_Transpose, Dv, b_Mrows, U,
+                     rtb_useq, &sqrtFF, localDW->Memory_PreviousInput, localDW);
 
   // MATLAB Function: '<S7>/MATLAB Function' incorporates:
   //   BusCreator: '<S6>/Bus Creator1'
@@ -3175,7 +3639,7 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
   //   Constant: '<S6>/Constant13'
   //   Constant: '<S6>/Constant2'
   //   MATLAB Function: '<S87>/ScalarExpansion'
-  //   RandomNumber: '<S2>/Measurement Noise'
+  //   SignalConversion generated from: '<S6>/Bus Creator1'
 
   // '<S37>:1:295' if return_xseq || return_ovseq
   // '<S37>:1:297' else
@@ -3227,22 +3691,16 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
   // 'stateEstimator:21' B = [Bp;
   // 'stateEstimator:22'      zeros(no,ni)];
   // 'stateEstimator:23' C = [Cp Cod];
-  rtb_C[0] = localP->Constant12_Value;
-  rtb_C[1] = rtP->Cod0;
+  rtb_Transpose[0] = localP->Constant12_Value;
+  rtb_Transpose[1] = rtP->Cod0;
 
   // 'stateEstimator:24' D = Dp;
   // 'stateEstimator:26' B_est = [ [Bp; zeros(no,ni)] [zeros(size(Bp,1), size(Cp,1)); Bod] [zeros(size(Bp,1) + size(Bod,1), size(Cp,1))] ]; 
-  rtb_B[0] = rty_u[0];
-  rtb_B[1] = 0.0;
-  B_est[0] = rty_u[0];
+  B_est[0] = rty_params[0];
   B_est[1] = 0.0;
-  rtb_B[2] = rty_u[1];
-  rtb_B[3] = 0.0;
-  B_est[2] = rty_u[1];
+  B_est[2] = rty_params[1];
   B_est[3] = 0.0;
-  rtb_B[4] = rty_u[2];
-  rtb_B[5] = 0.0;
-  B_est[4] = rty_u[2];
+  B_est[4] = rty_params[2];
   B_est[5] = 0.0;
   B_est[6] = 0.0;
   B_est[7] = rtP->Bod0;
@@ -3258,27 +3716,26 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
 
   // 'stateEstimator:28' Q = B_est * B_est';
   for (i = 0; i < 2; i++) {
-    i_0 = 0;
-    for (b_ct = 0; b_ct < 2; b_ct++) {
+    rtb_y_h_tmp = 0;
+    for (kk = 0; kk < 2; kk++) {
       int32_T rtb_Q_tmp;
-      rtb_Q_tmp = i_0 + i;
+      rtb_Q_tmp = rtb_y_h_tmp + i;
       rtb_Q[rtb_Q_tmp] = 0.0;
       b_utarget_tmp = 0;
-      for (int32_T i_1{0}; i_1 < 5; i_1++) {
-        rtb_Q[rtb_Q_tmp] += B_est[b_utarget_tmp + i] * B_est[b_utarget_tmp +
-          b_ct];
+      for (int32_T i_0{0}; i_0 < 5; i_0++) {
+        rtb_Q[rtb_Q_tmp] += B_est[b_utarget_tmp + i] * B_est[b_utarget_tmp + kk];
         b_utarget_tmp += 2;
       }
 
-      i_0 += 2;
+      rtb_y_h_tmp += 2;
     }
   }
 
   // 'stateEstimator:29' R = D_est * D_est';
-  rtb_Sum1 = 0.0;
+  rtb_X = 0.0;
   for (i = 0; i < 5; i++) {
     b_Mlim_0 = D_est[i];
-    rtb_Sum1 += b_Mlim_0 * b_Mlim_0;
+    rtb_X += b_Mlim_0 * b_Mlim_0;
   }
 
   // Outputs for Atomic SubSystem: '<S65>/ScalarExpansionQ'
@@ -3301,17 +3758,17 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
   //    Copyright 2014-2015 The MathWorks, Inc.
   // '<S109>:1:16' y = ctrlScalarExpansion(u,n,IsStrictPositiveDefinite,OutputSquareRootY); 
   i = 0;
-  for (i_0 = 0; i_0 < 2; i_0++) {
-    rtb_Bkuk[i_0] = 0.0;
-    b_ct = 0;
+  for (rtb_y_h_tmp = 0; rtb_y_h_tmp < 2; rtb_y_h_tmp++) {
+    rtb_Bkuk[rtb_y_h_tmp] = 0.0;
+    kk = 0;
     for (b_utarget_tmp = 0; b_utarget_tmp < 5; b_utarget_tmp++) {
-      rtb_Bkuk[i_0] += B_est[b_ct + i_0] * D_est[b_utarget_tmp];
-      b_ct += 2;
+      rtb_Bkuk[rtb_y_h_tmp] += B_est[kk + rtb_y_h_tmp] * D_est[b_utarget_tmp];
+      kk += 2;
     }
 
-    rtb_N[i_0] = rtb_Bkuk[i_0];
-    rtb_y_k[i] = (rtb_Q[i] + rtb_Q[i_0]) / 2.0;
-    rtb_y_k[i + 1] = (rtb_Q[i + 1] + rtb_Q[i_0 + 2]) / 2.0;
+    rtb_N[rtb_y_h_tmp] = rtb_Bkuk[rtb_y_h_tmp];
+    rtb_y_l[i] = (rtb_Q[i] + rtb_Q[rtb_y_h_tmp]) / 2.0;
+    rtb_y_l[i + 1] = (rtb_Q[i + 1] + rtb_Q[rtb_y_h_tmp + 2]) / 2.0;
     i += 2;
   }
 
@@ -3334,8 +3791,8 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
   // MATLAB Function 'Utilities/ScalarExpansion/ScalarExpansion': '<S110>:1'
   //    Copyright 2014-2015 The MathWorks, Inc.
   // '<S110>:1:16' y = ctrlScalarExpansion(u,n,IsStrictPositiveDefinite,OutputSquareRootY); 
-  if (rtb_Sum1 <= 0.0) {
-    rtb_Sum1 = 2.2204460492503131E-16;
+  if (rtb_X <= 0.0) {
+    rtb_X = 2.2204460492503131E-16;
   }
 
   // End of Outputs for SubSystem: '<S65>/ScalarExpansionR'
@@ -3347,20 +3804,20 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
 
     tmp_4 = _mm_set1_pd(0.0);
     (void)_mm_storeu_pd(&rtb_y_e[i], tmp_4);
-    tmp_2 = _mm_loadu_pd(&rtb_y_k[i]);
+    tmp_2 = _mm_loadu_pd(&rtb_y_l[i]);
     tmp_3 = _mm_loadu_pd(&rtb_y_e[i]);
     (void)_mm_storeu_pd(&rtb_y_e[i], _mm_add_pd(_mm_mul_pd(tmp_2, _mm_set1_pd
       (localP->G_Value[0])), tmp_3));
-    tmp_2 = _mm_loadu_pd(&rtb_y_k[i + 2]);
+    tmp_2 = _mm_loadu_pd(&rtb_y_l[i + 2]);
     tmp_3 = _mm_loadu_pd(&rtb_y_e[i]);
     (void)_mm_storeu_pd(&rtb_y_e[i], _mm_add_pd(_mm_mul_pd(tmp_2, _mm_set1_pd
       (localP->G_Value[2])), tmp_3));
     (void)_mm_storeu_pd(&rtb_y_e[i + 2], tmp_4);
-    tmp_4 = _mm_loadu_pd(&rtb_y_k[i]);
+    tmp_4 = _mm_loadu_pd(&rtb_y_l[i]);
     tmp_2 = _mm_loadu_pd(&rtb_y_e[i + 2]);
     (void)_mm_storeu_pd(&rtb_y_e[i + 2], _mm_add_pd(tmp_2, _mm_mul_pd(tmp_4,
       _mm_set1_pd(localP->G_Value[1]))));
-    tmp_4 = _mm_loadu_pd(&rtb_y_k[i + 2]);
+    tmp_4 = _mm_loadu_pd(&rtb_y_l[i + 2]);
     tmp_2 = _mm_loadu_pd(&rtb_y_e[i + 2]);
     (void)_mm_storeu_pd(&rtb_y_e[i + 2], _mm_add_pd(_mm_mul_pd(tmp_4,
       _mm_set1_pd(localP->G_Value[3])), tmp_2));
@@ -3415,8 +3872,8 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
     //   Product: '<S85>/Product'
     //   Product: '<S85>/Product1'
 
-    tmp_4 = _mm_loadu_pd(&rtb_y_k[i + 2]);
-    tmp_2 = _mm_loadu_pd(&rtb_y_k[i]);
+    tmp_4 = _mm_loadu_pd(&rtb_y_l[i + 2]);
+    tmp_2 = _mm_loadu_pd(&rtb_y_l[i]);
     tmp_3 = _mm_loadu_pd(&rtb_N[i]);
     (void)_mm_storeu_pd(&rtb_Bkuk[i], _mm_add_pd(_mm_add_pd(_mm_mul_pd(tmp_4,
       _mm_set1_pd(localP->H_Value[1])), _mm_mul_pd(tmp_2, _mm_set1_pd
@@ -3444,9 +3901,8 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
   //   Product: '<S85>/Product3'
   //   Product: '<S85>/Product4'
 
-  rtb_Sum1 += (localP->H_Value[0] * rtb_Bkuk[0] + localP->H_Value[1] * rtb_Bkuk
-               [1]) + (rtb_N[0] * localP->H_Value[0] + rtb_N[1] *
-                       localP->H_Value[1]);
+  rtb_X += (localP->H_Value[0] * rtb_Bkuk[0] + localP->H_Value[1] * rtb_Bkuk[1])
+    + (rtb_N[0] * localP->H_Value[0] + rtb_N[1] * localP->H_Value[1]);
 
   // End of Outputs for SubSystem: '<S65>/ScalarExpansionR'
   // End of Outputs for SubSystem: '<S65>/ReducedQRN'
@@ -3483,53 +3939,54 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
     real_T rtb_Z_idx_1;
     real_T rtb_Z_idx_2;
     real_T rtb_Z_idx_3;
-    prodVal = 0.0;
+    sqrtFF = 0.0;
     i = 0;
-    for (i_0 = 0; i_0 < 2; i_0++) {
-      rtb_N[i_0] = 0.0;
-      rtb_N[i_0] += localDW->MemoryP_DSTATE[i] * localP->Constant12_Value;
-      rtb_y_e[i_0] = 0.0;
-      rtb_y_e[i_0] += rtb_A[i_0] * localDW->MemoryP_DSTATE[0];
-      rtb_Z_idx_1 = rtb_A[i_0 + 2];
-      rtb_y_e[i_0] += rtb_Z_idx_1 * localDW->MemoryP_DSTATE[1];
-      rtb_N[i_0] += localDW->MemoryP_DSTATE[i + 1] * rtP->Cod0;
-      rtb_y_e[i_0 + 2] = 0.0;
-      rtb_y_e[i_0 + 2] += rtb_A[i_0] * localDW->MemoryP_DSTATE[2];
-      rtb_y_e[i_0 + 2] += rtb_Z_idx_1 * localDW->MemoryP_DSTATE[3];
-      prodVal += rtb_N[i_0] * rtb_C[i_0];
+    for (rtb_y_h_tmp = 0; rtb_y_h_tmp < 2; rtb_y_h_tmp++) {
+      rtb_N[rtb_y_h_tmp] = 0.0;
+      rtb_N[rtb_y_h_tmp] += localDW->MemoryP_DSTATE[i] *
+        localP->Constant12_Value;
+      rtb_y_e[rtb_y_h_tmp] = 0.0;
+      rtb_y_e[rtb_y_h_tmp] += rtb_A[rtb_y_h_tmp] * localDW->MemoryP_DSTATE[0];
+      rtb_Z_idx_1 = rtb_A[rtb_y_h_tmp + 2];
+      rtb_y_e[rtb_y_h_tmp] += rtb_Z_idx_1 * localDW->MemoryP_DSTATE[1];
+      rtb_N[rtb_y_h_tmp] += localDW->MemoryP_DSTATE[i + 1] * rtP->Cod0;
+      rtb_y_e[rtb_y_h_tmp + 2] = 0.0;
+      rtb_y_e[rtb_y_h_tmp + 2] += rtb_A[rtb_y_h_tmp] * localDW->MemoryP_DSTATE[2];
+      rtb_y_e[rtb_y_h_tmp + 2] += rtb_Z_idx_1 * localDW->MemoryP_DSTATE[3];
+      sqrtFF += rtb_N[rtb_y_h_tmp] * rtb_Transpose[rtb_y_h_tmp];
       i += 2;
     }
 
-    prodVal += rtb_Sum1;
+    sqrtFF += rtb_X;
     rtb_N[0] = ((rtb_y_e[0] * localP->Constant12_Value + rtb_y_e[2] * rtP->Cod0)
-                + b_Mlim_0) / prodVal;
+                + b_Mlim_0) / sqrtFF;
     rtb_Bkuk[0] = (localDW->MemoryP_DSTATE[0] * localP->Constant12_Value +
-                   localDW->MemoryP_DSTATE[2] * rtP->Cod0) / prodVal;
+                   localDW->MemoryP_DSTATE[2] * rtP->Cod0) / sqrtFF;
     rtb_N[1] = ((rtb_y_e[1] * localP->Constant12_Value + rtb_y_e[3] * rtP->Cod0)
-                + rtb_Product2_gf) / prodVal;
+                + rtb_Product2_gf) / sqrtFF;
     rtb_Bkuk[1] = (localDW->MemoryP_DSTATE[1] * localP->Constant12_Value +
-                   localDW->MemoryP_DSTATE[3] * rtP->Cod0) / prodVal;
-    rtb_y_k[0] = 1.0 - rtb_Bkuk[0] * localP->Constant12_Value;
-    rtb_y_k[1] = 0.0 - localP->Constant12_Value * rtb_Bkuk[1];
-    rtb_y_k[2] = 0.0 - rtb_Bkuk[0] * rtP->Cod0;
-    rtb_y_k[3] = 1.0 - rtb_Bkuk[1] * rtP->Cod0;
+                   localDW->MemoryP_DSTATE[3] * rtP->Cod0) / sqrtFF;
+    rtb_y_l[0] = 1.0 - rtb_Bkuk[0] * localP->Constant12_Value;
+    rtb_y_l[1] = 0.0 - localP->Constant12_Value * rtb_Bkuk[1];
+    rtb_y_l[2] = 0.0 - rtb_Bkuk[0] * rtP->Cod0;
+    rtb_y_l[3] = 1.0 - rtb_Bkuk[1] * rtP->Cod0;
     for (i = 0; i <= 0; i += 2) {
       tmp_4 = _mm_set1_pd(0.0);
       (void)_mm_storeu_pd(&Abar[i], tmp_4);
-      tmp_2 = _mm_loadu_pd(&rtb_y_k[i]);
+      tmp_2 = _mm_loadu_pd(&rtb_y_l[i]);
       tmp_3 = _mm_loadu_pd(&Abar[i]);
       (void)_mm_storeu_pd(&Abar[i], _mm_add_pd(_mm_mul_pd(tmp_2, _mm_set1_pd
         (localDW->MemoryP_DSTATE[0])), tmp_3));
-      tmp_2 = _mm_loadu_pd(&rtb_y_k[i + 2]);
+      tmp_2 = _mm_loadu_pd(&rtb_y_l[i + 2]);
       tmp_3 = _mm_loadu_pd(&Abar[i]);
       (void)_mm_storeu_pd(&Abar[i], _mm_add_pd(_mm_mul_pd(tmp_2, _mm_set1_pd
         (localDW->MemoryP_DSTATE[1])), tmp_3));
       (void)_mm_storeu_pd(&Abar[i + 2], tmp_4);
-      tmp_2 = _mm_loadu_pd(&rtb_y_k[i]);
+      tmp_2 = _mm_loadu_pd(&rtb_y_l[i]);
       tmp_3 = _mm_loadu_pd(&Abar[i + 2]);
       (void)_mm_storeu_pd(&Abar[i + 2], _mm_add_pd(tmp_3, _mm_mul_pd(tmp_2,
         _mm_set1_pd(localDW->MemoryP_DSTATE[2]))));
-      tmp_2 = _mm_loadu_pd(&rtb_y_k[i + 2]);
+      tmp_2 = _mm_loadu_pd(&rtb_y_l[i + 2]);
       tmp_3 = _mm_loadu_pd(&Abar[i + 2]);
       (void)_mm_storeu_pd(&Abar[i + 2], _mm_add_pd(_mm_mul_pd(tmp_2, _mm_set1_pd
         (localDW->MemoryP_DSTATE[3])), tmp_3));
@@ -3537,52 +3994,52 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
       tmp_2 = _mm_loadu_pd(&Abar[i]);
       tmp_3 = _mm_loadu_pd(&rtb_y_e[i]);
       (void)_mm_storeu_pd(&rtb_y_e[i], _mm_add_pd(_mm_mul_pd(tmp_2, _mm_set1_pd
-        (rtb_y_k[0])), tmp_3));
+        (rtb_y_l[0])), tmp_3));
       tmp_2 = _mm_loadu_pd(&Abar[i + 2]);
       tmp_3 = _mm_loadu_pd(&rtb_y_e[i]);
       (void)_mm_storeu_pd(&rtb_y_e[i], _mm_add_pd(_mm_mul_pd(tmp_2, _mm_set1_pd
-        (rtb_y_k[2])), tmp_3));
+        (rtb_y_l[2])), tmp_3));
       (void)_mm_storeu_pd(&rtb_y_e[i + 2], tmp_4);
       tmp_4 = _mm_loadu_pd(&Abar[i]);
       tmp_2 = _mm_loadu_pd(&rtb_y_e[i + 2]);
       (void)_mm_storeu_pd(&rtb_y_e[i + 2], _mm_add_pd(tmp_2, _mm_mul_pd(tmp_4,
-        _mm_set1_pd(rtb_y_k[1]))));
+        _mm_set1_pd(rtb_y_l[1]))));
       tmp_4 = _mm_loadu_pd(&Abar[i + 2]);
       tmp_2 = _mm_loadu_pd(&rtb_y_e[i + 2]);
       (void)_mm_storeu_pd(&rtb_y_e[i + 2], _mm_add_pd(_mm_mul_pd(tmp_4,
-        _mm_set1_pd(rtb_y_k[3])), tmp_2));
+        _mm_set1_pd(rtb_y_l[3])), tmp_2));
     }
 
-    rtb_Z_idx_2 = rtb_Bkuk[0] * rtb_Sum1;
-    prodVal = rtb_Z_idx_2 * rtb_Bkuk[0] + rtb_y_e[0];
-    rtb_Z_idx_3 = rtb_Bkuk[1] * rtb_Sum1;
+    rtb_Z_idx_2 = rtb_Bkuk[0] * rtb_X;
+    sqrtFF = rtb_Z_idx_2 * rtb_Bkuk[0] + rtb_y_e[0];
+    rtb_Z_idx_3 = rtb_Bkuk[1] * rtb_X;
     rtb_Z_idx_1 = rtb_Z_idx_3 * rtb_Bkuk[0] + rtb_y_e[1];
     rtb_Z_idx_2 = rtb_Z_idx_2 * rtb_Bkuk[1] + rtb_y_e[2];
     rtb_Z_idx_3 = rtb_Z_idx_3 * rtb_Bkuk[1] + rtb_y_e[3];
-    rtb_Bkuk[0] = b_Mlim_0 / rtb_Sum1;
-    rtb_Bkuk[1] = rtb_Product2_gf / rtb_Sum1;
-    rtb_y_k[0] = localP->Constant2_Value - rtb_Bkuk[0] *
+    rtb_Bkuk[0] = b_Mlim_0 / rtb_X;
+    rtb_Bkuk[1] = rtb_Product2_gf / rtb_X;
+    rtb_y_l[0] = localP->Constant2_Value - rtb_Bkuk[0] *
       localP->Constant12_Value;
-    rtb_y_k[1] = 0.0 - localP->Constant12_Value * rtb_Bkuk[1];
-    rtb_y_k[2] = 0.0 - rtb_Bkuk[0] * rtP->Cod0;
-    rtb_y_k[3] = rtP->Aod0 - rtb_Bkuk[1] * rtP->Cod0;
+    rtb_y_l[1] = 0.0 - localP->Constant12_Value * rtb_Bkuk[1];
+    rtb_y_l[2] = 0.0 - rtb_Bkuk[0] * rtP->Cod0;
+    rtb_y_l[3] = rtP->Aod0 - rtb_Bkuk[1] * rtP->Cod0;
     for (i = 0; i <= 0; i += 2) {
       tmp_4 = _mm_set1_pd(0.0);
       (void)_mm_storeu_pd(&Abar[i], tmp_4);
-      tmp_2 = _mm_loadu_pd(&rtb_y_k[i]);
+      tmp_2 = _mm_loadu_pd(&rtb_y_l[i]);
       tmp_3 = _mm_loadu_pd(&Abar[i]);
       (void)_mm_storeu_pd(&Abar[i], _mm_add_pd(_mm_mul_pd(tmp_2, _mm_set1_pd
-        (prodVal)), tmp_3));
-      tmp_2 = _mm_loadu_pd(&rtb_y_k[i + 2]);
+        (sqrtFF)), tmp_3));
+      tmp_2 = _mm_loadu_pd(&rtb_y_l[i + 2]);
       tmp_3 = _mm_loadu_pd(&Abar[i]);
       (void)_mm_storeu_pd(&Abar[i], _mm_add_pd(_mm_mul_pd(tmp_2, _mm_set1_pd
         (rtb_Z_idx_1)), tmp_3));
       (void)_mm_storeu_pd(&Abar[i + 2], tmp_4);
-      tmp_4 = _mm_loadu_pd(&rtb_y_k[i]);
+      tmp_4 = _mm_loadu_pd(&rtb_y_l[i]);
       tmp_2 = _mm_loadu_pd(&Abar[i + 2]);
       (void)_mm_storeu_pd(&Abar[i + 2], _mm_add_pd(tmp_2, _mm_mul_pd(tmp_4,
         _mm_set1_pd(rtb_Z_idx_2))));
-      tmp_4 = _mm_loadu_pd(&rtb_y_k[i + 2]);
+      tmp_4 = _mm_loadu_pd(&rtb_y_l[i + 2]);
       tmp_2 = _mm_loadu_pd(&Abar[i + 2]);
       (void)_mm_storeu_pd(&Abar[i + 2], _mm_add_pd(_mm_mul_pd(tmp_4, _mm_set1_pd
         (rtb_Z_idx_3)), tmp_2));
@@ -3590,20 +4047,20 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
       tmp_2 = _mm_loadu_pd(&Abar[i]);
       tmp_3 = _mm_loadu_pd(&rtb_Q[i]);
       (void)_mm_storeu_pd(&rtb_y_e[i], _mm_add_pd(_mm_add_pd(_mm_mul_pd(tmp_4,
-        _mm_set1_pd(rtb_y_k[2])), _mm_mul_pd(tmp_2, _mm_set1_pd(rtb_y_k[0]))),
+        _mm_set1_pd(rtb_y_l[2])), _mm_mul_pd(tmp_2, _mm_set1_pd(rtb_y_l[0]))),
         tmp_3));
       tmp_4 = _mm_loadu_pd(&Abar[i + 2]);
       tmp_2 = _mm_loadu_pd(&Abar[i]);
       tmp_3 = _mm_loadu_pd(&rtb_Q[i + 2]);
       (void)_mm_storeu_pd(&rtb_y_e[i + 2], _mm_add_pd(_mm_add_pd(_mm_mul_pd
-        (tmp_4, _mm_set1_pd(rtb_y_k[3])), _mm_mul_pd(tmp_2, _mm_set1_pd(rtb_y_k
+        (tmp_4, _mm_set1_pd(rtb_y_l[3])), _mm_mul_pd(tmp_2, _mm_set1_pd(rtb_y_l
         [1]))), tmp_3));
     }
 
-    rtb_y_k[0] = rtb_y_e[0] - rtb_Bkuk[0] * b_Mlim_0;
-    rtb_y_k[1] = rtb_y_e[1] - rtb_Bkuk[1] * b_Mlim_0;
-    rtb_y_k[2] = rtb_y_e[2] - rtb_Bkuk[0] * rtb_Product2_gf;
-    rtb_y_k[3] = rtb_y_e[3] - rtb_Bkuk[1] * rtb_Product2_gf;
+    rtb_y_l[0] = rtb_y_e[0] - rtb_Bkuk[0] * b_Mlim_0;
+    rtb_y_l[1] = rtb_y_e[1] - rtb_Bkuk[1] * b_Mlim_0;
+    rtb_y_l[2] = rtb_y_e[2] - rtb_Bkuk[0] * rtb_Product2_gf;
+    rtb_y_l[3] = rtb_y_e[3] - rtb_Bkuk[1] * rtb_Product2_gf;
   } else {
     for (i = 0; i <= 0; i += 2) {
       tmp_4 = _mm_set1_pd(0.0);
@@ -3629,12 +4086,12 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
       tmp_2 = _mm_loadu_pd(&rtb_y_e[i + 2]);
       tmp_3 = _mm_loadu_pd(&rtb_y_e[i]);
       tmp_6 = _mm_loadu_pd(&rtb_Q[i]);
-      (void)_mm_storeu_pd(&rtb_y_k[i], _mm_add_pd(_mm_add_pd(_mm_mul_pd(tmp_2,
+      (void)_mm_storeu_pd(&rtb_y_l[i], _mm_add_pd(_mm_add_pd(_mm_mul_pd(tmp_2,
         tmp_4), _mm_mul_pd(tmp_3, _mm_set1_pd(localP->Constant2_Value))), tmp_6));
       tmp_2 = _mm_loadu_pd(&rtb_y_e[i + 2]);
       tmp_3 = _mm_loadu_pd(&rtb_y_e[i]);
       tmp_6 = _mm_loadu_pd(&rtb_Q[i + 2]);
-      (void)_mm_storeu_pd(&rtb_y_k[i + 2], _mm_add_pd(_mm_add_pd(_mm_mul_pd
+      (void)_mm_storeu_pd(&rtb_y_l[i + 2], _mm_add_pd(_mm_add_pd(_mm_mul_pd
         (tmp_2, _mm_set1_pd(rtP->Aod0)), _mm_mul_pd(tmp_3, tmp_4)), tmp_6));
     }
   }
@@ -3712,14 +4169,14 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
     //   Sum: '<S108>/Add1'
     //   Sum: '<S7>/Sum1'
 
-    rtb_Sum1 = rtb_Add1_tmp - (((localP->Constant13_Value[0] * rtb_Sum1_gd[0] +
+    rtb_X = rtb_Add1_tmp - (((localP->Constant13_Value[0] * rtb_Sum1_gd[0] +
       localP->Constant13_Value[1] * rtb_Sum1_gd[1]) + localP->Constant13_Value[2]
-      * b_Mlim_0) + (rtb_C[0] * localDW->MemoryX_DSTATE[0] + rtb_C[1] *
-                     localDW->MemoryX_DSTATE[1]));
+      * b_Mlim_0) + (rtb_Transpose[0] * localDW->MemoryX_DSTATE[0] +
+                     rtb_Transpose[1] * localDW->MemoryX_DSTATE[1]));
 
     // Product: '<S108>/Product3'
-    localDW->Product3[0] = rtb_N[0] * rtb_Sum1;
-    localDW->Product3[1] = rtb_N[1] * rtb_Sum1;
+    localDW->Product3[0] = rtb_N[0] * rtb_X;
+    localDW->Product3[1] = rtb_N[1] * rtb_X;
   } else if (localDW->MeasurementUpdate_MODE) {
     // Disable for Product: '<S108>/Product3' incorporates:
     //   Outport: '<S108>/L*(y[k]-yhat[k|k-1])'
@@ -3766,9 +4223,9 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
 
   *rty_yhat = (((localP->Constant13_Value[0] * rtb_Sum1_gd[0] +
                  localP->Constant13_Value[1] * rtb_Sum1_gd[1]) +
-                localP->Constant13_Value[2] * b_Mlim_0) + (rtb_C[0] *
-    localDW->MemoryX_DSTATE[0] + rtb_C[1] * localDW->MemoryX_DSTATE[1])) +
-    rtu_y0;
+                localP->Constant13_Value[2] * b_Mlim_0) + (rtb_Transpose[0] *
+    localDW->MemoryX_DSTATE[0] + rtb_Transpose[1] * localDW->MemoryX_DSTATE[1]))
+    + rtu_y0;
 
   // Update for UnitDelay: '<S6>/Unit Delay3' incorporates:
   //   Sum: '<S6>/Add1'
@@ -3783,62 +4240,77 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
 
   // Update for Delay: '<S38>/delayTheta'
   localDW->icLoad_m = false;
-  localDW->delayTheta_DSTATE = *rty_params;
+  localDW->delayTheta_DSTATE[0] = rtb_x[0];
+  localDW->delayTheta_DSTATE[1] = rtb_x[1];
 
-  // Update for Delay: '<S38>/delayL' incorporates:
-  //   MATLAB Function: '<S38>/RLS'
-
+  // Update for Delay: '<S38>/delayL'
   localDW->icLoad_e = false;
-  localDW->delayL_DSTATE = Sy;
+  localDW->delayL_DSTATE[0] = rtb_y_a[0];
+  localDW->delayL_DSTATE[1] = rtb_y_a[1];
+  localDW->delayL_DSTATE[2] = rtb_y_a[2];
+  localDW->delayL_DSTATE[3] = rtb_y_a[3];
 
   // Update for Delay: '<S65>/MemoryX'
   localDW->icLoad_k = false;
+
+  // MATLAB Function: '<S7>/MATLAB Function' incorporates:
+  //   BusCreator: '<S6>/Bus Creator1'
+  //   SignalConversion generated from: '<S6>/Bus Creator1'
+
+  rty_params_0[0] = rty_params[0];
+  rty_params_0[1] = 0.0;
+  rty_params_0[2] = rty_params[1];
+  rty_params_0[3] = 0.0;
+  rty_params_0[4] = rty_params[2];
+  rty_params_0[5] = 0.0;
   for (i = 0; i <= 0; i += 2) {
     // Product: '<S84>/B[k]*u[k]' incorporates:
     //   Sum: '<S7>/Sum1'
 
     tmp_4 = _mm_set1_pd(0.0);
-    (void)_mm_storeu_pd(&rtb_C[i], tmp_4);
-    tmp_2 = _mm_loadu_pd(&rtb_B[i]);
-    tmp_3 = _mm_loadu_pd(&rtb_C[i]);
-    (void)_mm_storeu_pd(&rtb_C[i], _mm_add_pd(_mm_mul_pd(tmp_2, _mm_set1_pd
+    (void)_mm_storeu_pd(&rtb_x[i], tmp_4);
+    tmp_2 = _mm_loadu_pd(&rty_params_0[i]);
+    tmp_3 = _mm_loadu_pd(&rtb_x[i]);
+    (void)_mm_storeu_pd(&rtb_x[i], _mm_add_pd(_mm_mul_pd(tmp_2, _mm_set1_pd
       (rtb_Sum1_gd[0])), tmp_3));
-    tmp_2 = _mm_loadu_pd(&rtb_B[i + 2]);
-    tmp_3 = _mm_loadu_pd(&rtb_C[i]);
-    (void)_mm_storeu_pd(&rtb_C[i], _mm_add_pd(_mm_mul_pd(tmp_2, _mm_set1_pd
+    tmp_2 = _mm_loadu_pd(&rty_params_0[i + 2]);
+    tmp_3 = _mm_loadu_pd(&rtb_x[i]);
+    (void)_mm_storeu_pd(&rtb_x[i], _mm_add_pd(_mm_mul_pd(tmp_2, _mm_set1_pd
       (rtb_Sum1_gd[1])), tmp_3));
-    tmp_2 = _mm_loadu_pd(&rtb_B[i + 4]);
-    tmp_3 = _mm_loadu_pd(&rtb_C[i]);
-    (void)_mm_storeu_pd(&rtb_C[i], _mm_add_pd(_mm_mul_pd(tmp_2, _mm_set1_pd
+    tmp_2 = _mm_loadu_pd(&rty_params_0[i + 4]);
+    tmp_3 = _mm_loadu_pd(&rtb_x[i]);
+    (void)_mm_storeu_pd(&rtb_x[i], _mm_add_pd(_mm_mul_pd(tmp_2, _mm_set1_pd
       (b_Mlim_0)), tmp_3));
 
     // Product: '<S84>/A[k]*xhat[k|k-1]' incorporates:
     //   Delay: '<S65>/MemoryX'
     //   Product: '<S84>/B[k]*u[k]'
 
-    (void)_mm_storeu_pd(&rtb_N[i], tmp_4);
+    (void)_mm_storeu_pd(&rtb_Transpose[i], tmp_4);
     tmp_4 = _mm_loadu_pd(&rtb_A[i]);
-    tmp_2 = _mm_loadu_pd(&rtb_N[i]);
-    (void)_mm_storeu_pd(&rtb_N[i], _mm_add_pd(_mm_mul_pd(tmp_4, _mm_set1_pd
-      (localDW->MemoryX_DSTATE[0])), tmp_2));
+    tmp_2 = _mm_loadu_pd(&rtb_Transpose[i]);
+    (void)_mm_storeu_pd(&rtb_Transpose[i], _mm_add_pd(_mm_mul_pd(tmp_4,
+      _mm_set1_pd(localDW->MemoryX_DSTATE[0])), tmp_2));
     tmp_4 = _mm_loadu_pd(&rtb_A[i + 2]);
-    tmp_2 = _mm_loadu_pd(&rtb_N[i]);
-    (void)_mm_storeu_pd(&rtb_N[i], _mm_add_pd(_mm_mul_pd(tmp_4, _mm_set1_pd
-      (localDW->MemoryX_DSTATE[1])), tmp_2));
+    tmp_2 = _mm_loadu_pd(&rtb_Transpose[i]);
+    (void)_mm_storeu_pd(&rtb_Transpose[i], _mm_add_pd(_mm_mul_pd(tmp_4,
+      _mm_set1_pd(localDW->MemoryX_DSTATE[1])), tmp_2));
   }
 
   // Update for Delay: '<S65>/MemoryX' incorporates:
   //   Sum: '<S84>/Add'
 
-  localDW->MemoryX_DSTATE[0] = (rtb_C[0] + rtb_N[0]) + localDW->Product3[0];
-  localDW->MemoryX_DSTATE[1] = (rtb_C[1] + rtb_N[1]) + localDW->Product3[1];
+  localDW->MemoryX_DSTATE[0] = (rtb_x[0] + rtb_Transpose[0]) + localDW->
+    Product3[0];
+  localDW->MemoryX_DSTATE[1] = (rtb_x[1] + rtb_Transpose[1]) + localDW->
+    Product3[1];
 
   // Update for Delay: '<S65>/MemoryP'
   localDW->icLoad_f = false;
-  localDW->MemoryP_DSTATE[0] = rtb_y_k[0];
-  localDW->MemoryP_DSTATE[1] = rtb_y_k[1];
-  localDW->MemoryP_DSTATE[2] = rtb_y_k[2];
-  localDW->MemoryP_DSTATE[3] = rtb_y_k[3];
+  localDW->MemoryP_DSTATE[0] = rtb_y_l[0];
+  localDW->MemoryP_DSTATE[1] = rtb_y_l[1];
+  localDW->MemoryP_DSTATE[2] = rtb_y_l[2];
+  localDW->MemoryP_DSTATE[3] = rtb_y_l[3];
 
   // Update for RandomNumber: '<S2>/Measurement Noise'
   localDW->NextOutput[0] = rt_nrand_Upu32_Yd_f_pw_snf(&localDW->RandSeed[0]) *
@@ -3851,62 +4323,13 @@ void SupervisoryController::State0controlLawAMPC0(real_T rtu_r, real_T rtu_y,
 
 //
 // Output and update for atomic system:
-//    '<S112>/MATLAB Function1'
-//    '<S246>/MATLAB Function2'
-//
-void SupervisoryController::MATLABFunction1(const real_T rtu_B1[3], const real_T
-  rtu_B2[3], const real_T rtu_enAdapt[2], real_T rty_B[6])
-{
-  real_T B1_idx_0;
-  real_T B1_idx_1;
-  real_T B1_idx_2;
-  real_T B2_idx_0;
-  real_T B2_idx_1;
-  real_T B2_idx_2;
-  B1_idx_0 = rtu_B1[0];
-  B2_idx_0 = rtu_B2[0];
-  B1_idx_1 = rtu_B1[1];
-  B2_idx_1 = rtu_B2[1];
-  B1_idx_2 = rtu_B1[2];
-  B2_idx_2 = rtu_B2[2];
-
-  // MATLAB Function 'SupervisoryController/State1.controlLaw.AMPC1/Model Estimator/MATLAB Function1': '<S144>:1' 
-  // '<S144>:1:2' B = zeros(2,3);
-  // '<S144>:1:3' if enAdapt(1) == false && enAdapt(2) == true
-  if ((rtu_enAdapt[0] == 0.0) && (rtu_enAdapt[1] == 1.0)) {
-    // '<S144>:1:4' B1 = B2;
-    B1_idx_0 = rtu_B2[0];
-    B1_idx_1 = rtu_B2[1];
-    B1_idx_2 = rtu_B2[2];
-  }
-
-  // '<S144>:1:6' if enAdapt(1) == true && enAdapt(2) == false
-  if ((rtu_enAdapt[0] == 1.0) && (rtu_enAdapt[1] == 0.0)) {
-    // '<S144>:1:7' B2 = B1;
-    B2_idx_0 = B1_idx_0;
-    B2_idx_1 = B1_idx_1;
-    B2_idx_2 = B1_idx_2;
-  }
-
-  // '<S144>:1:10' B = [B1; B2];
-  rty_B[0] = B1_idx_0;
-  rty_B[1] = B2_idx_0;
-  rty_B[2] = B1_idx_1;
-  rty_B[3] = B2_idx_1;
-  rty_B[4] = B1_idx_2;
-  rty_B[5] = B2_idx_2;
-
-  // '<S144>:1:12' disp(B);
-}
-
-//
-// Output and update for atomic system:
 //    '<S145>/ProcessInitialCovariance'
 //    '<S146>/ProcessInitialCovariance'
 //    '<S279>/ProcessInitialCovariance'
 //    '<S280>/ProcessInitialCovariance'
 //
-void SupervisoryController::ProcessInitialCovariance(real_T rtu_u, real_T *rty_y)
+void SupervisoryController::ProcessInitialCovariance(real_T rtu_u, real_T rty_y
+  [9])
 {
   real_T u;
 
@@ -3926,17 +4349,21 @@ void SupervisoryController::ProcessInitialCovariance(real_T rtu_u, real_T *rty_y
   // MATLAB Function 'Utilities/ScalarExpansion/ScalarExpansion': '<S172>:1'
   //    Copyright 2014-2015 The MathWorks, Inc.
   // '<S172>:1:16' y = ctrlScalarExpansion(u,n,IsStrictPositiveDefinite,OutputSquareRootY); 
+  (void)std::memset(&rty_y[0], 0, 9U * sizeof(real_T));
   if (rtu_u <= 0.0) {
     u = 2.2204460492503131E-16;
   }
 
-  *rty_y = std::sqrt(u);
+  u = std::sqrt(u);
+  rty_y[0] = u;
+  rty_y[4] = u;
+  rty_y[8] = u;
 
   // End of MATLAB Function: '<S165>/ScalarExpansion'
 }
 
 // Function for MATLAB Function: '<S145>/RLS'
-real_T SupervisoryController::xnrm2_m(int32_T n, const real_T x[2], int32_T ix0)
+real_T SupervisoryController::xnrm2_m(int32_T n, const real_T x[4], int32_T ix0)
 {
   real_T y;
   y = 0.0;
@@ -3971,54 +4398,509 @@ real_T SupervisoryController::xnrm2_m(int32_T n, const real_T x[2], int32_T ix0)
 }
 
 // Function for MATLAB Function: '<S145>/RLS'
-void SupervisoryController::qrFactor_h(real_T A, real_T *S, real_T Ns)
+real_T SupervisoryController::qrFactor_h(const real_T A[3], const real_T S[9],
+  real_T Ns)
 {
-  real_T b_A[2];
-  real_T atmp;
-  real_T beta1;
-  b_A[0] = *S * A;
-  b_A[1] = Ns;
-  atmp = b_A[0];
-  beta1 = xnrm2_m(1, b_A, 2);
-  if (beta1 != 0.0) {
-    beta1 = rt_hypotd_snf(b_A[0], beta1);
+  real_T b_A[4];
+  real_T b_S;
+  real_T s;
+  int32_T aoffset;
+  for (int32_T i{0}; i < 3; i++) {
+    aoffset = i * 3;
+    b_A[i] = (S[aoffset + 1] * A[1] + S[aoffset] * A[0]) + S[aoffset + 2] * A[2];
+  }
+
+  b_A[3] = Ns;
+  b_S = b_A[0];
+  s = xnrm2_m(3, b_A, 2);
+  if (s != 0.0) {
+    s = rt_hypotd_snf(b_A[0], s);
     if (b_A[0] >= 0.0) {
-      beta1 = -beta1;
+      s = -s;
     }
 
-    if (std::abs(beta1) < 1.0020841800044864E-292) {
-      int32_T knt;
-      knt = 0;
+    if (std::abs(s) < 1.0020841800044864E-292) {
+      aoffset = 0;
       do {
-        knt++;
+        aoffset++;
         b_A[1] *= 9.9792015476736E+291;
-        beta1 *= 9.9792015476736E+291;
-        atmp *= 9.9792015476736E+291;
-      } while ((std::abs(beta1) < 1.0020841800044864E-292) && (knt < 20));
+        b_A[2] *= 9.9792015476736E+291;
+        b_A[3] *= 9.9792015476736E+291;
+        s *= 9.9792015476736E+291;
+        b_S *= 9.9792015476736E+291;
+      } while ((std::abs(s) < 1.0020841800044864E-292) && (aoffset < 20));
 
-      beta1 = rt_hypotd_snf(atmp, xnrm2_m(1, b_A, 2));
-      if (atmp >= 0.0) {
-        beta1 = -beta1;
+      s = rt_hypotd_snf(b_S, xnrm2_m(3, b_A, 2));
+      if (b_S >= 0.0) {
+        s = -s;
       }
 
-      for (int32_T b_k{0}; b_k < knt; b_k++) {
-        beta1 *= 1.0020841800044864E-292;
+      for (int32_T i{0}; i < aoffset; i++) {
+        s *= 1.0020841800044864E-292;
       }
 
-      atmp = beta1;
+      b_S = s;
     } else {
-      atmp = beta1;
+      b_S = s;
     }
   }
 
-  *S = atmp;
+  return b_S;
 }
 
 // Function for MATLAB Function: '<S145>/RLS'
-void SupervisoryController::trisolve_h(real_T A, real_T *B_1)
+void SupervisoryController::trisolve_h(real_T A, real_T B_3[3])
 {
-  if (*B_1 != 0.0) {
-    *B_1 /= A;
+  if (B_3[0] != 0.0) {
+    B_3[0] /= A;
+  }
+
+  if (B_3[1] != 0.0) {
+    B_3[1] /= A;
+  }
+
+  if (B_3[2] != 0.0) {
+    B_3[2] /= A;
+  }
+}
+
+// Function for MATLAB Function: '<S145>/RLS'
+real_T SupervisoryController::xnrm2_mw(int32_T n, const real_T x[12], int32_T
+  ix0)
+{
+  real_T y;
+  y = 0.0;
+  if (n >= 1) {
+    if (n == 1) {
+      y = std::abs(x[ix0 - 1]);
+    } else {
+      real_T scale;
+      int32_T kend;
+      scale = 3.3121686421112381E-170;
+      kend = (ix0 + n) - 1;
+      for (int32_T k{ix0}; k <= kend; k++) {
+        real_T absxk;
+        absxk = std::abs(x[k - 1]);
+        if (absxk > scale) {
+          real_T t;
+          t = scale / absxk;
+          y = y * t * t + 1.0;
+          scale = absxk;
+        } else {
+          real_T t;
+          t = absxk / scale;
+          y += t * t;
+        }
+      }
+
+      y = scale * std::sqrt(y);
+    }
+  }
+
+  return y;
+}
+
+// Function for MATLAB Function: '<S145>/RLS'
+void SupervisoryController::xgemv_p(int32_T m, int32_T n, const real_T A[12],
+  int32_T ia0, const real_T x[12], int32_T ix0, real_T y[3])
+{
+  if ((m != 0) && (n != 0)) {
+    int32_T b;
+    if (n - 1 >= 0) {
+      (void)std::memset(&y[0], 0, static_cast<uint32_T>(n) * sizeof(real_T));
+    }
+
+    b = ((n - 1) << 2UL) + ia0;
+    for (int32_T b_iy{ia0}; b_iy <= b; b_iy += 4) {
+      real_T c;
+      int32_T d;
+      int32_T iyend;
+      c = 0.0;
+      d = b_iy + m;
+      for (iyend = b_iy; iyend < d; iyend++) {
+        c += x[((ix0 + iyend) - b_iy) - 1] * A[iyend - 1];
+      }
+
+      iyend = (b_iy - ia0) >> 2UL;
+      y[iyend] += c;
+    }
+  }
+}
+
+// Function for MATLAB Function: '<S145>/RLS'
+void SupervisoryController::xgerc_d(int32_T m, int32_T n, real_T alpha1, int32_T
+  ix0, const real_T y[3], real_T A[12], int32_T ia0)
+{
+  if (!(alpha1 == 0.0)) {
+    int32_T jA;
+    jA = ia0;
+    for (int32_T j{0}; j < n; j++) {
+      real_T temp;
+      temp = y[j];
+      if (temp != 0.0) {
+        int32_T b;
+        temp *= alpha1;
+        b = m + jA;
+        for (int32_T ijA{jA}; ijA < b; ijA++) {
+          A[ijA - 1] += A[((ix0 + ijA) - jA) - 1] * temp;
+        }
+      }
+
+      jA += 4;
+    }
+  }
+}
+
+// Function for MATLAB Function: '<S145>/RLS'
+void SupervisoryController::sqrtMeasurementUpdate_c(real_T L[9], const real_T H
+  [3], real_T a0, real_T K[3])
+{
+  real_T c_A[12];
+  real_T A[9];
+  real_T y[9];
+  real_T B_2[3];
+  real_T Pxy[3];
+  real_T K_0;
+  real_T K_idx_1;
+  real_T Sy;
+  real_T prodVal;
+  int32_T aoffset;
+  int32_T b_i;
+  int32_T coffset;
+  int32_T ii;
+  for (b_i = 0; b_i < 3; b_i++) {
+    Pxy[b_i] = 0.0;
+    for (ii = 0; ii < 3; ii++) {
+      coffset = 3 * ii + b_i;
+      A[coffset] = 0.0;
+      A[coffset] += L[b_i] * L[ii];
+      A[coffset] += L[b_i + 3] * L[ii + 3];
+      A[coffset] += L[b_i + 6] * L[ii + 6];
+      if (std::isinf(A[coffset])) {
+        prodVal = A[coffset];
+        if (std::isnan(prodVal)) {
+          K_0 = (rtNaN);
+        } else if (prodVal < 0.0) {
+          K_0 = -1.0;
+        } else {
+          K_0 = static_cast<real_T>(prodVal > 0.0 ? static_cast<int32_T>(1) :
+            static_cast<int32_T>(0));
+        }
+
+        A[coffset] = K_0 * 1.7976931348623157E+308;
+      }
+
+      prodVal = A[coffset] * H[ii];
+      if (std::isinf(prodVal)) {
+        if (std::isnan(prodVal)) {
+          K_0 = (rtNaN);
+        } else if (prodVal < 0.0) {
+          K_0 = -1.0;
+        } else {
+          K_0 = static_cast<real_T>(prodVal > 0.0 ? static_cast<int32_T>(1) :
+            static_cast<int32_T>(0));
+        }
+
+        prodVal = K_0 * 1.7976931348623157E+308;
+      }
+
+      prodVal += Pxy[b_i];
+      if (std::isinf(prodVal)) {
+        if (std::isnan(prodVal)) {
+          K_0 = (rtNaN);
+        } else if (prodVal < 0.0) {
+          K_0 = -1.0;
+        } else {
+          K_0 = static_cast<real_T>(prodVal > 0.0 ? static_cast<int32_T>(1) :
+            static_cast<int32_T>(0));
+        }
+
+        prodVal = K_0 * 1.7976931348623157E+308;
+      }
+
+      Pxy[b_i] = prodVal;
+    }
+  }
+
+  prodVal = std::sqrt(a0);
+  Sy = qrFactor_h(H, L, prodVal);
+  B_2[0] = Pxy[0];
+  B_2[1] = Pxy[1];
+  B_2[2] = Pxy[2];
+  trisolve_h(Sy, B_2);
+  K[0] = B_2[0];
+  K[1] = B_2[1];
+  K[2] = B_2[2];
+  trisolve_h(Sy, K);
+  K_0 = K[0];
+  if (std::isinf(K[0])) {
+    if (std::isnan(K[0])) {
+      K_0 = (rtNaN);
+    } else if (K[0] < 0.0) {
+      K_0 = -1.0;
+    } else {
+      K_0 = static_cast<real_T>(K[0] > 0.0 ? static_cast<int32_T>(1) :
+        static_cast<int32_T>(0));
+    }
+
+    K_0 *= 1.7976931348623157E+308;
+  }
+
+  Sy = -K_0;
+  K[0] = K_0;
+  K_0 = K[1];
+  if (std::isinf(K[1])) {
+    if (std::isnan(K[1])) {
+      K_0 = (rtNaN);
+    } else if (K[1] < 0.0) {
+      K_0 = -1.0;
+    } else {
+      K_0 = static_cast<real_T>(K[1] > 0.0 ? static_cast<int32_T>(1) :
+        static_cast<int32_T>(0));
+    }
+
+    K_0 *= 1.7976931348623157E+308;
+  }
+
+  K_idx_1 = -K_0;
+  K[1] = K_0;
+  K_0 = K[2];
+  if (std::isinf(K[2])) {
+    if (std::isnan(K[2])) {
+      K_0 = (rtNaN);
+    } else if (K[2] < 0.0) {
+      K_0 = -1.0;
+    } else {
+      K_0 = static_cast<real_T>(K[2] > 0.0 ? static_cast<int32_T>(1) :
+        static_cast<int32_T>(0));
+    }
+
+    K_0 *= 1.7976931348623157E+308;
+  }
+
+  K[2] = K_0;
+  coffset = 0;
+  for (b_i = 0; b_i < 3; b_i++) {
+    A[coffset] = Sy * H[b_i];
+    A[coffset + 1] = K_idx_1 * H[b_i];
+    A[coffset + 2] = -K_0 * H[b_i];
+    coffset += 3;
+  }
+
+  A[0]++;
+  A[4]++;
+  A[8]++;
+  for (b_i = 0; b_i < 3; b_i++) {
+    coffset = b_i * 3;
+    for (ii = 0; ii < 3; ii++) {
+      aoffset = ii * 3;
+      y[coffset + ii] = (L[aoffset + 1] * A[b_i + 3] + L[aoffset] * A[b_i]) +
+        L[aoffset + 2] * A[b_i + 6];
+    }
+  }
+
+  b_i = 0;
+  coffset = 0;
+  for (ii = 0; ii < 3; ii++) {
+    c_A[b_i] = y[coffset];
+    c_A[b_i + 1] = y[coffset + 1];
+    c_A[b_i + 2] = y[coffset + 2];
+    c_A[b_i + 3] = K[ii] * prodVal;
+    Pxy[ii] = 0.0;
+    b_i += 4;
+    coffset += 3;
+  }
+
+  for (b_i = 0; b_i < 3; b_i++) {
+    int32_T lastv;
+    int32_T scalarLB;
+    ii = (b_i << 2UL) + b_i;
+    Sy = c_A[ii];
+    lastv = ii + 2;
+    B_2[b_i] = 0.0;
+    prodVal = xnrm2_mw(3 - b_i, c_A, ii + 2);
+    if (prodVal != 0.0) {
+      prodVal = rt_hypotd_snf(c_A[ii], prodVal);
+      if (c_A[ii] >= 0.0) {
+        prodVal = -prodVal;
+      }
+
+      if (std::abs(prodVal) < 1.0020841800044864E-292) {
+        __m128d tmp;
+        int32_T scalarLB_tmp;
+        int32_T vectorUB;
+        coffset = 0;
+        scalarLB = (ii - b_i) + 4;
+        do {
+          coffset++;
+          scalarLB_tmp = (((((scalarLB - ii) - 1) / 2) << 1UL) + ii) + 2;
+          vectorUB = scalarLB_tmp - 2;
+          for (aoffset = lastv; aoffset <= vectorUB; aoffset += 2) {
+            tmp = _mm_loadu_pd(&c_A[aoffset - 1]);
+            (void)_mm_storeu_pd(&c_A[aoffset - 1], _mm_mul_pd(tmp, _mm_set1_pd
+              (9.9792015476736E+291)));
+          }
+
+          for (aoffset = scalarLB_tmp; aoffset <= scalarLB; aoffset++) {
+            c_A[aoffset - 1] *= 9.9792015476736E+291;
+          }
+
+          prodVal *= 9.9792015476736E+291;
+          Sy *= 9.9792015476736E+291;
+        } while ((std::abs(prodVal) < 1.0020841800044864E-292) && (coffset < 20));
+
+        prodVal = rt_hypotd_snf(Sy, xnrm2_mw(3 - b_i, c_A, ii + 2));
+        if (Sy >= 0.0) {
+          prodVal = -prodVal;
+        }
+
+        B_2[b_i] = (prodVal - Sy) / prodVal;
+        Sy = 1.0 / (Sy - prodVal);
+        vectorUB = scalarLB_tmp - 2;
+        for (aoffset = lastv; aoffset <= vectorUB; aoffset += 2) {
+          tmp = _mm_loadu_pd(&c_A[aoffset - 1]);
+          (void)_mm_storeu_pd(&c_A[aoffset - 1], _mm_mul_pd(tmp, _mm_set1_pd(Sy)));
+        }
+
+        for (aoffset = scalarLB_tmp; aoffset <= scalarLB; aoffset++) {
+          c_A[aoffset - 1] *= Sy;
+        }
+
+        for (lastv = 0; lastv < coffset; lastv++) {
+          prodVal *= 1.0020841800044864E-292;
+        }
+
+        Sy = prodVal;
+      } else {
+        int32_T vectorUB;
+        B_2[b_i] = (prodVal - c_A[ii]) / prodVal;
+        Sy = 1.0 / (c_A[ii] - prodVal);
+        aoffset = (ii - b_i) + 4;
+        scalarLB = (((((aoffset - ii) - 1) / 2) << 1UL) + ii) + 2;
+        vectorUB = scalarLB - 2;
+        for (coffset = lastv; coffset <= vectorUB; coffset += 2) {
+          __m128d tmp;
+          tmp = _mm_loadu_pd(&c_A[coffset - 1]);
+          (void)_mm_storeu_pd(&c_A[coffset - 1], _mm_mul_pd(tmp, _mm_set1_pd(Sy)));
+        }
+
+        for (coffset = scalarLB; coffset <= aoffset; coffset++) {
+          c_A[coffset - 1] *= Sy;
+        }
+
+        Sy = prodVal;
+      }
+    }
+
+    c_A[ii] = Sy;
+    if (b_i + 1 < 3) {
+      prodVal = c_A[ii];
+      c_A[ii] = 1.0;
+      if (B_2[b_i] != 0.0) {
+        boolean_T exitg2;
+        lastv = 4 - b_i;
+        coffset = (ii - b_i) + 3;
+        while ((lastv > 0) && (c_A[coffset] == 0.0)) {
+          lastv--;
+          coffset--;
+        }
+
+        coffset = 2 - b_i;
+        exitg2 = false;
+        while (((exitg2 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U))
+                == false) && (coffset > 0)) {
+          int32_T exitg1;
+          aoffset = (((coffset - 1) << 2UL) + ii) + 4;
+          scalarLB = aoffset;
+          do {
+            exitg1 = 0;
+            if (scalarLB + 1 <= aoffset + lastv) {
+              if (c_A[scalarLB] != 0.0) {
+                exitg1 = 1;
+              } else {
+                scalarLB++;
+              }
+            } else {
+              coffset--;
+              exitg1 = 2;
+            }
+          } while (exitg1 == 0);
+
+          if (exitg1 == 1) {
+            exitg2 = true;
+          }
+        }
+      } else {
+        lastv = 0;
+        coffset = 0;
+      }
+
+      if (lastv > 0) {
+        xgemv_p(lastv, coffset, c_A, ii + 5, c_A, ii + 1, Pxy);
+        xgerc_d(lastv, coffset, -B_2[b_i], ii + 1, Pxy, c_A, ii + 5);
+      }
+
+      c_A[ii] = prodVal;
+    }
+  }
+
+  for (b_i = 0; b_i < 3; b_i++) {
+    for (ii = 0; ii <= b_i; ii++) {
+      A[ii + 3 * b_i] = c_A[(b_i << 2UL) + ii];
+    }
+
+    for (ii = b_i + 2; ii < 4; ii++) {
+      A[(ii + 3 * b_i) - 1] = 0.0;
+    }
+  }
+
+  for (ii = 0; ii < 3; ii++) {
+    L[3 * ii] = A[ii];
+    coffset = 3 * ii + 1;
+    L[coffset] = A[ii + 3];
+    b_i = 3 * ii + 2;
+    L[b_i] = A[ii + 6];
+    prodVal = L[3 * ii];
+    if (std::isinf(prodVal)) {
+      if (std::isnan(prodVal)) {
+        K_0 = (rtNaN);
+      } else if (prodVal < 0.0) {
+        K_0 = -1.0;
+      } else {
+        K_0 = static_cast<real_T>(prodVal > 0.0 ? static_cast<int32_T>(1) :
+          static_cast<int32_T>(0));
+      }
+
+      L[3 * ii] = K_0 * 1.7976931348623157E+308;
+    }
+
+    prodVal = L[coffset];
+    if (std::isinf(prodVal)) {
+      if (std::isnan(prodVal)) {
+        K_0 = (rtNaN);
+      } else if (prodVal < 0.0) {
+        K_0 = -1.0;
+      } else {
+        K_0 = static_cast<real_T>(prodVal > 0.0 ? static_cast<int32_T>(1) :
+          static_cast<int32_T>(0));
+      }
+
+      L[coffset] = K_0 * 1.7976931348623157E+308;
+    }
+
+    prodVal = L[b_i];
+    if (std::isinf(prodVal)) {
+      if (std::isnan(prodVal)) {
+        K_0 = (rtNaN);
+      } else if (prodVal < 0.0) {
+        K_0 = -1.0;
+      } else {
+        K_0 = static_cast<real_T>(prodVal > 0.0 ? static_cast<int32_T>(1) :
+          static_cast<int32_T>(0));
+      }
+
+      L[b_i] = K_0 * 1.7976931348623157E+308;
+    }
   }
 }
 
@@ -4029,13 +4911,12 @@ void SupervisoryController::trisolve_h(real_T A, real_T *B_1)
 //    '<S279>/RLS'
 //    '<S280>/RLS'
 //
-void SupervisoryController::RLS(real_T rtu_H, real_T rtu_y, boolean_T
-  rtu_isEnabled, real_T rtu_adg1, real_T *rty_e, real_T *rty_x, real_T *rty_L,
+void SupervisoryController::RLS(const real_T rtu_H[3], real_T rtu_y, boolean_T
+  rtu_isEnabled, real_T rtu_adg1, real_T *rty_e, real_T rty_x[3], real_T rty_L[9],
   DW_RLS *localDW)
 {
-  real_T Sy;
-  real_T estimationError;
-  real_T prodVal;
+  real_T a[3];
+  real_T b;
 
   //  % I/O data
   //  % Helper variables
@@ -4064,100 +4945,67 @@ void SupervisoryController::RLS(real_T rtu_H, real_T rtu_y, boolean_T
     localDW->rlsEstimator.DataIterator.IteratorPosition = 2;
   }
 
-  estimationError = rtu_y - rtu_H * *rty_x;
+  b = rtu_y - ((rtu_H[0] * rty_x[0] + rtu_H[1] * rty_x[1]) + rtu_H[2] * rty_x[2]);
   if (rtu_isEnabled) {
-    prodVal = *rty_L * *rty_L;
-    if (std::isinf(prodVal)) {
-      if (std::isnan(prodVal)) {
-        Sy = (rtNaN);
-      } else if (prodVal < 0.0) {
-        Sy = -1.0;
-      } else {
-        Sy = static_cast<real_T>(prodVal > 0.0 ? static_cast<int32_T>(1) :
-          static_cast<int32_T>(0));
+    real_T sqrtFF;
+    sqrtMeasurementUpdate_c(rty_L, rtu_H, rtu_adg1, a);
+    sqrtFF = std::sqrt(rtu_adg1);
+    for (int32_T kk{0}; kk < 3; kk++) {
+      for (int32_T b_kk2{0}; b_kk2 <= kk; b_kk2++) {
+        int32_T tmp;
+        tmp = (((2 - kk) * 3 + b_kk2) - kk) + 2;
+        rty_L[tmp] /= sqrtFF;
       }
-
-      prodVal = Sy * 1.7976931348623157E+308;
     }
 
-    prodVal *= rtu_H;
-    if (std::isinf(prodVal)) {
-      if (std::isnan(prodVal)) {
-        Sy = (rtNaN);
-      } else if (prodVal < 0.0) {
-        Sy = -1.0;
-      } else {
-        Sy = static_cast<real_T>(prodVal > 0.0 ? static_cast<int32_T>(1) :
-          static_cast<int32_T>(0));
+    for (int32_T kk{0}; kk < 3; kk++) {
+      if (std::isinf(rty_L[kk])) {
+        sqrtFF = rty_L[kk];
+        if (std::isnan(sqrtFF)) {
+          sqrtFF = (rtNaN);
+        } else if (sqrtFF < 0.0) {
+          sqrtFF = -1.0;
+        } else {
+          sqrtFF = static_cast<real_T>(sqrtFF > 0.0 ? static_cast<int32_T>(1) :
+            static_cast<int32_T>(0));
+        }
+
+        rty_L[kk] = sqrtFF * 1.7976931348623157E+308;
       }
 
-      prodVal = Sy * 1.7976931348623157E+308;
-    }
+      sqrtFF = rty_L[kk + 3];
+      if (std::isinf(sqrtFF)) {
+        if (std::isnan(sqrtFF)) {
+          sqrtFF = (rtNaN);
+        } else if (sqrtFF < 0.0) {
+          sqrtFF = -1.0;
+        } else {
+          sqrtFF = static_cast<real_T>(sqrtFF > 0.0 ? static_cast<int32_T>(1) :
+            static_cast<int32_T>(0));
+        }
 
-    if (std::isinf(prodVal)) {
-      if (std::isnan(prodVal)) {
-        Sy = (rtNaN);
-      } else if (prodVal < 0.0) {
-        Sy = -1.0;
-      } else {
-        Sy = static_cast<real_T>(prodVal > 0.0 ? static_cast<int32_T>(1) :
-          static_cast<int32_T>(0));
+        rty_L[kk + 3] = sqrtFF * 1.7976931348623157E+308;
       }
 
-      prodVal = Sy * 1.7976931348623157E+308;
-    }
+      sqrtFF = rty_L[kk + 6];
+      if (std::isinf(sqrtFF)) {
+        if (std::isnan(sqrtFF)) {
+          sqrtFF = (rtNaN);
+        } else if (sqrtFF < 0.0) {
+          sqrtFF = -1.0;
+        } else {
+          sqrtFF = static_cast<real_T>(sqrtFF > 0.0 ? static_cast<int32_T>(1) :
+            static_cast<int32_T>(0));
+        }
 
-    Sy = *rty_L;
-    qrFactor_h(rtu_H, &Sy, std::sqrt(rtu_adg1));
-    trisolve_h(Sy, &prodVal);
-    trisolve_h(Sy, &prodVal);
-    if (std::isinf(prodVal)) {
-      if (std::isnan(prodVal)) {
-        Sy = (rtNaN);
-      } else if (prodVal < 0.0) {
-        Sy = -1.0;
-      } else {
-        Sy = static_cast<real_T>(prodVal > 0.0 ? static_cast<int32_T>(1) :
-          static_cast<int32_T>(0));
+        rty_L[kk + 6] = sqrtFF * 1.7976931348623157E+308;
       }
 
-      prodVal = Sy * 1.7976931348623157E+308;
+      rty_x[kk] += a[kk] * b;
     }
-
-    Sy = *rty_L;
-    qrFactor_h(-prodVal * rtu_H + 1.0, &Sy, prodVal * std::sqrt(rtu_adg1));
-    if (std::isinf(Sy)) {
-      if (std::isnan(Sy)) {
-        Sy = (rtNaN);
-      } else if (Sy < 0.0) {
-        Sy = -1.0;
-      } else {
-        Sy = static_cast<real_T>(Sy > 0.0 ? static_cast<int32_T>(1) :
-          static_cast<int32_T>(0));
-      }
-
-      Sy *= 1.7976931348623157E+308;
-    }
-
-    Sy /= std::sqrt(rtu_adg1);
-    if (std::isinf(Sy)) {
-      if (std::isnan(Sy)) {
-        Sy = (rtNaN);
-      } else if (Sy < 0.0) {
-        Sy = -1.0;
-      } else {
-        Sy = static_cast<real_T>(Sy > 0.0 ? static_cast<int32_T>(1) :
-          static_cast<int32_T>(0));
-      }
-
-      Sy *= 1.7976931348623157E+308;
-    }
-
-    *rty_x += prodVal * estimationError;
-    *rty_L = Sy;
   }
 
-  *rty_e = estimationError;
+  *rty_e = b;
 
   //  % states
   //  % new IO data
@@ -4165,7 +5013,7 @@ void SupervisoryController::RLS(real_T rtu_H, real_T rtu_y, boolean_T
 }
 
 // Function for MATLAB Function: '<S201>/Discrete-Time KF - Calculate PLMZ'
-void SupervisoryController::mrdiv(const real_T A[8], const real_T B_2[4], real_T
+void SupervisoryController::mrdiv(const real_T A[8], const real_T B_4[4], real_T
   Y[8])
 {
   real_T a21;
@@ -4174,7 +5022,7 @@ void SupervisoryController::mrdiv(const real_T A[8], const real_T B_2[4], real_T
   int32_T Y_tmp;
   int32_T r1;
   int32_T r2;
-  if (std::abs(B_2[1]) > std::abs(B_2[0])) {
+  if (std::abs(B_4[1]) > std::abs(B_4[0])) {
     r1 = 1;
     r2 = 0;
   } else {
@@ -4182,21 +5030,21 @@ void SupervisoryController::mrdiv(const real_T A[8], const real_T B_2[4], real_T
     r2 = 1;
   }
 
-  a21 = B_2[r2] / B_2[r1];
-  a22_tmp = B_2[r1 + 2];
-  a22 = B_2[r2 + 2] - a22_tmp * a21;
+  a21 = B_4[r2] / B_4[r1];
+  a22_tmp = B_4[r1 + 2];
+  a22 = B_4[r2 + 2] - a22_tmp * a21;
   Y_tmp = r1 << 2UL;
-  Y[Y_tmp] = A[0] / B_2[r1];
+  Y[Y_tmp] = A[0] / B_4[r1];
   r2 <<= 2UL;
   Y[r2] = (A[4] - Y[Y_tmp] * a22_tmp) / a22;
   Y[Y_tmp] -= Y[r2] * a21;
-  Y[Y_tmp + 1] = A[1] / B_2[r1];
+  Y[Y_tmp + 1] = A[1] / B_4[r1];
   Y[r2 + 1] = (A[5] - Y[Y_tmp + 1] * a22_tmp) / a22;
   Y[Y_tmp + 1] -= Y[r2 + 1] * a21;
-  Y[Y_tmp + 2] = A[2] / B_2[r1];
+  Y[Y_tmp + 2] = A[2] / B_4[r1];
   Y[r2 + 2] = (A[6] - Y[Y_tmp + 2] * a22_tmp) / a22;
   Y[Y_tmp + 2] -= Y[r2 + 2] * a21;
-  Y[Y_tmp + 3] = A[3] / B_2[r1];
+  Y[Y_tmp + 3] = A[3] / B_4[r1];
   Y[r2 + 3] = (A[7] - Y[Y_tmp + 3] * a22_tmp) / a22;
   Y[Y_tmp + 3] -= Y[r2 + 3] * a21;
 }
@@ -6679,7 +7527,7 @@ void SupervisoryController::mpcblock_optimizer_d(const real_T rseq[40], const
 
 // System initialize for function-call system: '<S1>/State1.controlLaw.AMPC1'
 void SupervisoryController::State1controlLawAMPC1_Init(real_T rty_u[3], real_T
-  rty_yhat[2], real_T rty_params[2], DW_State1controlLawAMPC1 *localDW,
+  rty_yhat[2], real_T rty_params[6], DW_State1controlLawAMPC1 *localDW,
   P_State1controlLawAMPC1 *localP)
 {
   int32_T i;
@@ -6692,8 +7540,21 @@ void SupervisoryController::State1controlLawAMPC1_Init(real_T rty_u[3], real_T
 
   // InitializeConditions for UnitDelay: '<S114>/last_mv'
   localDW->last_mv_DSTATE[0] = localP->last_mv_InitialCondition[0];
+
+  // InitializeConditions for UnitDelay: '<S112>/Unit Delay2'
+  localDW->UnitDelay2_DSTATE[0] = localP->UnitDelay2_InitialCondition;
+
+  // InitializeConditions for UnitDelay: '<S114>/last_mv'
   localDW->last_mv_DSTATE[1] = localP->last_mv_InitialCondition[1];
+
+  // InitializeConditions for UnitDelay: '<S112>/Unit Delay2'
+  localDW->UnitDelay2_DSTATE[1] = localP->UnitDelay2_InitialCondition;
+
+  // InitializeConditions for UnitDelay: '<S114>/last_mv'
   localDW->last_mv_DSTATE[2] = localP->last_mv_InitialCondition[2];
+
+  // InitializeConditions for UnitDelay: '<S112>/Unit Delay2'
+  localDW->UnitDelay2_DSTATE[2] = localP->UnitDelay2_InitialCondition;
 
   // InitializeConditions for UnitDelay: '<S112>/Unit Delay3'
   localDW->UnitDelay3_DSTATE[0] = localP->UnitDelay3_InitialCondition;
@@ -6729,9 +7590,6 @@ void SupervisoryController::State1controlLawAMPC1_Init(real_T rty_u[3], real_T
   // InitializeConditions for Delay: '<S199>/MemoryP'
   localDW->icLoad_a = true;
 
-  // InitializeConditions for UnitDelay: '<S112>/Unit Delay2'
-  localDW->UnitDelay2_DSTATE[0] = localP->UnitDelay2_InitialCondition;
-
   // InitializeConditions for RandomNumber: '<S3>/Measurement Noise'
   i = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
     (localP->MeasurementNoise_Seed) >> 16UL));
@@ -6751,11 +7609,6 @@ void SupervisoryController::State1controlLawAMPC1_Init(real_T rty_u[3], real_T
   localDW->RandSeed[0] = tseed;
   localDW->NextOutput[0] = rt_nrand_Upu32_Yd_f_pw_snf(&localDW->RandSeed[0]) *
     localP->MeasurementNoise_StdDev[0] + localP->MeasurementNoise_Mean[0];
-
-  // InitializeConditions for UnitDelay: '<S112>/Unit Delay2'
-  localDW->UnitDelay2_DSTATE[1] = localP->UnitDelay2_InitialCondition;
-
-  // InitializeConditions for RandomNumber: '<S3>/Measurement Noise'
   i = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
     (localP->MeasurementNoise_Seed) >> 16UL));
   tseed = ((((static_cast<uint32_T>(localP->MeasurementNoise_Seed) - (
@@ -6772,11 +7625,6 @@ void SupervisoryController::State1controlLawAMPC1_Init(real_T rty_u[3], real_T
   localDW->RandSeed[1] = tseed;
   localDW->NextOutput[1] = rt_nrand_Upu32_Yd_f_pw_snf(&localDW->RandSeed[1]) *
     localP->MeasurementNoise_StdDev[1] + localP->MeasurementNoise_Mean[1];
-
-  // InitializeConditions for UnitDelay: '<S112>/Unit Delay2'
-  localDW->UnitDelay2_DSTATE[2] = localP->UnitDelay2_InitialCondition;
-
-  // InitializeConditions for RandomNumber: '<S3>/Measurement Noise'
   i = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
     (localP->MeasurementNoise_Seed) >> 16UL));
   tseed = ((((static_cast<uint32_T>(localP->MeasurementNoise_Seed) - (
@@ -6794,6 +7642,8 @@ void SupervisoryController::State1controlLawAMPC1_Init(real_T rty_u[3], real_T
   localDW->NextOutput[2] = rt_nrand_Upu32_Yd_f_pw_snf(&localDW->RandSeed[2]) *
     localP->MeasurementNoise_StdDev[2] + localP->MeasurementNoise_Mean[2];
 
+  // End of InitializeConditions for RandomNumber: '<S3>/Measurement Noise'
+
   // SystemInitialize for Enabled SubSystem: '<S218>/MeasurementUpdate'
   MeasurementUpdate_Init(localDW->Product3, &localP->MeasurementUpdate_n);
 
@@ -6806,15 +7656,14 @@ void SupervisoryController::State1controlLawAMPC1_Init(real_T rty_u[3], real_T
 
   // SystemInitialize for Outport: '<S3>/yhat'
   rty_yhat[0] = localP->yhat_Y0;
-
-  // SystemInitialize for Outport: '<S3>/params'
-  rty_params[0] = localP->params_Y0;
-
-  // SystemInitialize for Outport: '<S3>/yhat'
   rty_yhat[1] = localP->yhat_Y0;
 
   // SystemInitialize for Outport: '<S3>/params'
-  rty_params[1] = localP->params_Y0;
+  for (i = 0; i < 6; i++) {
+    rty_params[i] = localP->params_Y0;
+  }
+
+  // End of SystemInitialize for Outport: '<S3>/params'
 }
 
 // Disable for function-call system: '<S1>/State1.controlLaw.AMPC1'
@@ -6833,8 +7682,8 @@ void SupervisoryController::State1controlLawAMPC1_Disable
 // Output and update for function-call system: '<S1>/State1.controlLaw.AMPC1'
 void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   real_T rtu_y[2], const real_T rtu_y0[2], const real_T rtu_u0[3], const real_T
-  rtu_initParam[2], const real_T rtu_paramEst[2], real_T rtu_excitationVal,
-  real_T rty_u[3], real_T rty_yhat[2], real_T rty_params[2],
+  rtu_initParam[6], const real_T rtu_paramEst[2], real_T rtu_excitationVal,
+  real_T rty_u[3], real_T rty_yhat[2], real_T rty_params[6],
   DW_State1controlLawAMPC1 *localDW, P_State1controlLawAMPC1 *localP, P *rtP,
   ZCE_State1controlLawAMPC1 *localZCE)
 {
@@ -7118,7 +7967,7 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
     -3.5057363011318934, 0.0, -6.5999203145628318, -3.5057363011318934,
     10.608801223672017, 0.0, 0.0, 0.0, 0.0, 100000.0 };
 
-  static const int32_T b_Mrows_0[86]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+  static const int32_T b_Mrows[86]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
     14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
     33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51,
     52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70,
@@ -7155,35 +8004,34 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   real_T rtb_Z_c[16];
   real_T D_est[14];
   real_T rtb_R_h_tmp[14];
-  real_T rtb_B_g[12];
-  real_T rtb_C[8];
+  real_T rty_params_0[12];
+  real_T rtb_y_i[9];
+  real_T rtb_C_k[8];
   real_T rtb_L_h[8];
   real_T rtb_N[8];
-  real_T rtb_Product2_n[8];
-  real_T rtb_B[6];
-  real_T rtb_D_d[6];
-  real_T rtb_MemoryX_c[4];
+  real_T rtb_Product2_o[8];
+  real_T rtb_Transpose[6];
   real_T rtb_R_o[4];
-  real_T rtb_y_b[4];
-  real_T rtb_Product2_j[3];
-  real_T rtb_Product3[3];
+  real_T rtb_y_m3[4];
+  real_T U[3];
+  real_T rtb_Sum1_k[3];
+  real_T rtb_x[3];
+  real_T rtb_x_n[3];
   real_T tmp[3];
   real_T tmp_0[3];
   real_T tmp_1[3];
   real_T Y[2];
   real_T rtb_Add1_k1_tmp[2];
-  real_T rtb_D_b[2];
+  real_T rtb_C_o[2];
   real_T b_Mlim_0;
   real_T rtb_Add1_k1_tmp_0;
   real_T rtb_Sum_p_idx_0;
-  real_T rtb_Sum_p_idx_1;
-  real_T rtb_x_l;
-  real_T rtb_y_l;
-  int32_T b_Mrows;
+  real_T rtb_e_f;
   int32_T b_utarget_tmp;
+  int32_T i;
   int32_T i_0;
+  int32_T i_1;
   boolean_T tmp_6[86];
-  boolean_T rtb_DataTypeConversionEnable_k;
 
   // Sum: '<S112>/Add1' incorporates:
   //   Sum: '<S113>/Sum6'
@@ -7200,19 +8048,7 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
 
   rtb_Add1_k1_tmp[0] = rtb_Add1_k1_tmp_0;
   rtb_Add1_k1_tmp_0 = rtu_y[1] - rtu_y0[1];
-
-  // Sum: '<S112>/Sum' incorporates:
-  //   UnitDelay: '<S112>/Unit Delay3'
-
-  rtb_Sum_p_idx_1 = rtb_Add1_k1_tmp_0 - localDW->UnitDelay3_DSTATE[1];
-
-  // Sum: '<S112>/Add1'
   rtb_Add1_k1_tmp[1] = rtb_Add1_k1_tmp_0;
-
-  // UnitDelay: '<S112>/Unit Delay2'
-  rty_u[0] = localDW->UnitDelay2_DSTATE[0];
-  rty_u[1] = localDW->UnitDelay2_DSTATE[1];
-  rty_u[2] = localDW->UnitDelay2_DSTATE[2];
 
   // Delay: '<S145>/delayBuffery' incorporates:
   //   Constant: '<S145>/InitialOutputs'
@@ -7232,24 +8068,40 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
 
   // End of Delay: '<S145>/delayBufferH'
 
-  // Delay: '<S145>/delayTheta'
-  if (localDW->icLoad_b) {
-    localDW->delayTheta_DSTATE = rtu_initParam[0];
+  // Math: '<S112>/Transpose'
+  i_0 = 0;
+  for (i_1 = 0; i_1 < 2; i_1++) {
+    rtb_Transpose[i_0] = rtu_initParam[i_1];
+    rtb_Transpose[i_0 + 1] = rtu_initParam[i_1 + 2];
+    rtb_Transpose[i_0 + 2] = rtu_initParam[i_1 + 4];
+    i_0 += 3;
   }
 
-  rtb_x_l = localDW->delayTheta_DSTATE;
+  // End of Math: '<S112>/Transpose'
+
+  // Delay: '<S145>/delayTheta'
+  if (localDW->icLoad_b) {
+    localDW->delayTheta_DSTATE[0] = rtb_Transpose[0];
+    localDW->delayTheta_DSTATE[1] = rtb_Transpose[1];
+    localDW->delayTheta_DSTATE[2] = rtb_Transpose[2];
+  }
+
+  rtb_x[0] = localDW->delayTheta_DSTATE[0];
+  rtb_x[1] = localDW->delayTheta_DSTATE[1];
+  rtb_x[2] = localDW->delayTheta_DSTATE[2];
 
   // End of Delay: '<S145>/delayTheta'
 
   // Outputs for Atomic SubSystem: '<S145>/ProcessInitialCovariance'
   // Constant: '<S112>/Constant'
-  ProcessInitialCovariance(localP->Constant_Value, &rtb_y_l);
+  ProcessInitialCovariance(localP->Constant_Value, rtb_y_i);
 
   // End of Outputs for SubSystem: '<S145>/ProcessInitialCovariance'
 
   // Delay: '<S145>/delayL'
   if (localDW->icLoad_d) {
-    localDW->delayL_DSTATE = rtb_y_l;
+    (void)std::memcpy(&localDW->delayL_DSTATE[0], &rtb_y_i[0], 9U * sizeof
+                      (real_T));
   }
 
   // End of Delay: '<S145>/delayL'
@@ -7260,20 +8112,11 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   //   Delay: '<S145>/delayBufferH'
   //   Delay: '<S145>/delayBuffery'
   //   MATLAB Function: '<S145>/RLS'
-  //   Sum: '<S112>/Sum1'
   //   UnitDelay: '<S112>/Unit Delay2'
 
-  RLS((localDW->UnitDelay2_DSTATE[1] - localDW->UnitDelay2_DSTATE[0]) -
-      localDW->UnitDelay2_DSTATE[2], rtb_Sum_p_idx_0, rtu_paramEst[0] != 0.0,
-      localP->ForgettingFactor_Value, &rtb_y_l, &rtb_x_l,
-      &localDW->delayL_DSTATE, &localDW->sf_RLS);
-
-  // Product: '<S112>/Product2' incorporates:
-  //   Constant: '<S112>/Constant3'
-
-  rtb_Product2_j[0] = localP->Constant3_Value[0] * rtb_x_l;
-  rtb_Product2_j[1] = localP->Constant3_Value[1] * rtb_x_l;
-  rtb_Product2_j[2] = localP->Constant3_Value[2] * rtb_x_l;
+  RLS(localDW->UnitDelay2_DSTATE, rtb_Sum_p_idx_0, rtu_paramEst[0] != 0.0,
+      localP->ForgettingFactor_Value, &rtb_e_f, rtb_x, localDW->delayL_DSTATE,
+      &localDW->sf_RLS);
 
   // Delay: '<S146>/delayBuffery' incorporates:
   //   Constant: '<S146>/InitialOutputs'
@@ -7295,22 +8138,27 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
 
   // Delay: '<S146>/delayTheta'
   if (localDW->icLoad_c) {
-    localDW->delayTheta_DSTATE_i = rtu_initParam[1];
+    localDW->delayTheta_DSTATE_i[0] = rtb_Transpose[3];
+    localDW->delayTheta_DSTATE_i[1] = rtb_Transpose[4];
+    localDW->delayTheta_DSTATE_i[2] = rtb_Transpose[5];
   }
 
-  rtb_y_l = localDW->delayTheta_DSTATE_i;
+  rtb_x_n[0] = localDW->delayTheta_DSTATE_i[0];
+  rtb_x_n[1] = localDW->delayTheta_DSTATE_i[1];
+  rtb_x_n[2] = localDW->delayTheta_DSTATE_i[2];
 
   // End of Delay: '<S146>/delayTheta'
 
   // Outputs for Atomic SubSystem: '<S146>/ProcessInitialCovariance'
   // Constant: '<S112>/Constant'
-  ProcessInitialCovariance(localP->Constant_Value, &rtb_Sum_p_idx_0);
+  ProcessInitialCovariance(localP->Constant_Value, rtb_y_i);
 
   // End of Outputs for SubSystem: '<S146>/ProcessInitialCovariance'
 
   // Delay: '<S146>/delayL'
   if (localDW->icLoad_e) {
-    localDW->delayL_DSTATE_o = rtb_Sum_p_idx_0;
+    (void)std::memcpy(&localDW->delayL_DSTATE_o[0], &rtb_y_i[0], 9U * sizeof
+                      (real_T));
   }
 
   // End of Delay: '<S146>/delayL'
@@ -7321,30 +8169,58 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   //   Delay: '<S146>/delayBufferH'
   //   Delay: '<S146>/delayBuffery'
   //   MATLAB Function: '<S146>/RLS'
-  //   Sum: '<S112>/Sum2'
+  //   Sum: '<S112>/Sum'
   //   UnitDelay: '<S112>/Unit Delay2'
+  //   UnitDelay: '<S112>/Unit Delay3'
 
-  RLS((localDW->UnitDelay2_DSTATE[2] - localDW->UnitDelay2_DSTATE[0]) -
-      localDW->UnitDelay2_DSTATE[1], rtb_Sum_p_idx_1, rtu_paramEst[1] != 0.0,
-      localP->ForgettingFactor_Value_k, &rtb_Sum_p_idx_0, &rtb_y_l,
-      &localDW->delayL_DSTATE_o, &localDW->sf_RLS_g);
-
-  // Product: '<S112>/Product3' incorporates:
-  //   Constant: '<S112>/Constant4'
-
-  rtb_Product3[0] = localP->Constant4_Value[0] * rtb_y_l;
-  rtb_Product3[1] = localP->Constant4_Value[1] * rtb_y_l;
-  rtb_Product3[2] = localP->Constant4_Value[2] * rtb_y_l;
+  RLS(localDW->UnitDelay2_DSTATE, rtb_Add1_k1_tmp_0 - localDW->
+      UnitDelay3_DSTATE[1], rtu_paramEst[1] != 0.0,
+      localP->ForgettingFactor_Value_k, &rtb_e_f, rtb_x_n,
+      localDW->delayL_DSTATE_o, &localDW->sf_RLS_g);
 
   // MATLAB Function: '<S112>/MATLAB Function1'
-  MATLABFunction1(rtb_Product2_j, rtb_Product3, rtu_paramEst, rtb_B);
+  rtb_Sum1_k[0] = rtb_x[0];
+  U[0] = rtb_x_n[0];
+  rtb_Sum1_k[1] = rtb_x[1];
+  U[1] = rtb_x_n[1];
+  rtb_Sum1_k[2] = rtb_x[2];
+  U[2] = rtb_x_n[2];
+
+  // MATLAB Function 'SupervisoryController/State1.controlLaw.AMPC1/Model Estimator/MATLAB Function1': '<S144>:1' 
+  // '<S144>:1:2' B = zeros(2,3);
+  // '<S144>:1:3' if enAdapt(1) == false && enAdapt(2) == true
+  if ((rtu_paramEst[0] == 0.0) && (rtu_paramEst[1] == 1.0)) {
+    // '<S144>:1:4' B1 = [B2(1), B2(3), B2(2)];
+    rtb_Sum1_k[0] = rtb_x_n[0];
+    rtb_Sum1_k[1] = rtb_x_n[2];
+    rtb_Sum1_k[2] = rtb_x_n[1];
+  }
+
+  // '<S144>:1:6' if enAdapt(1) == true && enAdapt(2) == false
+  if ((rtu_paramEst[0] == 1.0) && (rtu_paramEst[1] == 0.0)) {
+    // '<S144>:1:7' B2 = [B1(1), B1(3), B1(2)];
+    U[0] = rtb_Sum1_k[0];
+    U[1] = rtb_Sum1_k[2];
+    U[2] = rtb_Sum1_k[1];
+  }
+
+  // '<S144>:1:10' B = [B1; B2];
+  rty_params[0] = rtb_Sum1_k[0];
+  rty_params[1] = U[0];
+  rty_params[2] = rtb_Sum1_k[1];
+  rty_params[3] = U[1];
+  rty_params[4] = rtb_Sum1_k[2];
+  rty_params[5] = U[2];
+
+  // End of MATLAB Function: '<S112>/MATLAB Function1'
 
   // Product: '<S112>/Product' incorporates:
   //   Constant: '<S112>/Constant11'
   //   Product: '<S202>/Product1'
 
+  // '<S144>:1:12' disp(B);
   rtb_Sum_p_idx_0 = localP->Constant11_Value * rtu_y0[0];
-  rtb_Sum_p_idx_1 = localP->Constant11_Value * rtu_y0[1];
+  rtb_e_f = localP->Constant11_Value * rtu_y0[1];
 
   // Delay: '<S199>/MemoryX' incorporates:
   //   Constant: '<S199>/X0'
@@ -7359,11 +8235,6 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
     localDW->MemoryX_DSTATE[2] = localP->X0_Value[2];
     localDW->MemoryX_DSTATE[3] = localP->X0_Value[3];
   }
-
-  rtb_MemoryX_c[0] = localDW->MemoryX_DSTATE[0];
-  rtb_MemoryX_c[1] = localDW->MemoryX_DSTATE[1];
-  rtb_MemoryX_c[2] = localDW->MemoryX_DSTATE[2];
-  rtb_MemoryX_c[3] = localDW->MemoryX_DSTATE[3];
 
   // MATLAB Function: '<S142>/FixedHorizonOptimizer' incorporates:
   //   BusCreator: '<S112>/Bus Creator1'
@@ -7554,29 +8425,29 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   // '<S143>:1:157'     myindex,Uscale,Yscale,Cid,Did);
   (void)std::memcpy(&rtb_A[0], &b[0], sizeof(real_T) << 4UL);
   (void)std::memcpy(&b_B[0], &c[0], sizeof(real_T) << 5UL);
-  for (b_Mrows = 0; b_Mrows < 8; b_Mrows++) {
-    rtb_C[b_Mrows] = static_cast<real_T>(d[b_Mrows]);
+  for (i_0 = 0; i_0 < 8; i_0++) {
+    rtb_C_k[i_0] = static_cast<real_T>(d[i_0]);
   }
 
-  rtb_C[0] = localP->Constant12_Value[0];
+  rtb_C_k[0] = localP->Constant12_Value[0];
   rtb_A[0] = localP->Constant5_Value[0];
-  rtb_C[1] = localP->Constant12_Value[1];
+  rtb_C_k[1] = localP->Constant12_Value[1];
   rtb_A[1] = localP->Constant5_Value[1];
-  rtb_C[2] = localP->Constant12_Value[2];
+  rtb_C_k[2] = localP->Constant12_Value[2];
   rtb_A[4] = localP->Constant5_Value[2];
-  rtb_C[3] = localP->Constant12_Value[3];
+  rtb_C_k[3] = localP->Constant12_Value[3];
   rtb_A[5] = localP->Constant5_Value[3];
-  b_Mrows = 0;
   i_0 = 0;
-  for (int32_T i{0}; i < 3; i++) {
-    b_B[b_Mrows] = rtb_B[i_0];
-    b_B[b_Mrows + 1] = rtb_B[i_0 + 1];
-    Bu[b_Mrows] = b_B[b_Mrows];
-    Bu[b_Mrows + 1] = b_B[b_Mrows + 1];
-    Bu[b_Mrows + 2] = b_B[b_Mrows + 2];
-    Bu[b_Mrows + 3] = b_B[b_Mrows + 3];
-    b_Mrows += 4;
-    i_0 += 2;
+  i_1 = 0;
+  for (i = 0; i < 3; i++) {
+    b_B[i_0] = rty_params[i_1];
+    b_B[i_0 + 1] = rty_params[i_1 + 1];
+    Bu[i_0] = b_B[i_0];
+    Bu[i_0 + 1] = b_B[i_0 + 1];
+    Bu[i_0 + 2] = b_B[i_0 + 2];
+    Bu[i_0 + 3] = b_B[i_0 + 3];
+    i_0 += 4;
+    i_1 += 2;
   }
 
   Bv[2] = b_B[14];
@@ -7591,47 +8462,46 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   // '<S143>:1:176'        U,Uscale,uoff,mvindex,voff,mdindex,utarget,nu,nv-1,... 
   // '<S143>:1:177'        Y,Yscale,yoff,myoff,myindex,ny,...
   // '<S143>:1:178'        X,xoff,nxp,DX,A,Bu,Bv,C,Dv,nCC);
-  for (int32_T i{0}; i < 86; i++) {
+  for (i = 0; i < 86; i++) {
     b_Mlim[i] = static_cast<real_T>(e[i]);
   }
 
   (void)std::memset(&b_utarget[0], 0, 60U * sizeof(real_T));
-  rtb_Product3[0] = rtu_u0[0];
-  rtb_Product3[1] = rtu_u0[1];
-  rtb_Product3[2] = rtu_u0[2];
+  U[0] = rtu_u0[0];
+  U[1] = rtu_u0[1];
+  U[2] = rtu_u0[2];
   Y[0] = rtu_y0[0];
   Y[1] = rtu_y0[1];
-  rtb_Product2_j[0] = rtu_u0[0];
-  rtb_Product2_j[1] = rtu_u0[1];
-  rtb_Product2_j[2] = rtu_u0[2];
-  for (int32_T i{0}; i < 86; i++) {
+  rtb_Sum1_k[0] = rtu_u0[0];
+  rtb_Sum1_k[1] = rtu_u0[1];
+  rtb_Sum1_k[2] = rtu_u0[2];
+  for (i = 0; i < 86; i++) {
     b_Mlim_0 = b_Mlim[i];
-    b_Mrows = b_Mrows_0[i];
-    if (b_Mrows <= 40) {
-      b_Mrows = (b_Mrows - (((b_Mrows - 1) / static_cast<int32_T>(ny)) << 1UL))
-        - 1;
-      b_Mlim_0 += (-22.0 * static_cast<real_T>(b_Mrows) + 455.0) - Y[b_Mrows];
-    } else if (b_Mrows <= 80) {
-      b_Mrows = (b_Mrows - (((b_Mrows - 41) >> 1UL) << 1UL)) - 41;
-      b_Mlim_0 -= (-22.0 * static_cast<real_T>(b_Mrows) + 455.0) - Y[b_Mrows];
-    } else if (b_Mrows <= 140) {
-      b_Mlim_0 += 0.0 - rtb_Product3[(b_Mrows - div_nde_s32_floor(b_Mrows - 81,
-        static_cast<int32_T>(nu_g)) * static_cast<int32_T>(nu_g)) - 81];
+    i_0 = b_Mrows[i];
+    if (i_0 <= 40) {
+      i_0 = (i_0 - (((i_0 - 1) / static_cast<int32_T>(ny)) << 1UL)) - 1;
+      b_Mlim_0 += (-22.0 * static_cast<real_T>(i_0) + 455.0) - Y[i_0];
+    } else if (i_0 <= 80) {
+      i_0 = (i_0 - (((i_0 - 41) >> 1UL) << 1UL)) - 41;
+      b_Mlim_0 -= (-22.0 * static_cast<real_T>(i_0) + 455.0) - Y[i_0];
+    } else if (i_0 <= 140) {
+      b_Mlim_0 += 0.0 - U[(i_0 - div_nde_s32_floor(i_0 - 81, static_cast<int32_T>
+        (nu_g)) * static_cast<int32_T>(nu_g)) - 81];
     } else {
-      b_Mlim_0 -= 0.0 - rtb_Product3[(b_Mrows - div_nde_s32_floor(b_Mrows - 141,
+      b_Mlim_0 -= 0.0 - U[(i_0 - div_nde_s32_floor(i_0 - 141,
         static_cast<int32_T>(nu_g)) * static_cast<int32_T>(nu_g)) - 141];
     }
 
     b_Mlim[i] = b_Mlim_0;
   }
 
-  for (int32_T i{0}; i < 3; i++) {
-    b_Mlim_0 = rtb_Product3[i];
-    b_Mrows = 0;
-    for (i_0 = 0; i_0 < 20; i_0++) {
-      b_utarget_tmp = b_Mrows + i;
+  for (i = 0; i < 3; i++) {
+    b_Mlim_0 = U[i];
+    i_0 = 0;
+    for (i_1 = 0; i_1 < 20; i_1++) {
+      b_utarget_tmp = i_0 + i;
       b_utarget[b_utarget_tmp] -= b_Mlim_0;
-      b_Mrows += 3;
+      i_0 += 3;
     }
   }
 
@@ -7645,15 +8515,15 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   // '<S143>:1:190' else
   //  When doing code generation, use M code directly
   // '<S143>:1:192' [rseq, vseq, v] = mpcblock_refmd(ref,md,nv,ny,p,yoff,voff,no_md,no_ref,openloopflag, RYscale, RMDscale); 
-  for (int32_T i{0}; i < 21; i++) {
+  for (i = 0; i < 21; i++) {
     vseq[i] = 1.0;
   }
 
-  b_Mrows = 0;
-  for (int32_T i{0}; i < 20; i++) {
-    rseq[b_Mrows] = rtu_r[0] - Y[0];
-    rseq[b_Mrows + 1] = rtu_r[1] - Y[1];
-    b_Mrows += 2;
+  i_1 = 0;
+  for (i = 0; i < 20; i++) {
+    rseq[i_1] = rtu_r[0] - Y[0];
+    rseq[i_1 + 1] = rtu_r[1] - Y[1];
+    i_1 += 2;
   }
 
   //  External MV override.
@@ -7690,10 +8560,10 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   // '<S143>:1:290'             Wy, Wdu, Jm, SuJm, Su1, Sx, Hv, Wu, I1, ...
   // '<S143>:1:291'             isAdaptive, isLTV, A, Bu, Bv, C, Dv, ...
   // '<S143>:1:292'             Mrows, nCC, Ecc, Fcc, Scc, Gcc, RYscale, RMVscale, m, isHyb, Mdis, Ndis, Vdis, numdis, maxdis); 
-  rtb_y_b[0] = (localDW->MemoryX_DSTATE[0] + rtb_Sum_p_idx_0) - rtb_Sum_p_idx_0;
-  rtb_y_b[1] = (localDW->MemoryX_DSTATE[1] + rtb_Sum_p_idx_1) - rtb_Sum_p_idx_1;
-  rtb_y_b[2] = localP->Constant_Value_d[0] + localDW->MemoryX_DSTATE[2];
-  rtb_y_b[3] = localP->Constant_Value_d[1] + localDW->MemoryX_DSTATE[3];
+  rtb_y_m3[0] = (localDW->MemoryX_DSTATE[0] + rtb_Sum_p_idx_0) - rtb_Sum_p_idx_0;
+  rtb_y_m3[1] = (localDW->MemoryX_DSTATE[1] + rtb_e_f) - rtb_e_f;
+  rtb_y_m3[2] = localP->Constant_Value_d[0] + localDW->MemoryX_DSTATE[2];
+  rtb_y_m3[3] = localP->Constant_Value_d[1] + localDW->MemoryX_DSTATE[3];
   tmp[0] = localDW->last_mv_DSTATE[0] - rtu_u0[0];
   tmp[1] = localDW->last_mv_DSTATE[1] - rtu_u0[1];
   tmp[2] = localDW->last_mv_DSTATE[2] - rtu_u0[2];
@@ -7720,11 +8590,11 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   // Update for Memory: '<S114>/Memory' incorporates:
   //   MATLAB Function: '<S142>/FixedHorizonOptimizer'
 
-  mpcblock_optimizer_d(rseq, vseq, rtb_y_b, tmp, tmp_6, b_Mlim, f_0, g_0,
-                       localDW->dv, b_utarget, rtb_Product2_j, rtb_Q, k_0, Y,
-                       tmp_0, l, tmp_1, n, rtb_A, Bu, Bv, rtb_C, Dv, b_Mrows_0,
-                       rtb_Product3, rtb_useq, &rtb_Sum_p_idx_0,
-                       localDW->Memory_PreviousInput, localDW);
+  mpcblock_optimizer_d(rseq, vseq, rtb_y_m3, tmp, tmp_6, b_Mlim, f_0, g_0,
+                       localDW->dv, b_utarget, rtb_Sum1_k, rtb_Q, k_0, Y, tmp_0,
+                       l, tmp_1, n, rtb_A, Bu, Bv, rtb_C_k, Dv, b_Mrows, U,
+                       rtb_useq, &rtb_e_f, localDW->Memory_PreviousInput,
+                       localDW);
 
   // Delay: '<S199>/MemoryP' incorporates:
   //   Constant: '<S199>/P0'
@@ -7748,11 +8618,6 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
     (void)std::memcpy(&localDW->MemoryP_DSTATE[0], &localP->P0_Value[0], sizeof
                       (real_T) << 4UL);
   }
-
-  // DataTypeConversion: '<S199>/DataTypeConversionEnable' incorporates:
-  //   Constant: '<S3>/Constant'
-
-  rtb_DataTypeConversionEnable_k = (localP->Constant_Value_f != 0.0);
 
   // MATLAB Function: '<S113>/MATLAB Function' incorporates:
   //   BusCreator: '<S112>/Bus Creator1'
@@ -7811,97 +8676,93 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   // 'stateEstimator:21' B = [Bp;
   // 'stateEstimator:22'      zeros(no,ni)];
   // 'stateEstimator:23' C = [Cp Cod];
-  rtb_C[0] = localP->Constant12_Value[0];
-  rtb_C[4] = rtP->Cod1[0];
-  rtb_C[1] = localP->Constant12_Value[1];
-  rtb_C[5] = rtP->Cod1[1];
-  rtb_C[2] = localP->Constant12_Value[2];
-  rtb_C[6] = rtP->Cod1[2];
-  rtb_C[3] = localP->Constant12_Value[3];
-  rtb_C[7] = rtP->Cod1[3];
+  rtb_C_k[0] = localP->Constant12_Value[0];
+  rtb_C_k[4] = rtP->Cod1[0];
+  rtb_C_k[1] = localP->Constant12_Value[1];
+  rtb_C_k[5] = rtP->Cod1[1];
+  rtb_C_k[2] = localP->Constant12_Value[2];
+  rtb_C_k[6] = rtP->Cod1[2];
+  rtb_C_k[3] = localP->Constant12_Value[3];
+  rtb_C_k[7] = rtP->Cod1[3];
 
   // 'stateEstimator:24' D = Dp;
-  for (int32_T i{0}; i < 6; i++) {
-    rtb_D_d[i] = localP->Constant13_Value[i];
-  }
-
   // 'stateEstimator:26' B_est = [ [Bp; zeros(no,ni)] [zeros(size(Bp,1), size(Cp,1)); Bod] [zeros(size(Bp,1) + size(Bod,1), size(Cp,1))] ]; 
-  b_Mrows = 0;
   i_0 = 0;
-  for (int32_T i{0}; i < 3; i++) {
-    B_est[b_Mrows] = rtb_B[i_0];
-    B_est[b_Mrows + 2] = 0.0;
-    B_est[b_Mrows + 1] = rtb_B[i_0 + 1];
-    B_est[b_Mrows + 3] = 0.0;
-    b_Mrows += 4;
-    i_0 += 2;
+  i_1 = 0;
+  for (i = 0; i < 3; i++) {
+    B_est[i_0] = rty_params[i_1];
+    B_est[i_0 + 2] = 0.0;
+    B_est[i_0 + 1] = rty_params[i_1 + 1];
+    B_est[i_0 + 3] = 0.0;
+    i_0 += 4;
+    i_1 += 2;
   }
 
-  b_Mrows = 0;
   i_0 = 0;
-  for (int32_T i{0}; i < 2; i++) {
-    B_est[b_Mrows + 12] = 0.0;
-    B_est[b_Mrows + 14] = rtP->Bod1[i_0];
-    B_est[b_Mrows + 13] = 0.0;
-    B_est[b_Mrows + 15] = rtP->Bod1[i_0 + 1];
-    B_est[b_Mrows + 20] = 0.0;
-    B_est[b_Mrows + 21] = 0.0;
-    B_est[b_Mrows + 22] = 0.0;
-    B_est[b_Mrows + 23] = 0.0;
-    b_Mrows += 4;
-    i_0 += 2;
+  i_1 = 0;
+  for (i = 0; i < 2; i++) {
+    B_est[i_0 + 12] = 0.0;
+    B_est[i_0 + 14] = rtP->Bod1[i_1];
+    B_est[i_0 + 13] = 0.0;
+    B_est[i_0 + 15] = rtP->Bod1[i_1 + 1];
+    B_est[i_0 + 20] = 0.0;
+    B_est[i_0 + 21] = 0.0;
+    B_est[i_0 + 22] = 0.0;
+    B_est[i_0 + 23] = 0.0;
+    i_0 += 4;
+    i_1 += 2;
   }
 
   // 'stateEstimator:27' D_est = [Dp Dod Dn];
-  for (b_Mrows = 0; b_Mrows < 6; b_Mrows++) {
-    D_est[b_Mrows] = localP->Constant13_Value[b_Mrows];
+  for (i_0 = 0; i_0 < 6; i_0++) {
+    D_est[i_0] = localP->Constant13_Value[i_0];
   }
 
   // 'stateEstimator:28' Q = B_est * B_est';
-  for (b_Mrows = 0; b_Mrows < 4; b_Mrows++) {
-    D_est[b_Mrows + 6] = rtP->Dod1[b_Mrows];
-    D_est[b_Mrows + 10] = rtP->Dmn1[b_Mrows];
-    i_0 = 0;
-    for (int32_T i{0}; i < 4; i++) {
+  for (i_0 = 0; i_0 < 4; i_0++) {
+    D_est[i_0 + 6] = rtP->Dod1[i_0];
+    D_est[i_0 + 10] = rtP->Dmn1[i_0];
+    i_1 = 0;
+    for (i = 0; i < 4; i++) {
       int32_T rtb_Q_c_tmp;
       int32_T tmp_2;
-      rtb_Q_c_tmp = i_0 + b_Mrows;
+      rtb_Q_c_tmp = i_1 + i_0;
       rtb_Q[rtb_Q_c_tmp] = 0.0;
       tmp_2 = 0;
       for (b_utarget_tmp = 0; b_utarget_tmp < 7; b_utarget_tmp++) {
-        rtb_Q[rtb_Q_c_tmp] += B_est[tmp_2 + b_Mrows] * B_est[tmp_2 + i];
+        rtb_Q[rtb_Q_c_tmp] += B_est[tmp_2 + i_0] * B_est[tmp_2 + i];
         tmp_2 += 4;
       }
 
-      i_0 += 4;
+      i_1 += 4;
     }
   }
 
   // 'stateEstimator:29' R = D_est * D_est';
-  b_Mrows = 0;
-  for (i_0 = 0; i_0 < 7; i_0++) {
-    rtb_R_h_tmp[i_0] = D_est[b_Mrows];
-    rtb_R_h_tmp[i_0 + 7] = D_est[b_Mrows + 1];
-    b_Mrows += 2;
+  i_0 = 0;
+  for (i_1 = 0; i_1 < 7; i_1++) {
+    rtb_R_h_tmp[i_1] = D_est[i_0];
+    rtb_R_h_tmp[i_1 + 7] = D_est[i_0 + 1];
+    i_0 += 2;
   }
 
   // 'stateEstimator:30' N = B_est * D_est';
-  for (b_Mrows = 0; b_Mrows < 2; b_Mrows++) {
-    for (i_0 = 0; i_0 < 2; i_0++) {
-      b_utarget_tmp = (b_Mrows << 1UL) + i_0;
+  for (i_0 = 0; i_0 < 2; i_0++) {
+    for (i_1 = 0; i_1 < 2; i_1++) {
+      b_utarget_tmp = (i_0 << 1UL) + i_1;
       rtb_R_o[b_utarget_tmp] = 0.0;
-      for (int32_T i{0}; i < 7; i++) {
-        rtb_R_o[b_utarget_tmp] += D_est[(i << 1UL) + i_0] * rtb_R_h_tmp[7 *
-          b_Mrows + i];
+      for (i = 0; i < 7; i++) {
+        rtb_R_o[b_utarget_tmp] += D_est[(i << 1UL) + i_1] * rtb_R_h_tmp[7 * i_0
+          + i];
       }
     }
 
-    for (i_0 = 0; i_0 < 4; i_0++) {
-      b_utarget_tmp = (b_Mrows << 2UL) + i_0;
+    for (i_1 = 0; i_1 < 4; i_1++) {
+      b_utarget_tmp = (i_0 << 2UL) + i_1;
       rtb_N[b_utarget_tmp] = 0.0;
-      for (int32_T i{0}; i < 7; i++) {
-        rtb_N[b_utarget_tmp] += B_est[(i << 2UL) + i_0] * rtb_R_h_tmp[7 *
-          b_Mrows + i];
+      for (i = 0; i < 7; i++) {
+        rtb_N[b_utarget_tmp] += B_est[(i << 2UL) + i_1] * rtb_R_h_tmp[7 * i_0 +
+          i];
       }
     }
   }
@@ -7913,7 +8774,7 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   //  [k,L,~,Mx,~,My] = kalman(ss(A,B_est,C,D_est,dt), Q, R, N);
   //  xhat = A*xhat_prev + B*u + L*(y - C*xhat_prev);
   //  yhat = C*xhat + D*u;
-  ScalarExpansionR(rtb_R_o, rtb_y_b);
+  ScalarExpansionR(rtb_R_o, rtb_y_m3);
 
   // End of Outputs for SubSystem: '<S199>/ScalarExpansionR'
 
@@ -7926,8 +8787,8 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   // Constant: '<S199>/G' incorporates:
   //   Constant: '<S199>/H'
 
-  ReducedQRN(localP->G_Value, localP->H_Value, rtb_Z_c, rtb_y_b, rtb_N,
-             rtb_Product_on, rtb_R_o, rtb_Product2_n);
+  ReducedQRN(localP->G_Value, localP->H_Value, rtb_Z_c, rtb_y_m3, rtb_N,
+             rtb_Product_on, rtb_R_o, rtb_Product2_o);
 
   // End of Outputs for SubSystem: '<S199>/ReducedQRN'
 
@@ -7936,7 +8797,7 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   //   Constant: '<S3>/Constant'
   //   Delay: '<S199>/MemoryP'
 
-  CalculatePL(rtb_A, rtb_C, rtb_Product_on, rtb_R_o, rtb_Product2_n,
+  CalculatePL(rtb_A, rtb_C_k, rtb_Product_on, rtb_R_o, rtb_Product2_o,
               localP->Constant_Value_f != 0.0, localDW->MemoryP_DSTATE, rtb_N,
               rtb_L_h, rtb_Z_c, rtb_Q);
 
@@ -7969,12 +8830,12 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   //   Product: '<S3>/Product1'
 
   rty_u[0] = static_cast<real_T>(rtb_RelationalOperator1 ? 1.0 : 0.0) * rty_u[0]
-    * rtu_excitationVal + localP->u_scale_Gain[0] * rtb_Product3[0];
+    * rtu_excitationVal + localP->u_scale_Gain[0] * U[0];
 
   // Sum: '<S113>/Sum1' incorporates:
   //   BusCreator: '<S112>/Bus Creator1'
 
-  rtb_Product2_j[0] = rty_u[0] - rtu_u0[0];
+  rtb_Sum1_k[0] = rty_u[0] - rtu_u0[0];
 
   // RandomNumber: '<S3>/Measurement Noise'
   rty_u[1] = localDW->NextOutput[1];
@@ -7985,12 +8846,12 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   //   Product: '<S3>/Product1'
 
   rty_u[1] = static_cast<real_T>(rtb_RelationalOperator1 ? 1.0 : 0.0) * rty_u[1]
-    * rtu_excitationVal + localP->u_scale_Gain[1] * rtb_Product3[1];
+    * rtu_excitationVal + localP->u_scale_Gain[1] * U[1];
 
   // Sum: '<S113>/Sum1' incorporates:
   //   BusCreator: '<S112>/Bus Creator1'
 
-  rtb_Product2_j[1] = rty_u[1] - rtu_u0[1];
+  rtb_Sum1_k[1] = rty_u[1] - rtu_u0[1];
 
   // RandomNumber: '<S3>/Measurement Noise'
   rty_u[2] = localDW->NextOutput[2];
@@ -8001,177 +8862,114 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   //   Product: '<S3>/Product1'
 
   rty_u[2] = static_cast<real_T>(rtb_RelationalOperator1 ? 1.0 : 0.0) * rty_u[2]
-    * rtu_excitationVal + localP->u_scale_Gain[2] * rtb_Product3[2];
+    * rtu_excitationVal + localP->u_scale_Gain[2] * U[2];
 
   // Sum: '<S113>/Sum1' incorporates:
   //   BusCreator: '<S112>/Bus Creator1'
   //   Sum: '<S112>/Add3'
 
-  rtb_Sum_p_idx_1 = rty_u[2] - rtu_u0[2];
-  rtb_Product2_j[2] = rtb_Sum_p_idx_1;
+  rtb_Sum_p_idx_0 = rty_u[2] - rtu_u0[2];
+  rtb_Sum1_k[2] = rtb_Sum_p_idx_0;
 
   // Outputs for Enabled SubSystem: '<S218>/MeasurementUpdate'
-  MeasurementUpdate(rtb_DataTypeConversionEnable_k, rtb_L_h, rtb_Add1_k1_tmp,
-                    rtb_C, rtb_MemoryX_c, rtb_D_d, rtb_Product2_j,
-                    localDW->Product3, &localDW->MeasurementUpdate_n,
+  // DataTypeConversion: '<S199>/DataTypeConversionEnable' incorporates:
+  //   Constant: '<S112>/Constant13'
+  //   Constant: '<S3>/Constant'
+  //   Delay: '<S199>/MemoryX'
+
+  MeasurementUpdate(localP->Constant_Value_f != 0.0, rtb_L_h, rtb_Add1_k1_tmp,
+                    rtb_C_k, localDW->MemoryX_DSTATE, localP->Constant13_Value,
+                    rtb_Sum1_k, localDW->Product3, &localDW->MeasurementUpdate_n,
                     &localP->MeasurementUpdate_n);
 
   // End of Outputs for SubSystem: '<S218>/MeasurementUpdate'
-
-  // MATLAB Function: '<S113>/MATLAB Function' incorporates:
-  //   BusCreator: '<S112>/Bus Creator1'
-
-  b_Mrows = 0;
-  i_0 = 0;
-  for (int32_T i{0}; i < 3; i++) {
-    rtb_B_g[b_Mrows] = rtb_B[i_0];
-    rtb_B_g[b_Mrows + 2] = 0.0;
-    rtb_B_g[b_Mrows + 1] = rtb_B[i_0 + 1];
-    rtb_B_g[b_Mrows + 3] = 0.0;
-    b_Mrows += 4;
-    i_0 += 2;
-  }
-
-  for (b_Mrows = 0; b_Mrows <= 2; b_Mrows += 2) {
-    // Product: '<S218>/B[k]*u[k]' incorporates:
-    //   Sum: '<S113>/Sum1'
+  for (i_0 = 0; i_0 <= 0; i_0 += 2) {
+    // Product: '<S202>/Product' incorporates:
+    //   Delay: '<S199>/MemoryX'
 
     tmp_5 = _mm_set1_pd(0.0);
-    (void)_mm_storeu_pd(&rtb_y_b[b_Mrows], tmp_5);
-    tmp_3 = _mm_loadu_pd(&rtb_B_g[b_Mrows]);
-    tmp_4 = _mm_loadu_pd(&rtb_y_b[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_y_b[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3,
-      _mm_set1_pd(rtb_Product2_j[0])), tmp_4));
-    tmp_3 = _mm_loadu_pd(&rtb_B_g[b_Mrows + 4]);
-    tmp_4 = _mm_loadu_pd(&rtb_y_b[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_y_b[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3,
-      _mm_set1_pd(rtb_Product2_j[1])), tmp_4));
-    tmp_3 = _mm_loadu_pd(&rtb_B_g[b_Mrows + 8]);
-    tmp_4 = _mm_loadu_pd(&rtb_y_b[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_y_b[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3,
-      _mm_set1_pd(rtb_Sum_p_idx_1)), tmp_4));
-
-    // Product: '<S218>/A[k]*xhat[k|k-1]' incorporates:
-    //   Product: '<S218>/B[k]*u[k]'
-
-    (void)_mm_storeu_pd(&rtb_R_o[b_Mrows], tmp_5);
-    tmp_5 = _mm_loadu_pd(&rtb_A[b_Mrows]);
-    tmp_3 = _mm_loadu_pd(&rtb_R_o[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_R_o[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_5,
-      _mm_set1_pd(rtb_MemoryX_c[0])), tmp_3));
-    tmp_5 = _mm_loadu_pd(&rtb_A[b_Mrows + 4]);
-    tmp_3 = _mm_loadu_pd(&rtb_R_o[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_R_o[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_5,
-      _mm_set1_pd(rtb_MemoryX_c[1])), tmp_3));
-    tmp_5 = _mm_loadu_pd(&rtb_A[b_Mrows + 8]);
-    tmp_3 = _mm_loadu_pd(&rtb_R_o[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_R_o[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_5,
-      _mm_set1_pd(rtb_MemoryX_c[2])), tmp_3));
-    tmp_5 = _mm_loadu_pd(&rtb_A[b_Mrows + 12]);
-    tmp_3 = _mm_loadu_pd(&rtb_R_o[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_R_o[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_5,
-      _mm_set1_pd(rtb_MemoryX_c[3])), tmp_3));
-
-    // Product: '<S218>/B[k]*u[k]'
-    tmp_5 = _mm_loadu_pd(&rtb_y_b[b_Mrows]);
-
-    // Product: '<S218>/A[k]*xhat[k|k-1]' incorporates:
-    //   Product: '<S218>/B[k]*u[k]'
-
-    tmp_3 = _mm_loadu_pd(&rtb_R_o[b_Mrows]);
-
-    // Sum: '<S218>/Add' incorporates:
-    //   Product: '<S218>/B[k]*u[k]'
-
-    tmp_4 = _mm_loadu_pd(&localDW->Product3[b_Mrows]);
-
-    // Update for Delay: '<S199>/MemoryX' incorporates:
-    //   Product: '<S218>/B[k]*u[k]'
-
-    (void)_mm_storeu_pd(&localDW->MemoryX_DSTATE[b_Mrows], _mm_add_pd(_mm_add_pd
-      (tmp_5, tmp_3), tmp_4));
-  }
-
-  for (b_Mrows = 0; b_Mrows <= 0; b_Mrows += 2) {
-    // Product: '<S202>/Product'
-    tmp_5 = _mm_set1_pd(0.0);
-    (void)_mm_storeu_pd(&Y[b_Mrows], tmp_5);
-    tmp_3 = _mm_loadu_pd(&rtb_C[b_Mrows]);
-    tmp_4 = _mm_loadu_pd(&Y[b_Mrows]);
-    (void)_mm_storeu_pd(&Y[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3, _mm_set1_pd
-      (rtb_MemoryX_c[0])), tmp_4));
-    tmp_3 = _mm_loadu_pd(&rtb_C[b_Mrows + 2]);
-    tmp_4 = _mm_loadu_pd(&Y[b_Mrows]);
-    (void)_mm_storeu_pd(&Y[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3, _mm_set1_pd
-      (rtb_MemoryX_c[1])), tmp_4));
-    tmp_3 = _mm_loadu_pd(&rtb_C[b_Mrows + 4]);
-    tmp_4 = _mm_loadu_pd(&Y[b_Mrows]);
-    (void)_mm_storeu_pd(&Y[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3, _mm_set1_pd
-      (rtb_MemoryX_c[2])), tmp_4));
-    tmp_3 = _mm_loadu_pd(&rtb_C[b_Mrows + 6]);
-    tmp_4 = _mm_loadu_pd(&Y[b_Mrows]);
-    (void)_mm_storeu_pd(&Y[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3, _mm_set1_pd
-      (rtb_MemoryX_c[3])), tmp_4));
+    (void)_mm_storeu_pd(&rtb_C_o[i_0], tmp_5);
+    tmp_3 = _mm_loadu_pd(&rtb_C_k[i_0]);
+    tmp_4 = _mm_loadu_pd(&rtb_C_o[i_0]);
+    (void)_mm_storeu_pd(&rtb_C_o[i_0], _mm_add_pd(_mm_mul_pd(tmp_3, _mm_set1_pd
+      (localDW->MemoryX_DSTATE[0])), tmp_4));
+    tmp_3 = _mm_loadu_pd(&rtb_C_k[i_0 + 2]);
+    tmp_4 = _mm_loadu_pd(&rtb_C_o[i_0]);
+    (void)_mm_storeu_pd(&rtb_C_o[i_0], _mm_add_pd(_mm_mul_pd(tmp_3, _mm_set1_pd
+      (localDW->MemoryX_DSTATE[1])), tmp_4));
+    tmp_3 = _mm_loadu_pd(&rtb_C_k[i_0 + 4]);
+    tmp_4 = _mm_loadu_pd(&rtb_C_o[i_0]);
+    (void)_mm_storeu_pd(&rtb_C_o[i_0], _mm_add_pd(_mm_mul_pd(tmp_3, _mm_set1_pd
+      (localDW->MemoryX_DSTATE[2])), tmp_4));
+    tmp_3 = _mm_loadu_pd(&rtb_C_k[i_0 + 6]);
+    tmp_4 = _mm_loadu_pd(&rtb_C_o[i_0]);
+    (void)_mm_storeu_pd(&rtb_C_o[i_0], _mm_add_pd(_mm_mul_pd(tmp_3, _mm_set1_pd
+      (localDW->MemoryX_DSTATE[3])), tmp_4));
 
     // Product: '<S202>/Product1' incorporates:
+    //   Constant: '<S112>/Constant13'
+    //   Delay: '<S199>/MemoryX'
     //   Product: '<S202>/Product'
     //   Sum: '<S113>/Sum1'
 
-    (void)_mm_storeu_pd(&rtb_D_b[b_Mrows], tmp_5);
-    tmp_5 = _mm_loadu_pd(&rtb_D_d[b_Mrows]);
-    tmp_3 = _mm_loadu_pd(&rtb_D_b[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_D_b[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_5,
-      _mm_set1_pd(rtb_Product2_j[0])), tmp_3));
-    tmp_5 = _mm_loadu_pd(&rtb_D_d[b_Mrows + 2]);
-    tmp_3 = _mm_loadu_pd(&rtb_D_b[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_D_b[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_5,
-      _mm_set1_pd(rtb_Product2_j[1])), tmp_3));
-    tmp_5 = _mm_loadu_pd(&rtb_D_d[b_Mrows + 4]);
-    tmp_3 = _mm_loadu_pd(&rtb_D_b[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_D_b[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_5,
-      _mm_set1_pd(rtb_Sum_p_idx_1)), tmp_3));
+    (void)_mm_storeu_pd(&Y[i_0], tmp_5);
+    tmp_5 = _mm_loadu_pd(&Y[i_0]);
+    (void)_mm_storeu_pd(&Y[i_0], _mm_add_pd(_mm_mul_pd(_mm_loadu_pd
+      (&localP->Constant13_Value[i_0]), _mm_set1_pd(rtb_Sum1_k[0])), tmp_5));
+    tmp_5 = _mm_loadu_pd(&Y[i_0]);
+    (void)_mm_storeu_pd(&Y[i_0], _mm_add_pd(_mm_mul_pd(_mm_loadu_pd
+      (&localP->Constant13_Value[i_0 + 2]), _mm_set1_pd(rtb_Sum1_k[1])), tmp_5));
+    tmp_5 = _mm_loadu_pd(&Y[i_0]);
+    (void)_mm_storeu_pd(&Y[i_0], _mm_add_pd(_mm_mul_pd(_mm_loadu_pd
+      (&localP->Constant13_Value[i_0 + 4]), _mm_set1_pd(rtb_Sum_p_idx_0)), tmp_5));
 
     // Product: '<S202>/Product'
-    tmp_5 = _mm_loadu_pd(&Y[b_Mrows]);
+    tmp_5 = _mm_loadu_pd(&rtb_C_o[i_0]);
 
     // Product: '<S202>/Product1' incorporates:
     //   Product: '<S202>/Product'
 
-    tmp_3 = _mm_loadu_pd(&rtb_D_b[b_Mrows]);
+    tmp_3 = _mm_loadu_pd(&Y[i_0]);
 
     // BusCreator: '<S112>/Bus Creator1' incorporates:
     //   Product: '<S202>/Product'
 
-    tmp_4 = _mm_loadu_pd(&rtu_y0[b_Mrows]);
+    tmp_4 = _mm_loadu_pd(&rtu_y0[i_0]);
 
     // Sum: '<S113>/Sum3' incorporates:
     //   Product: '<S202>/Product'
 
-    (void)_mm_storeu_pd(&rty_yhat[b_Mrows], _mm_add_pd(_mm_add_pd(tmp_5, tmp_3),
+    (void)_mm_storeu_pd(&rty_yhat[i_0], _mm_add_pd(_mm_add_pd(tmp_5, tmp_3),
       tmp_4));
   }
 
-  // SignalConversion: '<S112>/Signal Conversion'
-  rty_params[0] = rtb_x_l;
-  rty_params[1] = rtb_y_l;
+  // Update for UnitDelay: '<S114>/last_mv'
+  localDW->last_mv_DSTATE[0] = U[0];
+
+  // Update for UnitDelay: '<S112>/Unit Delay2' incorporates:
+  //   Sum: '<S112>/Add3'
+
+  localDW->UnitDelay2_DSTATE[0] = rty_u[0] - rtu_u0[0];
 
   // Update for UnitDelay: '<S114>/last_mv'
-  localDW->last_mv_DSTATE[0] = rtb_Product3[0];
-  localDW->last_mv_DSTATE[1] = rtb_Product3[1];
-  localDW->last_mv_DSTATE[2] = rtb_Product3[2];
+  localDW->last_mv_DSTATE[1] = U[1];
+
+  // Update for UnitDelay: '<S112>/Unit Delay2' incorporates:
+  //   Sum: '<S112>/Add3'
+
+  localDW->UnitDelay2_DSTATE[1] = rty_u[1] - rtu_u0[1];
+
+  // Update for UnitDelay: '<S114>/last_mv'
+  localDW->last_mv_DSTATE[2] = U[2];
+
+  // Update for UnitDelay: '<S112>/Unit Delay2'
+  localDW->UnitDelay2_DSTATE[2] = rtb_Sum_p_idx_0;
 
   // Update for UnitDelay: '<S112>/Unit Delay3' incorporates:
   //   Sum: '<S112>/Add1'
 
   localDW->UnitDelay3_DSTATE[0] = rtb_Add1_k1_tmp[0];
   localDW->UnitDelay3_DSTATE[1] = rtb_Add1_k1_tmp_0;
-
-  // Update for UnitDelay: '<S112>/Unit Delay2' incorporates:
-  //   Sum: '<S112>/Add3'
-
-  localDW->UnitDelay2_DSTATE[0] = rty_u[0] - rtu_u0[0];
-  localDW->UnitDelay2_DSTATE[1] = rty_u[1] - rtu_u0[1];
-  localDW->UnitDelay2_DSTATE[2] = rtb_Sum_p_idx_1;
 
   // Update for Delay: '<S145>/delayBuffery'
   localDW->icLoad = false;
@@ -8181,7 +8979,6 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
 
   // Update for Delay: '<S145>/delayTheta'
   localDW->icLoad_b = false;
-  localDW->delayTheta_DSTATE = rtb_x_l;
 
   // Update for Delay: '<S145>/delayL'
   localDW->icLoad_d = false;
@@ -8194,13 +8991,80 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
 
   // Update for Delay: '<S146>/delayTheta'
   localDW->icLoad_c = false;
-  localDW->delayTheta_DSTATE_i = rtb_y_l;
 
   // Update for Delay: '<S146>/delayL'
   localDW->icLoad_e = false;
 
   // Update for Delay: '<S199>/MemoryX'
   localDW->icLoad_f = false;
+
+  // Update for Delay: '<S145>/delayTheta' incorporates:
+  //   BusCreator: '<S112>/Bus Creator1'
+  //   Delay: '<S146>/delayTheta'
+  //   MATLAB Function: '<S113>/MATLAB Function'
+
+  i = 0;
+  i_1 = 0;
+  for (i_0 = 0; i_0 < 3; i_0++) {
+    localDW->delayTheta_DSTATE[i_0] = rtb_x[i_0];
+    localDW->delayTheta_DSTATE_i[i_0] = rtb_x_n[i_0];
+    rty_params_0[i] = rty_params[i_1];
+    rty_params_0[i + 2] = 0.0;
+    rty_params_0[i + 1] = rty_params[i_1 + 1];
+    rty_params_0[i + 3] = 0.0;
+    i += 4;
+    i_1 += 2;
+  }
+
+  for (i_0 = 0; i_0 <= 2; i_0 += 2) {
+    // Product: '<S218>/B[k]*u[k]' incorporates:
+    //   Sum: '<S113>/Sum1'
+
+    tmp_5 = _mm_set1_pd(0.0);
+    (void)_mm_storeu_pd(&rtb_y_m3[i_0], tmp_5);
+    tmp_3 = _mm_loadu_pd(&rty_params_0[i_0]);
+    tmp_4 = _mm_loadu_pd(&rtb_y_m3[i_0]);
+    (void)_mm_storeu_pd(&rtb_y_m3[i_0], _mm_add_pd(_mm_mul_pd(tmp_3, _mm_set1_pd
+      (rtb_Sum1_k[0])), tmp_4));
+    tmp_3 = _mm_loadu_pd(&rty_params_0[i_0 + 4]);
+    tmp_4 = _mm_loadu_pd(&rtb_y_m3[i_0]);
+    (void)_mm_storeu_pd(&rtb_y_m3[i_0], _mm_add_pd(_mm_mul_pd(tmp_3, _mm_set1_pd
+      (rtb_Sum1_k[1])), tmp_4));
+    tmp_3 = _mm_loadu_pd(&rty_params_0[i_0 + 8]);
+    tmp_4 = _mm_loadu_pd(&rtb_y_m3[i_0]);
+    (void)_mm_storeu_pd(&rtb_y_m3[i_0], _mm_add_pd(_mm_mul_pd(tmp_3, _mm_set1_pd
+      (rtb_Sum_p_idx_0)), tmp_4));
+
+    // Product: '<S218>/A[k]*xhat[k|k-1]' incorporates:
+    //   Delay: '<S199>/MemoryX'
+    //   Product: '<S218>/B[k]*u[k]'
+
+    (void)_mm_storeu_pd(&rtb_R_o[i_0], tmp_5);
+    tmp_5 = _mm_loadu_pd(&rtb_A[i_0]);
+    tmp_3 = _mm_loadu_pd(&rtb_R_o[i_0]);
+    (void)_mm_storeu_pd(&rtb_R_o[i_0], _mm_add_pd(_mm_mul_pd(tmp_5, _mm_set1_pd
+      (localDW->MemoryX_DSTATE[0])), tmp_3));
+    tmp_5 = _mm_loadu_pd(&rtb_A[i_0 + 4]);
+    tmp_3 = _mm_loadu_pd(&rtb_R_o[i_0]);
+    (void)_mm_storeu_pd(&rtb_R_o[i_0], _mm_add_pd(_mm_mul_pd(tmp_5, _mm_set1_pd
+      (localDW->MemoryX_DSTATE[1])), tmp_3));
+    tmp_5 = _mm_loadu_pd(&rtb_A[i_0 + 8]);
+    tmp_3 = _mm_loadu_pd(&rtb_R_o[i_0]);
+    (void)_mm_storeu_pd(&rtb_R_o[i_0], _mm_add_pd(_mm_mul_pd(tmp_5, _mm_set1_pd
+      (localDW->MemoryX_DSTATE[2])), tmp_3));
+    tmp_5 = _mm_loadu_pd(&rtb_A[i_0 + 12]);
+    tmp_3 = _mm_loadu_pd(&rtb_R_o[i_0]);
+    (void)_mm_storeu_pd(&rtb_R_o[i_0], _mm_add_pd(_mm_mul_pd(tmp_5, _mm_set1_pd
+      (localDW->MemoryX_DSTATE[3])), tmp_3));
+  }
+
+  // Update for Delay: '<S199>/MemoryX' incorporates:
+  //   Sum: '<S218>/Add'
+
+  localDW->MemoryX_DSTATE[0] = (rtb_y_m3[0] + rtb_R_o[0]) + localDW->Product3[0];
+  localDW->MemoryX_DSTATE[1] = (rtb_y_m3[1] + rtb_R_o[1]) + localDW->Product3[1];
+  localDW->MemoryX_DSTATE[2] = (rtb_y_m3[2] + rtb_R_o[2]) + localDW->Product3[2];
+  localDW->MemoryX_DSTATE[3] = (rtb_y_m3[3] + rtb_R_o[3]) + localDW->Product3[3];
 
   // Update for Delay: '<S199>/MemoryP'
   localDW->icLoad_a = false;
@@ -10029,7 +10893,7 @@ void SupervisoryController::mpcblock_optimizer_l(const real_T rseq[40], const
 
 // System initialize for function-call system: '<S1>/State2.controlLaw.AMPC2'
 void SupervisoryController::State2controlLawAMPC2_Init(real_T rty_u[3], real_T
-  rty_yhat[2], real_T rty_params[2], DW_State2controlLawAMPC2 *localDW,
+  rty_yhat[2], real_T rty_params[6], DW_State2controlLawAMPC2 *localDW,
   P_State2controlLawAMPC2 *localP)
 {
   int32_T i;
@@ -10042,8 +10906,21 @@ void SupervisoryController::State2controlLawAMPC2_Init(real_T rty_u[3], real_T
 
   // InitializeConditions for UnitDelay: '<S248>/last_mv'
   localDW->last_mv_DSTATE[0] = localP->last_mv_InitialCondition[0];
+
+  // InitializeConditions for UnitDelay: '<S246>/Unit Delay1'
+  localDW->UnitDelay1_DSTATE[0] = localP->UnitDelay1_InitialCondition;
+
+  // InitializeConditions for UnitDelay: '<S248>/last_mv'
   localDW->last_mv_DSTATE[1] = localP->last_mv_InitialCondition[1];
+
+  // InitializeConditions for UnitDelay: '<S246>/Unit Delay1'
+  localDW->UnitDelay1_DSTATE[1] = localP->UnitDelay1_InitialCondition;
+
+  // InitializeConditions for UnitDelay: '<S248>/last_mv'
   localDW->last_mv_DSTATE[2] = localP->last_mv_InitialCondition[2];
+
+  // InitializeConditions for UnitDelay: '<S246>/Unit Delay1'
+  localDW->UnitDelay1_DSTATE[2] = localP->UnitDelay1_InitialCondition;
 
   // InitializeConditions for UnitDelay: '<S246>/Unit Delay7'
   localDW->UnitDelay7_DSTATE[0] = localP->UnitDelay7_InitialCondition;
@@ -10079,9 +10956,6 @@ void SupervisoryController::State2controlLawAMPC2_Init(real_T rty_u[3], real_T
   // InitializeConditions for Delay: '<S333>/MemoryP'
   localDW->icLoad_h = true;
 
-  // InitializeConditions for UnitDelay: '<S246>/Unit Delay1'
-  localDW->UnitDelay1_DSTATE[0] = localP->UnitDelay1_InitialCondition;
-
   // InitializeConditions for RandomNumber: '<S4>/Measurement Noise'
   i = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
     (localP->MeasurementNoise_Seed) >> 16UL));
@@ -10101,11 +10975,6 @@ void SupervisoryController::State2controlLawAMPC2_Init(real_T rty_u[3], real_T
   localDW->RandSeed[0] = tseed;
   localDW->NextOutput[0] = rt_nrand_Upu32_Yd_f_pw_snf(&localDW->RandSeed[0]) *
     localP->MeasurementNoise_StdDev[0] + localP->MeasurementNoise_Mean[0];
-
-  // InitializeConditions for UnitDelay: '<S246>/Unit Delay1'
-  localDW->UnitDelay1_DSTATE[1] = localP->UnitDelay1_InitialCondition;
-
-  // InitializeConditions for RandomNumber: '<S4>/Measurement Noise'
   i = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
     (localP->MeasurementNoise_Seed) >> 16UL));
   tseed = ((((static_cast<uint32_T>(localP->MeasurementNoise_Seed) - (
@@ -10122,11 +10991,6 @@ void SupervisoryController::State2controlLawAMPC2_Init(real_T rty_u[3], real_T
   localDW->RandSeed[1] = tseed;
   localDW->NextOutput[1] = rt_nrand_Upu32_Yd_f_pw_snf(&localDW->RandSeed[1]) *
     localP->MeasurementNoise_StdDev[1] + localP->MeasurementNoise_Mean[1];
-
-  // InitializeConditions for UnitDelay: '<S246>/Unit Delay1'
-  localDW->UnitDelay1_DSTATE[2] = localP->UnitDelay1_InitialCondition;
-
-  // InitializeConditions for RandomNumber: '<S4>/Measurement Noise'
   i = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
     (localP->MeasurementNoise_Seed) >> 16UL));
   tseed = ((((static_cast<uint32_T>(localP->MeasurementNoise_Seed) - (
@@ -10144,6 +11008,8 @@ void SupervisoryController::State2controlLawAMPC2_Init(real_T rty_u[3], real_T
   localDW->NextOutput[2] = rt_nrand_Upu32_Yd_f_pw_snf(&localDW->RandSeed[2]) *
     localP->MeasurementNoise_StdDev[2] + localP->MeasurementNoise_Mean[2];
 
+  // End of InitializeConditions for RandomNumber: '<S4>/Measurement Noise'
+
   // SystemInitialize for Enabled SubSystem: '<S352>/MeasurementUpdate'
   MeasurementUpdate_Init(localDW->Product3, &localP->MeasurementUpdate_a);
 
@@ -10156,15 +11022,14 @@ void SupervisoryController::State2controlLawAMPC2_Init(real_T rty_u[3], real_T
 
   // SystemInitialize for Outport: '<S4>/yhat'
   rty_yhat[0] = localP->yhat_Y0;
-
-  // SystemInitialize for Outport: '<S4>/params'
-  rty_params[0] = localP->params_Y0;
-
-  // SystemInitialize for Outport: '<S4>/yhat'
   rty_yhat[1] = localP->yhat_Y0;
 
   // SystemInitialize for Outport: '<S4>/params'
-  rty_params[1] = localP->params_Y0;
+  for (i = 0; i < 6; i++) {
+    rty_params[i] = localP->params_Y0;
+  }
+
+  // End of SystemInitialize for Outport: '<S4>/params'
 }
 
 // Disable for function-call system: '<S1>/State2.controlLaw.AMPC2'
@@ -10183,8 +11048,8 @@ void SupervisoryController::State2controlLawAMPC2_Disable
 // Output and update for function-call system: '<S1>/State2.controlLaw.AMPC2'
 void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
   real_T rtu_y[2], const real_T rtu_y0[2], const real_T rtu_u0[3], const real_T
-  rtu_initParam[2], const real_T rtu_paramEst[2], real_T rtu_excitationVal,
-  real_T rty_u[3], real_T rty_yhat[2], real_T rty_params[2],
+  rtu_initParam[6], const real_T rtu_paramEst[2], real_T rtu_excitationVal,
+  real_T rty_u[3], real_T rty_yhat[2], real_T rty_params[6],
   DW_State2controlLawAMPC2 *localDW, P_State2controlLawAMPC2 *localP, P *rtP,
   ZCE_State2controlLawAMPC2 *localZCE)
 {
@@ -10468,7 +11333,7 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
     4.5947763709116511, 0.0, -20.77520380086132, 4.5947763709116511,
     16.448992358937382, 0.0, 0.0, 0.0, 0.0, 100000.0 };
 
-  static const int32_T b_Mrows_0[86]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+  static const int32_T b_Mrows[86]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
     14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
     33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51,
     52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70,
@@ -10505,35 +11370,34 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
   real_T rtb_Z_b[16];
   real_T D_est[14];
   real_T rtb_R_f_tmp[14];
-  real_T rtb_B_e[12];
-  real_T rtb_C[8];
+  real_T rty_params_0[12];
+  real_T rtb_y_k[9];
+  real_T rtb_C_f[8];
   real_T rtb_L_e[8];
   real_T rtb_N[8];
-  real_T rtb_Product2_b[8];
-  real_T rtb_B[6];
-  real_T rtb_D_k[6];
-  real_T rtb_MemoryX_n[4];
+  real_T rtb_Product2_k[8];
+  real_T rtb_Transpose[6];
   real_T rtb_R_g[4];
-  real_T rtb_y_b[4];
-  real_T rtb_Product3[3];
-  real_T rtb_Product4[3];
+  real_T rtb_y_b5[4];
+  real_T U[3];
+  real_T rtb_Sum1_f[3];
+  real_T rtb_x[3];
+  real_T rtb_x_c[3];
   real_T tmp[3];
   real_T tmp_0[3];
   real_T tmp_1[3];
   real_T Y[2];
   real_T rtb_Add5_tmp[2];
-  real_T rtb_D_j[2];
+  real_T rtb_C_g[2];
   real_T b_Mlim_0;
   real_T rtb_Add5_tmp_0;
   real_T rtb_Sum_h_idx_0;
-  real_T rtb_Sum_h_idx_1;
-  real_T rtb_x_pm;
-  real_T rtb_y_im;
-  int32_T b_Mrows;
+  real_T rtb_e_l;
   int32_T b_utarget_tmp;
+  int32_T i;
   int32_T i_0;
+  int32_T i_1;
   boolean_T tmp_6[86];
-  boolean_T rtb_DataTypeConversionEnable_a1;
 
   // Sum: '<S246>/Add5' incorporates:
   //   Sum: '<S247>/Sum6'
@@ -10550,19 +11414,7 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
 
   rtb_Add5_tmp[0] = rtb_Add5_tmp_0;
   rtb_Add5_tmp_0 = rtu_y[1] - rtu_y0[1];
-
-  // Sum: '<S246>/Sum' incorporates:
-  //   UnitDelay: '<S246>/Unit Delay7'
-
-  rtb_Sum_h_idx_1 = rtb_Add5_tmp_0 - localDW->UnitDelay7_DSTATE[1];
-
-  // Sum: '<S246>/Add5'
   rtb_Add5_tmp[1] = rtb_Add5_tmp_0;
-
-  // UnitDelay: '<S246>/Unit Delay1'
-  rty_u[0] = localDW->UnitDelay1_DSTATE[0];
-  rty_u[1] = localDW->UnitDelay1_DSTATE[1];
-  rty_u[2] = localDW->UnitDelay1_DSTATE[2];
 
   // Delay: '<S279>/delayBuffery' incorporates:
   //   Constant: '<S279>/InitialOutputs'
@@ -10582,24 +11434,40 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
 
   // End of Delay: '<S279>/delayBufferH'
 
-  // Delay: '<S279>/delayTheta'
-  if (localDW->icLoad_g) {
-    localDW->delayTheta_DSTATE = rtu_initParam[0];
+  // Math: '<S246>/Transpose'
+  i_0 = 0;
+  for (i_1 = 0; i_1 < 2; i_1++) {
+    rtb_Transpose[i_0] = rtu_initParam[i_1];
+    rtb_Transpose[i_0 + 1] = rtu_initParam[i_1 + 2];
+    rtb_Transpose[i_0 + 2] = rtu_initParam[i_1 + 4];
+    i_0 += 3;
   }
 
-  rtb_x_pm = localDW->delayTheta_DSTATE;
+  // End of Math: '<S246>/Transpose'
+
+  // Delay: '<S279>/delayTheta'
+  if (localDW->icLoad_g) {
+    localDW->delayTheta_DSTATE[0] = rtb_Transpose[0];
+    localDW->delayTheta_DSTATE[1] = rtb_Transpose[1];
+    localDW->delayTheta_DSTATE[2] = rtb_Transpose[2];
+  }
+
+  rtb_x[0] = localDW->delayTheta_DSTATE[0];
+  rtb_x[1] = localDW->delayTheta_DSTATE[1];
+  rtb_x[2] = localDW->delayTheta_DSTATE[2];
 
   // End of Delay: '<S279>/delayTheta'
 
   // Outputs for Atomic SubSystem: '<S279>/ProcessInitialCovariance'
   // Constant: '<S246>/Constant'
-  ProcessInitialCovariance(localP->Constant_Value, &rtb_y_im);
+  ProcessInitialCovariance(localP->Constant_Value, rtb_y_k);
 
   // End of Outputs for SubSystem: '<S279>/ProcessInitialCovariance'
 
   // Delay: '<S279>/delayL'
   if (localDW->icLoad_c) {
-    localDW->delayL_DSTATE = rtb_y_im;
+    (void)std::memcpy(&localDW->delayL_DSTATE[0], &rtb_y_k[0], 9U * sizeof
+                      (real_T));
   }
 
   // End of Delay: '<S279>/delayL'
@@ -10610,20 +11478,11 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
   //   Delay: '<S279>/delayBufferH'
   //   Delay: '<S279>/delayBuffery'
   //   MATLAB Function: '<S279>/RLS'
-  //   Sum: '<S246>/Sum1'
   //   UnitDelay: '<S246>/Unit Delay1'
 
-  RLS((localDW->UnitDelay1_DSTATE[0] - localDW->UnitDelay1_DSTATE[1]) -
-      localDW->UnitDelay1_DSTATE[2], rtb_Sum_h_idx_0, rtu_paramEst[0] != 0.0,
-      localP->ForgettingFactor_Value, &rtb_y_im, &rtb_x_pm,
-      &localDW->delayL_DSTATE, &localDW->sf_RLS);
-
-  // Product: '<S246>/Product3' incorporates:
-  //   Constant: '<S246>/Constant7'
-
-  rtb_Product3[0] = localP->Constant7_Value[0] * rtb_x_pm;
-  rtb_Product3[1] = localP->Constant7_Value[1] * rtb_x_pm;
-  rtb_Product3[2] = localP->Constant7_Value[2] * rtb_x_pm;
+  RLS(localDW->UnitDelay1_DSTATE, rtb_Sum_h_idx_0, rtu_paramEst[0] != 0.0,
+      localP->ForgettingFactor_Value, &rtb_e_l, rtb_x, localDW->delayL_DSTATE,
+      &localDW->sf_RLS);
 
   // Delay: '<S280>/delayBuffery' incorporates:
   //   Constant: '<S280>/InitialOutputs'
@@ -10645,22 +11504,27 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
 
   // Delay: '<S280>/delayTheta'
   if (localDW->icLoad_cf) {
-    localDW->delayTheta_DSTATE_m = rtu_initParam[1];
+    localDW->delayTheta_DSTATE_m[0] = rtb_Transpose[3];
+    localDW->delayTheta_DSTATE_m[1] = rtb_Transpose[4];
+    localDW->delayTheta_DSTATE_m[2] = rtb_Transpose[5];
   }
 
-  rtb_y_im = localDW->delayTheta_DSTATE_m;
+  rtb_x_c[0] = localDW->delayTheta_DSTATE_m[0];
+  rtb_x_c[1] = localDW->delayTheta_DSTATE_m[1];
+  rtb_x_c[2] = localDW->delayTheta_DSTATE_m[2];
 
   // End of Delay: '<S280>/delayTheta'
 
   // Outputs for Atomic SubSystem: '<S280>/ProcessInitialCovariance'
   // Constant: '<S246>/Constant'
-  ProcessInitialCovariance(localP->Constant_Value, &rtb_Sum_h_idx_0);
+  ProcessInitialCovariance(localP->Constant_Value, rtb_y_k);
 
   // End of Outputs for SubSystem: '<S280>/ProcessInitialCovariance'
 
   // Delay: '<S280>/delayL'
   if (localDW->icLoad_l) {
-    localDW->delayL_DSTATE_c = rtb_Sum_h_idx_0;
+    (void)std::memcpy(&localDW->delayL_DSTATE_c[0], &rtb_y_k[0], 9U * sizeof
+                      (real_T));
   }
 
   // End of Delay: '<S280>/delayL'
@@ -10671,30 +11535,57 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
   //   Delay: '<S280>/delayBufferH'
   //   Delay: '<S280>/delayBuffery'
   //   MATLAB Function: '<S280>/RLS'
-  //   Sum: '<S246>/Sum2'
+  //   Sum: '<S246>/Sum'
   //   UnitDelay: '<S246>/Unit Delay1'
+  //   UnitDelay: '<S246>/Unit Delay7'
 
-  RLS((localDW->UnitDelay1_DSTATE[2] - localDW->UnitDelay1_DSTATE[0]) -
-      localDW->UnitDelay1_DSTATE[1], rtb_Sum_h_idx_1, rtu_paramEst[1] != 0.0,
-      localP->ForgettingFactor_Value_a, &rtb_Sum_h_idx_0, &rtb_y_im,
-      &localDW->delayL_DSTATE_c, &localDW->sf_RLS_i);
-
-  // Product: '<S246>/Product4' incorporates:
-  //   Constant: '<S246>/Constant8'
-
-  rtb_Product4[0] = localP->Constant8_Value[0] * rtb_y_im;
-  rtb_Product4[1] = localP->Constant8_Value[1] * rtb_y_im;
-  rtb_Product4[2] = localP->Constant8_Value[2] * rtb_y_im;
+  RLS(localDW->UnitDelay1_DSTATE, rtb_Add5_tmp_0 - localDW->UnitDelay7_DSTATE[1],
+      rtu_paramEst[1] != 0.0, localP->ForgettingFactor_Value_a, &rtb_e_l,
+      rtb_x_c, localDW->delayL_DSTATE_c, &localDW->sf_RLS_i);
 
   // MATLAB Function: '<S246>/MATLAB Function2'
-  MATLABFunction1(rtb_Product3, rtb_Product4, rtu_paramEst, rtb_B);
+  rtb_Sum1_f[0] = rtb_x[0];
+  U[0] = rtb_x_c[0];
+  rtb_Sum1_f[1] = rtb_x[1];
+  U[1] = rtb_x_c[1];
+  rtb_Sum1_f[2] = rtb_x[2];
+  U[2] = rtb_x_c[2];
+
+  // MATLAB Function 'SupervisoryController/State2.controlLaw.AMPC2/Model Estimator/MATLAB Function2': '<S278>:1' 
+  // '<S278>:1:2' B = zeros(2,3);
+  // '<S278>:1:3' if enAdapt(1) == false && enAdapt(2) == true
+  if ((rtu_paramEst[0] == 0.0) && (rtu_paramEst[1] == 1.0)) {
+    // '<S278>:1:4' B1 = [B2(3), B2(2), B2(1)];
+    rtb_Sum1_f[0] = rtb_x_c[2];
+    rtb_Sum1_f[1] = rtb_x_c[1];
+    rtb_Sum1_f[2] = rtb_x_c[0];
+  }
+
+  // '<S278>:1:6' if enAdapt(1) == true && enAdapt(2) == false
+  if ((rtu_paramEst[0] == 1.0) && (rtu_paramEst[1] == 0.0)) {
+    // '<S278>:1:7' B2 = [B1(3), B1(2), B1(1)];
+    U[0] = rtb_Sum1_f[2];
+    U[1] = rtb_Sum1_f[1];
+    U[2] = rtb_Sum1_f[0];
+  }
+
+  // '<S278>:1:10' B = [B1; B2];
+  rty_params[0] = rtb_Sum1_f[0];
+  rty_params[1] = U[0];
+  rty_params[2] = rtb_Sum1_f[1];
+  rty_params[3] = U[1];
+  rty_params[4] = rtb_Sum1_f[2];
+  rty_params[5] = U[2];
+
+  // End of MATLAB Function: '<S246>/MATLAB Function2'
 
   // Product: '<S246>/Product2' incorporates:
   //   Constant: '<S246>/Constant3'
   //   Product: '<S336>/Product1'
 
+  // '<S278>:1:12' disp(B);
   rtb_Sum_h_idx_0 = localP->Constant3_Value * rtu_y0[0];
-  rtb_Sum_h_idx_1 = localP->Constant3_Value * rtu_y0[1];
+  rtb_e_l = localP->Constant3_Value * rtu_y0[1];
 
   // Delay: '<S333>/MemoryX' incorporates:
   //   Constant: '<S333>/X0'
@@ -10709,11 +11600,6 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
     localDW->MemoryX_DSTATE[2] = localP->X0_Value[2];
     localDW->MemoryX_DSTATE[3] = localP->X0_Value[3];
   }
-
-  rtb_MemoryX_n[0] = localDW->MemoryX_DSTATE[0];
-  rtb_MemoryX_n[1] = localDW->MemoryX_DSTATE[1];
-  rtb_MemoryX_n[2] = localDW->MemoryX_DSTATE[2];
-  rtb_MemoryX_n[3] = localDW->MemoryX_DSTATE[3];
 
   // MATLAB Function: '<S276>/FixedHorizonOptimizer' incorporates:
   //   BusCreator: '<S246>/Bus Creator3'
@@ -10904,29 +11790,29 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
   // '<S277>:1:157'     myindex,Uscale,Yscale,Cid,Did);
   (void)std::memcpy(&rtb_A[0], &b[0], sizeof(real_T) << 4UL);
   (void)std::memcpy(&b_B[0], &c[0], sizeof(real_T) << 5UL);
-  for (b_Mrows = 0; b_Mrows < 8; b_Mrows++) {
-    rtb_C[b_Mrows] = static_cast<real_T>(d[b_Mrows]);
+  for (i_0 = 0; i_0 < 8; i_0++) {
+    rtb_C_f[i_0] = static_cast<real_T>(d[i_0]);
   }
 
-  rtb_C[0] = localP->Constant4_Value[0];
+  rtb_C_f[0] = localP->Constant4_Value[0];
   rtb_A[0] = localP->Constant10_Value[0];
-  rtb_C[1] = localP->Constant4_Value[1];
+  rtb_C_f[1] = localP->Constant4_Value[1];
   rtb_A[1] = localP->Constant10_Value[1];
-  rtb_C[2] = localP->Constant4_Value[2];
+  rtb_C_f[2] = localP->Constant4_Value[2];
   rtb_A[4] = localP->Constant10_Value[2];
-  rtb_C[3] = localP->Constant4_Value[3];
+  rtb_C_f[3] = localP->Constant4_Value[3];
   rtb_A[5] = localP->Constant10_Value[3];
-  b_Mrows = 0;
   i_0 = 0;
-  for (int32_T i{0}; i < 3; i++) {
-    b_B[b_Mrows] = rtb_B[i_0];
-    b_B[b_Mrows + 1] = rtb_B[i_0 + 1];
-    Bu[b_Mrows] = b_B[b_Mrows];
-    Bu[b_Mrows + 1] = b_B[b_Mrows + 1];
-    Bu[b_Mrows + 2] = b_B[b_Mrows + 2];
-    Bu[b_Mrows + 3] = b_B[b_Mrows + 3];
-    b_Mrows += 4;
-    i_0 += 2;
+  i_1 = 0;
+  for (i = 0; i < 3; i++) {
+    b_B[i_0] = rty_params[i_1];
+    b_B[i_0 + 1] = rty_params[i_1 + 1];
+    Bu[i_0] = b_B[i_0];
+    Bu[i_0 + 1] = b_B[i_0 + 1];
+    Bu[i_0 + 2] = b_B[i_0 + 2];
+    Bu[i_0 + 3] = b_B[i_0 + 3];
+    i_0 += 4;
+    i_1 += 2;
   }
 
   Bv[2] = b_B[14];
@@ -10941,47 +11827,46 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
   // '<S277>:1:176'        U,Uscale,uoff,mvindex,voff,mdindex,utarget,nu,nv-1,... 
   // '<S277>:1:177'        Y,Yscale,yoff,myoff,myindex,ny,...
   // '<S277>:1:178'        X,xoff,nxp,DX,A,Bu,Bv,C,Dv,nCC);
-  for (int32_T i{0}; i < 86; i++) {
+  for (i = 0; i < 86; i++) {
     b_Mlim[i] = static_cast<real_T>(e[i]);
   }
 
   (void)std::memset(&b_utarget[0], 0, 60U * sizeof(real_T));
-  rtb_Product4[0] = rtu_u0[0];
-  rtb_Product4[1] = rtu_u0[1];
-  rtb_Product4[2] = rtu_u0[2];
+  U[0] = rtu_u0[0];
+  U[1] = rtu_u0[1];
+  U[2] = rtu_u0[2];
   Y[0] = rtu_y0[0];
   Y[1] = rtu_y0[1];
-  rtb_Product3[0] = rtu_u0[0];
-  rtb_Product3[1] = rtu_u0[1];
-  rtb_Product3[2] = rtu_u0[2];
-  for (int32_T i{0}; i < 86; i++) {
+  rtb_Sum1_f[0] = rtu_u0[0];
+  rtb_Sum1_f[1] = rtu_u0[1];
+  rtb_Sum1_f[2] = rtu_u0[2];
+  for (i = 0; i < 86; i++) {
     b_Mlim_0 = b_Mlim[i];
-    b_Mrows = b_Mrows_0[i];
-    if (b_Mrows <= 40) {
-      b_Mrows = (b_Mrows - (((b_Mrows - 1) / static_cast<int32_T>(ny_i)) << 1UL))
-        - 1;
-      b_Mlim_0 += (-195.0 * static_cast<real_T>(b_Mrows) + 628.0) - Y[b_Mrows];
-    } else if (b_Mrows <= 80) {
-      b_Mrows = (b_Mrows - (((b_Mrows - 41) >> 1UL) << 1UL)) - 41;
-      b_Mlim_0 -= (-195.0 * static_cast<real_T>(b_Mrows) + 628.0) - Y[b_Mrows];
-    } else if (b_Mrows <= 140) {
-      b_Mlim_0 += 0.0 - rtb_Product4[(b_Mrows - div_nde_s32_floor(b_Mrows - 81,
-        static_cast<int32_T>(nu_h)) * static_cast<int32_T>(nu_h)) - 81];
+    i_0 = b_Mrows[i];
+    if (i_0 <= 40) {
+      i_0 = (i_0 - (((i_0 - 1) / static_cast<int32_T>(ny_i)) << 1UL)) - 1;
+      b_Mlim_0 += (-195.0 * static_cast<real_T>(i_0) + 628.0) - Y[i_0];
+    } else if (i_0 <= 80) {
+      i_0 = (i_0 - (((i_0 - 41) >> 1UL) << 1UL)) - 41;
+      b_Mlim_0 -= (-195.0 * static_cast<real_T>(i_0) + 628.0) - Y[i_0];
+    } else if (i_0 <= 140) {
+      b_Mlim_0 += 0.0 - U[(i_0 - div_nde_s32_floor(i_0 - 81, static_cast<int32_T>
+        (nu_h)) * static_cast<int32_T>(nu_h)) - 81];
     } else {
-      b_Mlim_0 -= 0.0 - rtb_Product4[(b_Mrows - div_nde_s32_floor(b_Mrows - 141,
+      b_Mlim_0 -= 0.0 - U[(i_0 - div_nde_s32_floor(i_0 - 141,
         static_cast<int32_T>(nu_h)) * static_cast<int32_T>(nu_h)) - 141];
     }
 
     b_Mlim[i] = b_Mlim_0;
   }
 
-  for (int32_T i{0}; i < 3; i++) {
-    b_Mlim_0 = rtb_Product4[i];
-    b_Mrows = 0;
-    for (i_0 = 0; i_0 < 20; i_0++) {
-      b_utarget_tmp = b_Mrows + i;
+  for (i = 0; i < 3; i++) {
+    b_Mlim_0 = U[i];
+    i_0 = 0;
+    for (i_1 = 0; i_1 < 20; i_1++) {
+      b_utarget_tmp = i_0 + i;
       b_utarget[b_utarget_tmp] -= b_Mlim_0;
-      b_Mrows += 3;
+      i_0 += 3;
     }
   }
 
@@ -10995,15 +11880,15 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
   // '<S277>:1:190' else
   //  When doing code generation, use M code directly
   // '<S277>:1:192' [rseq, vseq, v] = mpcblock_refmd(ref,md,nv,ny,p,yoff,voff,no_md,no_ref,openloopflag, RYscale, RMDscale); 
-  for (int32_T i{0}; i < 21; i++) {
+  for (i = 0; i < 21; i++) {
     vseq[i] = 1.0;
   }
 
-  b_Mrows = 0;
-  for (int32_T i{0}; i < 20; i++) {
-    rseq[b_Mrows] = rtu_r[0] - Y[0];
-    rseq[b_Mrows + 1] = rtu_r[1] - Y[1];
-    b_Mrows += 2;
+  i_1 = 0;
+  for (i = 0; i < 20; i++) {
+    rseq[i_1] = rtu_r[0] - Y[0];
+    rseq[i_1 + 1] = rtu_r[1] - Y[1];
+    i_1 += 2;
   }
 
   //  External MV override.
@@ -11040,10 +11925,10 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
   // '<S277>:1:290'             Wy, Wdu, Jm, SuJm, Su1, Sx, Hv, Wu, I1, ...
   // '<S277>:1:291'             isAdaptive, isLTV, A, Bu, Bv, C, Dv, ...
   // '<S277>:1:292'             Mrows, nCC, Ecc, Fcc, Scc, Gcc, RYscale, RMVscale, m, isHyb, Mdis, Ndis, Vdis, numdis, maxdis); 
-  rtb_y_b[0] = (localDW->MemoryX_DSTATE[0] + rtb_Sum_h_idx_0) - rtb_Sum_h_idx_0;
-  rtb_y_b[1] = (localDW->MemoryX_DSTATE[1] + rtb_Sum_h_idx_1) - rtb_Sum_h_idx_1;
-  rtb_y_b[2] = localP->Constant_Value_m[0] + localDW->MemoryX_DSTATE[2];
-  rtb_y_b[3] = localP->Constant_Value_m[1] + localDW->MemoryX_DSTATE[3];
+  rtb_y_b5[0] = (localDW->MemoryX_DSTATE[0] + rtb_Sum_h_idx_0) - rtb_Sum_h_idx_0;
+  rtb_y_b5[1] = (localDW->MemoryX_DSTATE[1] + rtb_e_l) - rtb_e_l;
+  rtb_y_b5[2] = localP->Constant_Value_m[0] + localDW->MemoryX_DSTATE[2];
+  rtb_y_b5[3] = localP->Constant_Value_m[1] + localDW->MemoryX_DSTATE[3];
   tmp[0] = localDW->last_mv_DSTATE[0] - rtu_u0[0];
   tmp[1] = localDW->last_mv_DSTATE[1] - rtu_u0[1];
   tmp[2] = localDW->last_mv_DSTATE[2] - rtu_u0[2];
@@ -11070,11 +11955,11 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
   // Update for Memory: '<S248>/Memory' incorporates:
   //   MATLAB Function: '<S276>/FixedHorizonOptimizer'
 
-  mpcblock_optimizer_l(rseq, vseq, rtb_y_b, tmp, tmp_6, b_Mlim, f_0, g_0,
-                       localDW->dv, b_utarget, rtb_Product3, rtb_Q, k_0, Y,
-                       tmp_0, l, tmp_1, n, rtb_A, Bu, Bv, rtb_C, Dv, b_Mrows_0,
-                       rtb_Product4, rtb_useq, &rtb_Sum_h_idx_0,
-                       localDW->Memory_PreviousInput, localDW);
+  mpcblock_optimizer_l(rseq, vseq, rtb_y_b5, tmp, tmp_6, b_Mlim, f_0, g_0,
+                       localDW->dv, b_utarget, rtb_Sum1_f, rtb_Q, k_0, Y, tmp_0,
+                       l, tmp_1, n, rtb_A, Bu, Bv, rtb_C_f, Dv, b_Mrows, U,
+                       rtb_useq, &rtb_e_l, localDW->Memory_PreviousInput,
+                       localDW);
 
   // Delay: '<S333>/MemoryP' incorporates:
   //   Constant: '<S333>/P0'
@@ -11098,11 +11983,6 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
     (void)std::memcpy(&localDW->MemoryP_DSTATE[0], &localP->P0_Value[0], sizeof
                       (real_T) << 4UL);
   }
-
-  // DataTypeConversion: '<S333>/DataTypeConversionEnable' incorporates:
-  //   Constant: '<S4>/Constant'
-
-  rtb_DataTypeConversionEnable_a1 = (localP->Constant_Value_g != 0.0);
 
   // MATLAB Function: '<S247>/MATLAB Function' incorporates:
   //   BusCreator: '<S246>/Bus Creator3'
@@ -11161,97 +12041,93 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
   // 'stateEstimator:21' B = [Bp;
   // 'stateEstimator:22'      zeros(no,ni)];
   // 'stateEstimator:23' C = [Cp Cod];
-  rtb_C[0] = localP->Constant4_Value[0];
-  rtb_C[4] = rtP->Cod2[0];
-  rtb_C[1] = localP->Constant4_Value[1];
-  rtb_C[5] = rtP->Cod2[1];
-  rtb_C[2] = localP->Constant4_Value[2];
-  rtb_C[6] = rtP->Cod2[2];
-  rtb_C[3] = localP->Constant4_Value[3];
-  rtb_C[7] = rtP->Cod2[3];
+  rtb_C_f[0] = localP->Constant4_Value[0];
+  rtb_C_f[4] = rtP->Cod2[0];
+  rtb_C_f[1] = localP->Constant4_Value[1];
+  rtb_C_f[5] = rtP->Cod2[1];
+  rtb_C_f[2] = localP->Constant4_Value[2];
+  rtb_C_f[6] = rtP->Cod2[2];
+  rtb_C_f[3] = localP->Constant4_Value[3];
+  rtb_C_f[7] = rtP->Cod2[3];
 
   // 'stateEstimator:24' D = Dp;
-  for (int32_T i{0}; i < 6; i++) {
-    rtb_D_k[i] = localP->Constant5_Value[i];
-  }
-
   // 'stateEstimator:26' B_est = [ [Bp; zeros(no,ni)] [zeros(size(Bp,1), size(Cp,1)); Bod] [zeros(size(Bp,1) + size(Bod,1), size(Cp,1))] ]; 
-  b_Mrows = 0;
   i_0 = 0;
-  for (int32_T i{0}; i < 3; i++) {
-    B_est[b_Mrows] = rtb_B[i_0];
-    B_est[b_Mrows + 2] = 0.0;
-    B_est[b_Mrows + 1] = rtb_B[i_0 + 1];
-    B_est[b_Mrows + 3] = 0.0;
-    b_Mrows += 4;
-    i_0 += 2;
+  i_1 = 0;
+  for (i = 0; i < 3; i++) {
+    B_est[i_0] = rty_params[i_1];
+    B_est[i_0 + 2] = 0.0;
+    B_est[i_0 + 1] = rty_params[i_1 + 1];
+    B_est[i_0 + 3] = 0.0;
+    i_0 += 4;
+    i_1 += 2;
   }
 
-  b_Mrows = 0;
   i_0 = 0;
-  for (int32_T i{0}; i < 2; i++) {
-    B_est[b_Mrows + 12] = 0.0;
-    B_est[b_Mrows + 14] = rtP->Bod2[i_0];
-    B_est[b_Mrows + 13] = 0.0;
-    B_est[b_Mrows + 15] = rtP->Bod2[i_0 + 1];
-    B_est[b_Mrows + 20] = 0.0;
-    B_est[b_Mrows + 21] = 0.0;
-    B_est[b_Mrows + 22] = 0.0;
-    B_est[b_Mrows + 23] = 0.0;
-    b_Mrows += 4;
-    i_0 += 2;
+  i_1 = 0;
+  for (i = 0; i < 2; i++) {
+    B_est[i_0 + 12] = 0.0;
+    B_est[i_0 + 14] = rtP->Bod2[i_1];
+    B_est[i_0 + 13] = 0.0;
+    B_est[i_0 + 15] = rtP->Bod2[i_1 + 1];
+    B_est[i_0 + 20] = 0.0;
+    B_est[i_0 + 21] = 0.0;
+    B_est[i_0 + 22] = 0.0;
+    B_est[i_0 + 23] = 0.0;
+    i_0 += 4;
+    i_1 += 2;
   }
 
   // 'stateEstimator:27' D_est = [Dp Dod Dn];
-  for (b_Mrows = 0; b_Mrows < 6; b_Mrows++) {
-    D_est[b_Mrows] = localP->Constant5_Value[b_Mrows];
+  for (i_0 = 0; i_0 < 6; i_0++) {
+    D_est[i_0] = localP->Constant5_Value[i_0];
   }
 
   // 'stateEstimator:28' Q = B_est * B_est';
-  for (b_Mrows = 0; b_Mrows < 4; b_Mrows++) {
-    D_est[b_Mrows + 6] = rtP->Dod2[b_Mrows];
-    D_est[b_Mrows + 10] = rtP->Dmn2[b_Mrows];
-    i_0 = 0;
-    for (int32_T i{0}; i < 4; i++) {
+  for (i_0 = 0; i_0 < 4; i_0++) {
+    D_est[i_0 + 6] = rtP->Dod2[i_0];
+    D_est[i_0 + 10] = rtP->Dmn2[i_0];
+    i_1 = 0;
+    for (i = 0; i < 4; i++) {
       int32_T rtb_Q_p_tmp;
       int32_T tmp_2;
-      rtb_Q_p_tmp = i_0 + b_Mrows;
+      rtb_Q_p_tmp = i_1 + i_0;
       rtb_Q[rtb_Q_p_tmp] = 0.0;
       tmp_2 = 0;
       for (b_utarget_tmp = 0; b_utarget_tmp < 7; b_utarget_tmp++) {
-        rtb_Q[rtb_Q_p_tmp] += B_est[tmp_2 + b_Mrows] * B_est[tmp_2 + i];
+        rtb_Q[rtb_Q_p_tmp] += B_est[tmp_2 + i_0] * B_est[tmp_2 + i];
         tmp_2 += 4;
       }
 
-      i_0 += 4;
+      i_1 += 4;
     }
   }
 
   // 'stateEstimator:29' R = D_est * D_est';
-  b_Mrows = 0;
-  for (i_0 = 0; i_0 < 7; i_0++) {
-    rtb_R_f_tmp[i_0] = D_est[b_Mrows];
-    rtb_R_f_tmp[i_0 + 7] = D_est[b_Mrows + 1];
-    b_Mrows += 2;
+  i_0 = 0;
+  for (i_1 = 0; i_1 < 7; i_1++) {
+    rtb_R_f_tmp[i_1] = D_est[i_0];
+    rtb_R_f_tmp[i_1 + 7] = D_est[i_0 + 1];
+    i_0 += 2;
   }
 
   // 'stateEstimator:30' N = B_est * D_est';
-  for (b_Mrows = 0; b_Mrows < 2; b_Mrows++) {
-    for (i_0 = 0; i_0 < 2; i_0++) {
-      b_utarget_tmp = (b_Mrows << 1UL) + i_0;
+  for (i_0 = 0; i_0 < 2; i_0++) {
+    for (i_1 = 0; i_1 < 2; i_1++) {
+      b_utarget_tmp = (i_0 << 1UL) + i_1;
       rtb_R_g[b_utarget_tmp] = 0.0;
-      for (int32_T i{0}; i < 7; i++) {
-        rtb_R_g[b_utarget_tmp] += D_est[(i << 1UL) + i_0] * rtb_R_f_tmp[7 *
-          b_Mrows + i];
+      for (i = 0; i < 7; i++) {
+        rtb_R_g[b_utarget_tmp] += D_est[(i << 1UL) + i_1] * rtb_R_f_tmp[7 * i_0
+          + i];
       }
     }
 
-    for (i_0 = 0; i_0 < 4; i_0++) {
-      b_utarget_tmp = (b_Mrows << 2UL) + i_0;
+    for (i_1 = 0; i_1 < 4; i_1++) {
+      b_utarget_tmp = (i_0 << 2UL) + i_1;
       rtb_N[b_utarget_tmp] = 0.0;
-      for (int32_T i{0}; i < 7; i++) {
-        rtb_N[b_utarget_tmp] += B_est[(i << 2UL) + i_0] * rtb_R_f_tmp[7 *
-          b_Mrows + i];
+      for (i = 0; i < 7; i++) {
+        rtb_N[b_utarget_tmp] += B_est[(i << 2UL) + i_1] * rtb_R_f_tmp[7 * i_0 +
+          i];
       }
     }
   }
@@ -11263,7 +12139,7 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
   //  [k,L,~,Mx,~,My] = kalman(ss(A,B_est,C,D_est,dt), Q, R, N);
   //  xhat = A*xhat_prev + B*u + L*(y - C*xhat_prev);
   //  yhat = C*xhat + D*u;
-  ScalarExpansionR(rtb_R_g, rtb_y_b);
+  ScalarExpansionR(rtb_R_g, rtb_y_b5);
 
   // End of Outputs for SubSystem: '<S333>/ScalarExpansionR'
 
@@ -11276,8 +12152,8 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
   // Constant: '<S333>/G' incorporates:
   //   Constant: '<S333>/H'
 
-  ReducedQRN(localP->G_Value, localP->H_Value, rtb_Z_b, rtb_y_b, rtb_N,
-             rtb_Product_d, rtb_R_g, rtb_Product2_b);
+  ReducedQRN(localP->G_Value, localP->H_Value, rtb_Z_b, rtb_y_b5, rtb_N,
+             rtb_Product_d, rtb_R_g, rtb_Product2_k);
 
   // End of Outputs for SubSystem: '<S333>/ReducedQRN'
 
@@ -11286,7 +12162,7 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
   //   Constant: '<S4>/Constant'
   //   Delay: '<S333>/MemoryP'
 
-  CalculatePL(rtb_A, rtb_C, rtb_Product_d, rtb_R_g, rtb_Product2_b,
+  CalculatePL(rtb_A, rtb_C_f, rtb_Product_d, rtb_R_g, rtb_Product2_k,
               localP->Constant_Value_g != 0.0, localDW->MemoryP_DSTATE, rtb_N,
               rtb_L_e, rtb_Z_b, rtb_Q);
 
@@ -11319,12 +12195,12 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
   //   Product: '<S4>/Product1'
 
   rty_u[0] = static_cast<real_T>(rtb_RelationalOperator1 ? 1.0 : 0.0) * rty_u[0]
-    * rtu_excitationVal + localP->u_scale_Gain[0] * rtb_Product4[0];
+    * rtu_excitationVal + localP->u_scale_Gain[0] * U[0];
 
   // Sum: '<S247>/Sum1' incorporates:
   //   BusCreator: '<S246>/Bus Creator3'
 
-  rtb_Product3[0] = rty_u[0] - rtu_u0[0];
+  rtb_Sum1_f[0] = rty_u[0] - rtu_u0[0];
 
   // RandomNumber: '<S4>/Measurement Noise'
   rty_u[1] = localDW->NextOutput[1];
@@ -11335,12 +12211,12 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
   //   Product: '<S4>/Product1'
 
   rty_u[1] = static_cast<real_T>(rtb_RelationalOperator1 ? 1.0 : 0.0) * rty_u[1]
-    * rtu_excitationVal + localP->u_scale_Gain[1] * rtb_Product4[1];
+    * rtu_excitationVal + localP->u_scale_Gain[1] * U[1];
 
   // Sum: '<S247>/Sum1' incorporates:
   //   BusCreator: '<S246>/Bus Creator3'
 
-  rtb_Product3[1] = rty_u[1] - rtu_u0[1];
+  rtb_Sum1_f[1] = rty_u[1] - rtu_u0[1];
 
   // RandomNumber: '<S4>/Measurement Noise'
   rty_u[2] = localDW->NextOutput[2];
@@ -11351,177 +12227,114 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
   //   Product: '<S4>/Product1'
 
   rty_u[2] = static_cast<real_T>(rtb_RelationalOperator1 ? 1.0 : 0.0) * rty_u[2]
-    * rtu_excitationVal + localP->u_scale_Gain[2] * rtb_Product4[2];
+    * rtu_excitationVal + localP->u_scale_Gain[2] * U[2];
 
   // Sum: '<S247>/Sum1' incorporates:
   //   BusCreator: '<S246>/Bus Creator3'
   //   Sum: '<S246>/Add6'
 
-  rtb_Sum_h_idx_1 = rty_u[2] - rtu_u0[2];
-  rtb_Product3[2] = rtb_Sum_h_idx_1;
+  rtb_Sum_h_idx_0 = rty_u[2] - rtu_u0[2];
+  rtb_Sum1_f[2] = rtb_Sum_h_idx_0;
 
   // Outputs for Enabled SubSystem: '<S352>/MeasurementUpdate'
-  MeasurementUpdate(rtb_DataTypeConversionEnable_a1, rtb_L_e, rtb_Add5_tmp,
-                    rtb_C, rtb_MemoryX_n, rtb_D_k, rtb_Product3,
-                    localDW->Product3, &localDW->MeasurementUpdate_a,
+  // DataTypeConversion: '<S333>/DataTypeConversionEnable' incorporates:
+  //   Constant: '<S246>/Constant5'
+  //   Constant: '<S4>/Constant'
+  //   Delay: '<S333>/MemoryX'
+
+  MeasurementUpdate(localP->Constant_Value_g != 0.0, rtb_L_e, rtb_Add5_tmp,
+                    rtb_C_f, localDW->MemoryX_DSTATE, localP->Constant5_Value,
+                    rtb_Sum1_f, localDW->Product3, &localDW->MeasurementUpdate_a,
                     &localP->MeasurementUpdate_a);
 
   // End of Outputs for SubSystem: '<S352>/MeasurementUpdate'
-
-  // MATLAB Function: '<S247>/MATLAB Function' incorporates:
-  //   BusCreator: '<S246>/Bus Creator3'
-
-  b_Mrows = 0;
-  i_0 = 0;
-  for (int32_T i{0}; i < 3; i++) {
-    rtb_B_e[b_Mrows] = rtb_B[i_0];
-    rtb_B_e[b_Mrows + 2] = 0.0;
-    rtb_B_e[b_Mrows + 1] = rtb_B[i_0 + 1];
-    rtb_B_e[b_Mrows + 3] = 0.0;
-    b_Mrows += 4;
-    i_0 += 2;
-  }
-
-  for (b_Mrows = 0; b_Mrows <= 2; b_Mrows += 2) {
-    // Product: '<S352>/B[k]*u[k]' incorporates:
-    //   Sum: '<S247>/Sum1'
+  for (i_0 = 0; i_0 <= 0; i_0 += 2) {
+    // Product: '<S336>/Product' incorporates:
+    //   Delay: '<S333>/MemoryX'
 
     tmp_5 = _mm_set1_pd(0.0);
-    (void)_mm_storeu_pd(&rtb_y_b[b_Mrows], tmp_5);
-    tmp_3 = _mm_loadu_pd(&rtb_B_e[b_Mrows]);
-    tmp_4 = _mm_loadu_pd(&rtb_y_b[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_y_b[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3,
-      _mm_set1_pd(rtb_Product3[0])), tmp_4));
-    tmp_3 = _mm_loadu_pd(&rtb_B_e[b_Mrows + 4]);
-    tmp_4 = _mm_loadu_pd(&rtb_y_b[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_y_b[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3,
-      _mm_set1_pd(rtb_Product3[1])), tmp_4));
-    tmp_3 = _mm_loadu_pd(&rtb_B_e[b_Mrows + 8]);
-    tmp_4 = _mm_loadu_pd(&rtb_y_b[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_y_b[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3,
-      _mm_set1_pd(rtb_Sum_h_idx_1)), tmp_4));
-
-    // Product: '<S352>/A[k]*xhat[k|k-1]' incorporates:
-    //   Product: '<S352>/B[k]*u[k]'
-
-    (void)_mm_storeu_pd(&rtb_R_g[b_Mrows], tmp_5);
-    tmp_5 = _mm_loadu_pd(&rtb_A[b_Mrows]);
-    tmp_3 = _mm_loadu_pd(&rtb_R_g[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_R_g[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_5,
-      _mm_set1_pd(rtb_MemoryX_n[0])), tmp_3));
-    tmp_5 = _mm_loadu_pd(&rtb_A[b_Mrows + 4]);
-    tmp_3 = _mm_loadu_pd(&rtb_R_g[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_R_g[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_5,
-      _mm_set1_pd(rtb_MemoryX_n[1])), tmp_3));
-    tmp_5 = _mm_loadu_pd(&rtb_A[b_Mrows + 8]);
-    tmp_3 = _mm_loadu_pd(&rtb_R_g[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_R_g[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_5,
-      _mm_set1_pd(rtb_MemoryX_n[2])), tmp_3));
-    tmp_5 = _mm_loadu_pd(&rtb_A[b_Mrows + 12]);
-    tmp_3 = _mm_loadu_pd(&rtb_R_g[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_R_g[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_5,
-      _mm_set1_pd(rtb_MemoryX_n[3])), tmp_3));
-
-    // Product: '<S352>/B[k]*u[k]'
-    tmp_5 = _mm_loadu_pd(&rtb_y_b[b_Mrows]);
-
-    // Product: '<S352>/A[k]*xhat[k|k-1]' incorporates:
-    //   Product: '<S352>/B[k]*u[k]'
-
-    tmp_3 = _mm_loadu_pd(&rtb_R_g[b_Mrows]);
-
-    // Sum: '<S352>/Add' incorporates:
-    //   Product: '<S352>/B[k]*u[k]'
-
-    tmp_4 = _mm_loadu_pd(&localDW->Product3[b_Mrows]);
-
-    // Update for Delay: '<S333>/MemoryX' incorporates:
-    //   Product: '<S352>/B[k]*u[k]'
-
-    (void)_mm_storeu_pd(&localDW->MemoryX_DSTATE[b_Mrows], _mm_add_pd(_mm_add_pd
-      (tmp_5, tmp_3), tmp_4));
-  }
-
-  for (b_Mrows = 0; b_Mrows <= 0; b_Mrows += 2) {
-    // Product: '<S336>/Product'
-    tmp_5 = _mm_set1_pd(0.0);
-    (void)_mm_storeu_pd(&Y[b_Mrows], tmp_5);
-    tmp_3 = _mm_loadu_pd(&rtb_C[b_Mrows]);
-    tmp_4 = _mm_loadu_pd(&Y[b_Mrows]);
-    (void)_mm_storeu_pd(&Y[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3, _mm_set1_pd
-      (rtb_MemoryX_n[0])), tmp_4));
-    tmp_3 = _mm_loadu_pd(&rtb_C[b_Mrows + 2]);
-    tmp_4 = _mm_loadu_pd(&Y[b_Mrows]);
-    (void)_mm_storeu_pd(&Y[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3, _mm_set1_pd
-      (rtb_MemoryX_n[1])), tmp_4));
-    tmp_3 = _mm_loadu_pd(&rtb_C[b_Mrows + 4]);
-    tmp_4 = _mm_loadu_pd(&Y[b_Mrows]);
-    (void)_mm_storeu_pd(&Y[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3, _mm_set1_pd
-      (rtb_MemoryX_n[2])), tmp_4));
-    tmp_3 = _mm_loadu_pd(&rtb_C[b_Mrows + 6]);
-    tmp_4 = _mm_loadu_pd(&Y[b_Mrows]);
-    (void)_mm_storeu_pd(&Y[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_3, _mm_set1_pd
-      (rtb_MemoryX_n[3])), tmp_4));
+    (void)_mm_storeu_pd(&rtb_C_g[i_0], tmp_5);
+    tmp_3 = _mm_loadu_pd(&rtb_C_f[i_0]);
+    tmp_4 = _mm_loadu_pd(&rtb_C_g[i_0]);
+    (void)_mm_storeu_pd(&rtb_C_g[i_0], _mm_add_pd(_mm_mul_pd(tmp_3, _mm_set1_pd
+      (localDW->MemoryX_DSTATE[0])), tmp_4));
+    tmp_3 = _mm_loadu_pd(&rtb_C_f[i_0 + 2]);
+    tmp_4 = _mm_loadu_pd(&rtb_C_g[i_0]);
+    (void)_mm_storeu_pd(&rtb_C_g[i_0], _mm_add_pd(_mm_mul_pd(tmp_3, _mm_set1_pd
+      (localDW->MemoryX_DSTATE[1])), tmp_4));
+    tmp_3 = _mm_loadu_pd(&rtb_C_f[i_0 + 4]);
+    tmp_4 = _mm_loadu_pd(&rtb_C_g[i_0]);
+    (void)_mm_storeu_pd(&rtb_C_g[i_0], _mm_add_pd(_mm_mul_pd(tmp_3, _mm_set1_pd
+      (localDW->MemoryX_DSTATE[2])), tmp_4));
+    tmp_3 = _mm_loadu_pd(&rtb_C_f[i_0 + 6]);
+    tmp_4 = _mm_loadu_pd(&rtb_C_g[i_0]);
+    (void)_mm_storeu_pd(&rtb_C_g[i_0], _mm_add_pd(_mm_mul_pd(tmp_3, _mm_set1_pd
+      (localDW->MemoryX_DSTATE[3])), tmp_4));
 
     // Product: '<S336>/Product1' incorporates:
+    //   Constant: '<S246>/Constant5'
+    //   Delay: '<S333>/MemoryX'
     //   Product: '<S336>/Product'
     //   Sum: '<S247>/Sum1'
 
-    (void)_mm_storeu_pd(&rtb_D_j[b_Mrows], tmp_5);
-    tmp_5 = _mm_loadu_pd(&rtb_D_k[b_Mrows]);
-    tmp_3 = _mm_loadu_pd(&rtb_D_j[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_D_j[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_5,
-      _mm_set1_pd(rtb_Product3[0])), tmp_3));
-    tmp_5 = _mm_loadu_pd(&rtb_D_k[b_Mrows + 2]);
-    tmp_3 = _mm_loadu_pd(&rtb_D_j[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_D_j[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_5,
-      _mm_set1_pd(rtb_Product3[1])), tmp_3));
-    tmp_5 = _mm_loadu_pd(&rtb_D_k[b_Mrows + 4]);
-    tmp_3 = _mm_loadu_pd(&rtb_D_j[b_Mrows]);
-    (void)_mm_storeu_pd(&rtb_D_j[b_Mrows], _mm_add_pd(_mm_mul_pd(tmp_5,
-      _mm_set1_pd(rtb_Sum_h_idx_1)), tmp_3));
+    (void)_mm_storeu_pd(&Y[i_0], tmp_5);
+    tmp_5 = _mm_loadu_pd(&Y[i_0]);
+    (void)_mm_storeu_pd(&Y[i_0], _mm_add_pd(_mm_mul_pd(_mm_loadu_pd
+      (&localP->Constant5_Value[i_0]), _mm_set1_pd(rtb_Sum1_f[0])), tmp_5));
+    tmp_5 = _mm_loadu_pd(&Y[i_0]);
+    (void)_mm_storeu_pd(&Y[i_0], _mm_add_pd(_mm_mul_pd(_mm_loadu_pd
+      (&localP->Constant5_Value[i_0 + 2]), _mm_set1_pd(rtb_Sum1_f[1])), tmp_5));
+    tmp_5 = _mm_loadu_pd(&Y[i_0]);
+    (void)_mm_storeu_pd(&Y[i_0], _mm_add_pd(_mm_mul_pd(_mm_loadu_pd
+      (&localP->Constant5_Value[i_0 + 4]), _mm_set1_pd(rtb_Sum_h_idx_0)), tmp_5));
 
     // Product: '<S336>/Product'
-    tmp_5 = _mm_loadu_pd(&Y[b_Mrows]);
+    tmp_5 = _mm_loadu_pd(&rtb_C_g[i_0]);
 
     // Product: '<S336>/Product1' incorporates:
     //   Product: '<S336>/Product'
 
-    tmp_3 = _mm_loadu_pd(&rtb_D_j[b_Mrows]);
+    tmp_3 = _mm_loadu_pd(&Y[i_0]);
 
     // BusCreator: '<S246>/Bus Creator3' incorporates:
     //   Product: '<S336>/Product'
 
-    tmp_4 = _mm_loadu_pd(&rtu_y0[b_Mrows]);
+    tmp_4 = _mm_loadu_pd(&rtu_y0[i_0]);
 
     // Sum: '<S247>/Sum3' incorporates:
     //   Product: '<S336>/Product'
 
-    (void)_mm_storeu_pd(&rty_yhat[b_Mrows], _mm_add_pd(_mm_add_pd(tmp_5, tmp_3),
+    (void)_mm_storeu_pd(&rty_yhat[i_0], _mm_add_pd(_mm_add_pd(tmp_5, tmp_3),
       tmp_4));
   }
 
-  // SignalConversion: '<S246>/Signal Conversion'
-  rty_params[0] = rtb_x_pm;
-  rty_params[1] = rtb_y_im;
+  // Update for UnitDelay: '<S248>/last_mv'
+  localDW->last_mv_DSTATE[0] = U[0];
+
+  // Update for UnitDelay: '<S246>/Unit Delay1' incorporates:
+  //   Sum: '<S246>/Add6'
+
+  localDW->UnitDelay1_DSTATE[0] = rty_u[0] - rtu_u0[0];
 
   // Update for UnitDelay: '<S248>/last_mv'
-  localDW->last_mv_DSTATE[0] = rtb_Product4[0];
-  localDW->last_mv_DSTATE[1] = rtb_Product4[1];
-  localDW->last_mv_DSTATE[2] = rtb_Product4[2];
+  localDW->last_mv_DSTATE[1] = U[1];
+
+  // Update for UnitDelay: '<S246>/Unit Delay1' incorporates:
+  //   Sum: '<S246>/Add6'
+
+  localDW->UnitDelay1_DSTATE[1] = rty_u[1] - rtu_u0[1];
+
+  // Update for UnitDelay: '<S248>/last_mv'
+  localDW->last_mv_DSTATE[2] = U[2];
+
+  // Update for UnitDelay: '<S246>/Unit Delay1'
+  localDW->UnitDelay1_DSTATE[2] = rtb_Sum_h_idx_0;
 
   // Update for UnitDelay: '<S246>/Unit Delay7' incorporates:
   //   Sum: '<S246>/Add5'
 
   localDW->UnitDelay7_DSTATE[0] = rtb_Add5_tmp[0];
   localDW->UnitDelay7_DSTATE[1] = rtb_Add5_tmp_0;
-
-  // Update for UnitDelay: '<S246>/Unit Delay1' incorporates:
-  //   Sum: '<S246>/Add6'
-
-  localDW->UnitDelay1_DSTATE[0] = rty_u[0] - rtu_u0[0];
-  localDW->UnitDelay1_DSTATE[1] = rty_u[1] - rtu_u0[1];
-  localDW->UnitDelay1_DSTATE[2] = rtb_Sum_h_idx_1;
 
   // Update for Delay: '<S279>/delayBuffery'
   localDW->icLoad = false;
@@ -11531,7 +12344,6 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
 
   // Update for Delay: '<S279>/delayTheta'
   localDW->icLoad_g = false;
-  localDW->delayTheta_DSTATE = rtb_x_pm;
 
   // Update for Delay: '<S279>/delayL'
   localDW->icLoad_c = false;
@@ -11544,13 +12356,80 @@ void SupervisoryController::State2controlLawAMPC2(const real_T rtu_r[2], const
 
   // Update for Delay: '<S280>/delayTheta'
   localDW->icLoad_cf = false;
-  localDW->delayTheta_DSTATE_m = rtb_y_im;
 
   // Update for Delay: '<S280>/delayL'
   localDW->icLoad_l = false;
 
   // Update for Delay: '<S333>/MemoryX'
   localDW->icLoad_l1 = false;
+
+  // Update for Delay: '<S279>/delayTheta' incorporates:
+  //   BusCreator: '<S246>/Bus Creator3'
+  //   Delay: '<S280>/delayTheta'
+  //   MATLAB Function: '<S247>/MATLAB Function'
+
+  i = 0;
+  i_1 = 0;
+  for (i_0 = 0; i_0 < 3; i_0++) {
+    localDW->delayTheta_DSTATE[i_0] = rtb_x[i_0];
+    localDW->delayTheta_DSTATE_m[i_0] = rtb_x_c[i_0];
+    rty_params_0[i] = rty_params[i_1];
+    rty_params_0[i + 2] = 0.0;
+    rty_params_0[i + 1] = rty_params[i_1 + 1];
+    rty_params_0[i + 3] = 0.0;
+    i += 4;
+    i_1 += 2;
+  }
+
+  for (i_0 = 0; i_0 <= 2; i_0 += 2) {
+    // Product: '<S352>/B[k]*u[k]' incorporates:
+    //   Sum: '<S247>/Sum1'
+
+    tmp_5 = _mm_set1_pd(0.0);
+    (void)_mm_storeu_pd(&rtb_y_b5[i_0], tmp_5);
+    tmp_3 = _mm_loadu_pd(&rty_params_0[i_0]);
+    tmp_4 = _mm_loadu_pd(&rtb_y_b5[i_0]);
+    (void)_mm_storeu_pd(&rtb_y_b5[i_0], _mm_add_pd(_mm_mul_pd(tmp_3, _mm_set1_pd
+      (rtb_Sum1_f[0])), tmp_4));
+    tmp_3 = _mm_loadu_pd(&rty_params_0[i_0 + 4]);
+    tmp_4 = _mm_loadu_pd(&rtb_y_b5[i_0]);
+    (void)_mm_storeu_pd(&rtb_y_b5[i_0], _mm_add_pd(_mm_mul_pd(tmp_3, _mm_set1_pd
+      (rtb_Sum1_f[1])), tmp_4));
+    tmp_3 = _mm_loadu_pd(&rty_params_0[i_0 + 8]);
+    tmp_4 = _mm_loadu_pd(&rtb_y_b5[i_0]);
+    (void)_mm_storeu_pd(&rtb_y_b5[i_0], _mm_add_pd(_mm_mul_pd(tmp_3, _mm_set1_pd
+      (rtb_Sum_h_idx_0)), tmp_4));
+
+    // Product: '<S352>/A[k]*xhat[k|k-1]' incorporates:
+    //   Delay: '<S333>/MemoryX'
+    //   Product: '<S352>/B[k]*u[k]'
+
+    (void)_mm_storeu_pd(&rtb_R_g[i_0], tmp_5);
+    tmp_5 = _mm_loadu_pd(&rtb_A[i_0]);
+    tmp_3 = _mm_loadu_pd(&rtb_R_g[i_0]);
+    (void)_mm_storeu_pd(&rtb_R_g[i_0], _mm_add_pd(_mm_mul_pd(tmp_5, _mm_set1_pd
+      (localDW->MemoryX_DSTATE[0])), tmp_3));
+    tmp_5 = _mm_loadu_pd(&rtb_A[i_0 + 4]);
+    tmp_3 = _mm_loadu_pd(&rtb_R_g[i_0]);
+    (void)_mm_storeu_pd(&rtb_R_g[i_0], _mm_add_pd(_mm_mul_pd(tmp_5, _mm_set1_pd
+      (localDW->MemoryX_DSTATE[1])), tmp_3));
+    tmp_5 = _mm_loadu_pd(&rtb_A[i_0 + 8]);
+    tmp_3 = _mm_loadu_pd(&rtb_R_g[i_0]);
+    (void)_mm_storeu_pd(&rtb_R_g[i_0], _mm_add_pd(_mm_mul_pd(tmp_5, _mm_set1_pd
+      (localDW->MemoryX_DSTATE[2])), tmp_3));
+    tmp_5 = _mm_loadu_pd(&rtb_A[i_0 + 12]);
+    tmp_3 = _mm_loadu_pd(&rtb_R_g[i_0]);
+    (void)_mm_storeu_pd(&rtb_R_g[i_0], _mm_add_pd(_mm_mul_pd(tmp_5, _mm_set1_pd
+      (localDW->MemoryX_DSTATE[3])), tmp_3));
+  }
+
+  // Update for Delay: '<S333>/MemoryX' incorporates:
+  //   Sum: '<S352>/Add'
+
+  localDW->MemoryX_DSTATE[0] = (rtb_y_b5[0] + rtb_R_g[0]) + localDW->Product3[0];
+  localDW->MemoryX_DSTATE[1] = (rtb_y_b5[1] + rtb_R_g[1]) + localDW->Product3[1];
+  localDW->MemoryX_DSTATE[2] = (rtb_y_b5[2] + rtb_R_g[2]) + localDW->Product3[2];
+  localDW->MemoryX_DSTATE[3] = (rtb_y_b5[3] + rtb_R_g[3]) + localDW->Product3[3];
 
   // Update for Delay: '<S333>/MemoryP'
   localDW->icLoad_h = false;
@@ -13125,8 +14004,8 @@ void SupervisoryController::enter_internal_State0(void)
 // Function for Chart: '<Root>/SupervisoryController'
 void SupervisoryController::State1(const int32_T *sfEvent)
 {
-  real_T SignalConversion_p[2];
-  real_T initParam_o[2];
+  real_T SignalConversion_p[6];
+  real_T initParam_o[6];
   real_T paramEst_l[2];
   real_T r_c[2];
   real_T y0_d[2];
@@ -13141,11 +14020,12 @@ void SupervisoryController::State1(const int32_T *sfEvent)
   //   Inport: '<Root>/y'
   //   Inport: '<Root>/y_max'
   //   Inport: '<Root>/y_o'
+  //   Outport: '<Root>/B'
   //   Outport: '<Root>/currTraj'
   //   Outport: '<Root>/inTransRegion'
-  //   Outport: '<Root>/param'
   //   Outport: '<Root>/requestEvent'
   //   Outport: '<Root>/yhat'
+  //   SignalConversion: '<S112>/Signal Conversion'
 
   // During 'State1': '<S1>:176'
   // '<S1>:47:1' sf_internal_predicateOutput = currEv.destState == 0 & evDone;
@@ -13311,20 +14191,28 @@ void SupervisoryController::State1(const int32_T *sfEvent)
     // During 'controlLaw': '<S1>:162'
     // '<S1>:162:5' if trueMeasAvail
     if (*sfEvent == static_cast<int32_T>(event_trueMeasAvail)) {
-      // '<S1>:162:6' [u, yhat1, param(chs1)] = AMPC1(traj(chs1, waypt),...
+      int32_T c_size_idx_0;
+
+      // '<S1>:162:6' [u, yhat1, B(chs1,:)] = AMPC1(traj(chs1, waypt),...
       // '<S1>:162:7'         y(chs1), y_o(chs1), u_o,...
-      // '<S1>:162:8'         param(chs1), enAdapt(chs1), excitation);
+      // '<S1>:162:8'         B(chs1,:), enAdapt(chs1), excitation);
       i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
       r_c[0] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs1[0])) - 1];
       y_f[0] = rtU.y[static_cast<int32_T>(rtDW.chs1[0]) - 1];
       y0_d[0] = rtU.y_o[static_cast<int32_T>(rtDW.chs1[0]) - 1];
-      initParam_o[0] = rtY.param[static_cast<int32_T>(rtDW.chs1[0]) - 1];
-      paramEst_l[0] = rtU.enAdapt[static_cast<int32_T>(rtDW.chs1[0]) - 1] ? 1.0 :
-        0.0;
       r_c[1] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs1[1])) - 1];
       y_f[1] = rtU.y[static_cast<int32_T>(rtDW.chs1[1]) - 1];
       y0_d[1] = rtU.y_o[static_cast<int32_T>(rtDW.chs1[1]) - 1];
-      initParam_o[1] = rtY.param[static_cast<int32_T>(rtDW.chs1[1]) - 1];
+      for (i = 0; i < 3; i++) {
+        c_size_idx_0 = i << 1UL;
+        initParam_o[c_size_idx_0] = rtY.B_o[(3 * i + static_cast<int32_T>
+          (rtDW.chs1[0])) - 1];
+        initParam_o[c_size_idx_0 + 1] = rtY.B_o[(3 * i + static_cast<int32_T>
+          (rtDW.chs1[1])) - 1];
+      }
+
+      paramEst_l[0] = rtU.enAdapt[static_cast<int32_T>(rtDW.chs1[0]) - 1] ? 1.0 :
+        0.0;
       paramEst_l[1] = rtU.enAdapt[static_cast<int32_T>(rtDW.chs1[1]) - 1] ? 1.0 :
         0.0;
 
@@ -13335,7 +14223,7 @@ void SupervisoryController::State1(const int32_T *sfEvent)
       //   Inport: '<Root>/u_o'
       //   Inport: '<Root>/y'
       //   Inport: '<Root>/y_o'
-      //   Outport: '<Root>/param'
+      //   Outport: '<Root>/B'
 
       // Simulink Function 'AMPC1': '<S1>:175'
       State1controlLawAMPC1(r_c, y_f, y0_d, rtU.u_o, initParam_o, paramEst_l,
@@ -13345,8 +14233,13 @@ void SupervisoryController::State1(const int32_T *sfEvent)
                             &rtPrevZCX.State1controlLawAMPC1_g);
 
       // End of Outputs for SubSystem: '<S1>/State1.controlLaw.AMPC1'
-      rtY.param[static_cast<int32_T>(rtDW.chs1[0]) - 1] = SignalConversion_p[0];
-      rtY.param[static_cast<int32_T>(rtDW.chs1[1]) - 1] = SignalConversion_p[1];
+      for (i = 0; i < 3; i++) {
+        c_size_idx_0 = i << 1UL;
+        rtY.B_o[(static_cast<int32_T>(rtDW.chs1[0]) + 3 * i) - 1] =
+          SignalConversion_p[c_size_idx_0];
+        rtY.B_o[(static_cast<int32_T>(rtDW.chs1[1]) + 3 * i) - 1] =
+          SignalConversion_p[c_size_idx_0 + 1];
+      }
     } else if ((*sfEvent == static_cast<int32_T>(event_simMeasAvail)) &&
                rtY.inTransRegion) {
       real_T y_f_tmp;
@@ -13395,18 +14288,24 @@ void SupervisoryController::State1(const int32_T *sfEvent)
         y_f[b_data[i] - 1] = r_c[i];
       }
 
-      // '<S1>:162:14' [u, yhat1, param(chs1)] = AMPC1(traj(chs1, waypt),...
+      // '<S1>:162:14' [u, yhat1, B(chs1,:)] = AMPC1(traj(chs1, waypt),...
       // '<S1>:162:15'         ysim1, y_o(chs1), u_o,...
-      // '<S1>:162:16'         param(chs1), y(chs1)~=0, excitation);
+      // '<S1>:162:16'         B(chs1,:), y(chs1)~=0, excitation);
       i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
       r_c[0] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs1[0])) - 1];
       y0_d[0] = rtU.y_o[static_cast<int32_T>(rtDW.chs1[0]) - 1];
-      initParam_o[0] = rtY.param[static_cast<int32_T>(rtDW.chs1[0]) - 1];
-      paramEst_l[0] = static_cast<real_T>(holdT != 0.0 ? static_cast<int32_T>(1)
-        : static_cast<int32_T>(0));
       r_c[1] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs1[1])) - 1];
       y0_d[1] = rtU.y_o[static_cast<int32_T>(rtDW.chs1[1]) - 1];
-      initParam_o[1] = rtY.param[static_cast<int32_T>(rtDW.chs1[1]) - 1];
+      for (i = 0; i < 3; i++) {
+        c_size_idx_0 = i << 1UL;
+        initParam_o[c_size_idx_0] = rtY.B_o[(3 * i + static_cast<int32_T>
+          (rtDW.chs1[0])) - 1];
+        initParam_o[c_size_idx_0 + 1] = rtY.B_o[(3 * i + static_cast<int32_T>
+          (rtDW.chs1[1])) - 1];
+      }
+
+      paramEst_l[0] = static_cast<real_T>(holdT != 0.0 ? static_cast<int32_T>(1)
+        : static_cast<int32_T>(0));
       paramEst_l[1] = static_cast<real_T>(y_f_tmp != 0.0 ? static_cast<int32_T>
         (1) : static_cast<int32_T>(0));
 
@@ -13417,7 +14316,7 @@ void SupervisoryController::State1(const int32_T *sfEvent)
       //   Inport: '<Root>/y'
       //   Inport: '<Root>/y_max'
       //   Inport: '<Root>/y_o'
-      //   Outport: '<Root>/param'
+      //   Outport: '<Root>/B'
 
       // Simulink Function 'AMPC1': '<S1>:175'
       State1controlLawAMPC1(r_c, y_f, y0_d, rtU.u_o, initParam_o, paramEst_l,
@@ -13427,8 +14326,13 @@ void SupervisoryController::State1(const int32_T *sfEvent)
                             &rtPrevZCX.State1controlLawAMPC1_g);
 
       // End of Outputs for SubSystem: '<S1>/State1.controlLaw.AMPC1'
-      rtY.param[static_cast<int32_T>(rtDW.chs1[0]) - 1] = SignalConversion_p[0];
-      rtY.param[static_cast<int32_T>(rtDW.chs1[1]) - 1] = SignalConversion_p[1];
+      for (i = 0; i < 3; i++) {
+        c_size_idx_0 = i << 1UL;
+        rtY.B_o[(static_cast<int32_T>(rtDW.chs1[0]) + 3 * i) - 1] =
+          SignalConversion_p[c_size_idx_0];
+        rtY.B_o[(static_cast<int32_T>(rtDW.chs1[1]) + 3 * i) - 1] =
+          SignalConversion_p[c_size_idx_0 + 1];
+      }
     } else {
       // no actions
     }
@@ -13452,8 +14356,10 @@ void SupervisoryController::State1(const int32_T *sfEvent)
 void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
   *sfEvent)
 {
-  real_T SignalConversion[2];
-  real_T initParam_e[2];
+  real_T SignalConversion[6];
+  real_T initParam_e[6];
+  real_T OutportBufferForparams[3];
+  real_T initParam[3];
   real_T paramEst_m[2];
   real_T r_l[2];
   real_T y0_l[2];
@@ -13468,12 +14374,13 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
   //   Inport: '<Root>/y'
   //   Inport: '<Root>/y_max'
   //   Inport: '<Root>/y_o'
+  //   Outport: '<Root>/B'
   //   Outport: '<Root>/currEv'
   //   Outport: '<Root>/currTraj'
   //   Outport: '<Root>/inTransRegion'
-  //   Outport: '<Root>/param'
   //   Outport: '<Root>/requestEvent'
   //   Outport: '<Root>/yhat'
+  //   SignalConversion: '<S246>/Signal Conversion'
 
   // During: SupervisoryController
   if (static_cast<uint32_T>(rtDW.is_active_c6_SupervisoryControl) == 0U) {
@@ -13518,13 +14425,8 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
         // During 'State0': '<S1>:1'
         // '<S1>:46:1' sf_internal_predicateOutput = currEv.destState == 1 & evDone; 
         if ((rtY.currEv.destState == 1.0) && rtDW.evDone) {
-          // Transition: '<S1>:46'
-          // '<S1>:46:2' param(chs1) = param(chs0)
-          ysim0 = rtY.param[static_cast<int32_T>(rtDW.chs0) - 1];
-          rtY.param[static_cast<int32_T>(rtDW.chs1[0]) - 1] = ysim0;
-          rtY.param[static_cast<int32_T>(rtDW.chs1[1]) - 1] = ysim0;
-
           // Disable for Function Call SubSystem: '<S1>/State0.controlLaw.AMPC0' 
+          // Transition: '<S1>:46'
           // Exit Internal 'State0': '<S1>:1'
           // Exit 'controlLaw': '<S1>:59'
           State0controlLawAMPC0_Disable(&rtDW.State0controlLawAMPC0_n,
@@ -13553,7 +14455,7 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
           rtY.inTransRegion = true;
           enter_internal_State1();
         } else {
-          int32_T c_size_idx_0;
+          int32_T i;
 
           // During 'EventHandler': '<S1>:61'
           if (static_cast<uint32_T>(rtDW.is_EventHandler) == IN_HandleEvent) {
@@ -13631,6 +14533,13 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
           // During 'controlLaw': '<S1>:59'
           // '<S1>:59:5' if trueMeasAvail
           if (*sfEvent == static_cast<int32_T>(event_trueMeasAvail)) {
+            // '<S1>:59:6' [u, yhat0, B(chs0,:)] = AMPC0(traj(chs0, waypt),...
+            // '<S1>:59:7'         y(chs0), y_o(chs0), u_o,...
+            // '<S1>:59:8'         B(chs0,:), enAdapt(chs0), excitation);
+            initParam[0] = rtY.B_o[static_cast<int32_T>(rtDW.chs0) - 1];
+            initParam[1] = rtY.B_o[static_cast<int32_T>(rtDW.chs0) + 2];
+            initParam[2] = rtY.B_o[static_cast<int32_T>(rtDW.chs0) + 5];
+
             // Outputs for Function Call SubSystem: '<S1>/State0.controlLaw.AMPC0' 
             // Outport: '<Root>/u' incorporates:
             //   Inport: '<Root>/enAdapt'
@@ -13638,30 +14547,30 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
             //   Inport: '<Root>/u_o'
             //   Inport: '<Root>/y'
             //   Inport: '<Root>/y_o'
-            //   Outport: '<Root>/param'
+            //   Outport: '<Root>/B'
 
-            // '<S1>:59:6' [u, yhat0, param(chs0)] = AMPC0(traj(chs0, waypt),... 
-            // '<S1>:59:7'         y(chs0), y_o(chs0), u_o,...
-            // '<S1>:59:8'         param(chs0), enAdapt(chs0), excitation);
             // Simulink Function 'AMPC0': '<S1>:5'
             State0controlLawAMPC0(rtDW.traj[(static_cast<int32_T>(rtDW.chs0) + 3
               * (static_cast<int32_T>(rtDW.waypt) - 1)) - 1], rtU.y
                                   [static_cast<int32_T>(rtDW.chs0) - 1],
                                   rtU.y_o[static_cast<int32_T>(rtDW.chs0) - 1],
-                                  rtU.u_o, rtY.param[static_cast<int32_T>
-                                  (rtDW.chs0) - 1], static_cast<real_T>
+                                  rtU.u_o, initParam, static_cast<real_T>
                                   (rtU.enAdapt[static_cast<int32_T>(rtDW.chs0) -
-              1] ? 1.0 : 0.0), rtU.excitation, rtY.u, &rtDW.yhat0, &rtY.param[
-                                  static_cast<int32_T>(rtDW.chs0) - 1],
+              1] ? 1.0 : 0.0), rtU.excitation, rtY.u, &rtDW.yhat0,
+                                  OutportBufferForparams,
                                   &rtDW.State0controlLawAMPC0_n,
                                   &rtP.State0controlLawAMPC0_n, &rtP,
                                   &rtPrevZCX.State0controlLawAMPC0_n);
 
             // End of Outputs for SubSystem: '<S1>/State0.controlLaw.AMPC0'
+            rtY.B_o[static_cast<int32_T>(rtDW.chs0) - 1] =
+              OutportBufferForparams[0];
+            rtY.B_o[static_cast<int32_T>(rtDW.chs0) + 2] =
+              OutportBufferForparams[1];
+            rtY.B_o[static_cast<int32_T>(rtDW.chs0) + 5] =
+              OutportBufferForparams[2];
           } else if ((*sfEvent == static_cast<int32_T>(event_simMeasAvail)) &&
                      rtY.inTransRegion) {
-            int32_T i;
-
             // '<S1>:59:9' elseif simMeasAvail & inTransRegion
             //  use yhat instead of y for ch's w/o measurements
             // '<S1>:59:11' ysim0 = y(chs0);
@@ -13677,6 +14586,13 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
               ysim0 = rtU.y_max[static_cast<int32_T>(rtDW.chs0) - 1];
             }
 
+            // '<S1>:59:14' [u, yhat0, B(chs0,:)] = AMPC0(traj(chs0, waypt),...
+            // '<S1>:59:15'         ysim0, y_o(chs0), u_o,...
+            // '<S1>:59:16'         B(chs0,:), false, excitation);
+            initParam[0] = rtY.B_o[static_cast<int32_T>(rtDW.chs0) - 1];
+            initParam[1] = rtY.B_o[static_cast<int32_T>(rtDW.chs0) + 2];
+            initParam[2] = rtY.B_o[static_cast<int32_T>(rtDW.chs0) + 5];
+
             // Outputs for Function Call SubSystem: '<S1>/State0.controlLaw.AMPC0' 
             // Outport: '<Root>/u' incorporates:
             //   Inport: '<Root>/excitation'
@@ -13684,23 +14600,25 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
             //   Inport: '<Root>/y'
             //   Inport: '<Root>/y_max'
             //   Inport: '<Root>/y_o'
-            //   Outport: '<Root>/param'
+            //   Outport: '<Root>/B'
 
-            // '<S1>:59:14' [u, yhat0, param(chs0)] = AMPC0(traj(chs0, waypt),... 
-            // '<S1>:59:15'         ysim0, y_o(chs0), u_o,...
-            // '<S1>:59:16'         param(chs0), false, excitation);
             // Simulink Function 'AMPC0': '<S1>:5'
             State0controlLawAMPC0(rtDW.traj[(static_cast<int32_T>(rtDW.chs0) + 3
               * (static_cast<int32_T>(rtDW.waypt) - 1)) - 1], ysim0, rtU.y_o[
                                   static_cast<int32_T>(rtDW.chs0) - 1], rtU.u_o,
-                                  rtY.param[static_cast<int32_T>(rtDW.chs0) - 1],
-                                  0.0, rtU.excitation, rtY.u, &rtDW.yhat0,
-                                  &rtY.param[static_cast<int32_T>(rtDW.chs0) - 1],
+                                  initParam, 0.0, rtU.excitation, rtY.u,
+                                  &rtDW.yhat0, OutportBufferForparams,
                                   &rtDW.State0controlLawAMPC0_n,
                                   &rtP.State0controlLawAMPC0_n, &rtP,
                                   &rtPrevZCX.State0controlLawAMPC0_n);
 
             // End of Outputs for SubSystem: '<S1>/State0.controlLaw.AMPC0'
+            rtY.B_o[static_cast<int32_T>(rtDW.chs0) - 1] =
+              OutportBufferForparams[0];
+            rtY.B_o[static_cast<int32_T>(rtDW.chs0) + 2] =
+              OutportBufferForparams[1];
+            rtY.B_o[static_cast<int32_T>(rtDW.chs0) + 5] =
+              OutportBufferForparams[2];
           } else {
             // no actions
           }
@@ -13712,9 +14630,9 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
 
           // '<S1>:59:19' currTraj = traj(:, waypt);
           rtY.currTraj[0] = rtDW.traj[(static_cast<int32_T>(rtDW.waypt) - 1) * 3];
-          c_size_idx_0 = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
-          rtY.currTraj[1] = rtDW.traj[c_size_idx_0 + 1];
-          rtY.currTraj[2] = rtDW.traj[c_size_idx_0 + 2];
+          i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
+          rtY.currTraj[1] = rtDW.traj[i + 1];
+          rtY.currTraj[2] = rtDW.traj[i + 2];
         }
       }
       break;
@@ -13784,9 +14702,8 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
                 // '<S1>:191:7' else
                 //  hold last waypoint pos
                 // '<S1>:191:9' traj(:,1) = traj(:, waypt);
-                rtDW.traj[0] = rtDW.traj[(static_cast<int32_T>(rtDW.waypt) - 1) *
-                  3];
                 i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
+                rtDW.traj[0] = rtDW.traj[i];
                 rtDW.traj[1] = rtDW.traj[i + 1];
                 rtDW.traj[2] = rtDW.traj[i + 2];
 
@@ -13836,21 +14753,28 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
           // During 'controlLaw': '<S1>:203'
           // '<S1>:203:5' if trueMeasAvail
           if (*sfEvent == static_cast<int32_T>(event_trueMeasAvail)) {
-            // '<S1>:203:6' [u, yhat2, param(chs2)] = AMPC2(traj(chs2, waypt),... 
+            int32_T c_size_idx_0;
+
+            // '<S1>:203:6' [u, yhat2, B(chs2,:)] = AMPC2(traj(chs2, waypt),...
             // '<S1>:203:7'         y(chs2), y_o(chs2), u_o,...
-            // '<S1>:203:8'         param(chs2), enAdapt(chs2), excitation);
-            r_l[0] = rtDW.traj[((static_cast<int32_T>(rtDW.waypt) - 1) * 3 +
-                                static_cast<int32_T>(rtDW.chs2[0])) - 1];
+            // '<S1>:203:8'         B(chs2,:), enAdapt(chs2), excitation);
+            i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
+            r_l[0] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs2[0])) - 1];
             y_c[0] = rtU.y[static_cast<int32_T>(rtDW.chs2[0]) - 1];
             y0_l[0] = rtU.y_o[static_cast<int32_T>(rtDW.chs2[0]) - 1];
-            initParam_e[0] = rtY.param[static_cast<int32_T>(rtDW.chs2[0]) - 1];
-            paramEst_m[0] = rtU.enAdapt[static_cast<int32_T>(rtDW.chs2[0]) - 1] ?
-              1.0 : 0.0;
-            r_l[1] = rtDW.traj[((static_cast<int32_T>(rtDW.waypt) - 1) * 3 +
-                                static_cast<int32_T>(rtDW.chs2[1])) - 1];
+            r_l[1] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs2[1])) - 1];
             y_c[1] = rtU.y[static_cast<int32_T>(rtDW.chs2[1]) - 1];
             y0_l[1] = rtU.y_o[static_cast<int32_T>(rtDW.chs2[1]) - 1];
-            initParam_e[1] = rtY.param[static_cast<int32_T>(rtDW.chs2[1]) - 1];
+            for (i = 0; i < 3; i++) {
+              c_size_idx_0 = i << 1UL;
+              initParam_e[c_size_idx_0] = rtY.B_o[(3 * i + static_cast<int32_T>
+                (rtDW.chs2[0])) - 1];
+              initParam_e[c_size_idx_0 + 1] = rtY.B_o[(3 * i +
+                static_cast<int32_T>(rtDW.chs2[1])) - 1];
+            }
+
+            paramEst_m[0] = rtU.enAdapt[static_cast<int32_T>(rtDW.chs2[0]) - 1] ?
+              1.0 : 0.0;
             paramEst_m[1] = rtU.enAdapt[static_cast<int32_T>(rtDW.chs2[1]) - 1] ?
               1.0 : 0.0;
 
@@ -13861,7 +14785,7 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
             //   Inport: '<Root>/u_o'
             //   Inport: '<Root>/y'
             //   Inport: '<Root>/y_o'
-            //   Outport: '<Root>/param'
+            //   Outport: '<Root>/B'
 
             // Simulink Function 'AMPC2': '<S1>:202'
             State2controlLawAMPC2(r_l, y_c, y0_l, rtU.u_o, initParam_e,
@@ -13872,10 +14796,13 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
                                   &rtPrevZCX.State2controlLawAMPC2_l);
 
             // End of Outputs for SubSystem: '<S1>/State2.controlLaw.AMPC2'
-            rtY.param[static_cast<int32_T>(rtDW.chs2[0]) - 1] =
-              SignalConversion[0];
-            rtY.param[static_cast<int32_T>(rtDW.chs2[1]) - 1] =
-              SignalConversion[1];
+            for (i = 0; i < 3; i++) {
+              c_size_idx_0 = i << 1UL;
+              rtY.B_o[(static_cast<int32_T>(rtDW.chs2[0]) + 3 * i) - 1] =
+                SignalConversion[c_size_idx_0];
+              rtY.B_o[(static_cast<int32_T>(rtDW.chs2[1]) + 3 * i) - 1] =
+                SignalConversion[c_size_idx_0 + 1];
+            }
           } else if ((*sfEvent == static_cast<int32_T>(event_simMeasAvail)) &&
                      rtY.inTransRegion) {
             real_T y_c_tmp;
@@ -13924,18 +14851,24 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
               y_c[b_data[i] - 1] = r_l[i];
             }
 
-            // '<S1>:203:14' [u, yhat2, param(chs2)] = AMPC2(traj(chs2, waypt),... 
+            // '<S1>:203:14' [u, yhat2, B(chs2,:)] = AMPC2(traj(chs2, waypt),... 
             // '<S1>:203:15'         ysim2, y_o(chs2), u_o,...
-            // '<S1>:203:16'         param(chs2), y(chs2)~=0, excitation);
+            // '<S1>:203:16'         B(chs2,:), y(chs2)~=0, excitation);
             i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
             r_l[0] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs2[0])) - 1];
             y0_l[0] = rtU.y_o[static_cast<int32_T>(rtDW.chs2[0]) - 1];
-            initParam_e[0] = rtY.param[static_cast<int32_T>(rtDW.chs2[0]) - 1];
-            paramEst_m[0] = static_cast<real_T>(ysim0 != 0.0 ?
-              static_cast<int32_T>(1) : static_cast<int32_T>(0));
             r_l[1] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs2[1])) - 1];
             y0_l[1] = rtU.y_o[static_cast<int32_T>(rtDW.chs2[1]) - 1];
-            initParam_e[1] = rtY.param[static_cast<int32_T>(rtDW.chs2[1]) - 1];
+            for (i = 0; i < 3; i++) {
+              c_size_idx_0 = i << 1UL;
+              initParam_e[c_size_idx_0] = rtY.B_o[(3 * i + static_cast<int32_T>
+                (rtDW.chs2[0])) - 1];
+              initParam_e[c_size_idx_0 + 1] = rtY.B_o[(3 * i +
+                static_cast<int32_T>(rtDW.chs2[1])) - 1];
+            }
+
+            paramEst_m[0] = static_cast<real_T>(ysim0 != 0.0 ?
+              static_cast<int32_T>(1) : static_cast<int32_T>(0));
             paramEst_m[1] = static_cast<real_T>(y_c_tmp != 0.0 ?
               static_cast<int32_T>(1) : static_cast<int32_T>(0));
 
@@ -13946,7 +14879,7 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
             //   Inport: '<Root>/y'
             //   Inport: '<Root>/y_max'
             //   Inport: '<Root>/y_o'
-            //   Outport: '<Root>/param'
+            //   Outport: '<Root>/B'
 
             // Simulink Function 'AMPC2': '<S1>:202'
             State2controlLawAMPC2(r_l, y_c, y0_l, rtU.u_o, initParam_e,
@@ -13957,10 +14890,13 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
                                   &rtPrevZCX.State2controlLawAMPC2_l);
 
             // End of Outputs for SubSystem: '<S1>/State2.controlLaw.AMPC2'
-            rtY.param[static_cast<int32_T>(rtDW.chs2[0]) - 1] =
-              SignalConversion[0];
-            rtY.param[static_cast<int32_T>(rtDW.chs2[1]) - 1] =
-              SignalConversion[1];
+            for (i = 0; i < 3; i++) {
+              c_size_idx_0 = i << 1UL;
+              rtY.B_o[(static_cast<int32_T>(rtDW.chs2[0]) + 3 * i) - 1] =
+                SignalConversion[c_size_idx_0];
+              rtY.B_o[(static_cast<int32_T>(rtDW.chs2[1]) + 3 * i) - 1] =
+                SignalConversion[c_size_idx_0 + 1];
+            }
           } else {
             // no actions
           }
@@ -14026,11 +14962,14 @@ void SupervisoryController::initialize()
   rt_InitInfAndNaN(sizeof(real_T));
 
   {
+    static const real_T tmp[9]{ 1.0, -0.5, -0.5, -0.5, 1.0, -0.5, -0.5, -0.5,
+      1.0 };
+
+    real_T SignalConversion_p[6];
+    real_T OutportBufferForparams[3];
     real_T Sum_b[3];
-    real_T SignalConversion_p[2];
     real_T Sum3_m[2];
     real_T Sum3_l;
-    real_T x;
     rtPrevZCX.SupervisoryController_Trig_ZCE[0] = UNINITIALIZED_ZCSIG;
     rtPrevZCX.SupervisoryController_Trig_ZCE[1] = UNINITIALIZED_ZCSIG;
     rtPrevZCX.State2controlLawAMPC2_l.MemoryX_Reset_ZCE = UNINITIALIZED_ZCSIG;
@@ -14039,6 +14978,9 @@ void SupervisoryController::initialize()
     rtPrevZCX.State1controlLawAMPC1_g.MemoryP_Reset_ZCE_k = UNINITIALIZED_ZCSIG;
     rtPrevZCX.State0controlLawAMPC0_n.MemoryX_Reset_ZCE_j = UNINITIALIZED_ZCSIG;
     rtPrevZCX.State0controlLawAMPC0_n.MemoryP_Reset_ZCE_a = UNINITIALIZED_ZCSIG;
+
+    // SystemInitialize for Outport: '<Root>/B'
+    (void)std::memcpy(&rtY.B_o[0], &tmp[0], 9U * sizeof(real_T));
     rtDW.chs0 = 1U;
     rtDW.chs1[0] = 2U;
     rtDW.chs2[0] = 1U;
@@ -14053,31 +14995,18 @@ void SupervisoryController::initialize()
     rtY.currEv.destPos[0] = 0.0;
     rtY.currEv.chs[0] = false;
     rtY.currEv.nextChs[0] = false;
-
-    // SystemInitialize for Outport: '<Root>/param'
-    rtY.param[0] = 1.0;
-
-    // SystemInitialize for Outport: '<Root>/currEv'
     rtY.currEv.destPos[1] = 0.0;
     rtY.currEv.chs[1] = false;
     rtY.currEv.nextChs[1] = false;
-
-    // SystemInitialize for Outport: '<Root>/param'
-    rtY.param[1] = 1.0;
-
-    // SystemInitialize for Outport: '<Root>/currEv'
     rtY.currEv.destPos[2] = 0.0;
     rtY.currEv.chs[2] = false;
     rtY.currEv.nextChs[2] = false;
 
-    // SystemInitialize for Outport: '<Root>/param'
-    rtY.param[2] = 1.0;
-
     // SystemInitialize for Chart: '<Root>/SupervisoryController' incorporates:
     //   SubSystem: '<S1>/State0.controlLaw.AMPC0'
 
-    State0controlLawAMPC0_Init(Sum_b, &Sum3_l, &x, &rtDW.State0controlLawAMPC0_n,
-      &rtP.State0controlLawAMPC0_n);
+    State0controlLawAMPC0_Init(Sum_b, &Sum3_l, OutportBufferForparams,
+      &rtDW.State0controlLawAMPC0_n, &rtP.State0controlLawAMPC0_n);
 
     // SystemInitialize for Chart: '<Root>/SupervisoryController' incorporates:
     //   SubSystem: '<S1>/State1.controlLaw.AMPC1'

@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.854
+// Model version                  : 1.943
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Sun May 14 23:58:51 2023
+// C/C++ source code generated on : Mon May 15 02:27:04 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -286,14 +286,14 @@ class SupervisoryController final
     real_T Product3[2];                // '<S108>/Product3'
     real_T last_mv_DSTATE[3];          // '<S8>/last_mv'
     real_T UnitDelay2_DSTATE[3];       // '<S6>/Unit Delay2'
+    real_T delayTheta_DSTATE[2];       // '<S38>/delayTheta'
+    real_T delayL_DSTATE[4];           // '<S38>/delayL'
     real_T MemoryX_DSTATE[2];          // '<S65>/MemoryX'
     real_T MemoryP_DSTATE[4];          // '<S65>/MemoryP'
     real_T NextOutput[3];              // '<S2>/Measurement Noise'
     real_T dv[966];
     real_T Su[1200];
     real_T UnitDelay3_DSTATE;          // '<S6>/Unit Delay3'
-    real_T delayTheta_DSTATE;          // '<S38>/delayTheta'
-    real_T delayL_DSTATE;              // '<S38>/delayL'
     uint32_T RandSeed[3];              // '<S2>/Measurement Noise'
     boolean_T Memory_PreviousInput[46];// '<S8>/Memory'
     boolean_T icLoad;                  // '<S38>/delayBuffery'
@@ -330,8 +330,12 @@ class SupervisoryController final
     DW_RLS sf_RLS;                     // '<S145>/RLS'
     real_T Product3[4];                // '<S242>/Product3'
     real_T last_mv_DSTATE[3];          // '<S114>/last_mv'
-    real_T UnitDelay3_DSTATE[2];       // '<S112>/Unit Delay3'
     real_T UnitDelay2_DSTATE[3];       // '<S112>/Unit Delay2'
+    real_T UnitDelay3_DSTATE[2];       // '<S112>/Unit Delay3'
+    real_T delayTheta_DSTATE[3];       // '<S145>/delayTheta'
+    real_T delayL_DSTATE[9];           // '<S145>/delayL'
+    real_T delayTheta_DSTATE_i[3];     // '<S146>/delayTheta'
+    real_T delayL_DSTATE_o[9];         // '<S146>/delayL'
     real_T MemoryX_DSTATE[4];          // '<S199>/MemoryX'
     real_T MemoryP_DSTATE[16];         // '<S199>/MemoryP'
     real_T NextOutput[3];              // '<S3>/Measurement Noise'
@@ -340,12 +344,8 @@ class SupervisoryController final
     real_T Su[2400];
     real_T delayBuffery_DSTATE;        // '<S145>/delayBuffery'
     real_T delayBufferH_DSTATE;        // '<S145>/delayBufferH'
-    real_T delayTheta_DSTATE;          // '<S145>/delayTheta'
-    real_T delayL_DSTATE;              // '<S145>/delayL'
     real_T delayBuffery_DSTATE_i;      // '<S146>/delayBuffery'
     real_T delayBufferH_DSTATE_h;      // '<S146>/delayBufferH'
-    real_T delayTheta_DSTATE_i;        // '<S146>/delayTheta'
-    real_T delayL_DSTATE_o;            // '<S146>/delayL'
     uint32_T RandSeed[3];              // '<S3>/Measurement Noise'
     boolean_T Memory_PreviousInput[86];// '<S114>/Memory'
     boolean_T icLoad;                  // '<S145>/delayBuffery'
@@ -373,8 +373,12 @@ class SupervisoryController final
     DW_RLS sf_RLS;                     // '<S279>/RLS'
     real_T Product3[4];                // '<S376>/Product3'
     real_T last_mv_DSTATE[3];          // '<S248>/last_mv'
-    real_T UnitDelay7_DSTATE[2];       // '<S246>/Unit Delay7'
     real_T UnitDelay1_DSTATE[3];       // '<S246>/Unit Delay1'
+    real_T UnitDelay7_DSTATE[2];       // '<S246>/Unit Delay7'
+    real_T delayTheta_DSTATE[3];       // '<S279>/delayTheta'
+    real_T delayL_DSTATE[9];           // '<S279>/delayL'
+    real_T delayTheta_DSTATE_m[3];     // '<S280>/delayTheta'
+    real_T delayL_DSTATE_c[9];         // '<S280>/delayL'
     real_T MemoryX_DSTATE[4];          // '<S333>/MemoryX'
     real_T MemoryP_DSTATE[16];         // '<S333>/MemoryP'
     real_T NextOutput[3];              // '<S4>/Measurement Noise'
@@ -383,12 +387,8 @@ class SupervisoryController final
     real_T Su[2400];
     real_T delayBuffery_DSTATE;        // '<S279>/delayBuffery'
     real_T delayBufferH_DSTATE;        // '<S279>/delayBufferH'
-    real_T delayTheta_DSTATE;          // '<S279>/delayTheta'
-    real_T delayL_DSTATE;              // '<S279>/delayL'
     real_T delayBuffery_DSTATE_l;      // '<S280>/delayBuffery'
     real_T delayBufferH_DSTATE_i;      // '<S280>/delayBufferH'
-    real_T delayTheta_DSTATE_m;        // '<S280>/delayTheta'
-    real_T delayL_DSTATE_c;            // '<S280>/delayL'
     uint32_T RandSeed[3];              // '<S4>/Measurement Noise'
     boolean_T Memory_PreviousInput[86];// '<S248>/Memory'
     boolean_T icLoad;                  // '<S279>/delayBuffery'
@@ -466,7 +466,7 @@ class SupervisoryController final
     boolean_T requestEvent;            // '<Root>/requestEvent'
     real_T currTraj[3];                // '<Root>/currTraj'
     real_T yhat[3];                    // '<Root>/yhat'
-    real_T param[3];                   // '<Root>/param'
+    real_T B_o[9];                     // '<Root>/B'
   };
 
   // Parameters for system: '<S1>/State0.controlLaw.AMPC0'
@@ -529,9 +529,6 @@ class SupervisoryController final
 
     real_T Constant_Value;             // Expression: 1e4
                                           //  Referenced by: '<S6>/Constant'
-
-    real_T Constant1_Value[3];         // Expression: G0.B
-                                          //  Referenced by: '<S6>/Constant1'
 
     real_T Constant13_Value[3];        // Expression: G0.D
                                           //  Referenced by: '<S6>/Constant13'
@@ -689,11 +686,11 @@ class SupervisoryController final
     real_T Constant5_Value[4];         // Expression: G1.A
                                           //  Referenced by: '<S112>/Constant5'
 
-    real_T UnitDelay3_InitialCondition;// Expression: 0
-                                          //  Referenced by: '<S112>/Unit Delay3'
-
     real_T UnitDelay2_InitialCondition;// Expression: 0
                                           //  Referenced by: '<S112>/Unit Delay2'
+
+    real_T UnitDelay3_InitialCondition;// Expression: 0
+                                          //  Referenced by: '<S112>/Unit Delay3'
 
     real_T ForgettingFactor_Value;     // Expression: initializationParams.adg1
                                           //  Referenced by: '<S145>/Forgetting Factor'
@@ -712,9 +709,6 @@ class SupervisoryController final
     real_T Constant_Value;             // Expression: 1e4
                                           //  Referenced by: '<S112>/Constant'
 
-    real_T Constant3_Value[3];         // Expression: G1.B(1,:)
-                                          //  Referenced by: '<S112>/Constant3'
-
     real_T ForgettingFactor_Value_k;   // Expression: initializationParams.adg1
                                           //  Referenced by: '<S146>/Forgetting Factor'
 
@@ -728,9 +722,6 @@ class SupervisoryController final
     real_T InitialRegressors_Value_e;
                            // Expression: initializationParams.initialRegressors
                               //  Referenced by: '<S146>/InitialRegressors'
-
-    real_T Constant4_Value[3];         // Expression: G1.B(2,:)
-                                          //  Referenced by: '<S112>/Constant4'
 
     real_T Constant12_Value[4];        // Expression: G1.C
                                           //  Referenced by: '<S112>/Constant12'
@@ -891,11 +882,11 @@ class SupervisoryController final
     real_T Constant10_Value[4];        // Expression: G2.A
                                           //  Referenced by: '<S246>/Constant10'
 
-    real_T UnitDelay7_InitialCondition;// Expression: 0
-                                          //  Referenced by: '<S246>/Unit Delay7'
-
     real_T UnitDelay1_InitialCondition;// Expression: 0
                                           //  Referenced by: '<S246>/Unit Delay1'
+
+    real_T UnitDelay7_InitialCondition;// Expression: 0
+                                          //  Referenced by: '<S246>/Unit Delay7'
 
     real_T ForgettingFactor_Value;     // Expression: initializationParams.adg1
                                           //  Referenced by: '<S279>/Forgetting Factor'
@@ -914,9 +905,6 @@ class SupervisoryController final
     real_T Constant_Value;             // Expression: 1e4
                                           //  Referenced by: '<S246>/Constant'
 
-    real_T Constant7_Value[3];         // Expression: G2.B(1,:)
-                                          //  Referenced by: '<S246>/Constant7'
-
     real_T ForgettingFactor_Value_a;   // Expression: initializationParams.adg1
                                           //  Referenced by: '<S280>/Forgetting Factor'
 
@@ -930,9 +918,6 @@ class SupervisoryController final
     real_T InitialRegressors_Value_j;
                            // Expression: initializationParams.initialRegressors
                               //  Referenced by: '<S280>/InitialRegressors'
-
-    real_T Constant8_Value[3];         // Expression: G2.B(2,:)
-                                          //  Referenced by: '<S246>/Constant8'
 
     real_T Constant4_Value[4];         // Expression: G2.C
                                           //  Referenced by: '<S246>/Constant4'
@@ -1159,18 +1144,25 @@ class SupervisoryController final
 
   // private member function(s) for subsystem '<S1>/State0.controlLaw.AMPC0'
   void State0controlLawAMPC0_Init(real_T rty_u[3], real_T *rty_yhat, real_T
-    *rty_params, DW_State0controlLawAMPC0 *localDW, P_State0controlLawAMPC0
+    rty_params[3], DW_State0controlLawAMPC0 *localDW, P_State0controlLawAMPC0
     *localP);
   static void State0controlLawAMPC0_Disable(DW_State0controlLawAMPC0 *localDW,
     P_State0controlLawAMPC0 *localP);
   void State0controlLawAMPC0(real_T rtu_r, real_T rtu_y, real_T rtu_y0, const
-    real_T rtu_u0[3], real_T rtu_initParam, real_T rtu_paramEst, real_T
-    rtu_excitationVal, real_T rty_u[3], real_T *rty_yhat, real_T *rty_params,
+    real_T rtu_u0[3], const real_T rtu_initParam[3], real_T rtu_paramEst, real_T
+    rtu_excitationVal, real_T rty_u[3], real_T *rty_yhat, real_T rty_params[3],
     DW_State0controlLawAMPC0 *localDW, P_State0controlLawAMPC0 *localP, P *rtP,
     ZCE_State0controlLawAMPC0 *localZCE);
-  real_T xnrm2_g(int32_T n, const real_T x[2], int32_T ix0);
-  void qrFactor(real_T A, real_T *S, real_T Ns);
-  void trisolve_m(real_T A, real_T *B_0);
+  real_T xnrm2_g(int32_T n, const real_T x[3], int32_T ix0);
+  real_T qrFactor(const real_T A[2], const real_T S[4], real_T Ns);
+  void trisolve_m(real_T A, real_T B_1[2]);
+  real_T xnrm2_gg(int32_T n, const real_T x[6], int32_T ix0);
+  void xgemv_m(int32_T m, int32_T n, const real_T A[6], int32_T ia0, const
+               real_T x[6], int32_T ix0, real_T y[2]);
+  void xgerc_n(int32_T m, int32_T n, real_T alpha1, int32_T ix0, const real_T y
+               [2], real_T A[6], int32_T ia0);
+  void sqrtMeasurementUpdate(real_T L[4], const real_T H[2], real_T a0, real_T
+    K[2]);
   int32_T xpotrf(real_T b_A[16]);
   real_T minimum(const real_T x[4]);
   void trisolve(const real_T b_A[16], real_T b_B[16]);
@@ -1200,19 +1192,23 @@ class SupervisoryController final
     b_Mrows[46], real_T u[3], real_T useq[63], real_T *status, boolean_T iAout
     [46], DW_State0controlLawAMPC0 *localDW);
 
-  // private member function(s) for subsystem '<S112>/MATLAB Function1'
-  static void MATLABFunction1(const real_T rtu_B1[3], const real_T rtu_B2[3],
-    const real_T rtu_enAdapt[2], real_T rty_B[6]);
-
   // private member function(s) for subsystem '<S145>/ProcessInitialCovariance'
-  static void ProcessInitialCovariance(real_T rtu_u, real_T *rty_y);
+  static void ProcessInitialCovariance(real_T rtu_u, real_T rty_y[9]);
 
   // private member function(s) for subsystem '<S145>/RLS'
-  void RLS(real_T rtu_H, real_T rtu_y, boolean_T rtu_isEnabled, real_T rtu_adg1,
-           real_T *rty_e, real_T *rty_x, real_T *rty_L, DW_RLS *localDW);
-  real_T xnrm2_m(int32_T n, const real_T x[2], int32_T ix0);
-  void qrFactor_h(real_T A, real_T *S, real_T Ns);
-  void trisolve_h(real_T A, real_T *B_1);
+  void RLS(const real_T rtu_H[3], real_T rtu_y, boolean_T rtu_isEnabled, real_T
+           rtu_adg1, real_T *rty_e, real_T rty_x[3], real_T rty_L[9], DW_RLS
+           *localDW);
+  real_T xnrm2_m(int32_T n, const real_T x[4], int32_T ix0);
+  real_T qrFactor_h(const real_T A[3], const real_T S[9], real_T Ns);
+  void trisolve_h(real_T A, real_T B_3[3]);
+  real_T xnrm2_mw(int32_T n, const real_T x[12], int32_T ix0);
+  void xgemv_p(int32_T m, int32_T n, const real_T A[12], int32_T ia0, const
+               real_T x[12], int32_T ix0, real_T y[3]);
+  void xgerc_d(int32_T m, int32_T n, real_T alpha1, int32_T ix0, const real_T y
+               [3], real_T A[12], int32_T ia0);
+  void sqrtMeasurementUpdate_c(real_T L[9], const real_T H[3], real_T a0, real_T
+    K[3]);
 
   // private member function(s) for subsystem '<S199>/CalculatePL'
   void CalculatePL(const real_T rtu_Ak[16], const real_T rtu_Ck[8], const real_T
@@ -1220,7 +1216,7 @@ class SupervisoryController final
                    rtu_Nbark[8], boolean_T rtu_Enablek, const real_T rtu_Pk[16],
                    real_T rty_Mk[8], real_T rty_Lk[8], real_T rty_Zk[16], real_T
                    rty_Pk1[16]);
-  void mrdiv(const real_T A[8], const real_T B_2[4], real_T Y[8]);
+  void mrdiv(const real_T A[8], const real_T B_4[4], real_T Y[8]);
 
   // private member function(s) for subsystem '<S240>/SqrtUsedFcn'
   static void SqrtUsedFcn(const real_T rtu_u[16], boolean_T rtu_isSqrtUsed,
@@ -1249,14 +1245,14 @@ class SupervisoryController final
 
   // private member function(s) for subsystem '<S1>/State1.controlLaw.AMPC1'
   void State1controlLawAMPC1_Init(real_T rty_u[3], real_T rty_yhat[2], real_T
-    rty_params[2], DW_State1controlLawAMPC1 *localDW, P_State1controlLawAMPC1
+    rty_params[6], DW_State1controlLawAMPC1 *localDW, P_State1controlLawAMPC1
     *localP);
   static void State1controlLawAMPC1_Disable(DW_State1controlLawAMPC1 *localDW,
     P_State1controlLawAMPC1 *localP);
   void State1controlLawAMPC1(const real_T rtu_r[2], const real_T rtu_y[2], const
-    real_T rtu_y0[2], const real_T rtu_u0[3], const real_T rtu_initParam[2],
+    real_T rtu_y0[2], const real_T rtu_u0[3], const real_T rtu_initParam[6],
     const real_T rtu_paramEst[2], real_T rtu_excitationVal, real_T rty_u[3],
-    real_T rty_yhat[2], real_T rty_params[2], DW_State1controlLawAMPC1 *localDW,
+    real_T rty_yhat[2], real_T rty_params[6], DW_State1controlLawAMPC1 *localDW,
     P_State1controlLawAMPC1 *localP, P *rtP, ZCE_State1controlLawAMPC1 *localZCE);
   int32_T xpotrf_n(real_T b_A[16]);
   real_T minimum_i(const real_T x[4]);
@@ -1289,14 +1285,14 @@ class SupervisoryController final
 
   // private member function(s) for subsystem '<S1>/State2.controlLaw.AMPC2'
   void State2controlLawAMPC2_Init(real_T rty_u[3], real_T rty_yhat[2], real_T
-    rty_params[2], DW_State2controlLawAMPC2 *localDW, P_State2controlLawAMPC2
+    rty_params[6], DW_State2controlLawAMPC2 *localDW, P_State2controlLawAMPC2
     *localP);
   static void State2controlLawAMPC2_Disable(DW_State2controlLawAMPC2 *localDW,
     P_State2controlLawAMPC2 *localP);
   void State2controlLawAMPC2(const real_T rtu_r[2], const real_T rtu_y[2], const
-    real_T rtu_y0[2], const real_T rtu_u0[3], const real_T rtu_initParam[2],
+    real_T rtu_y0[2], const real_T rtu_u0[3], const real_T rtu_initParam[6],
     const real_T rtu_paramEst[2], real_T rtu_excitationVal, real_T rty_u[3],
-    real_T rty_yhat[2], real_T rty_params[2], DW_State2controlLawAMPC2 *localDW,
+    real_T rty_yhat[2], real_T rty_params[6], DW_State2controlLawAMPC2 *localDW,
     P_State2controlLawAMPC2 *localP, P *rtP, ZCE_State2controlLawAMPC2 *localZCE);
   int32_T xpotrf_b(real_T b_A[16]);
   real_T minimum_k(const real_T x[4]);
@@ -1652,6 +1648,7 @@ class SupervisoryController final
 //  Block '<S186>/Conversion' : Eliminate redundant data type conversion
 //  Block '<S187>/Conversion' : Eliminate redundant data type conversion
 //  Block '<S188>/Conversion' : Eliminate redundant data type conversion
+//  Block '<S112>/Reshape' : Reshape block reduction
 //  Block '<S211>/Conversion' : Eliminate redundant data type conversion
 //  Block '<S215>/Conversion' : Eliminate redundant data type conversion
 //  Block '<S218>/Reshape' : Reshape block reduction
@@ -1678,6 +1675,7 @@ class SupervisoryController final
 //  Block '<S320>/Conversion' : Eliminate redundant data type conversion
 //  Block '<S321>/Conversion' : Eliminate redundant data type conversion
 //  Block '<S322>/Conversion' : Eliminate redundant data type conversion
+//  Block '<S246>/Reshape' : Reshape block reduction
 //  Block '<S345>/Conversion' : Eliminate redundant data type conversion
 //  Block '<S349>/Conversion' : Eliminate redundant data type conversion
 //  Block '<S352>/Reshape' : Reshape block reduction
