@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.993
+// Model version                  : 1.994
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon May 15 08:09:25 2023
+// C/C++ source code generated on : Mon May 15 11:03:38 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -820,7 +820,7 @@ class SupervisoryController final
                                   // Computed Parameter: MeasurementNoise_StdDev
                                      //  Referenced by: '<S3>/Measurement Noise'
 
-    real_T MeasurementNoise_Seed;      // Expression: 12345
+    real_T MeasurementNoise_Seed[3];   // Expression: [12345 12346 12347]
                                           //  Referenced by: '<S3>/Measurement Noise'
 
     int32_T FixedHorizonOptimizer_Ndis;// Expression: Ndis
