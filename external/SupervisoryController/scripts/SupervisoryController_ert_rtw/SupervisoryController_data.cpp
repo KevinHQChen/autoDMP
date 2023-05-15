@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.966
+// Model version                  : 1.975
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon May 15 05:38:51 2023
+// C/C++ source code generated on : Mon May 15 06:27:44 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -538,11 +538,6 @@ SupervisoryController::P SupervisoryController::rtP{
 
     0.0,
 
-    // Expression: 0
-    //  Referenced by: '<S3>/Constant2'
-
-    0.0,
-
     // Expression: initializationParams.adg1
     //  Referenced by: '<S145>/Forgetting Factor'
 
@@ -730,6 +725,11 @@ SupervisoryController::P SupervisoryController::rtP{
 
     { 1.0, 1.0, 1.0 },
 
+    // Expression: 0
+    //  Referenced by: '<S3>/Constant2'
+
+    0.0,
+
     // Expression: [0 0 0]
     //  Referenced by: '<S3>/Measurement Noise'
 
@@ -763,11 +763,6 @@ SupervisoryController::P SupervisoryController::rtP{
       false, false, false, false, false, false, false, false, false, false,
       false, false, false, false, false, false },
 
-    // Expression: true
-    //  Referenced by: '<S3>/Constant1'
-
-    true,
-
     // Expression: true()
     //  Referenced by: '<S164>/Delay'
 
@@ -782,6 +777,11 @@ SupervisoryController::P SupervisoryController::rtP{
     //  Referenced by: '<S240>/isSqrtUsed'
 
     false,
+
+    // Expression: true
+    //  Referenced by: '<S3>/Constant1'
+
+    true,
 
     // Expression: false()
     //  Referenced by: '<S164>/Constant'
