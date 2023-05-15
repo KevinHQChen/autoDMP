@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.943
+// Model version                  : 1.944
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon May 15 02:46:04 2023
+// C/C++ source code generated on : Mon May 15 03:44:55 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -8190,21 +8190,23 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   // '<S144>:1:2' B = zeros(2,3);
   // '<S144>:1:3' if enAdapt(1) == false && enAdapt(2) == true
   if ((rtu_paramEst[0] == 0.0) && (rtu_paramEst[1] == 1.0)) {
-    // '<S144>:1:4' B1 = [B2(1), B2(3), B2(2)];
+    //      B1 = [B2(1), B2(3), B2(2)];
+    // '<S144>:1:5' B1 = B2;
     rtb_Sum1_k[0] = rtb_x_n[0];
-    rtb_Sum1_k[1] = rtb_x_n[2];
-    rtb_Sum1_k[2] = rtb_x_n[1];
+    rtb_Sum1_k[1] = rtb_x_n[1];
+    rtb_Sum1_k[2] = rtb_x_n[2];
   }
 
-  // '<S144>:1:6' if enAdapt(1) == true && enAdapt(2) == false
+  // '<S144>:1:7' if enAdapt(1) == true && enAdapt(2) == false
   if ((rtu_paramEst[0] == 1.0) && (rtu_paramEst[1] == 0.0)) {
-    // '<S144>:1:7' B2 = [B1(1), B1(3), B1(2)];
+    //      B2 = [B1(1), B1(3), B1(2)];
+    // '<S144>:1:9' B2 = B1;
     U[0] = rtb_Sum1_k[0];
-    U[1] = rtb_Sum1_k[2];
-    U[2] = rtb_Sum1_k[1];
+    U[1] = rtb_Sum1_k[1];
+    U[2] = rtb_Sum1_k[2];
   }
 
-  // '<S144>:1:10' B = [B1; B2];
+  // '<S144>:1:12' B = [B1; B2];
   rty_params[0] = rtb_Sum1_k[0];
   rty_params[1] = U[0];
   rty_params[2] = rtb_Sum1_k[1];
@@ -8218,7 +8220,7 @@ void SupervisoryController::State1controlLawAMPC1(const real_T rtu_r[2], const
   //   Constant: '<S112>/Constant11'
   //   Product: '<S202>/Product1'
 
-  // '<S144>:1:12' disp(B);
+  // '<S144>:1:14' disp(B);
   rtb_Sum_p_idx_0 = localP->Constant11_Value * rtu_y0[0];
   rtb_e_f = localP->Constant11_Value * rtu_y0[1];
 
