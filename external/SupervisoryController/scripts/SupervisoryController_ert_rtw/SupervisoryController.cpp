@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.951
+// Model version                  : 1.952
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon May 15 04:18:12 2023
+// C/C++ source code generated on : Mon May 15 04:35:58 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -14912,8 +14912,10 @@ void SupervisoryController::initialize()
   rt_InitInfAndNaN(sizeof(real_T));
 
   {
-    static const real_T tmp[9]{ 0.0315949, -0.0137427, -0.0137427, -0.0091062,
-      0.01135, -0.0010391, -0.0091062, -0.0010391, 0.01135 };
+    static const real_T tmp[9]{ 0.7084943675087555, -0.34290108520429963,
+      -0.3552101510579076, -0.34693844974269455, 0.43337106536580761,
+      -0.0749598690059731, -0.3458694000362138, -0.079433657162736954,
+      0.43031643660853247 };
 
     real_T SignalConversion_p[6];
     real_T OutportBufferForparams[3];
