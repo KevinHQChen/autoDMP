@@ -1,8 +1,8 @@
 #pragma once
 
 #include "gui/components/button.hpp"
-#include "gui/components/slider.hpp"
 #include "gui/components/implot_helpers.hpp"
+#include "gui/components/slider.hpp"
 #include "window.hpp"
 
 #include "ctrl/supervisor.hpp"
@@ -20,6 +20,7 @@ class CtrlWindow : public Window {
   float guiTime{0.0f}, history{30.0f};
   ScrollingBuffer u0, u1, u2;
   ScrollingBuffer y0, y1, y2, yhat0, yhat1, yhat2, yref0, yref1, yref2;
+  ScrollingBuffer param0, param1, param2;
   std::vector<std::pair<ScrollingBuffer *, std::string>> ctrlVecs{
       std::make_pair(&u0, "u0"), std::make_pair(&u1, "u1"), std::make_pair(&u2, "u2")};
   std::vector<std::pair<ScrollingBuffer *, std::string>> measVecs{
@@ -28,10 +29,13 @@ class CtrlWindow : public Window {
       std::make_pair(&yhat1, "yhat1"), std::make_pair(&yhat2, "yhat2"),
       std::make_pair(&yref0, "yref0"), std::make_pair(&yref1, "yref1"),
       std::make_pair(&yref2, "yref2")};
-
+  std::vector<std::pair<ScrollingBuffer *, std::string>> paramVecs{
+      std::make_pair(&param0, "param0"), std::make_pair(&param1, "param1"),
+      std::make_pair(&param2, "param2")};
   int srcState, destState, moveTime, holdTime;
   int targetPos[NUM_CHANS];
-  bool chs0[NUM_CHANS] = {true, false, false}, chs1[NUM_CHANS] = {false, true, true}, chs2[NUM_CHANS] = {true, false, true};
+  bool chs0[NUM_CHANS] = {true, false, false}, chs1[NUM_CHANS] = {false, true, true},
+       chs2[NUM_CHANS] = {true, false, true};
   float excitationAmp;
 
   int openAction = -1;

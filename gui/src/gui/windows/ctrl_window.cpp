@@ -242,12 +242,17 @@ void CtrlWindow::render() {
         yref0.AddPoint(guiTime, sv_->supOut.currTraj[0]);
         yref1.AddPoint(guiTime, sv_->supOut.currTraj[1]);
         yref2.AddPoint(guiTime, sv_->supOut.currTraj[2]);
+        param0.AddPoint(guiTime, sv_->supOut.param[0]);
+        param1.AddPoint(guiTime, sv_->supOut.param[1]);
+        param2.AddPoint(guiTime, sv_->supOut.param[2]);
       }
 
       ImGui::SliderFloat("History", &history, 1, 60, "%.1f s");
       plotVector3d("##Control Input", "time (s)", "voltage (V)", 0, 250, ctrlVecs, guiTime,
                    history);
       plotVector3d("##Measured Output", "time (s)", "position (px)", 0, 600, measVecs, guiTime,
+                   history);
+      plotVector3d("##Estimated Output", "time (s)", "position (px)", 0, 600, paramVecs, guiTime,
                    history);
       ImGui::End();
     }

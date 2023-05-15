@@ -204,12 +204,8 @@ void Supervisor::start() {
                             << ", nextChs: " << (bool)supOut.currEv.nextChs[0]
                             << (bool)supOut.currEv.nextChs[1] << (bool)supOut.currEv.nextChs[2]
                             << "\n";
-      ctrlDataQueuePtr->out << "params: " << supOut.params0[0] << ", " << supOut.params0[1] << ", "
-                            << supOut.params0[2] << ", " << supOut.params1[0] << ", "
-                            << supOut.params1[1] << ", " << supOut.params1[2] << ", "
-                            << supOut.params1[3] << ", " << supOut.params1[4] << ", "
-                            << supOut.params1[5] << ", " << supOut.params1[6] << ", "
-                            << supOut.params1[7] << "\n";
+      ctrlDataQueuePtr->out << "params: " << supOut.param[0] << ", " << supOut.param[1] << ", "
+                            << supOut.param[2] << "\n";
     }
   }
 }
