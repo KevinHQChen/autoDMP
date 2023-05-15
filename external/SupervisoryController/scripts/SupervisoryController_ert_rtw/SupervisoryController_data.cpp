@@ -9,7 +9,7 @@
 //
 // Model version                  : 1.854
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Sun May 14 23:12:08 2023
+// C/C++ source code generated on : Sun May 14 23:58:51 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -219,7 +219,7 @@ SupervisoryController::P SupervisoryController::rtP{
     // Expression: G2.B(1,:)
     //  Referenced by: '<S246>/Constant7'
 
-    { 1.0, -1.0, -1.0 },
+    { 1.0, -0.5, -0.5 },
 
     // Expression: initializationParams.adg1
     //  Referenced by: '<S280>/Forgetting Factor'
@@ -244,7 +244,7 @@ SupervisoryController::P SupervisoryController::rtP{
     // Expression: G2.B(2,:)
     //  Referenced by: '<S246>/Constant8'
 
-    { -1.0, -1.0, 1.0 },
+    { -0.5, -0.5, 1.0 },
 
     // Expression: G2.C
     //  Referenced by: '<S246>/Constant4'
@@ -565,7 +565,7 @@ SupervisoryController::P SupervisoryController::rtP{
     // Expression: G1.B(1,:)
     //  Referenced by: '<S112>/Constant3'
 
-    { -1.0, 1.0, -1.0 },
+    { -0.5, 1.0, -0.5 },
 
     // Expression: initializationParams.adg1
     //  Referenced by: '<S146>/Forgetting Factor'
@@ -590,7 +590,7 @@ SupervisoryController::P SupervisoryController::rtP{
     // Expression: G1.B(2,:)
     //  Referenced by: '<S112>/Constant4'
 
-    { -1.0, -1.0, 1.0 },
+    { -0.5, -0.5, 1.0 },
 
     // Expression: G1.C
     //  Referenced by: '<S112>/Constant12'
@@ -910,7 +910,7 @@ SupervisoryController::P SupervisoryController::rtP{
     // Expression: G0.B
     //  Referenced by: '<S6>/Constant1'
 
-    { 1.0, -1.0, -1.0 },
+    { 1.0, -0.5, -0.5 },
 
     // Expression: G0.D
     //  Referenced by: '<S6>/Constant13'
