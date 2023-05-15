@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.959
+// Model version                  : 1.966
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon May 15 05:05:46 2023
+// C/C++ source code generated on : Mon May 15 05:38:51 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -14597,8 +14597,346 @@ void SupervisoryController::enter_internal_State1(void)
   //  request new event
   // Entry 'controlLaw': '<S1>:162'
   // '<S1>:162:3' yhat1 = y_o(chs1);
-  rtDW.yhat1[0] = rtU.y_o[static_cast<int32_T>(rtDW.chs1[0]) - 1];
-  rtDW.yhat1[1] = rtU.y_o[static_cast<int32_T>(rtDW.chs1[1]) - 1];
+  rtDW.yhat1[0] = rtU.y_o[static_cast<int32_T>(rtP.chs1[0]) - 1];
+  rtDW.yhat1[1] = rtU.y_o[static_cast<int32_T>(rtP.chs1[1]) - 1];
+}
+
+// Function for Chart: '<Root>/SupervisoryController'
+void SupervisoryController::State2(const int32_T *sfEvent)
+{
+  real_T SignalConversion[6];
+  real_T initParam_e[6];
+  real_T ysim2_0[3];
+  real_T c_data[2];
+  real_T paramEst_m[2];
+  real_T r_l[2];
+  real_T y0_l[2];
+  real_T ysim2[2];
+  real_T ysim2_tmp;
+  uint16_T waypt;
+  int8_T b_data[2];
+  int8_T d_data[2];
+
+  // Outport: '<Root>/currEv' incorporates:
+  //   Inport: '<Root>/enAdapt'
+  //   Inport: '<Root>/nextEv'
+  //   Inport: '<Root>/y'
+  //   Inport: '<Root>/y_o'
+  //   Outport: '<Root>/B'
+  //   Outport: '<Root>/currTraj'
+  //   Outport: '<Root>/inTransRegion'
+  //   Outport: '<Root>/requestEvent'
+  //   Outport: '<Root>/yhat'
+  //   SignalConversion: '<S246>/Signal Conversion'
+
+  // During 'State2': '<S1>:193'
+  // '<S1>:207:1' sf_internal_predicateOutput = currEv.destState == 1 & evDone;
+  if ((rtY.currEv.destState == 1.0) && rtDW.evDone) {
+    // Disable for Function Call SubSystem: '<S1>/State2.controlLaw.AMPC2'
+    // Transition: '<S1>:207'
+    // Exit Internal 'State2': '<S1>:193'
+    // Exit 'controlLaw': '<S1>:203'
+    State2controlLawAMPC2_Disable(&rtDW.State2controlLawAMPC2_l,
+      &rtP.State2controlLawAMPC2_l);
+
+    // End of Disable for SubSystem: '<S1>/State2.controlLaw.AMPC2'
+    // Exit Internal 'EventHandler': '<S1>:194'
+    if (static_cast<uint32_T>(rtDW.is_EventHandler_k) == IN_RequestEvent) {
+      // Exit 'RequestEvent': '<S1>:191'
+      // '<S1>:191:14' requestEvent = false;
+      rtDW.is_EventHandler_k = IN_NO_ACTIVE_CHILD;
+    } else {
+      rtDW.is_EventHandler_k = IN_NO_ACTIVE_CHILD;
+    }
+
+    rtDW.is_c6_SupervisoryController = IN_State1;
+
+    // Entry 'State1': '<S1>:176'
+    // '<S1>:176:3' waypt = 1;
+    rtDW.waypt = 1U;
+
+    // '<S1>:176:4' traj = zeros(3, 2400);
+    (void)std::memset(&rtDW.traj[0], 0, 7200U * sizeof(real_T));
+
+    // '<S1>:176:5' inTransRegion = true;
+    rtY.inTransRegion = true;
+    enter_internal_State1();
+  } else {
+    real_T ysim2_tmp_0;
+    int32_T e_size_idx_0;
+    int32_T i;
+
+    // During 'EventHandler': '<S1>:194'
+    if (static_cast<uint32_T>(rtDW.is_EventHandler_k) == IN_HandleEvent) {
+      // During 'HandleEvent': '<S1>:190'
+      // '<S1>:188:1' sf_internal_predicateOutput = evDone;
+      if (rtDW.evDone) {
+        // Transition: '<S1>:188'
+        rtDW.is_EventHandler_k = IN_RequestEvent;
+
+        // Entry 'RequestEvent': '<S1>:191'
+        // '<S1>:191:3' evDone = false;
+        rtDW.evDone = false;
+
+        // '<S1>:191:4' if waypt == 1
+        if (rtDW.waypt == 1UL) {
+          //  hold curr pos
+          // '<S1>:191:6' traj(:, waypt) = y;
+          rtDW.traj[0] = rtU.y[0];
+          rtDW.traj[1] = rtU.y[1];
+          rtDW.traj[2] = rtU.y[2];
+        } else {
+          // '<S1>:191:7' else
+          //  hold last waypoint pos
+          // '<S1>:191:9' traj(:,1) = traj(:, waypt);
+          i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
+          rtDW.traj[0] = rtDW.traj[i];
+          rtDW.traj[1] = rtDW.traj[i + 1];
+          rtDW.traj[2] = rtDW.traj[i + 2];
+
+          // '<S1>:191:10' waypt = 1;
+          rtDW.waypt = 1U;
+        }
+
+        // '<S1>:191:12' requestEvent = true;
+        rtY.requestEvent = true;
+
+        //  request new event
+      } else {
+        // Outport: '<Root>/inTransRegion'
+        // '<S1>:190:9' [inTransRegion, evDone, waypt, holdT]...
+        // '<S1>:190:10'     = handleEvent(currEv);
+        handleEvent(rtY.currEv, &rtY.inTransRegion, &rtDW.evDone, &waypt,
+                    &ysim2_tmp);
+        rtDW.waypt = waypt;
+        rtDW.holdT = ysim2_tmp;
+      }
+
+      // During 'RequestEvent': '<S1>:191'
+      // '<S1>:192:1' sf_internal_predicateOutput = ~isequal(nextEv, nullEv);
+    } else if (!isequal(rtU.nextEv, rtP.nullEv)) {
+      // Transition: '<S1>:192'
+      // '<S1>:192:1' evDone = false;
+      rtDW.evDone = false;
+
+      // Exit 'RequestEvent': '<S1>:191'
+      // '<S1>:191:14' requestEvent = false;
+      rtY.requestEvent = false;
+      rtDW.is_EventHandler_k = IN_HandleEvent;
+
+      // Entry 'HandleEvent': '<S1>:190'
+      // '<S1>:190:3' currEv = nextEv;
+      rtY.currEv = rtU.nextEv;
+
+      // '<S1>:190:4' ysim2 = y(chs2);
+      ysim2_tmp = rtU.y[static_cast<int32_T>(rtP.chs2[0]) - 1];
+      ysim2[0] = ysim2_tmp;
+      ysim2_tmp_0 = rtU.y[static_cast<int32_T>(rtP.chs2[1]) - 1];
+      ysim2[1] = ysim2_tmp_0;
+
+      // '<S1>:190:5' ysim2(find(ysim2 == 0)) = ymax2(find(ysim2 == 0));
+      i = 0;
+      if (ysim2_tmp == 0.0) {
+        d_data[0] = 1;
+        i = 1;
+      }
+
+      if (ysim2_tmp_0 == 0.0) {
+        d_data[i] = 2;
+      }
+
+      i = 0;
+      if (ysim2_tmp == 0.0) {
+        i = 1;
+      }
+
+      if (ysim2_tmp_0 == 0.0) {
+        i++;
+      }
+
+      e_size_idx_0 = i;
+      i = 0;
+      if (ysim2_tmp == 0.0) {
+        r_l[0] = rtDW.ymax2[0];
+        i = 1;
+      }
+
+      if (ysim2_tmp_0 == 0.0) {
+        r_l[i] = rtDW.ymax2[1];
+      }
+
+      for (i = 0; i < e_size_idx_0; i++) {
+        ysim2[d_data[i] - 1] = r_l[i];
+      }
+
+      // '<S1>:190:6' [traj, trajSize] = trajGen(currEv, [ysim2(1); y(2); ysim2(2)]); 
+      ysim2_0[0] = ysim2[0];
+      ysim2_0[1] = rtU.y[1];
+      ysim2_0[2] = ysim2[1];
+      trajGen(rtY.currEv, ysim2_0, rtDW.traj, &rtDW.trajSize);
+
+      // '<S1>:190:7' holdT = 0;
+      rtDW.holdT = 0.0;
+    } else {
+      // no actions
+    }
+
+    // During 'controlLaw': '<S1>:203'
+    // '<S1>:203:5' if trueMeasAvail
+    if (*sfEvent == static_cast<int32_T>(event_trueMeasAvail)) {
+      // '<S1>:203:6' [u, yhat2, B(chs2,:)] = AMPC2(traj(chs2, waypt),...
+      // '<S1>:203:7'         y(chs2), y_o(chs2), u_o,...
+      // '<S1>:203:8'         B(chs2,:), enAdapt(chs2), excitation);
+      i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
+      r_l[0] = rtDW.traj[(i + static_cast<int32_T>(rtP.chs2[0])) - 1];
+      r_l[1] = rtDW.traj[(i + static_cast<int32_T>(rtP.chs2[1])) - 1];
+      ysim2[0] = rtU.y[static_cast<int32_T>(rtP.chs2[0]) - 1];
+      ysim2[1] = rtU.y[static_cast<int32_T>(rtP.chs2[1]) - 1];
+      y0_l[0] = rtU.y_o[static_cast<int32_T>(rtP.chs2[0]) - 1];
+      y0_l[1] = rtU.y_o[static_cast<int32_T>(rtP.chs2[1]) - 1];
+      for (i = 0; i < 3; i++) {
+        e_size_idx_0 = i << 1UL;
+        initParam_e[e_size_idx_0] = rtY.B_o[(3 * i + static_cast<int32_T>
+          (rtP.chs2[0])) - 1];
+        initParam_e[e_size_idx_0 + 1] = rtY.B_o[(3 * i + static_cast<int32_T>
+          (rtP.chs2[1])) - 1];
+      }
+
+      paramEst_m[0] = rtU.enAdapt[static_cast<int32_T>(rtP.chs2[0]) - 1] ? 1.0 :
+        0.0;
+      paramEst_m[1] = rtU.enAdapt[static_cast<int32_T>(rtP.chs2[1]) - 1] ? 1.0 :
+        0.0;
+
+      // Outputs for Function Call SubSystem: '<S1>/State2.controlLaw.AMPC2'
+      // Outport: '<Root>/u' incorporates:
+      //   Inport: '<Root>/enAdapt'
+      //   Inport: '<Root>/excitation'
+      //   Inport: '<Root>/u_o'
+      //   Inport: '<Root>/y'
+      //   Inport: '<Root>/y_o'
+      //   Outport: '<Root>/B'
+
+      // Simulink Function 'AMPC2': '<S1>:202'
+      State2controlLawAMPC2(r_l, ysim2, y0_l, rtU.u_o, initParam_e, paramEst_m,
+                            rtU.excitation, rtY.u, rtDW.yhat2, SignalConversion,
+                            &rtDW.State2controlLawAMPC2_l,
+                            &rtP.State2controlLawAMPC2_l, &rtP,
+                            &rtPrevZCX.State2controlLawAMPC2_l);
+
+      // End of Outputs for SubSystem: '<S1>/State2.controlLaw.AMPC2'
+      for (i = 0; i < 3; i++) {
+        e_size_idx_0 = i << 1UL;
+        rtY.B_o[(static_cast<int32_T>(rtP.chs2[0]) + 3 * i) - 1] =
+          SignalConversion[e_size_idx_0];
+        rtY.B_o[(static_cast<int32_T>(rtP.chs2[1]) + 3 * i) - 1] =
+          SignalConversion[e_size_idx_0 + 1];
+      }
+    } else if ((*sfEvent == static_cast<int32_T>(event_simMeasAvail)) &&
+               rtY.inTransRegion) {
+      // '<S1>:203:9' elseif simMeasAvail & inTransRegion
+      //  use yhat instead of y for ch's w/o measurements
+      // '<S1>:203:11' ysim2 = y(chs2);
+      ysim2_tmp = rtU.y[static_cast<int32_T>(rtP.chs2[0]) - 1];
+      ysim2[0] = ysim2_tmp;
+      ysim2_tmp_0 = rtU.y[static_cast<int32_T>(rtP.chs2[1]) - 1];
+      ysim2[1] = ysim2_tmp_0;
+
+      // '<S1>:203:12' ysim2(find(ysim2 == 0)) = ymax2(find(ysim2 == 0));
+      i = 0;
+      if (ysim2_tmp == 0.0) {
+        b_data[0] = 1;
+        i = 1;
+      }
+
+      if (ysim2_tmp_0 == 0.0) {
+        b_data[i] = 2;
+      }
+
+      i = 0;
+      if (ysim2_tmp == 0.0) {
+        i = 1;
+      }
+
+      if (ysim2_tmp_0 == 0.0) {
+        i++;
+      }
+
+      e_size_idx_0 = i;
+      i = 0;
+      if (ysim2_tmp == 0.0) {
+        c_data[0] = rtDW.ymax2[0];
+        i = 1;
+      }
+
+      if (ysim2_tmp_0 == 0.0) {
+        c_data[i] = rtDW.ymax2[1];
+      }
+
+      for (i = 0; i < e_size_idx_0; i++) {
+        ysim2[b_data[i] - 1] = c_data[i];
+      }
+
+      // '<S1>:203:13' [u, yhat2, B(chs2,:)] = AMPC2(traj(chs2, waypt),...
+      // '<S1>:203:14'         ysim2, y_o(chs2), u_o,...
+      // '<S1>:203:15'         B(chs2,:), y(chs2)~=0, excitation);
+      i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
+      r_l[0] = rtDW.traj[(i + static_cast<int32_T>(rtP.chs2[0])) - 1];
+      r_l[1] = rtDW.traj[(i + static_cast<int32_T>(rtP.chs2[1])) - 1];
+      y0_l[0] = rtU.y_o[static_cast<int32_T>(rtP.chs2[0]) - 1];
+      y0_l[1] = rtU.y_o[static_cast<int32_T>(rtP.chs2[1]) - 1];
+      for (i = 0; i < 3; i++) {
+        e_size_idx_0 = i << 1UL;
+        initParam_e[e_size_idx_0] = rtY.B_o[(3 * i + static_cast<int32_T>
+          (rtP.chs2[0])) - 1];
+        initParam_e[e_size_idx_0 + 1] = rtY.B_o[(3 * i + static_cast<int32_T>
+          (rtP.chs2[1])) - 1];
+      }
+
+      paramEst_m[0] = static_cast<real_T>(ysim2_tmp != 0.0 ? static_cast<int32_T>
+        (1) : static_cast<int32_T>(0));
+      paramEst_m[1] = static_cast<real_T>(ysim2_tmp_0 != 0.0 ?
+        static_cast<int32_T>(1) : static_cast<int32_T>(0));
+
+      // Outputs for Function Call SubSystem: '<S1>/State2.controlLaw.AMPC2'
+      // Outport: '<Root>/u' incorporates:
+      //   Inport: '<Root>/excitation'
+      //   Inport: '<Root>/u_o'
+      //   Inport: '<Root>/y'
+      //   Inport: '<Root>/y_o'
+      //   Outport: '<Root>/B'
+
+      // Simulink Function 'AMPC2': '<S1>:202'
+      State2controlLawAMPC2(r_l, ysim2, y0_l, rtU.u_o, initParam_e, paramEst_m,
+                            rtU.excitation, rtY.u, rtDW.yhat2, SignalConversion,
+                            &rtDW.State2controlLawAMPC2_l,
+                            &rtP.State2controlLawAMPC2_l, &rtP,
+                            &rtPrevZCX.State2controlLawAMPC2_l);
+
+      // End of Outputs for SubSystem: '<S1>/State2.controlLaw.AMPC2'
+      for (i = 0; i < 3; i++) {
+        e_size_idx_0 = i << 1UL;
+        rtY.B_o[(static_cast<int32_T>(rtP.chs2[0]) + 3 * i) - 1] =
+          SignalConversion[e_size_idx_0];
+        rtY.B_o[(static_cast<int32_T>(rtP.chs2[1]) + 3 * i) - 1] =
+          SignalConversion[e_size_idx_0 + 1];
+      }
+    } else {
+      // no actions
+    }
+
+    // '<S1>:203:17' yhat = [yhat2(1); 0; yhat2(2)];
+    rtY.yhat[0] = rtDW.yhat2[0];
+    rtY.yhat[1] = 0.0;
+    rtY.yhat[2] = rtDW.yhat2[1];
+
+    // '<S1>:203:18' currTraj = traj(:, waypt);
+    rtY.currTraj[0] = rtDW.traj[(static_cast<int32_T>(rtDW.waypt) - 1) * 3];
+    i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
+    rtY.currTraj[1] = rtDW.traj[i + 1];
+    rtY.currTraj[2] = rtDW.traj[i + 2];
+  }
+
+  // End of Outport: '<Root>/currEv'
 }
 
 // Function for Chart: '<Root>/SupervisoryController'
@@ -14644,7 +14982,7 @@ void SupervisoryController::enter_internal_State0(void)
   //  request new event
   // Entry 'controlLaw': '<S1>:59'
   // '<S1>:59:3' yhat0 = y_o(chs0);
-  rtDW.yhat0 = rtU.y_o[static_cast<int32_T>(rtDW.chs0) - 1];
+  rtDW.yhat0 = rtU.y_o[static_cast<int32_T>(rtP.chs0) - 1];
 }
 
 // Function for Chart: '<Root>/SupervisoryController'
@@ -14652,19 +14990,21 @@ void SupervisoryController::State1(const int32_T *sfEvent)
 {
   real_T SignalConversion_p[6];
   real_T initParam_o[6];
+  real_T tmp[3];
+  real_T c_data[2];
   real_T paramEst_l[2];
   real_T r_c[2];
   real_T y0_d[2];
-  real_T y_f[2];
-  real_T holdT;
+  real_T ysim1[2];
+  real_T ysim1_tmp;
   uint16_T waypt;
   int8_T b_data[2];
+  int8_T d_data[2];
 
   // Outport: '<Root>/currEv' incorporates:
   //   Inport: '<Root>/enAdapt'
   //   Inport: '<Root>/nextEv'
   //   Inport: '<Root>/y'
-  //   Inport: '<Root>/y_max'
   //   Inport: '<Root>/y_o'
   //   Outport: '<Root>/B'
   //   Outport: '<Root>/currTraj'
@@ -14759,9 +15099,11 @@ void SupervisoryController::State1(const int32_T *sfEvent)
     //  request new event
     // Entry 'controlLaw': '<S1>:203'
     // '<S1>:203:3' yhat2 = y_o(chs2);
-    rtDW.yhat2[0] = rtU.y_o[static_cast<int32_T>(rtDW.chs2[0]) - 1];
-    rtDW.yhat2[1] = rtU.y_o[static_cast<int32_T>(rtDW.chs2[1]) - 1];
+    rtDW.yhat2[0] = rtU.y_o[static_cast<int32_T>(rtP.chs2[0]) - 1];
+    rtDW.yhat2[1] = rtU.y_o[static_cast<int32_T>(rtP.chs2[1]) - 1];
   } else {
+    real_T ysim1_tmp_0;
+    int32_T e_size_idx_0;
     int32_T i;
 
     // During 'EventHandler': '<S1>:177'
@@ -14802,11 +15144,12 @@ void SupervisoryController::State1(const int32_T *sfEvent)
         //  request new event
       } else {
         // Outport: '<Root>/inTransRegion'
-        // '<S1>:166:7' [inTransRegion, evDone, waypt, holdT]...
-        // '<S1>:166:8'     = handleEvent(currEv);
-        handleEvent(rtY.currEv, &rtY.inTransRegion, &rtDW.evDone, &waypt, &holdT);
+        // '<S1>:166:9' [inTransRegion, evDone, waypt, holdT]...
+        // '<S1>:166:10'     = handleEvent(currEv);
+        handleEvent(rtY.currEv, &rtY.inTransRegion, &rtDW.evDone, &waypt,
+                    &ysim1_tmp);
         rtDW.waypt = waypt;
-        rtDW.holdT = holdT;
+        rtDW.holdT = ysim1_tmp;
       }
 
       // During 'RequestEvent': '<S1>:163'
@@ -14825,10 +15168,54 @@ void SupervisoryController::State1(const int32_T *sfEvent)
       // '<S1>:166:3' currEv = nextEv;
       rtY.currEv = rtU.nextEv;
 
-      // '<S1>:166:4' [traj, trajSize] = trajGen(currEv, y);
-      trajGen(rtY.currEv, rtU.y, rtDW.traj, &rtDW.trajSize);
+      // '<S1>:166:4' ysim1 = y(chs1);
+      ysim1_tmp = rtU.y[static_cast<int32_T>(rtP.chs1[0]) - 1];
+      ysim1[0] = ysim1_tmp;
+      ysim1_tmp_0 = rtU.y[static_cast<int32_T>(rtP.chs1[1]) - 1];
+      ysim1[1] = ysim1_tmp_0;
 
-      // '<S1>:166:5' holdT = 0;
+      // '<S1>:166:5' ysim1(find(ysim1 == 0)) = ymax1(find(ysim1 == 0));
+      i = 0;
+      if (ysim1_tmp == 0.0) {
+        d_data[0] = 1;
+        i = 1;
+      }
+
+      if (ysim1_tmp_0 == 0.0) {
+        d_data[i] = 2;
+      }
+
+      i = 0;
+      if (ysim1_tmp == 0.0) {
+        i = 1;
+      }
+
+      if (ysim1_tmp_0 == 0.0) {
+        i++;
+      }
+
+      e_size_idx_0 = i;
+      i = 0;
+      if (ysim1_tmp == 0.0) {
+        r_c[0] = rtDW.ymax1[0];
+        i = 1;
+      }
+
+      if (ysim1_tmp_0 == 0.0) {
+        r_c[i] = rtDW.ymax1[1];
+      }
+
+      for (i = 0; i < e_size_idx_0; i++) {
+        ysim1[d_data[i] - 1] = r_c[i];
+      }
+
+      // '<S1>:166:6' [traj, trajSize] = trajGen(currEv, [y(1); ysim1]);
+      tmp[0] = rtU.y[0];
+      tmp[1] = ysim1[0];
+      tmp[2] = ysim1[1];
+      trajGen(rtY.currEv, tmp, rtDW.traj, &rtDW.trajSize);
+
+      // '<S1>:166:7' holdT = 0;
       rtDW.holdT = 0.0;
     } else {
       // no actions
@@ -14837,29 +15224,27 @@ void SupervisoryController::State1(const int32_T *sfEvent)
     // During 'controlLaw': '<S1>:162'
     // '<S1>:162:5' if trueMeasAvail
     if (*sfEvent == static_cast<int32_T>(event_trueMeasAvail)) {
-      int32_T c_size_idx_0;
-
       // '<S1>:162:6' [u, yhat1, B(chs1,:)] = AMPC1(traj(chs1, waypt),...
       // '<S1>:162:7'         y(chs1), y_o(chs1), u_o,...
       // '<S1>:162:8'         B(chs1,:), enAdapt(chs1), excitation);
       i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
-      r_c[0] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs1[0])) - 1];
-      y_f[0] = rtU.y[static_cast<int32_T>(rtDW.chs1[0]) - 1];
-      y0_d[0] = rtU.y_o[static_cast<int32_T>(rtDW.chs1[0]) - 1];
-      r_c[1] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs1[1])) - 1];
-      y_f[1] = rtU.y[static_cast<int32_T>(rtDW.chs1[1]) - 1];
-      y0_d[1] = rtU.y_o[static_cast<int32_T>(rtDW.chs1[1]) - 1];
+      r_c[0] = rtDW.traj[(i + static_cast<int32_T>(rtP.chs1[0])) - 1];
+      r_c[1] = rtDW.traj[(i + static_cast<int32_T>(rtP.chs1[1])) - 1];
+      ysim1[0] = rtU.y[static_cast<int32_T>(rtP.chs1[0]) - 1];
+      ysim1[1] = rtU.y[static_cast<int32_T>(rtP.chs1[1]) - 1];
+      y0_d[0] = rtU.y_o[static_cast<int32_T>(rtP.chs1[0]) - 1];
+      y0_d[1] = rtU.y_o[static_cast<int32_T>(rtP.chs1[1]) - 1];
       for (i = 0; i < 3; i++) {
-        c_size_idx_0 = i << 1UL;
-        initParam_o[c_size_idx_0] = rtY.B_o[(3 * i + static_cast<int32_T>
-          (rtDW.chs1[0])) - 1];
-        initParam_o[c_size_idx_0 + 1] = rtY.B_o[(3 * i + static_cast<int32_T>
-          (rtDW.chs1[1])) - 1];
+        e_size_idx_0 = i << 1UL;
+        initParam_o[e_size_idx_0] = rtY.B_o[(3 * i + static_cast<int32_T>
+          (rtP.chs1[0])) - 1];
+        initParam_o[e_size_idx_0 + 1] = rtY.B_o[(3 * i + static_cast<int32_T>
+          (rtP.chs1[1])) - 1];
       }
 
-      paramEst_l[0] = rtU.enAdapt[static_cast<int32_T>(rtDW.chs1[0]) - 1] ? 1.0 :
+      paramEst_l[0] = rtU.enAdapt[static_cast<int32_T>(rtP.chs1[0]) - 1] ? 1.0 :
         0.0;
-      paramEst_l[1] = rtU.enAdapt[static_cast<int32_T>(rtDW.chs1[1]) - 1] ? 1.0 :
+      paramEst_l[1] = rtU.enAdapt[static_cast<int32_T>(rtP.chs1[1]) - 1] ? 1.0 :
         0.0;
 
       // Outputs for Function Call SubSystem: '<S1>/State1.controlLaw.AMPC1'
@@ -14872,7 +15257,7 @@ void SupervisoryController::State1(const int32_T *sfEvent)
       //   Outport: '<Root>/B'
 
       // Simulink Function 'AMPC1': '<S1>:175'
-      State1controlLawAMPC1(r_c, y_f, y0_d, rtU.u_o, initParam_o, paramEst_l,
+      State1controlLawAMPC1(r_c, ysim1, y0_d, rtU.u_o, initParam_o, paramEst_l,
                             rtU.excitation, rtY.u, rtDW.yhat1,
                             SignalConversion_p, &rtDW.State1controlLawAMPC1_g,
                             &rtP.State1controlLawAMPC1_g, &rtP,
@@ -14880,92 +15265,88 @@ void SupervisoryController::State1(const int32_T *sfEvent)
 
       // End of Outputs for SubSystem: '<S1>/State1.controlLaw.AMPC1'
       for (i = 0; i < 3; i++) {
-        c_size_idx_0 = i << 1UL;
-        rtY.B_o[(static_cast<int32_T>(rtDW.chs1[0]) + 3 * i) - 1] =
-          SignalConversion_p[c_size_idx_0];
-        rtY.B_o[(static_cast<int32_T>(rtDW.chs1[1]) + 3 * i) - 1] =
-          SignalConversion_p[c_size_idx_0 + 1];
+        e_size_idx_0 = i << 1UL;
+        rtY.B_o[(static_cast<int32_T>(rtP.chs1[0]) + 3 * i) - 1] =
+          SignalConversion_p[e_size_idx_0];
+        rtY.B_o[(static_cast<int32_T>(rtP.chs1[1]) + 3 * i) - 1] =
+          SignalConversion_p[e_size_idx_0 + 1];
       }
     } else if ((*sfEvent == static_cast<int32_T>(event_simMeasAvail)) &&
                rtY.inTransRegion) {
-      real_T y_f_tmp;
-      int32_T c_size_idx_0;
-
       // '<S1>:162:9' elseif simMeasAvail & inTransRegion
       //  use yhat instead of y for ch's w/o measurements
       // '<S1>:162:11' ysim1 = y(chs1);
-      // '<S1>:162:12' ymax1 = y_max(chs1);
-      // '<S1>:162:13' ysim1(find(ysim1 == 0)) = ymax1(find(ysim1 == 0));
-      holdT = rtU.y[static_cast<int32_T>(rtDW.chs1[0]) - 1];
-      y_f[0] = holdT;
-      y_f_tmp = rtU.y[static_cast<int32_T>(rtDW.chs1[1]) - 1];
-      y_f[1] = y_f_tmp;
+      ysim1_tmp = rtU.y[static_cast<int32_T>(rtP.chs1[0]) - 1];
+      ysim1[0] = ysim1_tmp;
+      ysim1_tmp_0 = rtU.y[static_cast<int32_T>(rtP.chs1[1]) - 1];
+      ysim1[1] = ysim1_tmp_0;
+
+      // '<S1>:162:12' ysim1(find(ysim1 == 0)) = ymax1(find(ysim1 == 0));
       i = 0;
-      if (holdT == 0.0) {
+      if (ysim1_tmp == 0.0) {
         b_data[0] = 1;
         i = 1;
       }
 
-      if (y_f_tmp == 0.0) {
+      if (ysim1_tmp_0 == 0.0) {
         b_data[i] = 2;
       }
 
       i = 0;
-      if (holdT == 0.0) {
+      if (ysim1_tmp == 0.0) {
         i = 1;
       }
 
-      if (y_f_tmp == 0.0) {
+      if (ysim1_tmp_0 == 0.0) {
         i++;
       }
 
-      c_size_idx_0 = i;
+      e_size_idx_0 = i;
       i = 0;
-      if (holdT == 0.0) {
-        r_c[0] = rtU.y_max[static_cast<int32_T>(rtDW.chs1[0]) - 1];
+      if (ysim1_tmp == 0.0) {
+        c_data[0] = rtDW.ymax1[0];
         i = 1;
       }
 
-      if (y_f_tmp == 0.0) {
-        r_c[i] = rtU.y_max[static_cast<int32_T>(rtDW.chs1[1]) - 1];
+      if (ysim1_tmp_0 == 0.0) {
+        c_data[i] = rtDW.ymax1[1];
       }
 
-      for (i = 0; i < c_size_idx_0; i++) {
-        y_f[b_data[i] - 1] = r_c[i];
+      for (i = 0; i < e_size_idx_0; i++) {
+        ysim1[b_data[i] - 1] = c_data[i];
       }
 
-      // '<S1>:162:14' [u, yhat1, B(chs1,:)] = AMPC1(traj(chs1, waypt),...
-      // '<S1>:162:15'         ysim1, y_o(chs1), u_o,...
-      // '<S1>:162:16'         B(chs1,:), y(chs1)~=0, excitation);
+      // '<S1>:162:13' [u, yhat1, B(chs1,:)] = AMPC1(traj(chs1, waypt),...
+      // '<S1>:162:14'         ysim1, y_o(chs1), u_o,...
+      // '<S1>:162:15'         B(chs1,:), y(chs1)~=0, excitation);
       i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
-      r_c[0] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs1[0])) - 1];
-      y0_d[0] = rtU.y_o[static_cast<int32_T>(rtDW.chs1[0]) - 1];
-      r_c[1] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs1[1])) - 1];
-      y0_d[1] = rtU.y_o[static_cast<int32_T>(rtDW.chs1[1]) - 1];
+      r_c[0] = rtDW.traj[(i + static_cast<int32_T>(rtP.chs1[0])) - 1];
+      r_c[1] = rtDW.traj[(i + static_cast<int32_T>(rtP.chs1[1])) - 1];
+      y0_d[0] = rtU.y_o[static_cast<int32_T>(rtP.chs1[0]) - 1];
+      y0_d[1] = rtU.y_o[static_cast<int32_T>(rtP.chs1[1]) - 1];
       for (i = 0; i < 3; i++) {
-        c_size_idx_0 = i << 1UL;
-        initParam_o[c_size_idx_0] = rtY.B_o[(3 * i + static_cast<int32_T>
-          (rtDW.chs1[0])) - 1];
-        initParam_o[c_size_idx_0 + 1] = rtY.B_o[(3 * i + static_cast<int32_T>
-          (rtDW.chs1[1])) - 1];
+        e_size_idx_0 = i << 1UL;
+        initParam_o[e_size_idx_0] = rtY.B_o[(3 * i + static_cast<int32_T>
+          (rtP.chs1[0])) - 1];
+        initParam_o[e_size_idx_0 + 1] = rtY.B_o[(3 * i + static_cast<int32_T>
+          (rtP.chs1[1])) - 1];
       }
 
-      paramEst_l[0] = static_cast<real_T>(holdT != 0.0 ? static_cast<int32_T>(1)
-        : static_cast<int32_T>(0));
-      paramEst_l[1] = static_cast<real_T>(y_f_tmp != 0.0 ? static_cast<int32_T>
+      paramEst_l[0] = static_cast<real_T>(ysim1_tmp != 0.0 ? static_cast<int32_T>
         (1) : static_cast<int32_T>(0));
+      paramEst_l[1] = static_cast<real_T>(ysim1_tmp_0 != 0.0 ?
+        static_cast<int32_T>(1) : static_cast<int32_T>(0));
 
       // Outputs for Function Call SubSystem: '<S1>/State1.controlLaw.AMPC1'
       // Outport: '<Root>/u' incorporates:
       //   Inport: '<Root>/excitation'
       //   Inport: '<Root>/u_o'
       //   Inport: '<Root>/y'
-      //   Inport: '<Root>/y_max'
       //   Inport: '<Root>/y_o'
       //   Outport: '<Root>/B'
 
       // Simulink Function 'AMPC1': '<S1>:175'
-      State1controlLawAMPC1(r_c, y_f, y0_d, rtU.u_o, initParam_o, paramEst_l,
+      State1controlLawAMPC1(r_c, ysim1, y0_d, rtU.u_o, initParam_o, paramEst_l,
                             rtU.excitation, rtY.u, rtDW.yhat1,
                             SignalConversion_p, &rtDW.State1controlLawAMPC1_g,
                             &rtP.State1controlLawAMPC1_g, &rtP,
@@ -14973,22 +15354,22 @@ void SupervisoryController::State1(const int32_T *sfEvent)
 
       // End of Outputs for SubSystem: '<S1>/State1.controlLaw.AMPC1'
       for (i = 0; i < 3; i++) {
-        c_size_idx_0 = i << 1UL;
-        rtY.B_o[(static_cast<int32_T>(rtDW.chs1[0]) + 3 * i) - 1] =
-          SignalConversion_p[c_size_idx_0];
-        rtY.B_o[(static_cast<int32_T>(rtDW.chs1[1]) + 3 * i) - 1] =
-          SignalConversion_p[c_size_idx_0 + 1];
+        e_size_idx_0 = i << 1UL;
+        rtY.B_o[(static_cast<int32_T>(rtP.chs1[0]) + 3 * i) - 1] =
+          SignalConversion_p[e_size_idx_0];
+        rtY.B_o[(static_cast<int32_T>(rtP.chs1[1]) + 3 * i) - 1] =
+          SignalConversion_p[e_size_idx_0 + 1];
       }
     } else {
       // no actions
     }
 
-    // '<S1>:162:18' yhat = [0; yhat1];
+    // '<S1>:162:17' yhat = [0; yhat1];
     rtY.yhat[0] = 0.0;
     rtY.yhat[1] = rtDW.yhat1[0];
     rtY.yhat[2] = rtDW.yhat1[1];
 
-    // '<S1>:162:19' currTraj = traj(:, waypt);
+    // '<S1>:162:18' currTraj = traj(:, waypt);
     rtY.currTraj[0] = rtDW.traj[(static_cast<int32_T>(rtDW.waypt) - 1) * 3];
     i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
     rtY.currTraj[1] = rtDW.traj[i + 1];
@@ -15002,31 +15383,20 @@ void SupervisoryController::State1(const int32_T *sfEvent)
 void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
   *sfEvent)
 {
-  real_T SignalConversion[6];
-  real_T initParam_e[6];
   real_T OutportBufferForparams[3];
   real_T initParam[3];
-  real_T paramEst_m[2];
-  real_T r_l[2];
-  real_T y0_l[2];
-  real_T y_c[2];
   real_T ysim0;
   uint16_T waypt;
-  int8_T b_data[2];
 
   // Chart: '<Root>/SupervisoryController' incorporates:
-  //   Inport: '<Root>/enAdapt'
   //   Inport: '<Root>/nextEv'
   //   Inport: '<Root>/y'
-  //   Inport: '<Root>/y_max'
-  //   Inport: '<Root>/y_o'
   //   Outport: '<Root>/B'
   //   Outport: '<Root>/currEv'
   //   Outport: '<Root>/currTraj'
   //   Outport: '<Root>/inTransRegion'
   //   Outport: '<Root>/requestEvent'
   //   Outport: '<Root>/yhat'
-  //   SignalConversion: '<S246>/Signal Conversion'
 
   // During: SupervisoryController
   if (static_cast<uint32_T>(rtDW.is_active_c6_SupervisoryControl) == 0U) {
@@ -15126,12 +15496,10 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
                 // '<S1>:65:7' else
                 //  hold last waypoint pos
                 // '<S1>:65:9' traj(:,1) = traj(:, waypt);
-                rtDW.traj[0] = rtDW.traj[(static_cast<int32_T>(rtDW.waypt) - 1) *
-                  3];
-                rtDW.traj[1] = rtDW.traj[(static_cast<int32_T>(rtDW.waypt) - 1) *
-                  3 + 1];
-                rtDW.traj[2] = rtDW.traj[(static_cast<int32_T>(rtDW.waypt) - 1) *
-                  3 + 2];
+                i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
+                rtDW.traj[0] = rtDW.traj[i];
+                rtDW.traj[1] = rtDW.traj[i + 1];
+                rtDW.traj[2] = rtDW.traj[i + 2];
 
                 // '<S1>:65:10' waypt = 1;
                 rtDW.waypt = 1U;
@@ -15182,9 +15550,9 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
             // '<S1>:59:6' [u, yhat0, B(chs0,:)] = AMPC0(traj(chs0, waypt),...
             // '<S1>:59:7'         y(chs0), y_o(chs0), u_o,...
             // '<S1>:59:8'         B(chs0,:), enAdapt(chs0), excitation);
-            initParam[0] = rtY.B_o[static_cast<int32_T>(rtDW.chs0) - 1];
-            initParam[1] = rtY.B_o[static_cast<int32_T>(rtDW.chs0) + 2];
-            initParam[2] = rtY.B_o[static_cast<int32_T>(rtDW.chs0) + 5];
+            initParam[0] = rtY.B_o[static_cast<int32_T>(rtP.chs0) - 1];
+            initParam[1] = rtY.B_o[static_cast<int32_T>(rtP.chs0) + 2];
+            initParam[2] = rtY.B_o[static_cast<int32_T>(rtP.chs0) + 5];
 
             // Outputs for Function Call SubSystem: '<S1>/State0.controlLaw.AMPC0' 
             // Outport: '<Root>/u' incorporates:
@@ -15196,62 +15564,59 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
             //   Outport: '<Root>/B'
 
             // Simulink Function 'AMPC0': '<S1>:5'
-            State0controlLawAMPC0(rtDW.traj[(static_cast<int32_T>(rtDW.chs0) + 3
-              * (static_cast<int32_T>(rtDW.waypt) - 1)) - 1], rtU.y
-                                  [static_cast<int32_T>(rtDW.chs0) - 1],
-                                  rtU.y_o[static_cast<int32_T>(rtDW.chs0) - 1],
-                                  rtU.u_o, initParam, static_cast<real_T>
-                                  (rtU.enAdapt[static_cast<int32_T>(rtDW.chs0) -
-              1] ? 1.0 : 0.0), rtU.excitation, rtY.u, &rtDW.yhat0,
-                                  OutportBufferForparams,
+            State0controlLawAMPC0(rtDW.traj[(static_cast<int32_T>(rtP.chs0) + 3 *
+              (static_cast<int32_T>(rtDW.waypt) - 1)) - 1], rtU.y
+                                  [static_cast<int32_T>(rtP.chs0) - 1], rtU.y_o[
+                                  static_cast<int32_T>(rtP.chs0) - 1], rtU.u_o,
+                                  initParam, static_cast<real_T>(rtU.enAdapt[
+              static_cast<int32_T>(rtP.chs0) - 1] ? 1.0 : 0.0), rtU.excitation,
+                                  rtY.u, &rtDW.yhat0, OutportBufferForparams,
                                   &rtDW.State0controlLawAMPC0_n,
                                   &rtP.State0controlLawAMPC0_n, &rtP,
                                   &rtPrevZCX.State0controlLawAMPC0_n);
 
             // End of Outputs for SubSystem: '<S1>/State0.controlLaw.AMPC0'
-            rtY.B_o[static_cast<int32_T>(rtDW.chs0) - 1] =
+            rtY.B_o[static_cast<int32_T>(rtP.chs0) - 1] =
               OutportBufferForparams[0];
-            rtY.B_o[static_cast<int32_T>(rtDW.chs0) + 2] =
+            rtY.B_o[static_cast<int32_T>(rtP.chs0) + 2] =
               OutportBufferForparams[1];
-            rtY.B_o[static_cast<int32_T>(rtDW.chs0) + 5] =
+            rtY.B_o[static_cast<int32_T>(rtP.chs0) + 5] =
               OutportBufferForparams[2];
           } else if ((*sfEvent == static_cast<int32_T>(event_simMeasAvail)) &&
                      rtY.inTransRegion) {
             // '<S1>:59:9' elseif simMeasAvail & inTransRegion
             //  use yhat instead of y for ch's w/o measurements
             // '<S1>:59:11' ysim0 = y(chs0);
-            // '<S1>:59:12' ymax0 = y_max(chs0);
-            // '<S1>:59:13' ysim0(find(ysim0 == 0)) = ymax0(find(ysim0 == 0));
+            // '<S1>:59:12' ysim0(find(ysim0 == 0)) = ymax0(find(ysim0 == 0));
             i = -1;
-            ysim0 = rtU.y[static_cast<int32_T>(rtDW.chs0) - 1];
+            ysim0 = rtU.y[static_cast<int32_T>(rtP.chs0) - 1];
             if (ysim0 == 0.0) {
               i = 0;
             }
 
             if (i >= 0) {
-              ysim0 = rtU.y_max[static_cast<int32_T>(rtDW.chs0) - 1];
+              ysim0 = rtDW.ymax0;
             }
 
-            // '<S1>:59:14' [u, yhat0, B(chs0,:)] = AMPC0(traj(chs0, waypt),...
-            // '<S1>:59:15'         ysim0, y_o(chs0), u_o,...
-            // '<S1>:59:16'         B(chs0,:), false, excitation);
-            initParam[0] = rtY.B_o[static_cast<int32_T>(rtDW.chs0) - 1];
-            initParam[1] = rtY.B_o[static_cast<int32_T>(rtDW.chs0) + 2];
-            initParam[2] = rtY.B_o[static_cast<int32_T>(rtDW.chs0) + 5];
+            // '<S1>:59:13' [u, yhat0, B(chs0,:)] = AMPC0(traj(chs0, waypt),...
+            // '<S1>:59:14'         ysim0, y_o(chs0), u_o,...
+            // '<S1>:59:15'         B(chs0,:), false, excitation);
+            initParam[0] = rtY.B_o[static_cast<int32_T>(rtP.chs0) - 1];
+            initParam[1] = rtY.B_o[static_cast<int32_T>(rtP.chs0) + 2];
+            initParam[2] = rtY.B_o[static_cast<int32_T>(rtP.chs0) + 5];
 
             // Outputs for Function Call SubSystem: '<S1>/State0.controlLaw.AMPC0' 
             // Outport: '<Root>/u' incorporates:
             //   Inport: '<Root>/excitation'
             //   Inport: '<Root>/u_o'
             //   Inport: '<Root>/y'
-            //   Inport: '<Root>/y_max'
             //   Inport: '<Root>/y_o'
             //   Outport: '<Root>/B'
 
             // Simulink Function 'AMPC0': '<S1>:5'
-            State0controlLawAMPC0(rtDW.traj[(static_cast<int32_T>(rtDW.chs0) + 3
-              * (static_cast<int32_T>(rtDW.waypt) - 1)) - 1], ysim0, rtU.y_o[
-                                  static_cast<int32_T>(rtDW.chs0) - 1], rtU.u_o,
+            State0controlLawAMPC0(rtDW.traj[(static_cast<int32_T>(rtP.chs0) + 3 *
+              (static_cast<int32_T>(rtDW.waypt) - 1)) - 1], ysim0, rtU.y_o[
+                                  static_cast<int32_T>(rtP.chs0) - 1], rtU.u_o,
                                   initParam, 0.0, rtU.excitation, rtY.u,
                                   &rtDW.yhat0, OutportBufferForparams,
                                   &rtDW.State0controlLawAMPC0_n,
@@ -15259,24 +15624,24 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
                                   &rtPrevZCX.State0controlLawAMPC0_n);
 
             // End of Outputs for SubSystem: '<S1>/State0.controlLaw.AMPC0'
-            rtY.B_o[static_cast<int32_T>(rtDW.chs0) - 1] =
+            rtY.B_o[static_cast<int32_T>(rtP.chs0) - 1] =
               OutportBufferForparams[0];
-            rtY.B_o[static_cast<int32_T>(rtDW.chs0) + 2] =
+            rtY.B_o[static_cast<int32_T>(rtP.chs0) + 2] =
               OutportBufferForparams[1];
-            rtY.B_o[static_cast<int32_T>(rtDW.chs0) + 5] =
+            rtY.B_o[static_cast<int32_T>(rtP.chs0) + 5] =
               OutportBufferForparams[2];
           } else {
             // no actions
           }
 
-          // '<S1>:59:18' yhat = [yhat0; 0; 0];
+          // '<S1>:59:17' yhat = [yhat0; 0; 0];
           rtY.yhat[0] = rtDW.yhat0;
           rtY.yhat[1] = 0.0;
           rtY.yhat[2] = 0.0;
 
-          // '<S1>:59:19' currTraj = traj(:, waypt);
-          rtY.currTraj[0] = rtDW.traj[(static_cast<int32_T>(rtDW.waypt) - 1) * 3];
+          // '<S1>:59:18' currTraj = traj(:, waypt);
           i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
+          rtY.currTraj[0] = rtDW.traj[i];
           rtY.currTraj[1] = rtDW.traj[i + 1];
           rtY.currTraj[2] = rtDW.traj[i + 2];
         }
@@ -15288,277 +15653,7 @@ void SupervisoryController::chartstep_c6_SupervisoryControl(const int32_T
       break;
 
      default:
-      {
-        // During 'State2': '<S1>:193'
-        // '<S1>:207:1' sf_internal_predicateOutput = currEv.destState == 1 & evDone; 
-        if ((rtY.currEv.destState == 1.0) && rtDW.evDone) {
-          // Disable for Function Call SubSystem: '<S1>/State2.controlLaw.AMPC2' 
-          // Transition: '<S1>:207'
-          // Exit Internal 'State2': '<S1>:193'
-          // Exit 'controlLaw': '<S1>:203'
-          State2controlLawAMPC2_Disable(&rtDW.State2controlLawAMPC2_l,
-            &rtP.State2controlLawAMPC2_l);
-
-          // End of Disable for SubSystem: '<S1>/State2.controlLaw.AMPC2'
-          // Exit Internal 'EventHandler': '<S1>:194'
-          if (static_cast<uint32_T>(rtDW.is_EventHandler_k) == IN_RequestEvent)
-          {
-            // Exit 'RequestEvent': '<S1>:191'
-            // '<S1>:191:14' requestEvent = false;
-            rtDW.is_EventHandler_k = IN_NO_ACTIVE_CHILD;
-          } else {
-            rtDW.is_EventHandler_k = IN_NO_ACTIVE_CHILD;
-          }
-
-          rtDW.is_c6_SupervisoryController = IN_State1;
-
-          // Entry 'State1': '<S1>:176'
-          // '<S1>:176:3' waypt = 1;
-          rtDW.waypt = 1U;
-
-          // '<S1>:176:4' traj = zeros(3, 2400);
-          (void)std::memset(&rtDW.traj[0], 0, 7200U * sizeof(real_T));
-
-          // '<S1>:176:5' inTransRegion = true;
-          rtY.inTransRegion = true;
-          enter_internal_State1();
-        } else {
-          int32_T i;
-
-          // During 'EventHandler': '<S1>:194'
-          if (static_cast<uint32_T>(rtDW.is_EventHandler_k) == IN_HandleEvent) {
-            // During 'HandleEvent': '<S1>:190'
-            // '<S1>:188:1' sf_internal_predicateOutput = evDone;
-            if (rtDW.evDone) {
-              // Transition: '<S1>:188'
-              rtDW.is_EventHandler_k = IN_RequestEvent;
-
-              // Entry 'RequestEvent': '<S1>:191'
-              // '<S1>:191:3' evDone = false;
-              rtDW.evDone = false;
-
-              // '<S1>:191:4' if waypt == 1
-              if (rtDW.waypt == 1UL) {
-                //  hold curr pos
-                // '<S1>:191:6' traj(:, waypt) = y;
-                rtDW.traj[0] = rtU.y[0];
-                rtDW.traj[1] = rtU.y[1];
-                rtDW.traj[2] = rtU.y[2];
-              } else {
-                // '<S1>:191:7' else
-                //  hold last waypoint pos
-                // '<S1>:191:9' traj(:,1) = traj(:, waypt);
-                i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
-                rtDW.traj[0] = rtDW.traj[i];
-                rtDW.traj[1] = rtDW.traj[i + 1];
-                rtDW.traj[2] = rtDW.traj[i + 2];
-
-                // '<S1>:191:10' waypt = 1;
-                rtDW.waypt = 1U;
-              }
-
-              // '<S1>:191:12' requestEvent = true;
-              rtY.requestEvent = true;
-
-              //  request new event
-            } else {
-              // Outport: '<Root>/inTransRegion'
-              // '<S1>:190:7' [inTransRegion, evDone, waypt, holdT]...
-              // '<S1>:190:8'     = handleEvent(currEv);
-              handleEvent(rtY.currEv, &rtY.inTransRegion, &rtDW.evDone, &waypt,
-                          &ysim0);
-              rtDW.waypt = waypt;
-              rtDW.holdT = ysim0;
-            }
-
-            // During 'RequestEvent': '<S1>:191'
-            // '<S1>:192:1' sf_internal_predicateOutput = ~isequal(nextEv, nullEv); 
-          } else if (!isequal(rtU.nextEv, rtP.nullEv)) {
-            // Transition: '<S1>:192'
-            // '<S1>:192:1' evDone = false;
-            rtDW.evDone = false;
-
-            // Exit 'RequestEvent': '<S1>:191'
-            // '<S1>:191:14' requestEvent = false;
-            rtY.requestEvent = false;
-            rtDW.is_EventHandler_k = IN_HandleEvent;
-
-            // Entry 'HandleEvent': '<S1>:190'
-            // '<S1>:190:3' currEv = nextEv;
-            rtY.currEv = rtU.nextEv;
-
-            // '<S1>:190:4' [traj, trajSize] = trajGen(currEv, y);
-            trajGen(rtY.currEv, rtU.y, rtDW.traj, &rtDW.trajSize);
-
-            // '<S1>:190:5' holdT = 0;
-            rtDW.holdT = 0.0;
-          } else {
-            // no actions
-          }
-
-          // During 'controlLaw': '<S1>:203'
-          // '<S1>:203:5' if trueMeasAvail
-          if (*sfEvent == static_cast<int32_T>(event_trueMeasAvail)) {
-            int32_T c_size_idx_0;
-
-            // '<S1>:203:6' [u, yhat2, B(chs2,:)] = AMPC2(traj(chs2, waypt),...
-            // '<S1>:203:7'         y(chs2), y_o(chs2), u_o,...
-            // '<S1>:203:8'         B(chs2,:), enAdapt(chs2), excitation);
-            i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
-            r_l[0] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs2[0])) - 1];
-            y_c[0] = rtU.y[static_cast<int32_T>(rtDW.chs2[0]) - 1];
-            y0_l[0] = rtU.y_o[static_cast<int32_T>(rtDW.chs2[0]) - 1];
-            r_l[1] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs2[1])) - 1];
-            y_c[1] = rtU.y[static_cast<int32_T>(rtDW.chs2[1]) - 1];
-            y0_l[1] = rtU.y_o[static_cast<int32_T>(rtDW.chs2[1]) - 1];
-            for (i = 0; i < 3; i++) {
-              c_size_idx_0 = i << 1UL;
-              initParam_e[c_size_idx_0] = rtY.B_o[(3 * i + static_cast<int32_T>
-                (rtDW.chs2[0])) - 1];
-              initParam_e[c_size_idx_0 + 1] = rtY.B_o[(3 * i +
-                static_cast<int32_T>(rtDW.chs2[1])) - 1];
-            }
-
-            paramEst_m[0] = rtU.enAdapt[static_cast<int32_T>(rtDW.chs2[0]) - 1] ?
-              1.0 : 0.0;
-            paramEst_m[1] = rtU.enAdapt[static_cast<int32_T>(rtDW.chs2[1]) - 1] ?
-              1.0 : 0.0;
-
-            // Outputs for Function Call SubSystem: '<S1>/State2.controlLaw.AMPC2' 
-            // Outport: '<Root>/u' incorporates:
-            //   Inport: '<Root>/enAdapt'
-            //   Inport: '<Root>/excitation'
-            //   Inport: '<Root>/u_o'
-            //   Inport: '<Root>/y'
-            //   Inport: '<Root>/y_o'
-            //   Outport: '<Root>/B'
-
-            // Simulink Function 'AMPC2': '<S1>:202'
-            State2controlLawAMPC2(r_l, y_c, y0_l, rtU.u_o, initParam_e,
-                                  paramEst_m, rtU.excitation, rtY.u, rtDW.yhat2,
-                                  SignalConversion,
-                                  &rtDW.State2controlLawAMPC2_l,
-                                  &rtP.State2controlLawAMPC2_l, &rtP,
-                                  &rtPrevZCX.State2controlLawAMPC2_l);
-
-            // End of Outputs for SubSystem: '<S1>/State2.controlLaw.AMPC2'
-            for (i = 0; i < 3; i++) {
-              c_size_idx_0 = i << 1UL;
-              rtY.B_o[(static_cast<int32_T>(rtDW.chs2[0]) + 3 * i) - 1] =
-                SignalConversion[c_size_idx_0];
-              rtY.B_o[(static_cast<int32_T>(rtDW.chs2[1]) + 3 * i) - 1] =
-                SignalConversion[c_size_idx_0 + 1];
-            }
-          } else if ((*sfEvent == static_cast<int32_T>(event_simMeasAvail)) &&
-                     rtY.inTransRegion) {
-            real_T y_c_tmp;
-            int32_T c_size_idx_0;
-
-            // '<S1>:203:9' elseif simMeasAvail & inTransRegion
-            //  use yhat instead of y for ch's w/o measurements
-            // '<S1>:203:11' ysim2 = y(chs2);
-            // '<S1>:203:12' ymax2 = y_max(chs2);
-            // '<S1>:203:13' ysim2(find(ysim2 == 0)) = ymax2(find(ysim2 == 0));
-            ysim0 = rtU.y[static_cast<int32_T>(rtDW.chs2[0]) - 1];
-            y_c[0] = ysim0;
-            y_c_tmp = rtU.y[static_cast<int32_T>(rtDW.chs2[1]) - 1];
-            y_c[1] = y_c_tmp;
-            i = 0;
-            if (ysim0 == 0.0) {
-              b_data[0] = 1;
-              i = 1;
-            }
-
-            if (y_c_tmp == 0.0) {
-              b_data[i] = 2;
-            }
-
-            i = 0;
-            if (ysim0 == 0.0) {
-              i = 1;
-            }
-
-            if (y_c_tmp == 0.0) {
-              i++;
-            }
-
-            c_size_idx_0 = i;
-            i = 0;
-            if (ysim0 == 0.0) {
-              r_l[0] = rtU.y_max[static_cast<int32_T>(rtDW.chs2[0]) - 1];
-              i = 1;
-            }
-
-            if (y_c_tmp == 0.0) {
-              r_l[i] = rtU.y_max[static_cast<int32_T>(rtDW.chs2[1]) - 1];
-            }
-
-            for (i = 0; i < c_size_idx_0; i++) {
-              y_c[b_data[i] - 1] = r_l[i];
-            }
-
-            // '<S1>:203:14' [u, yhat2, B(chs2,:)] = AMPC2(traj(chs2, waypt),... 
-            // '<S1>:203:15'         ysim2, y_o(chs2), u_o,...
-            // '<S1>:203:16'         B(chs2,:), y(chs2)~=0, excitation);
-            i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
-            r_l[0] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs2[0])) - 1];
-            y0_l[0] = rtU.y_o[static_cast<int32_T>(rtDW.chs2[0]) - 1];
-            r_l[1] = rtDW.traj[(i + static_cast<int32_T>(rtDW.chs2[1])) - 1];
-            y0_l[1] = rtU.y_o[static_cast<int32_T>(rtDW.chs2[1]) - 1];
-            for (i = 0; i < 3; i++) {
-              c_size_idx_0 = i << 1UL;
-              initParam_e[c_size_idx_0] = rtY.B_o[(3 * i + static_cast<int32_T>
-                (rtDW.chs2[0])) - 1];
-              initParam_e[c_size_idx_0 + 1] = rtY.B_o[(3 * i +
-                static_cast<int32_T>(rtDW.chs2[1])) - 1];
-            }
-
-            paramEst_m[0] = static_cast<real_T>(ysim0 != 0.0 ?
-              static_cast<int32_T>(1) : static_cast<int32_T>(0));
-            paramEst_m[1] = static_cast<real_T>(y_c_tmp != 0.0 ?
-              static_cast<int32_T>(1) : static_cast<int32_T>(0));
-
-            // Outputs for Function Call SubSystem: '<S1>/State2.controlLaw.AMPC2' 
-            // Outport: '<Root>/u' incorporates:
-            //   Inport: '<Root>/excitation'
-            //   Inport: '<Root>/u_o'
-            //   Inport: '<Root>/y'
-            //   Inport: '<Root>/y_max'
-            //   Inport: '<Root>/y_o'
-            //   Outport: '<Root>/B'
-
-            // Simulink Function 'AMPC2': '<S1>:202'
-            State2controlLawAMPC2(r_l, y_c, y0_l, rtU.u_o, initParam_e,
-                                  paramEst_m, rtU.excitation, rtY.u, rtDW.yhat2,
-                                  SignalConversion,
-                                  &rtDW.State2controlLawAMPC2_l,
-                                  &rtP.State2controlLawAMPC2_l, &rtP,
-                                  &rtPrevZCX.State2controlLawAMPC2_l);
-
-            // End of Outputs for SubSystem: '<S1>/State2.controlLaw.AMPC2'
-            for (i = 0; i < 3; i++) {
-              c_size_idx_0 = i << 1UL;
-              rtY.B_o[(static_cast<int32_T>(rtDW.chs2[0]) + 3 * i) - 1] =
-                SignalConversion[c_size_idx_0];
-              rtY.B_o[(static_cast<int32_T>(rtDW.chs2[1]) + 3 * i) - 1] =
-                SignalConversion[c_size_idx_0 + 1];
-            }
-          } else {
-            // no actions
-          }
-
-          // '<S1>:203:18' yhat = [yhat2(1); 0; yhat2(2)];
-          rtY.yhat[0] = rtDW.yhat2[0];
-          rtY.yhat[1] = 0.0;
-          rtY.yhat[2] = rtDW.yhat2[1];
-
-          // '<S1>:203:19' currTraj = traj(:, waypt);
-          rtY.currTraj[0] = rtDW.traj[(static_cast<int32_T>(rtDW.waypt) - 1) * 3];
-          i = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
-          rtY.currTraj[1] = rtDW.traj[i + 1];
-          rtY.currTraj[2] = rtDW.traj[i + 2];
-        }
-      }
+      State2(sfEvent);
       break;
     }
   }
@@ -15629,11 +15724,11 @@ void SupervisoryController::initialize()
 
     // SystemInitialize for Outport: '<Root>/B'
     (void)std::memcpy(&rtY.B_o[0], &tmp[0], 9U * sizeof(real_T));
-    rtDW.chs0 = 1U;
-    rtDW.chs1[0] = 2U;
-    rtDW.chs2[0] = 1U;
-    rtDW.chs1[1] = 3U;
-    rtDW.chs2[1] = 3U;
+    rtDW.ymax0 = 628.0;
+    rtDW.ymax1[0] = 455.0;
+    rtDW.ymax2[0] = 628.0;
+    rtDW.ymax1[1] = 433.0;
+    rtDW.ymax2[1] = 433.0;
 
     // SystemInitialize for Outport: '<Root>/currEv'
     rtY.currEv.srcState = 0.0;

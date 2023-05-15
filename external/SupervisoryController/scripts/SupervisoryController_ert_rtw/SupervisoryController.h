@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.959
+// Model version                  : 1.966
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon May 15 05:05:46 2023
+// C/C++ source code generated on : Mon May 15 05:38:51 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -423,6 +423,8 @@ class SupervisoryController final
     real_T traj[7200];                 // '<Root>/SupervisoryController'
     real_T yhat1[2];                   // '<Root>/SupervisoryController'
     real_T yhat2[2];                   // '<Root>/SupervisoryController'
+    real_T ymax1[2];                   // '<Root>/SupervisoryController'
+    real_T ymax2[2];                   // '<Root>/SupervisoryController'
     real_T b_data[3597];
     real_T c_data[3597];
     real_T d_data[3597];
@@ -430,11 +432,9 @@ class SupervisoryController final
     real_T tmp_data[3597];
     real_T holdT;                      // '<Root>/SupervisoryController'
     real_T yhat0;                      // '<Root>/SupervisoryController'
-    uint16_T chs1[2];                  // '<Root>/SupervisoryController'
-    uint16_T chs2[2];                  // '<Root>/SupervisoryController'
+    real_T ymax0;                      // '<Root>/SupervisoryController'
     uint16_T waypt;                    // '<Root>/SupervisoryController'
     uint16_T trajSize;                 // '<Root>/SupervisoryController'
-    uint16_T chs0;                     // '<Root>/SupervisoryController'
     uint8_T is_c6_SupervisoryController;// '<Root>/SupervisoryController'
     uint8_T is_EventHandler;           // '<Root>/SupervisoryController'
     uint8_T is_EventHandler_n;         // '<Root>/SupervisoryController'
@@ -1099,6 +1099,15 @@ class SupervisoryController final
     real_T dt;                         // Variable: dt
                                           //  Referenced by: '<Root>/SupervisoryController'
 
+    uint16_T chs0;                     // Variable: chs0
+                                          //  Referenced by: '<Root>/SupervisoryController'
+
+    uint16_T chs1[2];                  // Variable: chs1
+                                          //  Referenced by: '<Root>/SupervisoryController'
+
+    uint16_T chs2[2];                  // Variable: chs2
+                                          //  Referenced by: '<Root>/SupervisoryController'
+
     P_State2controlLawAMPC2 State2controlLawAMPC2_l;// '<S1>/State2.controlLaw.AMPC2' 
     P_State1controlLawAMPC1 State1controlLawAMPC1_g;// '<S1>/State1.controlLaw.AMPC1' 
     P_State0controlLawAMPC0 State0controlLawAMPC0_n;// '<S1>/State0.controlLaw.AMPC0' 
@@ -1375,6 +1384,7 @@ class SupervisoryController final
                    boolean_T *eventDone, uint16_T *waypoint, real_T *holdTime)
     const;
   void enter_internal_State1(void);
+  void State2(const int32_T *sfEvent);
   void enter_internal_State0(void);
   void State1(const int32_T *sfEvent);
   void chartstep_c6_SupervisoryControl(const int32_T *sfEvent);

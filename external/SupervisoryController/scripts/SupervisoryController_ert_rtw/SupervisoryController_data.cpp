@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.959
+// Model version                  : 1.966
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon May 15 05:05:46 2023
+// C/C++ source code generated on : Mon May 15 05:38:51 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -117,6 +117,21 @@ SupervisoryController::P SupervisoryController::rtP{
   //  Referenced by: '<Root>/SupervisoryController'
 
   0.025,
+
+  // Variable: chs0
+  //  Referenced by: '<Root>/SupervisoryController'
+
+  1U,
+
+  // Variable: chs1
+  //  Referenced by: '<Root>/SupervisoryController'
+
+  { 2U, 3U },
+
+  // Variable: chs2
+  //  Referenced by: '<Root>/SupervisoryController'
+
+  { 1U, 3U },
 
   // Start of '<S1>/State2.controlLaw.AMPC2'
   {
