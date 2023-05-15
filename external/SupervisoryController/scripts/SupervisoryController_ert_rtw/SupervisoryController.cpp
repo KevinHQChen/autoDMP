@@ -9,7 +9,7 @@
 //
 // Model version                  : 1.943
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon May 15 02:27:04 2023
+// C/C++ source code generated on : Mon May 15 02:46:04 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -14962,8 +14962,8 @@ void SupervisoryController::initialize()
   rt_InitInfAndNaN(sizeof(real_T));
 
   {
-    static const real_T tmp[9]{ 1.0, -0.5, -0.5, -0.5, 1.0, -0.5, -0.5, -0.5,
-      1.0 };
+    static const real_T tmp[9]{ 0.0315949, -0.0137427, -0.0137427, -0.0091062,
+      0.01135, -0.0010391, -0.0091062, -0.0010391, 0.01135 };
 
     real_T SignalConversion_p[6];
     real_T OutportBufferForparams[3];
