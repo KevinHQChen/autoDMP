@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.952
+// Model version                  : 1.959
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon May 15 04:35:58 2023
+// C/C++ source code generated on : Mon May 15 05:05:46 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -330,12 +330,12 @@ class SupervisoryController final
     DW_RLS sf_RLS;                     // '<S145>/RLS'
     real_T Product3[4];                // '<S242>/Product3'
     real_T last_mv_DSTATE[3];          // '<S114>/last_mv'
-    real_T UnitDelay2_DSTATE[3];       // '<S112>/Unit Delay2'
     real_T UnitDelay3_DSTATE[2];       // '<S112>/Unit Delay3'
-    real_T delayTheta_DSTATE[3];       // '<S145>/delayTheta'
-    real_T delayL_DSTATE[9];           // '<S145>/delayL'
-    real_T delayTheta_DSTATE_i[3];     // '<S146>/delayTheta'
-    real_T delayL_DSTATE_o[9];         // '<S146>/delayL'
+    real_T UnitDelay2_DSTATE[3];       // '<S112>/Unit Delay2'
+    real_T delayTheta_DSTATE[5];       // '<S145>/delayTheta'
+    real_T delayL_DSTATE[25];          // '<S145>/delayL'
+    real_T delayTheta_DSTATE_i[5];     // '<S146>/delayTheta'
+    real_T delayL_DSTATE_o[25];        // '<S146>/delayL'
     real_T MemoryX_DSTATE[4];          // '<S199>/MemoryX'
     real_T MemoryP_DSTATE[16];         // '<S199>/MemoryP'
     real_T NextOutput[3];              // '<S3>/Measurement Noise'
@@ -366,11 +366,17 @@ class SupervisoryController final
     ZCSigState MemoryP_Reset_ZCE_k;    // '<S199>/MemoryP'
   };
 
+  // Block signals and states (default storage) for system '<S279>/RLS'
+  struct DW_RLS_k {
+    d_controllib_internal_blocks_rl rlsEstimator;// '<S279>/RLS'
+    boolean_T rlsEstimator_not_empty;  // '<S279>/RLS'
+  };
+
   // Block signals and states (default storage) for system '<S1>/State2.controlLaw.AMPC2' 
   struct DW_State2controlLawAMPC2 {
     DW_MeasurementUpdate MeasurementUpdate_a;// '<S352>/MeasurementUpdate'
-    DW_RLS sf_RLS_i;                   // '<S280>/RLS'
-    DW_RLS sf_RLS;                     // '<S279>/RLS'
+    DW_RLS_k sf_RLS_i;                 // '<S280>/RLS'
+    DW_RLS_k sf_RLS;                   // '<S279>/RLS'
     real_T Product3[4];                // '<S376>/Product3'
     real_T last_mv_DSTATE[3];          // '<S248>/last_mv'
     real_T UnitDelay1_DSTATE[3];       // '<S246>/Unit Delay1'
@@ -683,14 +689,11 @@ class SupervisoryController final
     real_T last_mv_InitialCondition[3];// Expression: lastu+uoff
                                           //  Referenced by: '<S114>/last_mv'
 
-    real_T Constant5_Value[4];         // Expression: G1.A
-                                          //  Referenced by: '<S112>/Constant5'
+    real_T UnitDelay3_InitialCondition;// Expression: 0
+                                          //  Referenced by: '<S112>/Unit Delay3'
 
     real_T UnitDelay2_InitialCondition;// Expression: 0
                                           //  Referenced by: '<S112>/Unit Delay2'
-
-    real_T UnitDelay3_InitialCondition;// Expression: 0
-                                          //  Referenced by: '<S112>/Unit Delay3'
 
     real_T Constant2_Value;            // Expression: 0
                                           //  Referenced by: '<S3>/Constant2'
@@ -708,6 +711,9 @@ class SupervisoryController final
     real_T InitialRegressors_Value;
                            // Expression: initializationParams.initialRegressors
                               //  Referenced by: '<S145>/InitialRegressors'
+
+    real_T Constant3_Value[2];         // Expression: [1;1e-5]
+                                          //  Referenced by: '<S112>/Constant3'
 
     real_T Constant_Value;             // Expression: 1e4
                                           //  Referenced by: '<S112>/Constant'
@@ -1193,22 +1199,24 @@ class SupervisoryController final
     [46], DW_State0controlLawAMPC0 *localDW);
 
   // private member function(s) for subsystem '<S145>/ProcessInitialCovariance'
-  static void ProcessInitialCovariance(real_T rtu_u, real_T rty_y[9]);
+  static void ProcessInitialCovariance(real_T rtu_u, real_T rty_y[25]);
 
   // private member function(s) for subsystem '<S145>/RLS'
-  void RLS(const real_T rtu_H[3], real_T rtu_y, boolean_T rtu_isEnabled, real_T
-           rtu_adg1, real_T *rty_e, real_T rty_x[3], real_T rty_L[9], DW_RLS
-           *localDW);
-  real_T xnrm2_m(int32_T n, const real_T x[4], int32_T ix0);
-  real_T qrFactor_h(const real_T A[3], const real_T S[9], real_T Ns);
-  void trisolve_h(real_T A, real_T B_3[3]);
-  real_T xnrm2_mw(int32_T n, const real_T x[12], int32_T ix0);
-  void xgemv_p(int32_T m, int32_T n, const real_T A[12], int32_T ia0, const
-               real_T x[12], int32_T ix0, real_T y[3]);
+  void RLS(const real_T rtu_H[2], const real_T rtu_H_h[3], real_T rtu_y,
+           boolean_T rtu_isEnabled, real_T rtu_adg1, real_T rtu_yBuffer, real_T
+           rtu_HBuffer, const real_T rtu_x[5], const real_T rtu_L[25], real_T
+           *rty_e, real_T *rty_yBuffer, real_T *rty_HBuffer, real_T rty_x[5],
+           real_T rty_L[25], DW_RLS *localDW);
+  real_T xnrm2_m(int32_T n, const real_T x[6], int32_T ix0);
+  real_T qrFactor_h(const real_T A[5], const real_T S[25], real_T Ns);
+  void trisolve_h(real_T A, real_T B_3[5]);
+  real_T xnrm2_mw(int32_T n, const real_T x[30], int32_T ix0);
+  void xgemv_p(int32_T m, int32_T n, const real_T A[30], int32_T ia0, const
+               real_T x[30], int32_T ix0, real_T y[5]);
   void xgerc_d(int32_T m, int32_T n, real_T alpha1, int32_T ix0, const real_T y
-               [3], real_T A[12], int32_T ia0);
-  void sqrtMeasurementUpdate_c(real_T L[9], const real_T H[3], real_T a0, real_T
-    K[3]);
+               [5], real_T A[30], int32_T ia0);
+  void sqrtMeasurementUpdate_c(real_T L[25], const real_T H[5], real_T a0,
+    real_T K[5]);
 
   // private member function(s) for subsystem '<S199>/CalculatePL'
   void CalculatePL(const real_T rtu_Ak[16], const real_T rtu_Ck[8], const real_T
@@ -1282,6 +1290,24 @@ class SupervisoryController final
     real_T Bu[252], const real_T Bv[84], const real_T b_C[8], const real_T Dv[42],
     const int32_T b_Mrows[86], real_T u[3], real_T useq[63], real_T *status,
     boolean_T iAout[86], DW_State1controlLawAMPC1 *localDW);
+
+  // private member function(s) for subsystem '<S279>/ProcessInitialCovariance'
+  static void ProcessInitialCovariance_i(real_T rtu_u, real_T rty_y[9]);
+
+  // private member function(s) for subsystem '<S279>/RLS'
+  void RLS_h(const real_T rtu_H[3], real_T rtu_y, boolean_T rtu_isEnabled,
+             real_T rtu_adg1, real_T *rty_e, real_T rty_x[3], real_T rty_L[9],
+             DW_RLS_k *localDW);
+  real_T xnrm2_p(int32_T n, const real_T x[4], int32_T ix0);
+  real_T qrFactor_o(const real_T A[3], const real_T S[9], real_T Ns);
+  void trisolve_o(real_T A, real_T B_6[3]);
+  real_T xnrm2_pa(int32_T n, const real_T x[12], int32_T ix0);
+  void xgemv_l(int32_T m, int32_T n, const real_T A[12], int32_T ia0, const
+               real_T x[12], int32_T ix0, real_T y[3]);
+  void xgerc_i(int32_T m, int32_T n, real_T alpha1, int32_T ix0, const real_T y
+               [3], real_T A[12], int32_T ia0);
+  void sqrtMeasurementUpdate_a(real_T L[9], const real_T H[3], real_T a0, real_T
+    K[3]);
 
   // private member function(s) for subsystem '<S1>/State2.controlLaw.AMPC2'
   void State2controlLawAMPC2_Init(real_T rty_u[3], real_T rty_yhat[2], real_T
