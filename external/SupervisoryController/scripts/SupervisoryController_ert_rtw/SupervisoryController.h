@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.944
+// Model version                  : 1.951
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon May 15 03:44:55 2023
+// C/C++ source code generated on : Mon May 15 04:18:12 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -692,6 +692,9 @@ class SupervisoryController final
     real_T UnitDelay3_InitialCondition;// Expression: 0
                                           //  Referenced by: '<S112>/Unit Delay3'
 
+    real_T Constant2_Value;            // Expression: 0
+                                          //  Referenced by: '<S3>/Constant2'
+
     real_T ForgettingFactor_Value;     // Expression: initializationParams.adg1
                                           //  Referenced by: '<S145>/Forgetting Factor'
 
@@ -732,7 +735,7 @@ class SupervisoryController final
     real_T Constant11_Value;           // Expression: 1
                                           //  Referenced by: '<S112>/Constant11'
 
-    real_T Constant2_Value[2];         // Expression: [0;0]
+    real_T Constant2_Value_j[2];       // Expression: [0;0]
                                           //  Referenced by: '<S112>/Constant2'
 
     real_T Constant_Value_d[2];        // Expression: [0;0]
@@ -804,9 +807,6 @@ class SupervisoryController final
     real_T u_scale_Gain[3];            // Expression: MVscale
                                           //  Referenced by: '<S114>/u_scale'
 
-    real_T Constant2_Value_g;          // Expression: 0
-                                          //  Referenced by: '<S3>/Constant2'
-
     real_T MeasurementNoise_Mean[3];   // Expression: [0 0 0]
                                           //  Referenced by: '<S3>/Measurement Noise'
 
@@ -823,6 +823,9 @@ class SupervisoryController final
     boolean_T Memory_InitialCondition[86];// Expression: iA
                                              //  Referenced by: '<S114>/Memory'
 
+    boolean_T Constant1_Value;         // Expression: true
+                                          //  Referenced by: '<S3>/Constant1'
+
     boolean_T Delay_InitialCondition;  // Expression: true()
                                           //  Referenced by: '<S164>/Delay'
 
@@ -831,9 +834,6 @@ class SupervisoryController final
 
     boolean_T isSqrtUsed_Value;        // Expression: pInitialization.isSqrtUsed
                                           //  Referenced by: '<S240>/isSqrtUsed'
-
-    boolean_T Constant1_Value;         // Expression: true
-                                          //  Referenced by: '<S3>/Constant1'
 
     boolean_T Constant_Value_n;        // Expression: false()
                                           //  Referenced by: '<S164>/Constant'
@@ -887,6 +887,9 @@ class SupervisoryController final
 
     real_T UnitDelay7_InitialCondition;// Expression: 0
                                           //  Referenced by: '<S246>/Unit Delay7'
+
+    real_T Constant2_Value;            // Expression: 0
+                                          //  Referenced by: '<S4>/Constant2'
 
     real_T ForgettingFactor_Value;     // Expression: initializationParams.adg1
                                           //  Referenced by: '<S279>/Forgetting Factor'
@@ -1000,9 +1003,6 @@ class SupervisoryController final
     real_T u_scale_Gain[3];            // Expression: MVscale
                                           //  Referenced by: '<S248>/u_scale'
 
-    real_T Constant2_Value;            // Expression: 0
-                                          //  Referenced by: '<S4>/Constant2'
-
     real_T MeasurementNoise_Mean[3];   // Expression: [0 0 0]
                                           //  Referenced by: '<S4>/Measurement Noise'
 
@@ -1019,6 +1019,9 @@ class SupervisoryController final
     boolean_T Memory_InitialCondition[86];// Expression: iA
                                              //  Referenced by: '<S248>/Memory'
 
+    boolean_T Constant1_Value;         // Expression: true
+                                          //  Referenced by: '<S4>/Constant1'
+
     boolean_T Delay_InitialCondition;  // Expression: true()
                                           //  Referenced by: '<S298>/Delay'
 
@@ -1027,9 +1030,6 @@ class SupervisoryController final
 
     boolean_T isSqrtUsed_Value;        // Expression: pInitialization.isSqrtUsed
                                           //  Referenced by: '<S374>/isSqrtUsed'
-
-    boolean_T Constant1_Value;         // Expression: true
-                                          //  Referenced by: '<S4>/Constant1'
 
     boolean_T Constant_Value_l;        // Expression: false()
                                           //  Referenced by: '<S298>/Constant'
@@ -1642,12 +1642,14 @@ class SupervisoryController final
 //  Block '<S160>/Conversion' : Eliminate redundant data type conversion
 //  Block '<S161>/Conversion' : Eliminate redundant data type conversion
 //  Block '<S162>/Conversion' : Eliminate redundant data type conversion
+//  Block '<S145>/DataTypeConversionEnable' : Eliminate redundant data type conversion
 //  Block '<S181>/Conversion' : Eliminate redundant data type conversion
 //  Block '<S183>/Conversion' : Eliminate redundant data type conversion
 //  Block '<S185>/Conversion' : Eliminate redundant data type conversion
 //  Block '<S186>/Conversion' : Eliminate redundant data type conversion
 //  Block '<S187>/Conversion' : Eliminate redundant data type conversion
 //  Block '<S188>/Conversion' : Eliminate redundant data type conversion
+//  Block '<S146>/DataTypeConversionEnable' : Eliminate redundant data type conversion
 //  Block '<S112>/Reshape' : Reshape block reduction
 //  Block '<S211>/Conversion' : Eliminate redundant data type conversion
 //  Block '<S215>/Conversion' : Eliminate redundant data type conversion
@@ -1669,12 +1671,14 @@ class SupervisoryController final
 //  Block '<S294>/Conversion' : Eliminate redundant data type conversion
 //  Block '<S295>/Conversion' : Eliminate redundant data type conversion
 //  Block '<S296>/Conversion' : Eliminate redundant data type conversion
+//  Block '<S279>/DataTypeConversionEnable' : Eliminate redundant data type conversion
 //  Block '<S315>/Conversion' : Eliminate redundant data type conversion
 //  Block '<S317>/Conversion' : Eliminate redundant data type conversion
 //  Block '<S319>/Conversion' : Eliminate redundant data type conversion
 //  Block '<S320>/Conversion' : Eliminate redundant data type conversion
 //  Block '<S321>/Conversion' : Eliminate redundant data type conversion
 //  Block '<S322>/Conversion' : Eliminate redundant data type conversion
+//  Block '<S280>/DataTypeConversionEnable' : Eliminate redundant data type conversion
 //  Block '<S246>/Reshape' : Reshape block reduction
 //  Block '<S345>/Conversion' : Eliminate redundant data type conversion
 //  Block '<S349>/Conversion' : Eliminate redundant data type conversion
