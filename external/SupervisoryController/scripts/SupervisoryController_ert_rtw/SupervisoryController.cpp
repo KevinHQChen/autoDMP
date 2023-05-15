@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.975
+// Model version                  : 1.988
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon May 15 06:27:44 2023
+// C/C++ source code generated on : Mon May 15 07:06:02 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -2729,7 +2729,7 @@ void SupervisoryController::State0controlLawAMPC0_Init(real_T rty_u[3], real_T
   P_State0controlLawAMPC0 *localP)
 {
   int32_T i;
-  int32_T t_tmp;
+  int32_T t;
   uint32_T tseed;
 
   // InitializeConditions for Memory: '<S8>/Memory'
@@ -2768,12 +2768,12 @@ void SupervisoryController::State0controlLawAMPC0_Init(real_T rty_u[3], real_T
 
   // InitializeConditions for RandomNumber: '<S2>/Measurement Noise'
   i = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
-    (localP->MeasurementNoise_Seed) >> 16UL));
-  t_tmp = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
-    (localP->MeasurementNoise_Seed) & 32768U));
-  tseed = ((((static_cast<uint32_T>(localP->MeasurementNoise_Seed) - (
-    static_cast<uint32_T>(i) << 16UL)) + static_cast<uint32_T>(t_tmp)) << 16UL)
-           + static_cast<uint32_T>(t_tmp)) + static_cast<uint32_T>(i);
+    (localP->MeasurementNoise_Seed[0]) >> 16UL));
+  t = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
+    (localP->MeasurementNoise_Seed[0]) & 32768U));
+  tseed = ((((static_cast<uint32_T>(localP->MeasurementNoise_Seed[0]) - (
+    static_cast<uint32_T>(i) << 16UL)) + static_cast<uint32_T>(t)) << 16UL) +
+           static_cast<uint32_T>(t)) + static_cast<uint32_T>(i);
   if (tseed < 1U) {
     tseed = 1144108930U;
   } else if (tseed > 2147483646U) {
@@ -2794,10 +2794,12 @@ void SupervisoryController::State0controlLawAMPC0_Init(real_T rty_u[3], real_T
 
   // InitializeConditions for RandomNumber: '<S2>/Measurement Noise'
   i = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
-    (localP->MeasurementNoise_Seed) >> 16UL));
-  tseed = ((((static_cast<uint32_T>(localP->MeasurementNoise_Seed) - (
-    static_cast<uint32_T>(i) << 16UL)) + static_cast<uint32_T>(t_tmp)) << 16UL)
-           + static_cast<uint32_T>(t_tmp)) + static_cast<uint32_T>(i);
+    (localP->MeasurementNoise_Seed[1]) >> 16UL));
+  t = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
+    (localP->MeasurementNoise_Seed[1]) & 32768U));
+  tseed = ((((static_cast<uint32_T>(localP->MeasurementNoise_Seed[1]) - (
+    static_cast<uint32_T>(i) << 16UL)) + static_cast<uint32_T>(t)) << 16UL) +
+           static_cast<uint32_T>(t)) + static_cast<uint32_T>(i);
   if (tseed < 1U) {
     tseed = 1144108930U;
   } else if (tseed > 2147483646U) {
@@ -2818,10 +2820,12 @@ void SupervisoryController::State0controlLawAMPC0_Init(real_T rty_u[3], real_T
 
   // InitializeConditions for RandomNumber: '<S2>/Measurement Noise'
   i = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
-    (localP->MeasurementNoise_Seed) >> 16UL));
-  tseed = ((((static_cast<uint32_T>(localP->MeasurementNoise_Seed) - (
-    static_cast<uint32_T>(i) << 16UL)) + static_cast<uint32_T>(t_tmp)) << 16UL)
-           + static_cast<uint32_T>(t_tmp)) + static_cast<uint32_T>(i);
+    (localP->MeasurementNoise_Seed[2]) >> 16UL));
+  t = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
+    (localP->MeasurementNoise_Seed[2]) & 32768U));
+  tseed = ((((static_cast<uint32_T>(localP->MeasurementNoise_Seed[2]) - (
+    static_cast<uint32_T>(i) << 16UL)) + static_cast<uint32_T>(t)) << 16UL) +
+           static_cast<uint32_T>(t)) + static_cast<uint32_T>(i);
   if (tseed < 1U) {
     tseed = 1144108930U;
   } else if (tseed > 2147483646U) {
@@ -7510,7 +7514,7 @@ void SupervisoryController::State1controlLawAMPC1_Init(real_T rty_u[3], real_T
   P_State1controlLawAMPC1 *localP)
 {
   int32_T i;
-  int32_T t_tmp;
+  int32_T t;
   uint32_T tseed;
 
   // InitializeConditions for Memory: '<S114>/Memory'
@@ -7561,12 +7565,12 @@ void SupervisoryController::State1controlLawAMPC1_Init(real_T rty_u[3], real_T
 
   // InitializeConditions for RandomNumber: '<S3>/Measurement Noise'
   i = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
-    (localP->MeasurementNoise_Seed) >> 16UL));
-  t_tmp = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
-    (localP->MeasurementNoise_Seed) & 32768U));
-  tseed = ((((static_cast<uint32_T>(localP->MeasurementNoise_Seed) - (
-    static_cast<uint32_T>(i) << 16UL)) + static_cast<uint32_T>(t_tmp)) << 16UL)
-           + static_cast<uint32_T>(t_tmp)) + static_cast<uint32_T>(i);
+    (localP->MeasurementNoise_Seed[0]) >> 16UL));
+  t = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
+    (localP->MeasurementNoise_Seed[0]) & 32768U));
+  tseed = ((((static_cast<uint32_T>(localP->MeasurementNoise_Seed[0]) - (
+    static_cast<uint32_T>(i) << 16UL)) + static_cast<uint32_T>(t)) << 16UL) +
+           static_cast<uint32_T>(t)) + static_cast<uint32_T>(i);
   if (tseed < 1U) {
     tseed = 1144108930U;
   } else if (tseed > 2147483646U) {
@@ -7584,10 +7588,12 @@ void SupervisoryController::State1controlLawAMPC1_Init(real_T rty_u[3], real_T
 
   // InitializeConditions for RandomNumber: '<S3>/Measurement Noise'
   i = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
-    (localP->MeasurementNoise_Seed) >> 16UL));
-  tseed = ((((static_cast<uint32_T>(localP->MeasurementNoise_Seed) - (
-    static_cast<uint32_T>(i) << 16UL)) + static_cast<uint32_T>(t_tmp)) << 16UL)
-           + static_cast<uint32_T>(t_tmp)) + static_cast<uint32_T>(i);
+    (localP->MeasurementNoise_Seed[1]) >> 16UL));
+  t = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
+    (localP->MeasurementNoise_Seed[1]) & 32768U));
+  tseed = ((((static_cast<uint32_T>(localP->MeasurementNoise_Seed[1]) - (
+    static_cast<uint32_T>(i) << 16UL)) + static_cast<uint32_T>(t)) << 16UL) +
+           static_cast<uint32_T>(t)) + static_cast<uint32_T>(i);
   if (tseed < 1U) {
     tseed = 1144108930U;
   } else if (tseed > 2147483646U) {
@@ -7605,10 +7611,12 @@ void SupervisoryController::State1controlLawAMPC1_Init(real_T rty_u[3], real_T
 
   // InitializeConditions for RandomNumber: '<S3>/Measurement Noise'
   i = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
-    (localP->MeasurementNoise_Seed) >> 16UL));
-  tseed = ((((static_cast<uint32_T>(localP->MeasurementNoise_Seed) - (
-    static_cast<uint32_T>(i) << 16UL)) + static_cast<uint32_T>(t_tmp)) << 16UL)
-           + static_cast<uint32_T>(t_tmp)) + static_cast<uint32_T>(i);
+    (localP->MeasurementNoise_Seed[2]) >> 16UL));
+  t = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
+    (localP->MeasurementNoise_Seed[2]) & 32768U));
+  tseed = ((((static_cast<uint32_T>(localP->MeasurementNoise_Seed[2]) - (
+    static_cast<uint32_T>(i) << 16UL)) + static_cast<uint32_T>(t)) << 16UL) +
+           static_cast<uint32_T>(t)) + static_cast<uint32_T>(i);
   if (tseed < 1U) {
     tseed = 1144108930U;
   } else if (tseed > 2147483646U) {
@@ -11606,7 +11614,7 @@ void SupervisoryController::State2controlLawAMPC2_Init(real_T rty_u[3], real_T
   P_State2controlLawAMPC2 *localP)
 {
   int32_T i;
-  int32_T t_tmp;
+  int32_T t;
   uint32_T tseed;
 
   // InitializeConditions for Memory: '<S248>/Memory'
@@ -11667,12 +11675,12 @@ void SupervisoryController::State2controlLawAMPC2_Init(real_T rty_u[3], real_T
 
   // InitializeConditions for RandomNumber: '<S4>/Measurement Noise'
   i = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
-    (localP->MeasurementNoise_Seed) >> 16UL));
-  t_tmp = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
-    (localP->MeasurementNoise_Seed) & 32768U));
-  tseed = ((((static_cast<uint32_T>(localP->MeasurementNoise_Seed) - (
-    static_cast<uint32_T>(i) << 16UL)) + static_cast<uint32_T>(t_tmp)) << 16UL)
-           + static_cast<uint32_T>(t_tmp)) + static_cast<uint32_T>(i);
+    (localP->MeasurementNoise_Seed[0]) >> 16UL));
+  t = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
+    (localP->MeasurementNoise_Seed[0]) & 32768U));
+  tseed = ((((static_cast<uint32_T>(localP->MeasurementNoise_Seed[0]) - (
+    static_cast<uint32_T>(i) << 16UL)) + static_cast<uint32_T>(t)) << 16UL) +
+           static_cast<uint32_T>(t)) + static_cast<uint32_T>(i);
   if (tseed < 1U) {
     tseed = 1144108930U;
   } else if (tseed > 2147483646U) {
@@ -11685,10 +11693,12 @@ void SupervisoryController::State2controlLawAMPC2_Init(real_T rty_u[3], real_T
   localDW->NextOutput[0] = rt_nrand_Upu32_Yd_f_pw_snf(&localDW->RandSeed[0]) *
     localP->MeasurementNoise_StdDev[0] + localP->MeasurementNoise_Mean[0];
   i = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
-    (localP->MeasurementNoise_Seed) >> 16UL));
-  tseed = ((((static_cast<uint32_T>(localP->MeasurementNoise_Seed) - (
-    static_cast<uint32_T>(i) << 16UL)) + static_cast<uint32_T>(t_tmp)) << 16UL)
-           + static_cast<uint32_T>(t_tmp)) + static_cast<uint32_T>(i);
+    (localP->MeasurementNoise_Seed[1]) >> 16UL));
+  t = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
+    (localP->MeasurementNoise_Seed[1]) & 32768U));
+  tseed = ((((static_cast<uint32_T>(localP->MeasurementNoise_Seed[1]) - (
+    static_cast<uint32_T>(i) << 16UL)) + static_cast<uint32_T>(t)) << 16UL) +
+           static_cast<uint32_T>(t)) + static_cast<uint32_T>(i);
   if (tseed < 1U) {
     tseed = 1144108930U;
   } else if (tseed > 2147483646U) {
@@ -11701,10 +11711,12 @@ void SupervisoryController::State2controlLawAMPC2_Init(real_T rty_u[3], real_T
   localDW->NextOutput[1] = rt_nrand_Upu32_Yd_f_pw_snf(&localDW->RandSeed[1]) *
     localP->MeasurementNoise_StdDev[1] + localP->MeasurementNoise_Mean[1];
   i = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
-    (localP->MeasurementNoise_Seed) >> 16UL));
-  tseed = ((((static_cast<uint32_T>(localP->MeasurementNoise_Seed) - (
-    static_cast<uint32_T>(i) << 16UL)) + static_cast<uint32_T>(t_tmp)) << 16UL)
-           + static_cast<uint32_T>(t_tmp)) + static_cast<uint32_T>(i);
+    (localP->MeasurementNoise_Seed[2]) >> 16UL));
+  t = static_cast<int32_T>(static_cast<uint32_T>(static_cast<uint32_T>
+    (localP->MeasurementNoise_Seed[2]) & 32768U));
+  tseed = ((((static_cast<uint32_T>(localP->MeasurementNoise_Seed[2]) - (
+    static_cast<uint32_T>(i) << 16UL)) + static_cast<uint32_T>(t)) << 16UL) +
+           static_cast<uint32_T>(t)) + static_cast<uint32_T>(i);
   if (tseed < 1U) {
     tseed = 1144108930U;
   } else if (tseed > 2147483646U) {
