@@ -38,13 +38,13 @@ void Supervisor::startThread() {
     // assumption?)
     supIn.excitation = 5;
     supIn.y_range[0] = 0.1;
-    supIn.y_range[1] = 0.9;
+    supIn.y_range[1] = 0.95;
     for (int ch = 0; ch < imProc->impConf.numChs_; ++ch) {
       // TODO add support for non-90-degree channels
       if (ch == 0)
-        supIn.y_max[ch] = imProc->impConf.getChROIs()[ch].height;
+        supIn.y_max[ch] = imProc->impConf.getChROIs()[ch].height - imProc->impConf.getTmplImg()[ch].rows;
       else
-        supIn.y_max[ch] = imProc->impConf.getChROIs()[ch].width;
+        supIn.y_max[ch] = imProc->impConf.getChROIs()[ch].width - imProc->impConf.getTmplImg()[ch].cols;
       supIn.y_o[ch] = supIn.y_max[ch];
       supOut.yhat[ch] = supIn.y_max[ch];
     }
@@ -204,8 +204,10 @@ void Supervisor::start() {
                             << ", nextChs: " << (bool)supOut.currEv.nextChs[0]
                             << (bool)supOut.currEv.nextChs[1] << (bool)supOut.currEv.nextChs[2]
                             << "\n";
-      ctrlDataQueuePtr->out << "params: " << supOut.param[0] << ", " << supOut.param[1] << ", "
-                            << supOut.param[2] << "\n";
+      ctrlDataQueuePtr->out << "params: " << supOut.B_o[0] << ", " << supOut.B_o[1] << ", "
+                            << supOut.B_o[2] << ", " << supOut.B_o[3] << ", " << supOut.B_o[4]
+                            << ", " << supOut.B_o[5] << ", " << supOut.B_o[6] << ", "
+                            << supOut.B_o[7] << ", " << supOut.B_o[8] << "\n";
     }
   }
 }

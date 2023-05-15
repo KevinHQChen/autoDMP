@@ -242,9 +242,15 @@ void CtrlWindow::render() {
         yref0.AddPoint(guiTime, sv_->supOut.currTraj[0]);
         yref1.AddPoint(guiTime, sv_->supOut.currTraj[1]);
         yref2.AddPoint(guiTime, sv_->supOut.currTraj[2]);
-        param0.AddPoint(guiTime, sv_->supOut.param[0]);
-        param1.AddPoint(guiTime, sv_->supOut.param[1]);
-        param2.AddPoint(guiTime, sv_->supOut.param[2]);
+        param0.AddPoint(guiTime, sv_->supOut.B_o[0]);
+        param1.AddPoint(guiTime, sv_->supOut.B_o[1]);
+        param2.AddPoint(guiTime, sv_->supOut.B_o[2]);
+        param3.AddPoint(guiTime, sv_->supOut.B_o[3]);
+        param4.AddPoint(guiTime, sv_->supOut.B_o[4]);
+        param5.AddPoint(guiTime, sv_->supOut.B_o[5]);
+        param6.AddPoint(guiTime, sv_->supOut.B_o[6]);
+        param7.AddPoint(guiTime, sv_->supOut.B_o[7]);
+        param8.AddPoint(guiTime, sv_->supOut.B_o[8]);
       }
 
       ImGui::SliderFloat("History", &history, 1, 60, "%.1f s");
@@ -252,7 +258,7 @@ void CtrlWindow::render() {
                    history);
       plotVector3d("##Measured Output", "time (s)", "position (px)", 0, 600, measVecs, guiTime,
                    history);
-      plotVector3d("##Estimated Output", "time (s)", "position (px)", 0, 600, paramVecs, guiTime,
+      plotVector3d("##Estimated Output", "time (s)", "position (px)", -10, 10, paramVecs, guiTime,
                    history);
       ImGui::End();
     }
