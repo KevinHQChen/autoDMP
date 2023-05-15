@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.988
+// Model version                  : 1.993
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon May 15 07:06:02 2023
+// C/C++ source code generated on : Mon May 15 08:09:25 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -404,10 +404,10 @@ SupervisoryController::P SupervisoryController::rtP{
 
     { 1.0, 1.0, 1.0 },
 
-    // Expression: [12345 12346 12347]
+    // Expression: 12345
     //  Referenced by: '<S4>/Measurement Noise'
 
-    { 12345.0, 12346.0, 12347.0 },
+    12345.0,
 
     // Expression: Ndis
     //  Referenced by: '<S276>/FixedHorizonOptimizer'
@@ -740,10 +740,10 @@ SupervisoryController::P SupervisoryController::rtP{
 
     { 1.0, 1.0, 1.0 },
 
-    // Expression: [12345 12346 12347]
+    // Expression: 12345
     //  Referenced by: '<S3>/Measurement Noise'
 
-    { 12345.0, 12346.0, 12347.0 },
+    12345.0,
 
     // Expression: Ndis
     //  Referenced by: '<S142>/FixedHorizonOptimizer'
@@ -881,7 +881,7 @@ SupervisoryController::P SupervisoryController::rtP{
     // Expression: initializationParams.adg1
     //  Referenced by: '<S38>/Forgetting Factor'
 
-    0.9,
+    1.0,
 
     // Expression: initializationParams.adg2
     //  Referenced by: '<S38>/Normalization Bias'
@@ -1053,10 +1053,10 @@ SupervisoryController::P SupervisoryController::rtP{
 
     { 1.0, 1.0, 1.0 },
 
-    // Expression: [12345 12346 12347]
+    // Expression: 12345
     //  Referenced by: '<S2>/Measurement Noise'
 
-    { 12345.0, 12346.0, 12347.0 },
+    12345.0,
 
     // Expression: Ndis
     //  Referenced by: '<S36>/FixedHorizonOptimizer'
