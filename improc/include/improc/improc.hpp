@@ -4,10 +4,11 @@
 #include "util/util.hpp"
 
 struct Pose {
-  int rot;
   cv::Point loc;
   bool found;
 };
+
+void rotateMat(cv::Mat &src, cv::Mat &dst, double angle);
 
 class RotRect : public cv::Rect {
 public:
@@ -49,43 +50,35 @@ public:
   }
 };
 
-void rotateMat(cv::Mat &src, cv::Mat &dst, double angle);
-
 class ImProcConfig {
 public:
-  mutable std::mutex chanROIMtx, chWidthMtx, numTmplsMtx, numChsMtx, tmplThresMtx, tmplMtx;
+  mutable std::mutex chanROIMtx, chWidthMtx, numChsMtx, bgSubHistoryMtx, bgSubThresMtx;
   std::vector<RotRect> chROIs_;
-  int chWidth_, numTmpls_, numChs_;
-  double tmplThres_; // template matching threshold: pxIntensity/255 (8-bit) [double]
-  std::vector<cv::Mat> tmplImg_;
+  int chWidth_, numChs_, bgSubHistory_;
+  double bgSubThres_;
 
   ImProcConfig();
   ImProcConfig(const ImProcConfig &other);
   ImProcConfig &operator=(const ImProcConfig &other) {
     chROIs_ = other.getChROIs();
     chWidth_ = other.getChWidth();
-    numTmpls_ = other.numTmpls_;
-    numChs_ = other.numChs_;
-    tmplThres_ = other.tmplThres_;
+    numChs_ = other.getNumChs();
+    bgSubHistory_ = other.getBgSubHistory();
+    bgSubThres_ = other.getBgSubThres();
     return *this;
   }
 
   std::vector<RotRect> getChROIs() const;
   int getChWidth() const;
-  int getNumTmpls() const;
   int getNumChs() const;
-  double getTmplThres() const;
-  std::vector<cv::Mat> getTmplImg() const;
+  int getBgSubHistory() const;
+  double getBgSubThres() const;
 
   void setChROIs(const std::vector<RotRect> &chROIs);
   void setChWidth(int chWidth);
-  void setNumTmpls(int numTmpls);
   void setNumChs(int numChs);
-  void setTmplThres(double tmplThres);
-  void setTmplImg(cv::Mat tmplImg);
-
-  void setTmplImg(const std::vector<cv::Mat> &tmplImg);
-  void clearTmplImgs();
+  void setBgSubHistory(int bgSubHistory);
+  void setBgSubThres(double bgSubThres);
 
   void from_toml(const ordered_value &v);
   ordered_value into_toml() const;
@@ -95,21 +88,22 @@ class ImProc {
   ordered_value conf;
   std::string confPath, dataPath;
   ImCap *imCap;
-  QueueFPS<cv::Mat> *procFrameQueuePtr;
-  std::vector<QueueFPS<cv::Mat> *> tempResultQueueArr, procFrameQueueArr;
   SharedBuffer<std::vector<cv::Mat>> procFrameBuf;
 
   std::vector<int> compParams;
 
-  cv::Mat preFrame{0, 0, CV_16UC1}, tempFrame{0, 0, CV_16UC1}, tempPreFrame{0, 0, CV_16UC1},
-      tempProcFrame{0, 0, CV_16UC1};
+  cv::Mat preFrame, tempFrame, tempPreFrame, tempProcFrame;
+  cv::Mat fgMask, tempFgMask, tempChFgMask, tempRotChFgMask;
+  std::vector<cv::Point> fgLocs;
+  cv::Point currMaxLoc;
 
-  // for tmpl matching
+  cv::Ptr<cv::BackgroundSubtractor> pBackSub;
+
+
   std::vector<cv::Mat> tempResultFrame, tempProcFrameArr;
   std::vector<Pose> poseData;
   std::vector<bool> procDataAvail;
   cv::Point minLoc, maxLoc;
-  std::optional<cv::Point> currMaxLoc;
   double minVal, maxVal;
 
   std::atomic<bool> startedImProc{false};
@@ -133,10 +127,6 @@ public:
   void stopProcThread();
   bool started();
 
-  std::vector<cv::Mat> getTempFrames();
   cv::Mat getProcFrame(int idx);
-  cv::Mat getProcFrame();
-  void clearTempFrameQueues();
-  void clearProcFrameQueues();
   void clearProcData();
 };

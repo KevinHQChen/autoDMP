@@ -163,7 +163,7 @@ public:
       if (trueMeasAvail[ch(i)])
         p = sv_->poses[ch(i)];
 
-      if (trueMeasAvail[ch(i)] && (rot == -1 || p.rot == rot))
+      if (trueMeasAvail[ch(i)] && (rot == -1))
         dy(ch(i)) = p.loc.y - yref(ch(i));
       else if (stateTransitionCondition) { // assume interface is stuck at junction
         if (ytrans(ch(i)) < yref(ch(i)))

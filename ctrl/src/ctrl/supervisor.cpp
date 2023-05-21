@@ -29,8 +29,6 @@ void Supervisor::startThread() {
     info("Starting Supervisor...");
     startedCtrl = true;
 
-    imProc->clearProcFrameQueues();
-    imProc->clearTempFrameQueues();
     imProc->clearProcData();
 
     // initialize SupervisoryController (y_range, y_max, y_o, u_o, yhat)
@@ -42,9 +40,9 @@ void Supervisor::startThread() {
     for (int ch = 0; ch < imProc->impConf.numChs_; ++ch) {
       // TODO add support for non-90-degree channels
       if (ch == 0)
-        supIn.y_max[ch] = imProc->impConf.getChROIs()[ch].height - imProc->impConf.getTmplImg()[ch].rows;
+        supIn.y_max[ch] = imProc->impConf.getChROIs()[ch].height - imProc->impConf.getChWidth();
       else
-        supIn.y_max[ch] = imProc->impConf.getChROIs()[ch].width - imProc->impConf.getTmplImg()[ch].cols;
+        supIn.y_max[ch] = imProc->impConf.getChROIs()[ch].width - imProc->impConf.getChWidth();
       supIn.y_o[ch] = supIn.y_max[ch];
       supOut.yhat[ch] = supIn.y_max[ch];
     }
@@ -74,8 +72,6 @@ void Supervisor::stopThread() {
 
     if (ctrlThread.joinable())
       ctrlThread.join();
-    imProc->clearProcFrameQueues();
-    imProc->clearTempFrameQueues();
     imProc->clearProcData();
     // this->clearCtrlDataQueue();
   }

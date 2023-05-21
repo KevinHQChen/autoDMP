@@ -23,17 +23,17 @@ ImProcConfig::ImProcConfig() {
   chROIs_.push_back(RotRect(0, 0, 100, 100, 100));
   chROIs_.push_back(RotRect(0, 0, 100, 100, 100));
   chWidth_ = 100;
-  numTmpls_ = 2;
   numChs_ = 3;
-  tmplThres_ = 0.8;
+  bgSubHistory_ = 500;
+  bgSubThres_ = 16;
 }
 
 ImProcConfig::ImProcConfig(const ImProcConfig &other) {
   chROIs_ = other.getChROIs();
   chWidth_ = other.getChWidth();
-  numTmpls_ = other.getNumTmpls();
   numChs_ = other.getNumChs();
-  tmplThres_ = other.getTmplThres();
+  bgSubHistory_ = other.getBgSubHistory();
+  bgSubThres_ = other.getBgSubThres();
 }
 
 // enables stuff like:
@@ -41,9 +41,9 @@ ImProcConfig::ImProcConfig(const ImProcConfig &other) {
 void ImProcConfig::from_toml(const ordered_value &v) {
   setChROIs(toml::find<std::vector<RotRect>>(v, "chROIs"));
   chWidth_ = toml::find<int>(v, "chWidth");
-  numTmpls_ = toml::find<int>(v, "numTmpls");
   numChs_ = toml::find<int>(v, "numChs");
-  tmplThres_ = toml::find<double>(v, "tmplThres");
+  bgSubHistory_ = toml::find<int>(v, "bgSubHistory");
+  bgSubThres_ = toml::find<double>(v, "bgSubThres");
 }
 
 // enables stuff like:
@@ -52,9 +52,9 @@ ordered_value ImProcConfig::into_toml() const {
   ordered_value v;
   v["chROIs"] = getChROIs();
   v["chWidth"] = getChWidth();
-  v["numTmpls"] = getNumTmpls();
   v["numChs"] = getNumChs();
-  v["tmplThres"] = getTmplThres();
+  v["bgSubHistory"] = getBgSubHistory();
+  v["bgSubThres"] = getBgSubThres();
   info(v);
   return v;
 }
@@ -67,21 +67,17 @@ int ImProcConfig::getChWidth() const {
   std::lock_guard<std::mutex> lock(chWidthMtx);
   return chWidth_;
 }
-int ImProcConfig::getNumTmpls() const {
-  std::lock_guard<std::mutex> lock(numTmplsMtx);
-  return numTmpls_;
-}
 int ImProcConfig::getNumChs() const {
   std::lock_guard<std::mutex> lock(numChsMtx);
   return numChs_;
 }
-double ImProcConfig::getTmplThres() const {
-  std::lock_guard<std::mutex> lock(tmplThresMtx);
-  return tmplThres_;
+int ImProcConfig::getBgSubHistory() const {
+  std::lock_guard<std::mutex> lock(bgSubHistoryMtx);
+  return bgSubHistory_;
 }
-std::vector<cv::Mat> ImProcConfig::getTmplImg() const {
-  std::lock_guard<std::mutex> lock(tmplMtx);
-  return tmplImg_;
+double ImProcConfig::getBgSubThres() const {
+  std::lock_guard<std::mutex> lock(bgSubThresMtx);
+  return bgSubThres_;
 }
 
 void ImProcConfig::setChROIs(const std::vector<RotRect> &chROIs) {
@@ -92,27 +88,15 @@ void ImProcConfig::setChWidth(int chWidth) {
   std::lock_guard<std::mutex> lock(chWidthMtx);
   chWidth_ = chWidth;
 }
-void ImProcConfig::setNumTmpls(int numTmpls) {
-  std::lock_guard<std::mutex> lock(numTmplsMtx);
-  numTmpls_ = numTmpls;
-}
 void ImProcConfig::setNumChs(int numChs) {
   std::lock_guard<std::mutex> lock(numChsMtx);
   numChs_ = numChs;
 }
-void ImProcConfig::setTmplThres(double tmplThres) {
-  std::lock_guard<std::mutex> lock(tmplThresMtx);
-  tmplThres_ = tmplThres;
+void ImProcConfig::setBgSubHistory(int bgSubHistory) {
+  std::lock_guard<std::mutex> lock(bgSubHistoryMtx);
+  bgSubHistory_ = bgSubHistory;
 }
-void ImProcConfig::setTmplImg(cv::Mat tmplImg) {
-  std::lock_guard<std::mutex> lock(tmplMtx);
-  tmplImg_.push_back(tmplImg);
-}
-void ImProcConfig::setTmplImg(const std::vector<cv::Mat> &tmplImg) {
-  std::lock_guard<std::mutex> lock(tmplMtx);
-  tmplImg_ = tmplImg;
-}
-void ImProcConfig::clearTmplImgs() {
-  std::lock_guard<std::mutex> lock(tmplMtx);
-  tmplImg_.clear();
+void ImProcConfig::setBgSubThres(double bgSubThres) {
+  std::lock_guard<std::mutex> lock(bgSubThresMtx);
+  bgSubThres_ = bgSubThres;
 }

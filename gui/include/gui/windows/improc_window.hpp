@@ -29,20 +29,18 @@ class ImProcWindow : public Window {
 
   // std::unique_ptr<IMMImage> rawImage_, procImage_;
   // std::array<std::unique_ptr<IMMImage>, numChans_> chImages_;
-  // std::array<std::unique_ptr<IMMImage>, NUM_TEMPLATES> tmplImages_;
 
-  GUIFrame rawFrame, preFrame, tmplFrame;
+  GUIFrame rawFrame, preFrame;
   GUIFrame procGUIFrames[3];
 
   std::vector<RotRect> chBBoxes;
-  std::vector<cv::Rect> tmplBBoxes;
-  int chWidth, numTmpls, numChs;
-  float tmplThres;
+  int chWidth, numChs, bgSubHistory;
+  double bgSubThres;
 
   cv::Point junction;
   ImVec2 mousePos, startPos, center, endPos, pointPos, imgOrigin;
   ImDrawList *drawList;
-  bool isDrawing{false}, drawChs{false}, drawJunc{false}, drawTmpl{false};
+  bool isDrawing{false}, drawChs{false}, drawJunc{false};
 
   void draw() {
     drawList = ImGui::GetWindowDrawList();
@@ -65,17 +63,9 @@ class ImProcWindow : public Window {
       drawList->AddLine(center, endPos, IM_COL32(255, 255, 255, 255), 1.0f);
       drawList->AddCircleFilled(endPos, 3.0f, IM_COL32(255, 0, 0, 255));
     }
-    // draw current tmplBBoxes
-    for (const auto &tmplBBox : tmplBBoxes) {
-      drawList->AddRect(
-          ImVec2(tmplBBox.x + imgOrigin.x, tmplBBox.y + imgOrigin.y),
-          ImVec2(tmplBBox.x + tmplBBox.width + imgOrigin.x, tmplBBox.y + tmplBBox.height + imgOrigin.y),
-          IM_COL32(0, 0, 255, 255));
-    }
 
     drawNextChBBox();
     drawNextJunc();
-    drawNextTmplBBox();
   }
 
   void drawNextChBBox() {
@@ -113,33 +103,6 @@ class ImProcWindow : public Window {
         pointPos = clampToBounds(pointPos, rawFrame.width, rawFrame.height);
         junction = cv::Point(pointPos.x, pointPos.y);
         drawJunc = false;
-      }
-    }
-  }
-
-  void drawNextTmplBBox() {
-    if (drawTmpl) {
-      mousePos = ImGui::GetIO().MousePos;
-      if (ImGui::IsMouseDown(0) && !isDrawing) {
-        startPos = ImVec2(mousePos.x - imgOrigin.x, mousePos.y - imgOrigin.y);
-        startPos = clampToBounds(startPos, rawFrame.width, rawFrame.height);
-        isDrawing = true;
-      }
-      if (isDrawing) {
-        endPos = ImVec2(mousePos.x - imgOrigin.x, mousePos.y - imgOrigin.y);
-        endPos = clampToBounds(endPos, rawFrame.width, rawFrame.height);
-        drawList->AddRect(ImVec2(startPos.x + imgOrigin.x, startPos.y + imgOrigin.y),
-                          ImVec2(endPos.x + imgOrigin.x, endPos.y + imgOrigin.y),
-                          IM_COL32(255, 0, 0, 255));
-      }
-      if (ImGui::IsMouseReleased(0) && isDrawing) {
-        endPos = ImVec2(mousePos.x - imgOrigin.x, mousePos.y - imgOrigin.y);
-        endPos = clampToBounds(endPos, rawFrame.width, rawFrame.height);
-        tmplBBoxes.push_back(cv::Rect((startPos.x < endPos.x) ? startPos.x : endPos.x,
-                                    (startPos.y < endPos.y) ? startPos.y : endPos.y,
-                                    std::abs(endPos.x - startPos.x),
-                                    std::abs(endPos.y - startPos.y)));
-        isDrawing = drawTmpl = false;
       }
     }
   }
