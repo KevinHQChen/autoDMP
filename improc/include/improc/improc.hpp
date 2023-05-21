@@ -5,6 +5,7 @@
 
 struct Pose {
   cv::Point loc;
+  cv::Point minLoc;
   bool found;
 };
 
@@ -92,15 +93,13 @@ class ImProc {
 
   std::vector<int> compParams;
 
-  cv::Mat preFrame, tempFrame, tempPreFrame, tempProcFrame;
-  cv::Mat fgMask, tempFgMask, tempChFgMask, tempRotChFgMask;
+  cv::Mat preFrame, fgMask, tempFgMask, tempChFgMask, tempRotChFgMask;
   std::vector<cv::Point> fgLocs;
-  cv::Point currMaxLoc;
+  cv::Point currMaxLoc, currMinLoc;
 
   cv::Ptr<cv::BackgroundSubtractor> pBackSub;
 
-
-  std::vector<cv::Mat> tempResultFrame, tempProcFrameArr;
+  std::vector<cv::Mat> tempProcFrameArr;
   std::vector<Pose> poseData;
   std::vector<bool> procDataAvail;
   cv::Point minLoc, maxLoc;

@@ -52,7 +52,6 @@ void ImProc::stopProcThread() {
   if (started()) {
     info("Stopping image processing...");
     startedImProc = false;
-    tempResultFrame.clear();
     tempProcFrameArr.clear();
     if (procThread.joinable())
       procThread.join();
@@ -68,7 +67,7 @@ void ImProc::start() {
 
       // update background model at preset learning rate,
       // apply dilation/erosion to remove noise
-      pBackSub->apply(preFrame, fgMask);
+      pBackSub->apply(preFrame, fgMask, 0);
       cv::dilate(fgMask, tempFgMask, cv::Mat(), cv::Point(-1, -1), 3);
       cv::erode(tempFgMask, tempFgMask, cv::Mat(), cv::Point(-1, -1), 9);
       cv::dilate(tempFgMask, tempFgMask, cv::Mat(), cv::Point(-1, -1), 3);
@@ -86,6 +85,9 @@ void ImProc::start() {
         case -90:
           cv::rotate(tempChFgMask, tempRotChFgMask, cv::ROTATE_90_CLOCKWISE);
           break;
+        case 180:
+          cv::rotate(tempChFgMask, tempRotChFgMask, cv::ROTATE_180);
+          break;
         default:
           rotateMat(tempChFgMask, tempRotChFgMask, impConf.chROIs_[ch].angle);
           int x = tempRotChFgMask.cols / 2 - impConf.chWidth_ / 2;
@@ -101,28 +103,27 @@ void ImProc::start() {
           currMaxLoc = *std::max_element(
               fgLocs.begin(), fgLocs.end(),
               [](const cv::Point &p1, const cv::Point &p2) { return p1.y < p2.y; });
+          currMinLoc = *std::min_element(
+              fgLocs.begin(), fgLocs.end(),
+              [](const cv::Point &p1, const cv::Point &p2) { return p1.y > p2.y; });
 
           // save timestamp and maxLoc to file
-          poseData[ch] = {currMaxLoc, true};
+          poseData[ch] = {currMaxLoc, currMinLoc, true};
           procData->out << currMaxLoc.x << ", " << currMaxLoc.y << "\n";
-          // draw maxLoc for each channel
-          cv::circle(tempRotChFgMask, currMaxLoc, 10, cv::Scalar(255, 255, 255), 2);
+          // draw maxLoc/minLoc for each channel using black circle
+          cv::circle(tempRotChFgMask, currMaxLoc, 1, cv::Scalar(100, 100, 100), 1);
+          cv::circle(tempRotChFgMask, currMinLoc, 1, cv::Scalar(200, 200, 200), 1);
         } else
           poseData[ch].found = false;
 
         // push processed frame to queue for display
-        // tempResultQueueArr[ch]->push(tempResultFrame[i]);
-        // procFrameQueueArr[ch]->push(tempProcFrame);
         tempProcFrameArr[ch] = tempRotChFgMask;
 
         // debug info
-        // info("tempPreFrame size: {}", tempPreFrame.size());
-        // info("tempProcFrame size: {}", tempProcFrame.size());
         // info("currPose rotChanBBox: {}", currPose.rotChanBBox[idx]);
       } // iterate over all channels
       procData->push(poseData);
       procFrameBuf.set(tempProcFrameArr);
-      // procFrameQueuePtr->push(tempFrame);
       stopTime = high_resolution_clock::now();
       auto duration = duration_cast<milliseconds>(stopTime - startTime);
       // info("imProc duration: {}", duration.count());
