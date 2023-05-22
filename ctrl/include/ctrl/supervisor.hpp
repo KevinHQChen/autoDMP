@@ -39,12 +39,23 @@ public:
   SupervisoryController *sup;
   SupervisoryController::ExtU supIn;
   SupervisoryController::ExtY supOut;
-  static event_bus nullEv;
-  event_bus currEv_ = nullEv;
+  std::mutex supMtx;
+
+  // defined in SupervisoryControler_data.cpp in SupervisoryController::P SupervisoryController::rtP
+  constexpr static event_bus nullEv{0.0,
+                                    0.0,
+
+                                    {0.0, 0.0, 0.0},
+                                    0.0,
+                                    0.0,
+
+                                    {true, false, false},
+
+                                    {true, false, false}};
   QueueFPS<event_bus> *evQueue_;
   real_T y[3], y_max[3], y_o[3], u_o[3], y_range[3];
   boolean_T inTransRegion;
-  bool allMeasAvail, anyMeasAvail, simMeasAvail;
+  bool measAvail_;
   bool trueMeasAvail[3];
   time_point<steady_clock> initTime{steady_clock::now()};
   time_point<steady_clock> prevCtrlTime = initTime;
@@ -76,7 +87,29 @@ public:
   */
   bool updateInputs();
 
-  void addEvent(event_bus e);
+  void addEvent(event_bus e) { evQueue_->push_back(e); }
+
+  SupervisoryController::ExtU getSupIn() {
+    std::lock_guard<std::mutex> lock(supMtx);
+    return supIn;
+  }
+  SupervisoryController::ExtY getSupOut() {
+    std::lock_guard<std::mutex> lock(supMtx);
+    return supOut;
+  }
+
+  void setSupIn(SupervisoryController::ExtU supIn) {
+    std::lock_guard<std::mutex> lock(supMtx);
+    this->supIn = supIn;
+  }
+  void setSupOut(SupervisoryController::ExtY supOut) {
+    std::lock_guard<std::mutex> lock(supMtx);
+    this->supOut = supOut;
+  }
+
+  std::string getDataPath() const { return dataPath; }
+  std::string getConfPath() const { return confPath; }
+  void clearCtrlDataQueue();
 
   // tmpl methods must be defined in headers (https://stackoverflow.com/a/10632266)
   template <typename T> void updateState() {
@@ -100,8 +133,4 @@ public:
     delete currState_;
     currState_ = new T(this, uref, selChs, minVals, maxVals, data);
   }
-
-  std::string getDataPath() const { return dataPath; }
-  std::string getConfPath() const { return confPath; }
-  void clearCtrlDataQueue();
 };

@@ -21,4 +21,9 @@ int main(int, const char **) {
   info("Parsed config: {}", toml::find(Config::conf, "gui"));
   GUI gui(imCap, imProc, pump, sv);
   gui.startGUIThread();
+
+  delete sv;
+  delete pump;
+  delete imProc;
+  delete imCap;
 }

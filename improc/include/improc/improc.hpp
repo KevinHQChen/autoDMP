@@ -3,10 +3,12 @@
 #include "imcap/imcap.hpp"
 #include "util/util.hpp"
 
+class Supervisor;
+
 struct Pose {
   cv::Point loc;
-  cv::Point minLoc;
-  bool found;
+  double p[3];
+  bool found[3];
 };
 
 void rotateMat(cv::Mat &src, cv::Mat &dst, double angle);
@@ -89,6 +91,7 @@ class ImProc {
   ordered_value conf;
   std::string confPath, dataPath;
   ImCap *imCap;
+  Supervisor *sv_;
   SharedBuffer<std::vector<cv::Mat>> procFrameBuf;
 
   std::vector<int> compParams;
@@ -96,22 +99,21 @@ class ImProc {
   cv::Mat preFrame, fgMask, tempFgMask, tempChFgMask, tempRotChFgMask;
   std::vector<cv::Point> fgLocs;
   cv::Point currMaxLoc, currMinLoc;
+  int srcState, destState;
 
   cv::Ptr<cv::BackgroundSubtractor> pBackSub;
 
-  std::vector<cv::Mat> tempProcFrameArr;
-  std::vector<Pose> poseData;
-  std::vector<bool> procDataAvail;
-  cv::Point minLoc, maxLoc;
-  double minVal, maxVal;
+  std::vector<cv::Mat> procFrameArr;
+  std::vector<Pose> p;
 
   std::atomic<bool> startedImProc{false};
   std::thread procThread;
-
   // Called within imProcThread context
   void start();
+  void chImProc(int ch);
 
 public:
+  std::vector<int> yMax;
   ImProcConfig impConf;
   QueueFPS<std::vector<Pose>> *procData;
 
@@ -127,5 +129,8 @@ public:
   bool started();
 
   cv::Mat getProcFrame(int idx);
+
+  void setSupervisor(Supervisor *sv);
+
   void clearProcData();
 };

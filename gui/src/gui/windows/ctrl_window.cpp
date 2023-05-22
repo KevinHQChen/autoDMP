@@ -174,10 +174,10 @@ void CtrlWindow::render() {
           ImGui::TableSetupColumn("ch2");
           ImGui::TableHeadersRow();
 
-          displayArray3d("y", sv_->supIn.y);
+          displayArray3d("y", sv_->supIn.ymeas);
           displayArray3d("y_max", sv_->supIn.y_max);
-          displayArray3d("y0", sv_->supIn.y_o);
-          displayArray3d("u0", sv_->supIn.u_o);
+          displayArray3d("y0", sv_->supIn.y0);
+          displayArray3d("u0", sv_->supIn.u0);
           displayArray3d("u", sv_->supOut.u);
           displayArray3d("yhat", sv_->supOut.yhat);
           displayArray3d("traj", sv_->supOut.currTraj);
@@ -233,24 +233,24 @@ void CtrlWindow::render() {
         u0.AddPoint(guiTime, sv_->supOut.u[0]);
         u1.AddPoint(guiTime, sv_->supOut.u[1]);
         u2.AddPoint(guiTime, sv_->supOut.u[2]);
-        y0.AddPoint(guiTime, sv_->supIn.y[0]);
-        y1.AddPoint(guiTime, sv_->supIn.y[1]);
-        y2.AddPoint(guiTime, sv_->supIn.y[2]);
+        y0.AddPoint(guiTime, sv_->supIn.ymeas[0]);
+        y1.AddPoint(guiTime, sv_->supIn.ymeas[1]);
+        y2.AddPoint(guiTime, sv_->supIn.ymeas[2]);
         yhat0.AddPoint(guiTime, sv_->supOut.yhat[0]);
         yhat1.AddPoint(guiTime, sv_->supOut.yhat[1]);
         yhat2.AddPoint(guiTime, sv_->supOut.yhat[2]);
         yref0.AddPoint(guiTime, sv_->supOut.currTraj[0]);
         yref1.AddPoint(guiTime, sv_->supOut.currTraj[1]);
         yref2.AddPoint(guiTime, sv_->supOut.currTraj[2]);
-        param0.AddPoint(guiTime, sv_->supOut.B_o[0]);
-        param1.AddPoint(guiTime, sv_->supOut.B_o[1]);
-        param2.AddPoint(guiTime, sv_->supOut.B_o[2]);
-        param3.AddPoint(guiTime, sv_->supOut.B_o[3]);
-        param4.AddPoint(guiTime, sv_->supOut.B_o[4]);
-        param5.AddPoint(guiTime, sv_->supOut.B_o[5]);
-        param6.AddPoint(guiTime, sv_->supOut.B_o[6]);
-        param7.AddPoint(guiTime, sv_->supOut.B_o[7]);
-        param8.AddPoint(guiTime, sv_->supOut.B_o[8]);
+        param0.AddPoint(guiTime, sv_->supOut.B_b[0]);
+        param1.AddPoint(guiTime, sv_->supOut.B_b[1]);
+        param2.AddPoint(guiTime, sv_->supOut.B_b[2]);
+        param3.AddPoint(guiTime, sv_->supOut.B_b[3]);
+        param4.AddPoint(guiTime, sv_->supOut.B_b[4]);
+        param5.AddPoint(guiTime, sv_->supOut.B_b[5]);
+        param6.AddPoint(guiTime, sv_->supOut.B_b[6]);
+        param7.AddPoint(guiTime, sv_->supOut.B_b[7]);
+        param8.AddPoint(guiTime, sv_->supOut.B_b[8]);
       }
 
       ImGui::SliderFloat("History", &history, 1, 60, "%.1f s");

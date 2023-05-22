@@ -1,11 +1,9 @@
-#include "ctrl/supervisor.hpp" // ensures supervisor.hpp compiles in isolation
+#include "ctrl/supervisor.hpp"
 #include "ctrl/state/state0.hpp"
 #include "ctrl/state/state2.hpp"
 #include "ctrl/state/sysidstate.hpp"
 
 #define NUM_PUMPS 4
-
-event_bus Supervisor::nullEv = {};
 
 Supervisor::Supervisor(ImProc *imProc, Pump *pump)
     : conf(Config::conf), simModeActive(toml::get<bool>(conf["ctrl"]["simMode"])),
@@ -14,7 +12,9 @@ Supervisor::Supervisor(ImProc *imProc, Pump *pump)
       sup(new SupervisoryController()), supIn({}), supOut({}),
       evQueue_(new QueueFPS<event_bus>(dataPath + "eventQueue.txt")), currState_(new State0(this)),
       currEvent_(new Event(0, 0, Eigen::Vector3d(0.5, 0, 0), Eigen::Vector3d(10, 0, 0))),
-      ctrlDataQueuePtr(new QueueFPS<int>(dataPath + "ctrlDataQueue.txt")) {}
+      ctrlDataQueuePtr(new QueueFPS<int>(dataPath + "ctrlDataQueue.txt")) {
+  imProc->setSupervisor(this);
+}
 
 Supervisor::~Supervisor() {
   delete evQueue_;
@@ -35,22 +35,16 @@ void Supervisor::startThread() {
     // - assume y_o is always y_max, and yhat is at y_max initially (TODO is this a good
     // assumption?)
     supIn.excitation = 5;
-    supIn.y_range[0] = 0.1;
-    supIn.y_range[1] = 0.95;
     for (int ch = 0; ch < imProc->impConf.numChs_; ++ch) {
-      // TODO add support for non-90-degree channels
-      if (ch == 0)
-        supIn.y_max[ch] = imProc->impConf.getChROIs()[ch].height - imProc->impConf.getChWidth();
-      else
-        supIn.y_max[ch] = imProc->impConf.getChROIs()[ch].width - imProc->impConf.getChWidth();
-      supIn.y_o[ch] = supIn.y_max[ch];
+      supIn.y_max[ch] = imProc->yMax[ch];
+      supIn.y0[ch] = supIn.y_max[ch];
       supOut.yhat[ch] = supIn.y_max[ch];
     }
     for (int pp = 0; pp < NUM_PUMPS; ++pp) {
       if (pp < 2)
-        supIn.u_o[0] = pump->pumpVoltages[pp];
+        supIn.u0[0] = pump->pumpVoltages[pp];
       else
-        supIn.u_o[pp - 1] = pump->pumpVoltages[pp];
+        supIn.u0[pp - 1] = pump->pumpVoltages[pp];
     }
     sup->initialize();
 
@@ -77,73 +71,26 @@ void Supervisor::stopThread() {
   }
 }
 
-bool Supervisor::measAvail() {
-  if (imProc->procData->empty()) {
-    allMeasAvail = false;
-    anyMeasAvail = false;
-    simMeasAvail = duration_cast<milliseconds>(steady_clock::now() - prevCtrlTime).count() >= 25;
-    return false;
-  }
-  poses = imProc->procData->get();
-  allMeasAvail = true;
-  anyMeasAvail = false;
-  simMeasAvail = duration_cast<milliseconds>(steady_clock::now() - prevCtrlTime).count() >= 25;
-  for (int ch = 0; ch < imProc->impConf.numChs_; ++ch) {
-    if (!simModeActive)
-      trueMeasAvail[ch] = poses[ch].found;
-    else {
-      if (supOut.currEv.chs[ch] == supOut.currEv.nextChs[ch])
-        trueMeasAvail[ch] = simMeasAvail && supOut.currEv.chs[ch];
-      else
-        trueMeasAvail[ch] = !supOut.inTransRegion ? (simMeasAvail && supOut.currEv.chs[ch])
-                                                  : (simMeasAvail && supOut.currEv.nextChs[ch]);
-    }
-
-    if (supOut.currEv.chs[ch]) {
-      anyMeasAvail |= trueMeasAvail[ch];
-      allMeasAvail &= trueMeasAvail[ch];
-    }
-  }
-
-  if (allMeasAvail) {
-    supIn.inputevents[0] = !supIn.inputevents[0];
-    return true;
-  } else if (anyMeasAvail || (simMeasAvail && supOut.inTransRegion)) {
-    supIn.inputevents[1] = !supIn.inputevents[1];
-    return true;
-  } else
-    return false;
-}
-
-bool Supervisor::updateInputs() {
-  for (int ch = 0; ch < imProc->impConf.numChs_; ++ch) {
-    if (trueMeasAvail[ch]) {
-      if (!simModeActive)
-        supIn.y[ch] = poses[ch].loc.y;
-      else {
-        if (supOut.currEv.chs[ch] == supOut.currEv.nextChs[ch])
-          supIn.y[ch] = supOut.yhat[ch];
-        else
-          supIn.y[ch] = !supOut.inTransRegion ? supOut.yhat[ch] : supIn.y_o[ch];
-      }
-    } else // simMeasAvail (set y to 0 to tell the observer to only predict for this channel)
-      supIn.y[ch] = 0;
-  }
-
-  if (supOut.requestEvent && !evQueue_->empty())
-    supIn.nextEv = evQueue_->get();
-  else
-    supIn.nextEv = nullEv;
-
-  return true;
-}
-
 void Supervisor::start() {
   while (startedCtrl) {
-    if (measAvail()) {
+    if (!imProc->procData->empty()) {
+      std::lock_guard<std::mutex> lock(supMtx);
       prevCtrlTime = steady_clock::now();
+      poses = imProc->procData->get();
+      for (int ch = 0; ch < imProc->impConf.numChs_; ++ch) {
+        if (poses[ch].found)
+          supIn.ymeas[ch] = poses[ch].loc.y;
+        else
+          supIn.ymeas[ch] = 0;
+      }
+
+      if (supOut.requestEvent && !evQueue_->empty())
+        supIn.nextEv = evQueue_->get();
+      else
+        supIn.nextEv = nullEv;
+
+      supIn.measAvail = !supIn.measAvail;
       // info("Time: {}", duration_cast<milliseconds>(prevCtrlTime - initTime).count());
-      updateInputs();
       sup->rtU = supIn;
       // info("y0: {}", sup->rtU.y[0]);
       // info("y1: {}", sup->rtU.y[1]);
@@ -181,18 +128,15 @@ void Supervisor::start() {
       // info("currEv nextChs0: {}", sup->rtY.currEv.nextChs[0]);
       // info("currEv nextChs1: {}", sup->rtY.currEv.nextChs[1]);
       // info("currEv nextChs2: {}", sup->rtY.currEv.nextChs[2]);
-
       sup->step();
       supOut = sup->rtY;
 
       !simModeActive ? pump->sendSigs(Eigen::Vector3d(supOut.u[0], supOut.u[1], supOut.u[2]))
                      : info("Pump inputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
 
-      ctrlDataQueuePtr->out << "allMA: " << allMeasAvail << ", anyMA: " << anyMeasAvail
-                            << ", simMA: " << simMeasAvail
-                            << ", inTR: " << (bool)supOut.inTransRegion
-                            << ", y: " << (double)supIn.y[0] << ", " << (double)supIn.y[1] << ", "
-                            << (double)supIn.y[2] << ", yhat: " << (double)supOut.yhat[0] << ", "
+      ctrlDataQueuePtr->out << "y: " << (double)supIn.ymeas[0] << ", " << (double)supIn.ymeas[1]
+                            << ", " << (double)supIn.ymeas[2]
+                            << ", yhat: " << (double)supOut.yhat[0] << ", "
                             << (double)supOut.yhat[1] << ", " << (double)supOut.yhat[2]
                             << ", u: " << (double)supOut.u[0] << ", " << (double)supOut.u[1] << ", "
                             << (double)supOut.u[2] << ", chs: " << (bool)supOut.currEv.chs[0]
@@ -200,15 +144,13 @@ void Supervisor::start() {
                             << ", nextChs: " << (bool)supOut.currEv.nextChs[0]
                             << (bool)supOut.currEv.nextChs[1] << (bool)supOut.currEv.nextChs[2]
                             << "\n";
-      ctrlDataQueuePtr->out << "params: " << supOut.B_o[0] << ", " << supOut.B_o[1] << ", "
-                            << supOut.B_o[2] << ", " << supOut.B_o[3] << ", " << supOut.B_o[4]
-                            << ", " << supOut.B_o[5] << ", " << supOut.B_o[6] << ", "
-                            << supOut.B_o[7] << ", " << supOut.B_o[8] << "\n";
+      ctrlDataQueuePtr->out << "params: " << supOut.B_b[0] << ", " << supOut.B_b[1] << ", "
+                            << supOut.B_b[2] << ", " << supOut.B_b[3] << ", " << supOut.B_b[4]
+                            << ", " << supOut.B_b[5] << ", " << supOut.B_b[6] << ", "
+                            << supOut.B_b[7] << ", " << supOut.B_b[8] << "\n";
     }
   }
 }
-
-void Supervisor::addEvent(event_bus e) { evQueue_->push_back(e); }
 
 void Supervisor::startSysIDThread(Eigen::Vector3d uref, bool *selChs, std::vector<float> minVals,
                                   std::vector<float> maxVals, Eigen::MatrixXd &data) {
