@@ -27,7 +27,7 @@ bool SysIDState::measurementAvailable() {
     if (selChs_[i]) {
       simMeasAvail_ &=
           duration_cast<milliseconds>(steady_clock::now() - prevCtrlTime[i]).count() >= 25;
-      trueMeasAvail_ &= !sv_->poses[i].found;
+      trueMeasAvail_ &= !sv_->p[i].found;
     }
   }
   if (sv_->simModeActive)
@@ -40,7 +40,7 @@ void SysIDState::updateMeasurement() {
   if (trueMeasAvail_) { // update true measurement y
     for (int i = 0; i < 3; ++i)
       if (selChs_[i])
-        y(i) = sv_->poses[i].loc.y;
+        y(i) = sv_->p[i].loc[0].y;
   } else
     for (int i = 0; i < 3; ++i)
       if (selChs_[i])

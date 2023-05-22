@@ -25,6 +25,7 @@ class Supervisor {
   // Called within thread context
   void start();
   void startSysID();
+  void updateMeas();
 
 public:
   ordered_value conf;
@@ -34,7 +35,7 @@ public:
   Pump *pump;
   ImProc *imProc;
 
-  std::vector<Pose> poses;
+  std::vector<Pose> p;
 
   SupervisoryController *sup;
   SupervisoryController::ExtU supIn;
@@ -72,20 +73,6 @@ public:
   void startSysIDThread(Eigen::Vector3d uref, bool *selChs, std::vector<float> minVals,
                         std::vector<float> maxVals, Eigen::MatrixXd &data);
   void stopSysIDThread();
-
-  /*
-  ** updates the following SupervisoryController inputs:
-  **  - inputevents = {trueMeasAvail, simMeasAvail}
-  **  - y
-  */
-  bool measAvail();
-
-  /*
-  ** updates the following SupervisoryController inputs:
-  ** - initial y_o
-  ** - nextEv
-  */
-  bool updateInputs();
 
   void addEvent(event_bus e) { evQueue_->push_back(e); }
 

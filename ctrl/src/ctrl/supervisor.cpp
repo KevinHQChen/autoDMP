@@ -72,22 +72,16 @@ void Supervisor::stopThread() {
 void Supervisor::start() {
   while (startedCtrl) {
     if (!imProc->procData->empty()) {
-      prevCtrlTime = steady_clock::now();
-      poses = imProc->procData->get();
-      for (int ch = 0; ch < imProc->impConf.numChs_; ++ch) {
-        if (poses[ch].found)
-          supIn.ymeas[ch] = poses[ch].loc.y;
-        else
-          supIn.ymeas[ch] = 0;
-      }
-
       if (supOut.requestEvent && !evQueue_->empty()) {
         supIn.nextEv = evQueue_->get();
         currEv_ = supIn.nextEv;
       } else
         supIn.nextEv = nullEv;
 
-      supIn.measAvail = !supIn.measAvail;
+      prevCtrlTime = steady_clock::now();
+      p = imProc->procData->get();
+      updateMeas();
+
       // info("Time: {}", duration_cast<milliseconds>(prevCtrlTime - initTime).count());
       sup->rtU = supIn;
       // info("y0: {}", sup->rtU.y[0]);
@@ -148,6 +142,58 @@ void Supervisor::start() {
                             << supOut.B_b[7] << ", " << supOut.B_b[8] << "\n";
     }
   }
+}
+
+void Supervisor::updateMeas() {
+  if (currEv_.srcState == 0) {
+    if (p[0].found[0]) {
+      supIn.ymeas[0] = p[0].p[0];
+      supIn.ymeas[1] = supIn.ymeas[2] = 0;
+    }
+    if (p[1].found[1] && p[2].found[1]) { // state0 -> state1
+      supIn.ymeas[0] = 0;
+      supIn.ymeas[1] = p[1].p[1];
+      supIn.ymeas[2] = p[2].p[1];
+    }
+  }
+
+  if (currEv_.srcState == 1) {
+    if (p[1].found[0] && p[2].found[0]) {
+      supIn.ymeas[0] = 0;
+      supIn.ymeas[1] = p[1].p[0];
+      supIn.ymeas[2] = p[2].p[0];
+    }
+    if (p[1].found[1] && p[2].found[1]) {
+      supIn.ymeas[0] = 0;
+      supIn.ymeas[1] = p[1].p[1];
+      supIn.ymeas[2] = p[2].p[1];
+    }
+    if (p[1].found[2] && p[2].found[2]) {
+      supIn.ymeas[0] = 0;
+      supIn.ymeas[1] = (p[1].p[2] > imProc->yMax[1]) ? p[1].p[1] : p[1].p[2];
+      supIn.ymeas[2] = (p[2].p[2] > imProc->yMax[2]) ? p[2].p[1] : p[2].p[2];
+    }
+    if ((p[0].found[0] && p[0].p[0] < imProc->yMax[0]) &&
+        (p[2].found[2] && p[2].p[2] < imProc->yMax[2])) { // state1 -> state2
+      supIn.ymeas[0] = p[0].p[0];
+      supIn.ymeas[1] = 0;
+      supIn.ymeas[2] = p[2].p[2];
+    }
+  }
+
+  if (currEv_.srcState == 2) {
+    if (p[0].found[0] && p[2].found[2]) {
+      supIn.ymeas[0] = p[0].p[0];
+      supIn.ymeas[1] = 0;
+      supIn.ymeas[2] = p[2].p[2];
+    }
+    if (p[1].found[1] && p[2].found[1]) { // state2 -> state1
+      supIn.ymeas[0] = 0;
+      supIn.ymeas[1] = p[1].p[1];
+      supIn.ymeas[2] = p[2].p[1];
+    }
+  }
+  supIn.measAvail = !supIn.measAvail;
 }
 
 void Supervisor::startSysIDThread(Eigen::Vector3d uref, bool *selChs, std::vector<float> minVals,

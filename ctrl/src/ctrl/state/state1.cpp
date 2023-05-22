@@ -94,7 +94,7 @@ void State1::handleEvent(Event *event) {
     // we're in sim mode and ch1 & ch2 are 95% to junction
     // or ch0 is observable
     if ((yref(1) > 0.95 * yrefScale(1) && yref(2) > 0.95 * yrefScale(2) && sv_->simModeActive) ||
-        (stateTransitionCondition && !sv_->poses[0].found)) {
+        (stateTransitionCondition && !sv_->p[0].found)) {
       delete sv_->currEvent_;
       sv_->currEvent_ = nullptr;
       sv_->updateState<State0>(usat);
@@ -115,7 +115,7 @@ void State1::handleEvent(Event *event) {
     // we're in sim mode and ch1 is 95% to junction
     // or ch0 is observable
     if ((yref(1) > 0.95 * yrefScale(1) && sv_->simModeActive) ||
-        (stateTransitionCondition && !sv_->poses[0].found)) {
+        (stateTransitionCondition && !sv_->p[0].found)) {
       delete sv_->currEvent_;
       sv_->currEvent_ = nullptr;
       sv_->updateState<State2>(usat);

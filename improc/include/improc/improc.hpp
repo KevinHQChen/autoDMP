@@ -4,7 +4,7 @@
 #include "util/util.hpp"
 
 struct Pose {
-  cv::Point loc;
+  cv::Point loc[3];
   double p[3];
   bool found[3];
 };

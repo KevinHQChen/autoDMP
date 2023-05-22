@@ -140,7 +140,7 @@ public:
   template <int dim> bool measurementAvailable(Eigen::Matrix<unsigned int, dim, 1> &ch) {
     bool tmpMeasAvail = true;
     for (int i = 0; i != ch.rows(); ++i) {
-      trueMeasAvail[ch(i)] = !sv_->poses[ch(i)].found;
+      trueMeasAvail[ch(i)] = !sv_->p[ch(i)].found;
       measAvail[ch(i)] =
           duration_cast<milliseconds>(steady_clock::now() - prevCtrlTime[ch(i)]).count() >= 25;
 
@@ -161,10 +161,10 @@ public:
     for (int i = 0; i != ch.rows(); ++i) {
       // update measurement vectors dy, y
       if (trueMeasAvail[ch(i)])
-        p = sv_->poses[ch(i)];
+        p = sv_->p[ch(i)];
 
       if (trueMeasAvail[ch(i)] && (rot == -1))
-        dy(ch(i)) = p.loc.y - yref(ch(i));
+        dy(ch(i)) = p.loc[0].y - yref(ch(i));
       else if (stateTransitionCondition) { // assume interface is stuck at junction
         if (ytrans(ch(i)) < yref(ch(i)))
           ytrans(ch(i)) = yref(ch(i));

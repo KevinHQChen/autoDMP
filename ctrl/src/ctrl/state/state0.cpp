@@ -92,7 +92,7 @@ void State0::handleEvent(Event *event) {
     // or ch1 or ch2 are observable and we're not observing ch0
     if ((yref(0) > 0.95 * yrefScale(0) && sv_->simModeActive) ||
         (stateTransitionCondition &&
-         (!sv_->poses[1].found || !sv_->poses[2].found))) {
+         (!sv_->p[1].found || !sv_->p[2].found))) {
       delete sv_->currEvent_;
       sv_->currEvent_ = nullptr;
       sv_->updateState<State1>(usat);

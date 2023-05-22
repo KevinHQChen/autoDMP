@@ -103,7 +103,7 @@ void State2::handleEvent(Event *event) {
     // we're in sim mode and ch0 & ch2 are 95% to junction
     // or ch1 is observable
     if ((yref(0) > 0.95 * yrefScale(1) && yref(2) > 0.95 * yrefScale(2) && sv_->simModeActive) ||
-        (stateTransitionCondition && !sv_->poses[1].found)) {
+        (stateTransitionCondition && !sv_->p[1].found)) {
       delete sv_->currEvent_;
       sv_->currEvent_ = nullptr;
       sv_->updateState<State1>(usat);
