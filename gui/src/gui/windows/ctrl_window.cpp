@@ -141,27 +141,23 @@ void CtrlWindow::render() {
           ImGui::TableSetupColumn("nextChs");
           ImGui::TableHeadersRow();
 
-          // if (std::memcmp(&sv_->supOut.currEv, &Supervisor::nullEv, sizeof(event_bus)) != 0) {
-          //   ImGui::TableNextRow();
-          //   ImGui::TableSetColumnIndex(0);
-          //   ImGui::Text("%f", sv_->supOut.currEv.srcState);
-          //   ImGui::TableSetColumnIndex(2);
-          //   ImGui::Text("%f", sv_->supOut.currEv.destState);
-          //   ImGui::TableSetColumnIndex(3);
-          //   ImGui::Text("(%f, %f, %f)", sv_->supOut.currEv.destPos[0],
-          //               sv_->supOut.currEv.destPos[1], sv_->supOut.currEv.destPos[2]);
-          //   ImGui::TableSetColumnIndex(4);
-          //   ImGui::Text("%f", sv_->supOut.currEv.moveTime);
-          //   ImGui::TableSetColumnIndex(5);
-          //   ImGui::Text("%f", sv_->supOut.currEv.holdTime);
-          //   ImGui::TableSetColumnIndex(6);
-          //   ImGui::Text("%d, %d, %d", sv_->supOut.currEv.chs[0], sv_->supOut.currEv.chs[1],
-          //               sv_->supOut.currEv.chs[2]);
-          //   ImGui::TableSetColumnIndex(7);
-          //   ImGui::Text("%d, %d, %d", sv_->supOut.currEv.nextChs[0],
-          //   sv_->supOut.currEv.nextChs[1],
-          //               sv_->supOut.currEv.nextChs[2]);
-          // }
+          ImGui::TableNextRow();
+          ImGui::TableSetColumnIndex(0);
+          ImGui::Text("%f", sv_->currEv_.srcState);
+          ImGui::TableSetColumnIndex(2);
+          ImGui::Text("%f", sv_->currEv_.destState);
+          ImGui::TableSetColumnIndex(3);
+          ImGui::Text("(%f, %f, %f)", sv_->currEv_.destPos[0], sv_->currEv_.destPos[1],
+                      sv_->currEv_.destPos[2]);
+          ImGui::TableSetColumnIndex(4);
+          ImGui::Text("%f", sv_->currEv_.moveTime);
+          ImGui::TableSetColumnIndex(5);
+          ImGui::Text("%f", sv_->currEv_.holdTime);
+          ImGui::TableSetColumnIndex(6);
+          ImGui::Text("%d, %d, %d", sv_->currEv_.chs[0], sv_->currEv_.chs[1], sv_->currEv_.chs[2]);
+          ImGui::TableSetColumnIndex(7);
+          ImGui::Text("%d, %d, %d", sv_->currEv_.nextChs[0], sv_->currEv_.nextChs[1],
+                      sv_->currEv_.nextChs[2]);
           ImGui::EndTable();
         }
         ImGui::Separator();

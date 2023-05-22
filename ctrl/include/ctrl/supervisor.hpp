@@ -39,7 +39,6 @@ public:
   SupervisoryController *sup;
   SupervisoryController::ExtU supIn;
   SupervisoryController::ExtY supOut;
-  std::mutex supMtx;
 
   // defined in SupervisoryControler_data.cpp in SupervisoryController::P SupervisoryController::rtP
   constexpr static event_bus nullEv{0.0,
@@ -52,6 +51,7 @@ public:
                                     {true, false, false},
 
                                     {true, false, false}};
+  event_bus currEv_ = nullEv;
   QueueFPS<event_bus> *evQueue_;
   real_T y[3], y_max[3], y_o[3], u_o[3], y_range[3];
   boolean_T inTransRegion;
@@ -88,24 +88,6 @@ public:
   bool updateInputs();
 
   void addEvent(event_bus e) { evQueue_->push_back(e); }
-
-  SupervisoryController::ExtU getSupIn() {
-    std::lock_guard<std::mutex> lock(supMtx);
-    return supIn;
-  }
-  SupervisoryController::ExtY getSupOut() {
-    std::lock_guard<std::mutex> lock(supMtx);
-    return supOut;
-  }
-
-  void setSupIn(SupervisoryController::ExtU supIn) {
-    std::lock_guard<std::mutex> lock(supMtx);
-    this->supIn = supIn;
-  }
-  void setSupOut(SupervisoryController::ExtY supOut) {
-    std::lock_guard<std::mutex> lock(supMtx);
-    this->supOut = supOut;
-  }
 
   std::string getDataPath() const { return dataPath; }
   std::string getConfPath() const { return confPath; }

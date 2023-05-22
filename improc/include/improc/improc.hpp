@@ -3,8 +3,6 @@
 #include "imcap/imcap.hpp"
 #include "util/util.hpp"
 
-class Supervisor;
-
 struct Pose {
   cv::Point loc;
   double p[3];
@@ -91,15 +89,13 @@ class ImProc {
   ordered_value conf;
   std::string confPath, dataPath;
   ImCap *imCap;
-  Supervisor *sv_;
   SharedBuffer<std::vector<cv::Mat>> procFrameBuf;
 
   std::vector<int> compParams;
 
   cv::Mat preFrame, fgMask, tempFgMask, tempChFgMask, tempRotChFgMask;
   std::vector<cv::Point> fgLocs;
-  cv::Point currMaxLoc, currMinLoc;
-  int srcState, destState;
+  cv::Point currLoc;
 
   cv::Ptr<cv::BackgroundSubtractor> pBackSub;
 
@@ -129,8 +125,6 @@ public:
   bool started();
 
   cv::Mat getProcFrame(int idx);
-
-  void setSupervisor(Supervisor *sv);
 
   void clearProcData();
 };

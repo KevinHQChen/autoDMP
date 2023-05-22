@@ -12,9 +12,7 @@ Supervisor::Supervisor(ImProc *imProc, Pump *pump)
       sup(new SupervisoryController()), supIn({}), supOut({}),
       evQueue_(new QueueFPS<event_bus>(dataPath + "eventQueue.txt")), currState_(new State0(this)),
       currEvent_(new Event(0, 0, Eigen::Vector3d(0.5, 0, 0), Eigen::Vector3d(10, 0, 0))),
-      ctrlDataQueuePtr(new QueueFPS<int>(dataPath + "ctrlDataQueue.txt")) {
-  imProc->setSupervisor(this);
-}
+      ctrlDataQueuePtr(new QueueFPS<int>(dataPath + "ctrlDataQueue.txt")) {}
 
 Supervisor::~Supervisor() {
   delete evQueue_;
@@ -74,7 +72,6 @@ void Supervisor::stopThread() {
 void Supervisor::start() {
   while (startedCtrl) {
     if (!imProc->procData->empty()) {
-      std::lock_guard<std::mutex> lock(supMtx);
       prevCtrlTime = steady_clock::now();
       poses = imProc->procData->get();
       for (int ch = 0; ch < imProc->impConf.numChs_; ++ch) {
@@ -84,9 +81,10 @@ void Supervisor::start() {
           supIn.ymeas[ch] = 0;
       }
 
-      if (supOut.requestEvent && !evQueue_->empty())
+      if (supOut.requestEvent && !evQueue_->empty()) {
         supIn.nextEv = evQueue_->get();
-      else
+        currEv_ = supIn.nextEv;
+      } else
         supIn.nextEv = nullEv;
 
       supIn.measAvail = !supIn.measAvail;

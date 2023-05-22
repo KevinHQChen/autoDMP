@@ -13,10 +13,7 @@ target_include_directories(improc PUBLIC
 target_link_libraries(improc PRIVATE
   util
   imcap
-  cam
-  ctrl
-  supervisor
-  pump)
+  cam)
 
 # tests
 if(BUILD_TESTS)
