@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.994
+// Model version                  : 1.1222
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon May 15 11:03:38 2023
+// C/C++ source code generated on : Mon May 22 00:10:52 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -33,83 +33,83 @@ SupervisoryController::P SupervisoryController::rtP{
     0.0,
     0.0,
 
-    { false, false, false },
+    { true, false, false },
 
-    { false, false, false }
+    { true, false, false }
   },
 
   // Variable: Aod0
-  //  Referenced by: '<S7>/MATLAB Function'
+  //  Referenced by: '<S8>/MATLAB Function'
 
   1.0,
 
   // Variable: Aod1
-  //  Referenced by: '<S113>/MATLAB Function'
+  //  Referenced by: '<S115>/MATLAB Function'
 
   { 1.0, 0.0, 0.0, 1.0 },
 
   // Variable: Aod2
-  //  Referenced by: '<S247>/MATLAB Function'
+  //  Referenced by: '<S250>/MATLAB Function'
 
   { 1.0, 0.0, 0.0, 1.0 },
 
   // Variable: Bod0
-  //  Referenced by: '<S7>/MATLAB Function'
+  //  Referenced by: '<S8>/MATLAB Function'
 
   0.025,
 
   // Variable: Bod1
-  //  Referenced by: '<S113>/MATLAB Function'
+  //  Referenced by: '<S115>/MATLAB Function'
 
   { 0.025, 0.0, 0.0, 0.025 },
 
   // Variable: Bod2
-  //  Referenced by: '<S247>/MATLAB Function'
+  //  Referenced by: '<S250>/MATLAB Function'
 
   { 0.025, 0.0, 0.0, 0.025 },
 
   // Variable: Cod0
-  //  Referenced by: '<S7>/MATLAB Function'
+  //  Referenced by: '<S8>/MATLAB Function'
 
   1.0,
 
   // Variable: Cod1
-  //  Referenced by: '<S113>/MATLAB Function'
+  //  Referenced by: '<S115>/MATLAB Function'
 
   { 1.0, 0.0, 0.0, 1.0 },
 
   // Variable: Cod2
-  //  Referenced by: '<S247>/MATLAB Function'
+  //  Referenced by: '<S250>/MATLAB Function'
 
   { 1.0, 0.0, 0.0, 1.0 },
 
   // Variable: Dmn0
-  //  Referenced by: '<S7>/MATLAB Function'
+  //  Referenced by: '<S8>/MATLAB Function'
 
   1.0,
 
   // Variable: Dmn1
-  //  Referenced by: '<S113>/MATLAB Function'
+  //  Referenced by: '<S115>/MATLAB Function'
 
   { 1.0, 0.0, 0.0, 1.0 },
 
   // Variable: Dmn2
-  //  Referenced by: '<S247>/MATLAB Function'
+  //  Referenced by: '<S250>/MATLAB Function'
 
   { 1.0, 0.0, 0.0, 1.0 },
 
   // Variable: Dod0
-  //  Referenced by: '<S7>/MATLAB Function'
+  //  Referenced by: '<S8>/MATLAB Function'
 
   0.0,
 
   // Variable: Dod1
-  //  Referenced by: '<S113>/MATLAB Function'
+  //  Referenced by: '<S115>/MATLAB Function'
 
   { 0.0, 0.0, 0.0, 0.0 },
 
   // Variable: Dod2
-  //  Referenced by: '<S247>/MATLAB Function'
+  //  Referenced by: '<S250>/MATLAB Function'
 
   { 0.0, 0.0, 0.0, 0.0 },
 
@@ -117,6 +117,41 @@ SupervisoryController::P SupervisoryController::rtP{
   //  Referenced by: '<Root>/SupervisoryController'
 
   0.025,
+
+  // Variable: lpfDen
+  //  Referenced by:
+  //    '<S2>/Discrete Filter'
+  //    '<S3>/Discrete Filter'
+  //    '<S4>/Discrete Filter'
+
+  1.0,
+
+  // Variable: lpfNum
+  //  Referenced by:
+  //    '<S2>/Discrete Filter'
+  //    '<S3>/Discrete Filter'
+  //    '<S4>/Discrete Filter'
+
+  { -0.0001395194037777206, 0.0001062405464448335, 0.00053156288262108274,
+    0.00061498512134384043, -0.0001072340498580264, -0.0012869873067591802,
+    -0.0016761062869331484, -0.00023795039586547393, 0.002358892157775442,
+    0.0036213661265000964, 0.0013467247781293011, -0.0035727765134688375,
+    -0.0067466463590714672, -0.0038194621120323639, 0.0045377009594818243,
+    0.011326022139335446, 0.0085042852608373139, -0.0045719847433271926,
+    -0.017685942779495263, -0.01676882841526425, 0.0025008456098981418,
+    0.026580380967637394, 0.031629264420877129, 0.0042313858248733812,
+    -0.040884247859049747, -0.063732792845230007, -0.025454456431879591,
+    0.079274985582173219, 0.20972814939304377, 0.29979214373103996,
+    0.29979214373103996, 0.20972814939304377, 0.079274985582173219,
+    -0.025454456431879591, -0.063732792845230007, -0.040884247859049747,
+    0.0042313858248733812, 0.031629264420877129, 0.026580380967637394,
+    0.0025008456098981418, -0.01676882841526425, -0.017685942779495263,
+    -0.0045719847433271926, 0.0085042852608373139, 0.011326022139335446,
+    0.0045377009594818243, -0.0038194621120323639, -0.0067466463590714672,
+    -0.0035727765134688375, 0.0013467247781293011, 0.0036213661265000964,
+    0.002358892157775442, -0.00023795039586547393, -0.0016761062869331484,
+    -0.0012869873067591802, -0.0001072340498580264, 0.00061498512134384043,
+    0.00053156288262108274, 0.0001062405464448335, -0.0001395194037777206 },
 
   // Variable: chs0
   //  Referenced by: '<Root>/SupervisoryController'
@@ -133,961 +168,1034 @@ SupervisoryController::P SupervisoryController::rtP{
 
   { 1U, 3U },
 
-  // Start of '<S1>/State2.controlLaw.AMPC2'
+  // Expression: 0
+  //  Referenced by: '<S109>/L*(y[k]-yhat[k|k-1])'
+
+  0.0,
+
+  // Computed Parameter: u_Y0
+  //  Referenced by: '<S2>/u'
+
+  0.0,
+
+  // Computed Parameter: yhat_Y0
+  //  Referenced by: '<S2>/yhat'
+
+  0.0,
+
+  // Computed Parameter: params_Y0
+  //  Referenced by: '<S2>/params'
+
+  0.0,
+
+  // Computed Parameter: uref_Y0
+  //  Referenced by: '<S2>/uref'
+
+  0.0,
+
+  // Computed Parameter: paramErr_Y0
+  //  Referenced by: '<S2>/paramErr'
+
+  0.0,
+
+  // Computed Parameter: uclean_Y0
+  //  Referenced by: '<S2>/uclean'
+
+  0.0,
+
+  // Expression: zeros(1,1)
+  //  Referenced by: '<S5>/G_zero'
+
+  0.0,
+
+  // Expression: lastPcov
+  //  Referenced by: '<S9>/LastPcov'
+
+  { 0.0, 0.0, 0.0, 0.0 },
+
+  // Expression: zeros(1,1)
+  //  Referenced by: '<S5>/y.wt_zero'
+
+  0.0,
+
+  // Expression: zeros(3,1)
+  //  Referenced by: '<S5>/u.wt_zero'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Expression: zeros(3,1)
+  //  Referenced by: '<S5>/du.wt_zero'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Expression: zeros(3,1)
+  //  Referenced by: '<S5>/ext.mv_zero'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Expression: RMVscale
+  //  Referenced by: '<S9>/ext.mv_scale'
+
+  { 1.0, 1.0, 1.0 },
+
+  // Expression: lastu+uoff
+  //  Referenced by: '<S9>/last_mv'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Expression: 0
+  //  Referenced by: '<S7>/Unit Delay2'
+
+  0.0,
+
+  // Expression: 0
+  //  Referenced by: '<S7>/Unit Delay3'
+
+  0.0,
+
+  // Expression: initializationParams.adg1
+  //  Referenced by: '<S39>/Forgetting Factor'
+
+  0.99875,
+
+  // Expression: initializationParams.adg2
+  //  Referenced by: '<S39>/Normalization Bias'
+
+  0.0,
+
+  // Expression: initializationParams.initialOutputs
+  //  Referenced by: '<S39>/InitialOutputs'
+
+  0.0,
+
+  // Expression: initializationParams.initialRegressors
+  //  Referenced by: '<S39>/InitialRegressors'
+
+  0.0,
+
+  // Expression: 1e4
+  //  Referenced by: '<S7>/Constant'
+
+  10000.0,
+
+  // Expression: G0.D
+  //  Referenced by: '<S7>/Constant13'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Expression: G0.A
+  //  Referenced by: '<S7>/Constant2'
+
+  1.0,
+
+  // Expression: G0.C
+  //  Referenced by: '<S7>/Constant12'
+
+  1.0,
+
+  // Expression: 1
+  //  Referenced by: '<S7>/Constant11'
+
+  1.0,
+
+  // Expression: 0
+  //  Referenced by: '<S7>/Constant10'
+
+  0.0,
+
+  // Expression: 0
+  //  Referenced by: '<S8>/Constant'
+
+  0.0,
+
+  // Expression: pInitialization.X0
+  //  Referenced by: '<S66>/X0'
+
+  { 0.0, 0.0 },
+
+  // Expression: zeros(nym,1)
+  //  Referenced by: '<S9>/ym_zero'
+
+  0.0,
+
+  // Expression: zeros(1,1)
+  //  Referenced by: '<S5>/md_zero'
+
+  0.0,
+
+  // Expression: zeros(3,1)
+  //  Referenced by: '<S5>/umin_zero'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Expression: zeros(3,1)
+  //  Referenced by: '<S5>/umax_zero'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Expression: zeros(1,1)
+  //  Referenced by: '<S5>/ymin_zero'
+
+  0.0,
+
+  // Expression: zeros(1,1)
+  //  Referenced by: '<S5>/ymax_zero'
+
+  0.0,
+
+  // Expression: zeros(1,3)
+  //  Referenced by: '<S5>/E_zero'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Expression: MVscale(:,ones(1,max(nCC,1)))'
+  //  Referenced by: '<S9>/umin_scale4'
+
+  { 1.0, 1.0, 1.0 },
+
+  // Expression: zeros(1,1)
+  //  Referenced by: '<S5>/F_zero'
+
+  0.0,
+
+  // Expression: Yscale(:,ones(1,max(nCC,1)))'
+  //  Referenced by: '<S9>/ymin_scale1'
+
+  1.0,
+
+  // Expression: zeros(1,1)
+  //  Referenced by: '<S5>/S_zero'
+
+  0.0,
+
+  // Expression: MDscale(:,ones(1,max(nCC,1)))'
+  //  Referenced by: '<S9>/ymin_scale2'
+
+  1.0,
+
+  // Expression: zeros(1,1)
+  //  Referenced by: '<S5>/switch_zero'
+
+  0.0,
+
+  // Expression: zeros(3,1)
+  //  Referenced by: '<S5>/mv.target_zero'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Expression: RMVscale
+  //  Referenced by: '<S9>/uref_scale'
+
+  { 1.0, 1.0, 1.0 },
+
+  // Expression: zeros(1,1)
+  //  Referenced by: '<S5>/ecr.wt_zero'
+
+  0.0,
+
+  // Expression: pInitialization.H
+  //  Referenced by: '<S66>/H'
+
+  { 0.0, 0.0 },
+
+  // Expression: pInitialization.G
+  //  Referenced by: '<S66>/G'
+
+  { 1.0, 0.0, 0.0, 1.0 },
+
+  // Expression: 1
+  //  Referenced by: '<S2>/Constant'
+
+  1.0,
+
+  // Expression: pInitialization.P0
+  //  Referenced by: '<S66>/P0'
+
+  { 1.0, 0.0, 0.0, 1.0 },
+
+  // Expression: MVscale
+  //  Referenced by: '<S9>/u_scale'
+
+  { 1.0, 1.0, 1.0 },
+
+  // Expression: [0 0 0]
+  //  Referenced by: '<S2>/Measurement Noise'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Computed Parameter: MeasurementNoise_StdDev
+  //  Referenced by: '<S2>/Measurement Noise'
+
+  { 1.0, 1.0, 1.0 },
+
+  // Expression: [12345 12345 12345]
+  //  Referenced by: '<S2>/Measurement Noise'
+
+  { 12345.0, 12345.0, 12345.0 },
+
+  // Expression: 0
+  //  Referenced by: '<S2>/Discrete Filter'
+
+  0.0,
+
+  // Expression: 0
+  //  Referenced by: '<S2>/Constant1'
+
+  0.0,
+
+  // Expression: 0
+  //  Referenced by: '<S2>/Switch'
+
+  0.0,
+
+  // Computed Parameter: u_Y0_c
+  //  Referenced by: '<S3>/u'
+
+  0.0,
+
+  // Computed Parameter: yhat_Y0_f
+  //  Referenced by: '<S3>/yhat'
+
+  0.0,
+
+  // Computed Parameter: params_Y0_l
+  //  Referenced by: '<S3>/params'
+
+  0.0,
+
+  // Computed Parameter: uref_Y0_k
+  //  Referenced by: '<S3>/uref'
+
+  0.0,
+
+  // Computed Parameter: paramErr_Y0_k
+  //  Referenced by: '<S3>/paramErr'
+
+  0.0,
+
+  // Computed Parameter: uclean_Y0_e
+  //  Referenced by: '<S3>/uclean'
+
+  0.0,
+
+  // Expression: zeros(1,1)
+  //  Referenced by: '<S112>/G_zero'
+
+  0.0,
+
+  // Expression: lastPcov
+  //  Referenced by: '<S116>/LastPcov'
+
+  { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0 },
+
+  // Expression: zeros(2,1)
+  //  Referenced by: '<S112>/y.wt_zero'
+
+  { 0.0, 0.0 },
+
+  // Expression: zeros(3,1)
+  //  Referenced by: '<S112>/u.wt_zero'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Expression: zeros(3,1)
+  //  Referenced by: '<S112>/du.wt_zero'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Expression: zeros(3,1)
+  //  Referenced by: '<S112>/ext.mv_zero'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Expression: RMVscale
+  //  Referenced by: '<S116>/ext.mv_scale'
+
+  { 1.0, 1.0, 1.0 },
+
+  // Expression: lastu+uoff
+  //  Referenced by: '<S116>/last_mv'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Expression: G1.A
+  //  Referenced by: '<S114>/Constant3'
+
+  { 1.0, 0.0, 0.0, 1.0 },
+
+  // Expression: 0
+  //  Referenced by: '<S114>/Unit Delay2'
+
+  0.0,
+
+  // Expression: 0
+  //  Referenced by: '<S114>/Unit Delay3'
+
+  0.0,
+
+  // Expression: initializationParams.adg1
+  //  Referenced by: '<S147>/Forgetting Factor'
+
+  0.99875,
+
+  // Expression: initializationParams.adg2
+  //  Referenced by: '<S147>/Normalization Bias'
+
+  0.0,
+
+  // Expression: initializationParams.initialOutputs
+  //  Referenced by: '<S147>/InitialOutputs'
+
+  0.0,
+
+  // Expression: initializationParams.initialRegressors
+  //  Referenced by: '<S147>/InitialRegressors'
+
+  0.0,
+
+  // Expression: 1e4
+  //  Referenced by: '<S114>/Constant'
+
+  10000.0,
+
+  // Expression: initializationParams.adg1
+  //  Referenced by: '<S148>/Forgetting Factor'
+
+  0.99875,
+
+  // Expression: initializationParams.adg2
+  //  Referenced by: '<S148>/Normalization Bias'
+
+  0.0,
+
+  // Expression: initializationParams.initialOutputs
+  //  Referenced by: '<S148>/InitialOutputs'
+
+  0.0,
+
+  // Expression: initializationParams.initialRegressors
+  //  Referenced by: '<S148>/InitialRegressors'
+
+  0.0,
+
+  // Expression: G1.C
+  //  Referenced by: '<S114>/Constant12'
+
+  { 1.0, 0.0, 0.0, 1.0 },
+
+  // Expression: G1.D
+  //  Referenced by: '<S114>/Constant13'
+
+  { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+
+  // Expression: 1
+  //  Referenced by: '<S114>/Constant11'
+
+  1.0,
+
+  // Expression: [0;0]
+  //  Referenced by: '<S114>/Constant2'
+
+  { 0.0, 0.0 },
+
+  // Expression: [0;0]
+  //  Referenced by: '<S115>/Constant'
+
+  { 0.0, 0.0 },
+
+  // Expression: pInitialization.X0
+  //  Referenced by: '<S201>/X0'
+
+  { 0.0, 0.0, 0.0, 0.0 },
+
+  // Expression: zeros(nym,1)
+  //  Referenced by: '<S116>/ym_zero'
+
+  { 0.0, 0.0 },
+
+  // Expression: zeros(1,1)
+  //  Referenced by: '<S112>/md_zero'
+
+  0.0,
+
+  // Expression: zeros(3,1)
+  //  Referenced by: '<S112>/umin_zero'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Expression: zeros(3,1)
+  //  Referenced by: '<S112>/umax_zero'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Expression: zeros(2,1)
+  //  Referenced by: '<S112>/ymin_zero'
+
+  { 0.0, 0.0 },
+
+  // Expression: zeros(2,1)
+  //  Referenced by: '<S112>/ymax_zero'
+
+  { 0.0, 0.0 },
+
+  // Expression: zeros(1,3)
+  //  Referenced by: '<S112>/E_zero'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Expression: MVscale(:,ones(1,max(nCC,1)))'
+  //  Referenced by: '<S116>/umin_scale4'
+
+  { 1.0, 1.0, 1.0 },
+
+  // Expression: zeros(1,2)
+  //  Referenced by: '<S112>/F_zero'
+
+  { 0.0, 0.0 },
+
+  // Expression: Yscale(:,ones(1,max(nCC,1)))'
+  //  Referenced by: '<S116>/ymin_scale1'
+
+  { 1.0, 1.0 },
+
+  // Expression: zeros(1,1)
+  //  Referenced by: '<S112>/S_zero'
+
+  0.0,
+
+  // Expression: MDscale(:,ones(1,max(nCC,1)))'
+  //  Referenced by: '<S116>/ymin_scale2'
+
+  1.0,
+
+  // Expression: zeros(1,1)
+  //  Referenced by: '<S112>/switch_zero'
+
+  0.0,
+
+  // Expression: zeros(3,1)
+  //  Referenced by: '<S112>/mv.target_zero'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Expression: RMVscale
+  //  Referenced by: '<S116>/uref_scale'
+
+  { 1.0, 1.0, 1.0 },
+
+  // Expression: zeros(1,1)
+  //  Referenced by: '<S112>/ecr.wt_zero'
+
+  0.0,
+
+  // Expression: pInitialization.P0
+  //  Referenced by: '<S201>/P0'
+
+  { 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
+    1.0 },
+
+  // Expression: 1
+  //  Referenced by: '<S3>/Constant'
+
+  1.0,
+
+  // Expression: pInitialization.H
+  //  Referenced by: '<S201>/H'
+
+  { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+
+  // Expression: pInitialization.G
+  //  Referenced by: '<S201>/G'
+
+  { 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
+    1.0 },
+
+  // Expression: MVscale
+  //  Referenced by: '<S116>/u_scale'
+
+  { 1.0, 1.0, 1.0 },
+
+  // Expression: 0
+  //  Referenced by: '<S3>/Constant2'
+
+  0.0,
+
+  // Expression: [0 0 0]
+  //  Referenced by: '<S3>/Measurement Noise'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Computed Parameter: MeasurementNoise_StdDev_k
+  //  Referenced by: '<S3>/Measurement Noise'
+
+  { 1.0, 1.0, 1.0 },
+
+  // Expression: [12345 12346 12347]
+  //  Referenced by: '<S3>/Measurement Noise'
+
+  { 12345.0, 12346.0, 12347.0 },
+
+  // Expression: 0
+  //  Referenced by: '<S3>/Discrete Filter'
+
+  0.0,
+
+  // Expression: 0
+  //  Referenced by: '<S3>/Constant3'
+
+  0.0,
+
+  // Expression: 0
+  //  Referenced by: '<S3>/Switch'
+
+  0.0,
+
+  // Computed Parameter: u_Y0_l
+  //  Referenced by: '<S4>/u'
+
+  0.0,
+
+  // Computed Parameter: yhat_Y0_a
+  //  Referenced by: '<S4>/yhat'
+
+  0.0,
+
+  // Computed Parameter: params_Y0_b
+  //  Referenced by: '<S4>/params'
+
+  0.0,
+
+  // Computed Parameter: uref_Y0_i
+  //  Referenced by: '<S4>/uref'
+
+  0.0,
+
+  // Computed Parameter: paramErr_Y0_kg
+  //  Referenced by: '<S4>/paramErr'
+
+  0.0,
+
+  // Computed Parameter: uclean_Y0_m
+  //  Referenced by: '<S4>/uclean'
+
+  0.0,
+
+  // Expression: zeros(1,1)
+  //  Referenced by: '<S247>/G_zero'
+
+  0.0,
+
+  // Expression: lastPcov
+  //  Referenced by: '<S251>/LastPcov'
+
+  { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0 },
+
+  // Expression: zeros(2,1)
+  //  Referenced by: '<S247>/y.wt_zero'
+
+  { 0.0, 0.0 },
+
+  // Expression: zeros(3,1)
+  //  Referenced by: '<S247>/u.wt_zero'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Expression: zeros(3,1)
+  //  Referenced by: '<S247>/du.wt_zero'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Expression: zeros(3,1)
+  //  Referenced by: '<S247>/ext.mv_zero'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Expression: RMVscale
+  //  Referenced by: '<S251>/ext.mv_scale'
+
+  { 1.0, 1.0, 1.0 },
+
+  // Expression: lastu+uoff
+  //  Referenced by: '<S251>/last_mv'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Expression: G2.A
+  //  Referenced by: '<S249>/Constant10'
+
+  { 1.0, 0.0, 0.0, 1.0 },
+
+  // Expression: 0
+  //  Referenced by: '<S249>/Unit Delay1'
+
+  0.0,
+
+  // Expression: 0
+  //  Referenced by: '<S249>/Unit Delay7'
+
+  0.0,
+
+  // Expression: 0
+  //  Referenced by: '<S4>/Constant2'
+
+  0.0,
+
+  // Expression: initializationParams.adg1
+  //  Referenced by: '<S282>/Forgetting Factor'
+
+  0.99875,
+
+  // Expression: initializationParams.adg2
+  //  Referenced by: '<S282>/Normalization Bias'
+
+  0.0,
+
+  // Expression: initializationParams.initialOutputs
+  //  Referenced by: '<S282>/InitialOutputs'
+
+  0.0,
+
+  // Expression: initializationParams.initialRegressors
+  //  Referenced by: '<S282>/InitialRegressors'
+
+  0.0,
+
+  // Expression: 1e4
+  //  Referenced by: '<S249>/Constant'
+
+  10000.0,
+
+  // Expression: initializationParams.adg1
+  //  Referenced by: '<S283>/Forgetting Factor'
+
+  0.99875,
+
+  // Expression: initializationParams.adg2
+  //  Referenced by: '<S283>/Normalization Bias'
+
+  0.0,
+
+  // Expression: initializationParams.initialOutputs
+  //  Referenced by: '<S283>/InitialOutputs'
+
+  0.0,
+
+  // Expression: initializationParams.initialRegressors
+  //  Referenced by: '<S283>/InitialRegressors'
+
+  0.0,
+
+  // Expression: G2.C
+  //  Referenced by: '<S249>/Constant4'
+
+  { 1.0, 0.0, 0.0, 1.0 },
+
+  // Expression: G2.D
+  //  Referenced by: '<S249>/Constant5'
+
+  { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+
+  // Expression: 1
+  //  Referenced by: '<S249>/Constant3'
+
+  1.0,
+
+  // Expression: [0;0]
+  //  Referenced by: '<S249>/Constant6'
+
+  { 0.0, 0.0 },
+
+  // Expression: [0;0]
+  //  Referenced by: '<S250>/Constant'
+
+  { 0.0, 0.0 },
+
+  // Expression: pInitialization.X0
+  //  Referenced by: '<S336>/X0'
+
+  { 0.0, 0.0, 0.0, 0.0 },
+
+  // Expression: zeros(nym,1)
+  //  Referenced by: '<S251>/ym_zero'
+
+  { 0.0, 0.0 },
+
+  // Expression: zeros(1,1)
+  //  Referenced by: '<S247>/md_zero'
+
+  0.0,
+
+  // Expression: zeros(3,1)
+  //  Referenced by: '<S247>/umin_zero'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Expression: zeros(3,1)
+  //  Referenced by: '<S247>/umax_zero'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Expression: zeros(2,1)
+  //  Referenced by: '<S247>/ymin_zero'
+
+  { 0.0, 0.0 },
+
+  // Expression: zeros(2,1)
+  //  Referenced by: '<S247>/ymax_zero'
+
+  { 0.0, 0.0 },
+
+  // Expression: zeros(1,3)
+  //  Referenced by: '<S247>/E_zero'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Expression: MVscale(:,ones(1,max(nCC,1)))'
+  //  Referenced by: '<S251>/umin_scale4'
+
+  { 1.0, 1.0, 1.0 },
+
+  // Expression: zeros(1,2)
+  //  Referenced by: '<S247>/F_zero'
+
+  { 0.0, 0.0 },
+
+  // Expression: Yscale(:,ones(1,max(nCC,1)))'
+  //  Referenced by: '<S251>/ymin_scale1'
+
+  { 1.0, 1.0 },
+
+  // Expression: zeros(1,1)
+  //  Referenced by: '<S247>/S_zero'
+
+  0.0,
+
+  // Expression: MDscale(:,ones(1,max(nCC,1)))'
+  //  Referenced by: '<S251>/ymin_scale2'
+
+  1.0,
+
+  // Expression: zeros(1,1)
+  //  Referenced by: '<S247>/switch_zero'
+
+  0.0,
+
+  // Expression: zeros(3,1)
+  //  Referenced by: '<S247>/mv.target_zero'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Expression: RMVscale
+  //  Referenced by: '<S251>/uref_scale'
+
+  { 1.0, 1.0, 1.0 },
+
+  // Expression: zeros(1,1)
+  //  Referenced by: '<S247>/ecr.wt_zero'
+
+  0.0,
+
+  // Expression: pInitialization.P0
+  //  Referenced by: '<S336>/P0'
+
+  { 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
+    1.0 },
+
+  // Expression: 1
+  //  Referenced by: '<S4>/Constant'
+
+  1.0,
+
+  // Expression: pInitialization.H
+  //  Referenced by: '<S336>/H'
+
+  { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+
+  // Expression: pInitialization.G
+  //  Referenced by: '<S336>/G'
+
+  { 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
+    1.0 },
+
+  // Expression: MVscale
+  //  Referenced by: '<S251>/u_scale'
+
+  { 1.0, 1.0, 1.0 },
+
+  // Expression: [0 0 0]
+  //  Referenced by: '<S4>/Measurement Noise'
+
+  { 0.0, 0.0, 0.0 },
+
+  // Computed Parameter: MeasurementNoise_StdDev_l
+  //  Referenced by: '<S4>/Measurement Noise'
+
+  { 1.0, 1.0, 1.0 },
+
+  // Expression: 12345
+  //  Referenced by: '<S4>/Measurement Noise'
+
+  12345.0,
+
+  // Expression: 0
+  //  Referenced by: '<S4>/Discrete Filter'
+
+  0.0,
+
+  // Expression: 0
+  //  Referenced by: '<S4>/Constant3'
+
+  0.0,
+
+  // Expression: 0
+  //  Referenced by: '<S4>/Switch'
+
+  0.0,
+
+  // Expression: Ndis
+  //  Referenced by: '<S37>/FixedHorizonOptimizer'
+
+  0,
+
+  // Expression: Ndis
+  //  Referenced by: '<S144>/FixedHorizonOptimizer'
+
+  0,
+
+  // Expression: Ndis
+  //  Referenced by: '<S279>/FixedHorizonOptimizer'
+
+  0,
+
+  // Expression: iA
+  //  Referenced by: '<S9>/Memory'
+
+  { false, false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false, false, false, false,
+    false, false },
+
+  // Expression: true()
+  //  Referenced by: '<S57>/Delay'
+
+  true,
+
+  // Expression: pInitialization.isSqrtUsed
+  //  Referenced by: '<S107>/isSqrtUsed'
+
+  false,
+
+  // Expression: false()
+  //  Referenced by: '<S57>/Constant'
+
+  false,
+
+  // Expression: iA
+  //  Referenced by: '<S116>/Memory'
+
+  { false, false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false, false },
+
+  // Expression: true()
+  //  Referenced by: '<S166>/Delay'
+
+  true,
+
+  // Expression: true()
+  //  Referenced by: '<S192>/Delay'
+
+  true,
+
+  // Expression: pInitialization.isSqrtUsed
+  //  Referenced by: '<S242>/isSqrtUsed'
+
+  false,
+
+  // Expression: true
+  //  Referenced by: '<S3>/Constant1'
+
+  true,
+
+  // Expression: false()
+  //  Referenced by: '<S166>/Constant'
+
+  false,
+
+  // Expression: false()
+  //  Referenced by: '<S192>/Constant'
+
+  false,
+
+  // Expression: iA
+  //  Referenced by: '<S251>/Memory'
+
+  { false, false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false, false, false, false,
+    false, false, false, false, false, false, false, false, false },
+
+  // Expression: true
+  //  Referenced by: '<S4>/Constant1'
+
+  true,
+
+  // Expression: true()
+  //  Referenced by: '<S301>/Delay'
+
+  true,
+
+  // Expression: true()
+  //  Referenced by: '<S327>/Delay'
+
+  true,
+
+  // Expression: pInitialization.isSqrtUsed
+  //  Referenced by: '<S377>/isSqrtUsed'
+
+  false,
+
+  // Expression: false()
+  //  Referenced by: '<S301>/Constant'
+
+  false,
+
+  // Expression: false()
+  //  Referenced by: '<S327>/Constant'
+
+  false,
+
+  // Start of '<S355>/MeasurementUpdate'
   {
-    // Computed Parameter: u_Y0
-    //  Referenced by: '<S4>/u'
-
-    0.0,
-
-    // Computed Parameter: yhat_Y0
-    //  Referenced by: '<S4>/yhat'
-
-    0.0,
-
-    // Computed Parameter: params_Y0
-    //  Referenced by: '<S4>/params'
-
-    0.0,
-
-    // Expression: zeros(1,1)
-    //  Referenced by: '<S245>/G_zero'
-
-    0.0,
-
-    // Expression: lastPcov
-    //  Referenced by: '<S248>/LastPcov'
-
-    { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-      0.0 },
-
-    // Expression: zeros(2,1)
-    //  Referenced by: '<S245>/y.wt_zero'
-
-    { 0.0, 0.0 },
-
-    // Expression: zeros(3,1)
-    //  Referenced by: '<S245>/u.wt_zero'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Expression: zeros(3,1)
-    //  Referenced by: '<S245>/du.wt_zero'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Expression: zeros(3,1)
-    //  Referenced by: '<S245>/ext.mv_zero'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Expression: RMVscale
-    //  Referenced by: '<S248>/ext.mv_scale'
-
-    { 1.0, 1.0, 1.0 },
-
-    // Expression: lastu+uoff
-    //  Referenced by: '<S248>/last_mv'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Expression: G2.A
-    //  Referenced by: '<S246>/Constant10'
-
-    { 0.99996947351391963, -1.9978365398021225E-5, -3.3626770675199147E-5,
-      0.99995521109485208 },
-
     // Expression: 0
-    //  Referenced by: '<S246>/Unit Delay1'
+    //  Referenced by: '<S379>/L*(y[k]-yhat[k|k-1])'
 
-    0.0,
-
-    // Expression: 0
-    //  Referenced by: '<S246>/Unit Delay7'
-
-    0.0,
-
-    // Expression: 0
-    //  Referenced by: '<S4>/Constant2'
-
-    0.0,
-
-    // Expression: initializationParams.adg1
-    //  Referenced by: '<S279>/Forgetting Factor'
-
-    1.0,
-
-    // Expression: initializationParams.adg2
-    //  Referenced by: '<S279>/Normalization Bias'
-
-    0.0,
-
-    // Expression: initializationParams.initialOutputs
-    //  Referenced by: '<S279>/InitialOutputs'
-
-    0.0,
-
-    // Expression: initializationParams.initialRegressors
-    //  Referenced by: '<S279>/InitialRegressors'
-
-    0.0,
-
-    // Expression: 1e4
-    //  Referenced by: '<S246>/Constant'
-
-    10000.0,
-
-    // Expression: initializationParams.adg1
-    //  Referenced by: '<S280>/Forgetting Factor'
-
-    1.0,
-
-    // Expression: initializationParams.adg2
-    //  Referenced by: '<S280>/Normalization Bias'
-
-    0.0,
-
-    // Expression: initializationParams.initialOutputs
-    //  Referenced by: '<S280>/InitialOutputs'
-
-    0.0,
-
-    // Expression: initializationParams.initialRegressors
-    //  Referenced by: '<S280>/InitialRegressors'
-
-    0.0,
-
-    // Expression: G2.C
-    //  Referenced by: '<S246>/Constant4'
-
-    { 1.0, 0.0, 0.0, 1.0 },
-
-    // Expression: G2.D
-    //  Referenced by: '<S246>/Constant5'
-
-    { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-
-    // Expression: 1
-    //  Referenced by: '<S246>/Constant3'
-
-    1.0,
-
-    // Expression: [0;0]
-    //  Referenced by: '<S246>/Constant6'
-
-    { 0.0, 0.0 },
-
-    // Expression: [0;0]
-    //  Referenced by: '<S247>/Constant'
-
-    { 0.0, 0.0 },
-
-    // Expression: pInitialization.X0
-    //  Referenced by: '<S333>/X0'
-
-    { 0.0, 0.0, 0.0, 0.0 },
-
-    // Expression: zeros(nym,1)
-    //  Referenced by: '<S248>/ym_zero'
-
-    { 0.0, 0.0 },
-
-    // Expression: zeros(1,1)
-    //  Referenced by: '<S245>/md_zero'
-
-    0.0,
-
-    // Expression: zeros(3,1)
-    //  Referenced by: '<S245>/umin_zero'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Expression: zeros(3,1)
-    //  Referenced by: '<S245>/umax_zero'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Expression: zeros(2,1)
-    //  Referenced by: '<S245>/ymin_zero'
-
-    { 0.0, 0.0 },
-
-    // Expression: zeros(2,1)
-    //  Referenced by: '<S245>/ymax_zero'
-
-    { 0.0, 0.0 },
-
-    // Expression: zeros(1,3)
-    //  Referenced by: '<S245>/E_zero'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Expression: MVscale(:,ones(1,max(nCC,1)))'
-    //  Referenced by: '<S248>/umin_scale4'
-
-    { 1.0, 1.0, 1.0 },
-
-    // Expression: zeros(1,2)
-    //  Referenced by: '<S245>/F_zero'
-
-    { 0.0, 0.0 },
-
-    // Expression: Yscale(:,ones(1,max(nCC,1)))'
-    //  Referenced by: '<S248>/ymin_scale1'
-
-    { 1.0, 1.0 },
-
-    // Expression: zeros(1,1)
-    //  Referenced by: '<S245>/S_zero'
-
-    0.0,
-
-    // Expression: MDscale(:,ones(1,max(nCC,1)))'
-    //  Referenced by: '<S248>/ymin_scale2'
-
-    1.0,
-
-    // Expression: zeros(1,1)
-    //  Referenced by: '<S245>/switch_zero'
-
-    0.0,
-
-    // Expression: zeros(3,1)
-    //  Referenced by: '<S245>/mv.target_zero'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Expression: RMVscale
-    //  Referenced by: '<S248>/uref_scale'
-
-    { 1.0, 1.0, 1.0 },
-
-    // Expression: zeros(1,1)
-    //  Referenced by: '<S245>/ecr.wt_zero'
-
-    0.0,
-
-    // Expression: pInitialization.P0
-    //  Referenced by: '<S333>/P0'
-
-    { 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-      1.0 },
-
-    // Expression: 1
-    //  Referenced by: '<S4>/Constant'
-
-    1.0,
-
-    // Expression: pInitialization.H
-    //  Referenced by: '<S333>/H'
-
-    { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-
-    // Expression: pInitialization.G
-    //  Referenced by: '<S333>/G'
-
-    { 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-      1.0 },
-
-    // Expression: MVscale
-    //  Referenced by: '<S248>/u_scale'
-
-    { 1.0, 1.0, 1.0 },
-
-    // Expression: [0 0 0]
-    //  Referenced by: '<S4>/Measurement Noise'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Computed Parameter: MeasurementNoise_StdDev
-    //  Referenced by: '<S4>/Measurement Noise'
-
-    { 1.0, 1.0, 1.0 },
-
-    // Expression: 12345
-    //  Referenced by: '<S4>/Measurement Noise'
-
-    12345.0,
-
-    // Expression: Ndis
-    //  Referenced by: '<S276>/FixedHorizonOptimizer'
-
-    0,
-
-    // Expression: iA
-    //  Referenced by: '<S248>/Memory'
-
-    { false, false, false, false, false, false, false, false, false, false,
-      false, false, false, false, false, false, false, false, false, false,
-      false, false, false, false, false, false, false, false, false, false,
-      false, false, false, false, false, false, false, false, false, false,
-      false, false, false, false, false, false, false, false, false, false,
-      false, false, false, false, false, false, false, false, false, false,
-      false, false, false, false, false, false, false, false, false, false,
-      false, false, false, false, false, false, false, false, false, false,
-      false, false, false, false, false, false },
-
-    // Expression: true
-    //  Referenced by: '<S4>/Constant1'
-
-    true,
-
-    // Expression: true()
-    //  Referenced by: '<S298>/Delay'
-
-    true,
-
-    // Expression: true()
-    //  Referenced by: '<S324>/Delay'
-
-    true,
-
-    // Expression: pInitialization.isSqrtUsed
-    //  Referenced by: '<S374>/isSqrtUsed'
-
-    false,
-
-    // Expression: false()
-    //  Referenced by: '<S298>/Constant'
-
-    false,
-
-    // Expression: false()
-    //  Referenced by: '<S324>/Constant'
-
-    false,
-
-    // Start of '<S352>/MeasurementUpdate'
-    {
-      // Expression: 0
-      //  Referenced by: '<S376>/L*(y[k]-yhat[k|k-1])'
-
-      0.0
-    }
-    // End of '<S352>/MeasurementUpdate'
+    0.0
   }
   ,
 
-  // End of '<S1>/State2.controlLaw.AMPC2'
+  // End of '<S355>/MeasurementUpdate'
 
-  // Start of '<S1>/State1.controlLaw.AMPC1'
-  {
-    // Computed Parameter: u_Y0
-    //  Referenced by: '<S3>/u'
-
-    0.0,
-
-    // Computed Parameter: yhat_Y0
-    //  Referenced by: '<S3>/yhat'
-
-    0.0,
-
-    // Computed Parameter: params_Y0
-    //  Referenced by: '<S3>/params'
-
-    0.0,
-
-    // Expression: zeros(1,1)
-    //  Referenced by: '<S111>/G_zero'
-
-    0.0,
-
-    // Expression: lastPcov
-    //  Referenced by: '<S114>/LastPcov'
-
-    { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-      0.0 },
-
-    // Expression: zeros(2,1)
-    //  Referenced by: '<S111>/y.wt_zero'
-
-    { 0.0, 0.0 },
-
-    // Expression: zeros(3,1)
-    //  Referenced by: '<S111>/u.wt_zero'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Expression: zeros(3,1)
-    //  Referenced by: '<S111>/du.wt_zero'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Expression: zeros(3,1)
-    //  Referenced by: '<S111>/ext.mv_zero'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Expression: RMVscale
-    //  Referenced by: '<S114>/ext.mv_scale'
-
-    { 1.0, 1.0, 1.0 },
-
-    // Expression: lastu+uoff
-    //  Referenced by: '<S114>/last_mv'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Expression: 0
-    //  Referenced by: '<S112>/Unit Delay3'
-
-    0.0,
-
-    // Expression: 0
-    //  Referenced by: '<S112>/Unit Delay2'
-
-    0.0,
-
-    // Expression: initializationParams.adg1
-    //  Referenced by: '<S145>/Forgetting Factor'
-
-    0.9,
-
-    // Expression: initializationParams.adg2
-    //  Referenced by: '<S145>/Normalization Bias'
-
-    0.0,
-
-    // Expression: initializationParams.initialOutputs
-    //  Referenced by: '<S145>/InitialOutputs'
-
-    0.0,
-
-    // Expression: initializationParams.initialRegressors
-    //  Referenced by: '<S145>/InitialRegressors'
-
-    0.0,
-
-    // Expression: [1;1e-5]
-    //  Referenced by: '<S112>/Constant3'
-
-    { 1.0, 1.0E-5 },
-
-    // Expression: 1e4
-    //  Referenced by: '<S112>/Constant'
-
-    10000.0,
-
-    // Expression: initializationParams.adg1
-    //  Referenced by: '<S146>/Forgetting Factor'
-
-    0.9,
-
-    // Expression: initializationParams.adg2
-    //  Referenced by: '<S146>/Normalization Bias'
-
-    0.0,
-
-    // Expression: initializationParams.initialOutputs
-    //  Referenced by: '<S146>/InitialOutputs'
-
-    0.0,
-
-    // Expression: initializationParams.initialRegressors
-    //  Referenced by: '<S146>/InitialRegressors'
-
-    0.0,
-
-    // Expression: G1.C
-    //  Referenced by: '<S112>/Constant12'
-
-    { 1.0, 0.0, 0.0, 1.0 },
-
-    // Expression: G1.D
-    //  Referenced by: '<S112>/Constant13'
-
-    { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-
-    // Expression: 1
-    //  Referenced by: '<S112>/Constant11'
-
-    1.0,
-
-    // Expression: [0;0]
-    //  Referenced by: '<S112>/Constant2'
-
-    { 0.0, 0.0 },
-
-    // Expression: [0;0]
-    //  Referenced by: '<S113>/Constant'
-
-    { 0.0, 0.0 },
-
-    // Expression: pInitialization.X0
-    //  Referenced by: '<S199>/X0'
-
-    { 0.0, 0.0, 0.0, 0.0 },
-
-    // Expression: zeros(nym,1)
-    //  Referenced by: '<S114>/ym_zero'
-
-    { 0.0, 0.0 },
-
-    // Expression: zeros(1,1)
-    //  Referenced by: '<S111>/md_zero'
-
-    0.0,
-
-    // Expression: zeros(3,1)
-    //  Referenced by: '<S111>/umin_zero'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Expression: zeros(3,1)
-    //  Referenced by: '<S111>/umax_zero'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Expression: zeros(2,1)
-    //  Referenced by: '<S111>/ymin_zero'
-
-    { 0.0, 0.0 },
-
-    // Expression: zeros(2,1)
-    //  Referenced by: '<S111>/ymax_zero'
-
-    { 0.0, 0.0 },
-
-    // Expression: zeros(1,3)
-    //  Referenced by: '<S111>/E_zero'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Expression: MVscale(:,ones(1,max(nCC,1)))'
-    //  Referenced by: '<S114>/umin_scale4'
-
-    { 1.0, 1.0, 1.0 },
-
-    // Expression: zeros(1,2)
-    //  Referenced by: '<S111>/F_zero'
-
-    { 0.0, 0.0 },
-
-    // Expression: Yscale(:,ones(1,max(nCC,1)))'
-    //  Referenced by: '<S114>/ymin_scale1'
-
-    { 1.0, 1.0 },
-
-    // Expression: zeros(1,1)
-    //  Referenced by: '<S111>/S_zero'
-
-    0.0,
-
-    // Expression: MDscale(:,ones(1,max(nCC,1)))'
-    //  Referenced by: '<S114>/ymin_scale2'
-
-    1.0,
-
-    // Expression: zeros(1,1)
-    //  Referenced by: '<S111>/switch_zero'
-
-    0.0,
-
-    // Expression: zeros(3,1)
-    //  Referenced by: '<S111>/mv.target_zero'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Expression: RMVscale
-    //  Referenced by: '<S114>/uref_scale'
-
-    { 1.0, 1.0, 1.0 },
-
-    // Expression: zeros(1,1)
-    //  Referenced by: '<S111>/ecr.wt_zero'
-
-    0.0,
-
-    // Expression: pInitialization.P0
-    //  Referenced by: '<S199>/P0'
-
-    { 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-      1.0 },
-
-    // Expression: 1
-    //  Referenced by: '<S3>/Constant'
-
-    1.0,
-
-    // Expression: pInitialization.H
-    //  Referenced by: '<S199>/H'
-
-    { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-
-    // Expression: pInitialization.G
-    //  Referenced by: '<S199>/G'
-
-    { 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-      1.0 },
-
-    // Expression: MVscale
-    //  Referenced by: '<S114>/u_scale'
-
-    { 1.0, 1.0, 1.0 },
-
-    // Expression: 0
-    //  Referenced by: '<S3>/Constant2'
-
-    0.0,
-
-    // Expression: [0 0 0]
-    //  Referenced by: '<S3>/Measurement Noise'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Computed Parameter: MeasurementNoise_StdDev
-    //  Referenced by: '<S3>/Measurement Noise'
-
-    { 1.0, 1.0, 1.0 },
-
-    // Expression: [12345 12346 12347]
-    //  Referenced by: '<S3>/Measurement Noise'
-
-    { 12345.0, 12346.0, 12347.0 },
-
-    // Expression: Ndis
-    //  Referenced by: '<S142>/FixedHorizonOptimizer'
-
-    0,
-
-    // Expression: iA
-    //  Referenced by: '<S114>/Memory'
-
-    { false, false, false, false, false, false, false, false, false, false,
-      false, false, false, false, false, false, false, false, false, false,
-      false, false, false, false, false, false, false, false, false, false,
-      false, false, false, false, false, false, false, false, false, false,
-      false, false, false, false, false, false, false, false, false, false,
-      false, false, false, false, false, false, false, false, false, false,
-      false, false, false, false, false, false, false, false, false, false,
-      false, false, false, false, false, false, false, false, false, false,
-      false, false, false, false, false, false },
-
-    // Expression: true()
-    //  Referenced by: '<S164>/Delay'
-
-    true,
-
-    // Expression: true()
-    //  Referenced by: '<S190>/Delay'
-
-    true,
-
-    // Expression: pInitialization.isSqrtUsed
-    //  Referenced by: '<S240>/isSqrtUsed'
-
-    false,
-
-    // Expression: true
-    //  Referenced by: '<S3>/Constant1'
-
-    true,
-
-    // Expression: false()
-    //  Referenced by: '<S164>/Constant'
-
-    false,
-
-    // Expression: false()
-    //  Referenced by: '<S190>/Constant'
-
-    false,
-
-    // Start of '<S218>/MeasurementUpdate'
-    {
-      // Expression: 0
-      //  Referenced by: '<S242>/L*(y[k]-yhat[k|k-1])'
-
-      0.0
-    }
-    // End of '<S218>/MeasurementUpdate'
-  }
-  ,
-
-  // End of '<S1>/State1.controlLaw.AMPC1'
-
-  // Start of '<S1>/State0.controlLaw.AMPC0'
+  // Start of '<S220>/MeasurementUpdate'
   {
     // Expression: 0
-    //  Referenced by: '<S108>/L*(y[k]-yhat[k|k-1])'
+    //  Referenced by: '<S244>/L*(y[k]-yhat[k|k-1])'
 
-    0.0,
-
-    // Computed Parameter: u_Y0
-    //  Referenced by: '<S2>/u'
-
-    0.0,
-
-    // Computed Parameter: yhat_Y0
-    //  Referenced by: '<S2>/yhat'
-
-    0.0,
-
-    // Computed Parameter: params_Y0
-    //  Referenced by: '<S2>/params'
-
-    0.0,
-
-    // Expression: zeros(1,1)
-    //  Referenced by: '<S5>/G_zero'
-
-    0.0,
-
-    // Expression: lastPcov
-    //  Referenced by: '<S8>/LastPcov'
-
-    { 0.0, 0.0, 0.0, 0.0 },
-
-    // Expression: zeros(1,1)
-    //  Referenced by: '<S5>/y.wt_zero'
-
-    0.0,
-
-    // Expression: zeros(3,1)
-    //  Referenced by: '<S5>/u.wt_zero'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Expression: zeros(3,1)
-    //  Referenced by: '<S5>/du.wt_zero'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Expression: zeros(3,1)
-    //  Referenced by: '<S5>/ext.mv_zero'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Expression: RMVscale
-    //  Referenced by: '<S8>/ext.mv_scale'
-
-    { 1.0, 1.0, 1.0 },
-
-    // Expression: lastu+uoff
-    //  Referenced by: '<S8>/last_mv'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Expression: 0
-    //  Referenced by: '<S6>/Unit Delay2'
-
-    0.0,
-
-    // Expression: 0
-    //  Referenced by: '<S6>/Unit Delay3'
-
-    0.0,
-
-    // Expression: initializationParams.adg1
-    //  Referenced by: '<S38>/Forgetting Factor'
-
-    1.0,
-
-    // Expression: initializationParams.adg2
-    //  Referenced by: '<S38>/Normalization Bias'
-
-    0.0,
-
-    // Expression: initializationParams.initialOutputs
-    //  Referenced by: '<S38>/InitialOutputs'
-
-    0.0,
-
-    // Expression: initializationParams.initialRegressors
-    //  Referenced by: '<S38>/InitialRegressors'
-
-    0.0,
-
-    // Expression: 1e4
-    //  Referenced by: '<S6>/Constant'
-
-    10000.0,
-
-    // Expression: G0.D
-    //  Referenced by: '<S6>/Constant13'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Expression: G0.A
-    //  Referenced by: '<S6>/Constant2'
-
-    1.000032235800572,
-
-    // Expression: G0.C
-    //  Referenced by: '<S6>/Constant12'
-
-    1.0,
-
-    // Expression: 1
-    //  Referenced by: '<S6>/Constant11'
-
-    1.0,
-
-    // Expression: 0
-    //  Referenced by: '<S6>/Constant10'
-
-    0.0,
-
-    // Expression: 0
-    //  Referenced by: '<S7>/Constant'
-
-    0.0,
-
-    // Expression: pInitialization.X0
-    //  Referenced by: '<S65>/X0'
-
-    { 0.0, 0.0 },
-
-    // Expression: zeros(nym,1)
-    //  Referenced by: '<S8>/ym_zero'
-
-    0.0,
-
-    // Expression: zeros(1,1)
-    //  Referenced by: '<S5>/md_zero'
-
-    0.0,
-
-    // Expression: zeros(3,1)
-    //  Referenced by: '<S5>/umin_zero'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Expression: zeros(3,1)
-    //  Referenced by: '<S5>/umax_zero'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Expression: zeros(1,1)
-    //  Referenced by: '<S5>/ymin_zero'
-
-    0.0,
-
-    // Expression: zeros(1,1)
-    //  Referenced by: '<S5>/ymax_zero'
-
-    0.0,
-
-    // Expression: zeros(1,3)
-    //  Referenced by: '<S5>/E_zero'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Expression: MVscale(:,ones(1,max(nCC,1)))'
-    //  Referenced by: '<S8>/umin_scale4'
-
-    { 1.0, 1.0, 1.0 },
-
-    // Expression: zeros(1,1)
-    //  Referenced by: '<S5>/F_zero'
-
-    0.0,
-
-    // Expression: Yscale(:,ones(1,max(nCC,1)))'
-    //  Referenced by: '<S8>/ymin_scale1'
-
-    1.0,
-
-    // Expression: zeros(1,1)
-    //  Referenced by: '<S5>/S_zero'
-
-    0.0,
-
-    // Expression: MDscale(:,ones(1,max(nCC,1)))'
-    //  Referenced by: '<S8>/ymin_scale2'
-
-    1.0,
-
-    // Expression: zeros(1,1)
-    //  Referenced by: '<S5>/switch_zero'
-
-    0.0,
-
-    // Expression: zeros(3,1)
-    //  Referenced by: '<S5>/mv.target_zero'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Expression: RMVscale
-    //  Referenced by: '<S8>/uref_scale'
-
-    { 1.0, 1.0, 1.0 },
-
-    // Expression: zeros(1,1)
-    //  Referenced by: '<S5>/ecr.wt_zero'
-
-    0.0,
-
-    // Expression: pInitialization.H
-    //  Referenced by: '<S65>/H'
-
-    { 0.0, 0.0 },
-
-    // Expression: pInitialization.G
-    //  Referenced by: '<S65>/G'
-
-    { 1.0, 0.0, 0.0, 1.0 },
-
-    // Expression: 1
-    //  Referenced by: '<S2>/Constant'
-
-    1.0,
-
-    // Expression: pInitialization.P0
-    //  Referenced by: '<S65>/P0'
-
-    { 1.0, 0.0, 0.0, 1.0 },
-
-    // Expression: MVscale
-    //  Referenced by: '<S8>/u_scale'
-
-    { 1.0, 1.0, 1.0 },
-
-    // Expression: [0 0 0]
-    //  Referenced by: '<S2>/Measurement Noise'
-
-    { 0.0, 0.0, 0.0 },
-
-    // Computed Parameter: MeasurementNoise_StdDev
-    //  Referenced by: '<S2>/Measurement Noise'
-
-    { 1.0, 1.0, 1.0 },
-
-    // Expression: 12345
-    //  Referenced by: '<S2>/Measurement Noise'
-
-    12345.0,
-
-    // Expression: Ndis
-    //  Referenced by: '<S36>/FixedHorizonOptimizer'
-
-    0,
-
-    // Expression: iA
-    //  Referenced by: '<S8>/Memory'
-
-    { false, false, false, false, false, false, false, false, false, false,
-      false, false, false, false, false, false, false, false, false, false,
-      false, false, false, false, false, false, false, false, false, false,
-      false, false, false, false, false, false, false, false, false, false,
-      false, false, false, false, false, false },
-
-    // Expression: true()
-    //  Referenced by: '<S56>/Delay'
-
-    true,
-
-    // Expression: pInitialization.isSqrtUsed
-    //  Referenced by: '<S106>/isSqrtUsed'
-
-    false,
-
-    // Expression: false()
-    //  Referenced by: '<S56>/Constant'
-
-    false
+    0.0
   }
-  // End of '<S1>/State0.controlLaw.AMPC0'
+  // End of '<S220>/MeasurementUpdate'
 };
 
 //
