@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.1222
+// Model version                  : 1.1223
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon May 22 00:10:52 2023
+// C/C++ source code generated on : Mon May 22 03:09:57 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -5551,9 +5551,9 @@ void SupervisoryController::State2(void)
       int32_T i_0;
       boolean_T rtb_RelationalOperator1;
 
-      // '<S1>:272:4' [u, yhat(chs2), B2, uref, paramEstErr(chs2), uclean]...
+      // '<S1>:272:4' [u, yhat(chs2), B_2, uref, paramEstErr(chs2), uclean]...
       // '<S1>:272:5'         = AMPC2(traj(chs2, waypt), y(chs2), y0(chs2), uref,... 
-      // '<S1>:272:6'         B2, enAdapt(chs2), excitation);
+      // '<S1>:272:6'         B_2, enAdapt(chs2), excitation);
       // Simulink Function 'AMPC2': '<S1>:301'
       yi2_tmp = rtU.y0[static_cast<int32_T>(rtP.chs2[0]) - 1];
 
@@ -5622,9 +5622,9 @@ void SupervisoryController::State2(void)
       // Math: '<S249>/Transpose'
       i = 0;
       for (d_size_idx_0 = 0; d_size_idx_0 < 2; d_size_idx_0++) {
-        rtb_Transpose[i] = rtDW.B2[d_size_idx_0];
-        rtb_Transpose[i + 1] = rtDW.B2[d_size_idx_0 + 2];
-        rtb_Transpose[i + 2] = rtDW.B2[d_size_idx_0 + 4];
+        rtb_Transpose[i] = rtDW.B_2[d_size_idx_0];
+        rtb_Transpose[i + 1] = rtDW.B_2[d_size_idx_0 + 2];
+        rtb_Transpose[i + 2] = rtDW.B_2[d_size_idx_0 + 4];
         i += 3;
       }
 
@@ -6646,7 +6646,7 @@ void SupervisoryController::State2(void)
       // End of Outputs for SubSystem: '<S1>/State2.ControlLaw.AMPC2'
       for (i = 0; i < 6; i++) {
         // Outputs for Function Call SubSystem: '<S1>/State2.ControlLaw.AMPC2'
-        rtDW.B2[i] = rtb_Transpose[i];
+        rtDW.B_2[i] = rtb_Transpose[i];
 
         // End of Outputs for SubSystem: '<S1>/State2.ControlLaw.AMPC2'
       }
@@ -6693,15 +6693,15 @@ void SupervisoryController::State2(void)
       rtY.paramEstErr[static_cast<int32_T>(rtP.chs2[1]) - 1] = rtb_Sum[1];
 
       // End of Outputs for SubSystem: '<S1>/State2.ControlLaw.AMPC2'
-      // '<S1>:272:7' B(chs2,:) = B2;
+      // '<S1>:272:7' B(chs2,:) = B_2;
       // '<S1>:272:8' currTraj = traj(:, waypt);
       for (i = 0; i < 3; i++) {
         rtDW.uclean[i] = u_scale[i];
         d_size_idx_0 = i << 1UL;
         rtY.B_b[(static_cast<int32_T>(rtP.chs2[0]) + 3 * i) - 1] =
-          rtDW.B2[d_size_idx_0];
+          rtDW.B_2[d_size_idx_0];
         rtY.B_b[(static_cast<int32_T>(rtP.chs2[1]) + 3 * i) - 1] =
-          rtDW.B2[d_size_idx_0 + 1];
+          rtDW.B_2[d_size_idx_0 + 1];
         rtY.currTraj[i] = rtDW.traj[(static_cast<int32_T>(rtDW.waypt) - 1) * 3 +
           i];
       }
@@ -9281,9 +9281,9 @@ void SupervisoryController::State1(void)
       real_T rtb_Sum1_o_tmp;
       int32_T i_0;
 
-      // '<S1>:247:4' [u, yhat(chs1), B1, uref, paramEstErr(chs1), uclean]...
+      // '<S1>:247:4' [u, yhat(chs1), B_1, uref, paramEstErr(chs1), uclean]...
       // '<S1>:247:5'         = AMPC1(traj(chs1, waypt), y(chs1), y0(chs1), uref,... 
-      // '<S1>:247:6'         B1, enAdapt(chs1), excitation);
+      // '<S1>:247:6'         B_1, enAdapt(chs1), excitation);
       // Simulink Function 'AMPC1': '<S1>:271'
       yi1_tmp = rtU.y0[static_cast<int32_T>(rtP.chs1[0]) - 1];
       paramEst_a[0] = rtU.enAdapt[static_cast<int32_T>(rtP.chs1[0]) - 1] ? 1.0 :
@@ -9344,9 +9344,9 @@ void SupervisoryController::State1(void)
       // Math: '<S114>/Transpose'
       i = 0;
       for (d_size_idx_0 = 0; d_size_idx_0 < 2; d_size_idx_0++) {
-        rtb_Transpose_o[i] = rtDW.B1[d_size_idx_0];
-        rtb_Transpose_o[i + 1] = rtDW.B1[d_size_idx_0 + 2];
-        rtb_Transpose_o[i + 2] = rtDW.B1[d_size_idx_0 + 4];
+        rtb_Transpose_o[i] = rtDW.B_1[d_size_idx_0];
+        rtb_Transpose_o[i + 1] = rtDW.B_1[d_size_idx_0 + 2];
+        rtb_Transpose_o[i + 2] = rtDW.B_1[d_size_idx_0 + 4];
         i += 3;
       }
 
@@ -10363,7 +10363,7 @@ void SupervisoryController::State1(void)
       // End of Outputs for SubSystem: '<S1>/State1.ControlLaw.AMPC1'
       for (i = 0; i < 6; i++) {
         // Outputs for Function Call SubSystem: '<S1>/State1.ControlLaw.AMPC1'
-        rtDW.B1[i] = rtb_Transpose_o[i];
+        rtDW.B_1[i] = rtb_Transpose_o[i];
 
         // End of Outputs for SubSystem: '<S1>/State1.ControlLaw.AMPC1'
       }
@@ -10410,15 +10410,15 @@ void SupervisoryController::State1(void)
       rtY.paramEstErr[static_cast<int32_T>(rtP.chs1[1]) - 1] = rtb_Sum_fw[1];
 
       // End of Outputs for SubSystem: '<S1>/State1.ControlLaw.AMPC1'
-      // '<S1>:247:7' B(chs1,:) = B1;
+      // '<S1>:247:7' B(chs1,:) = B_1;
       // '<S1>:247:8' currTraj = traj(:, waypt);
       for (i = 0; i < 3; i++) {
         rtDW.uclean[i] = u_scale_h[i];
         d_size_idx_0 = i << 1UL;
         rtY.B_b[(static_cast<int32_T>(rtP.chs1[0]) + 3 * i) - 1] =
-          rtDW.B1[d_size_idx_0];
+          rtDW.B_1[d_size_idx_0];
         rtY.B_b[(static_cast<int32_T>(rtP.chs1[1]) + 3 * i) - 1] =
-          rtDW.B1[d_size_idx_0 + 1];
+          rtDW.B_1[d_size_idx_0 + 1];
         rtY.currTraj[i] = rtDW.traj[(static_cast<int32_T>(rtDW.waypt) - 1) * 3 +
           i];
       }
@@ -10941,9 +10941,9 @@ void SupervisoryController::step()
               int32_T i_1;
               int32_T rtb_y_h_tmp;
 
-              // '<S1>:59:4' [u, yhat(chs0), B0, uref, paramEstErr(chs0), uclean]... 
+              // '<S1>:59:4' [u, yhat(chs0), B_0, uref, paramEstErr(chs0), uclean]... 
               // '<S1>:59:5'         = AMPC0(traj(chs0, waypt), y(chs0), y0(chs0), uref,... 
-              // '<S1>:59:6'         B0, enAdapt(chs0), excitation);
+              // '<S1>:59:6'         B_0, enAdapt(chs0), excitation);
               yi0 = rtU.y0[static_cast<int32_T>(rtP.chs0) - 1];
 
               // Outputs for Function Call SubSystem: '<S1>/State0.ControlLaw.AMPC0' 
@@ -10956,8 +10956,8 @@ void SupervisoryController::step()
 
               // Delay: '<S39>/delayTheta'
               if (rtDW.icLoad_mt) {
-                rtDW.delayTheta_DSTATE_p[0] = rtDW.B0[0];
-                rtDW.delayTheta_DSTATE_p[1] = rtDW.B0[1];
+                rtDW.delayTheta_DSTATE_p[0] = rtDW.B_0[0];
+                rtDW.delayTheta_DSTATE_p[1] = rtDW.B_0[1];
               }
 
               rtb_x[0] = rtDW.delayTheta_DSTATE_p[0];
@@ -12242,9 +12242,9 @@ void SupervisoryController::step()
                 DiscreteFilter;
 
               // Outputs for Function Call SubSystem: '<S1>/State0.ControlLaw.AMPC0' 
-              // '<S1>:59:7' B(chs0,:) = B0;
+              // '<S1>:59:7' B(chs0,:) = B_0;
               // '<S1>:59:8' currTraj = traj(:, waypt);
-              rtDW.B0[0] = rtb_x[0];
+              rtDW.B_0[0] = rtb_x[0];
 
               // End of Outputs for SubSystem: '<S1>/State0.ControlLaw.AMPC0'
 
@@ -12279,7 +12279,7 @@ void SupervisoryController::step()
 
               // End of Outputs for SubSystem: '<S1>/State0.ControlLaw.AMPC0'
               rtDW.uclean[0] = u_scale_a[0];
-              rtY.B_b[static_cast<int32_T>(rtP.chs0) - 1] = rtDW.B0[0];
+              rtY.B_b[static_cast<int32_T>(rtP.chs0) - 1] = rtDW.B_0[0];
               trueCount = (static_cast<int32_T>(rtDW.waypt) - 1) * 3;
 
               // Outport: '<Root>/currTraj' incorporates:
@@ -12288,7 +12288,7 @@ void SupervisoryController::step()
               rtY.currTraj[0] = rtDW.traj[trueCount];
 
               // Outputs for Function Call SubSystem: '<S1>/State0.ControlLaw.AMPC0' 
-              rtDW.B0[1] = rtb_x[1];
+              rtDW.B_0[1] = rtb_x[1];
 
               // End of Outputs for SubSystem: '<S1>/State0.ControlLaw.AMPC0'
 
@@ -12314,7 +12314,7 @@ void SupervisoryController::step()
 
               // End of Outputs for SubSystem: '<S1>/State0.ControlLaw.AMPC0'
               rtDW.uclean[1] = u_scale_a[1];
-              rtY.B_b[static_cast<int32_T>(rtP.chs0) + 2] = rtDW.B0[1];
+              rtY.B_b[static_cast<int32_T>(rtP.chs0) + 2] = rtDW.B_0[1];
 
               // Outport: '<Root>/currTraj' incorporates:
               //   Outport: '<Root>/B'
@@ -12322,7 +12322,7 @@ void SupervisoryController::step()
               rtY.currTraj[1] = rtDW.traj[trueCount + 1];
 
               // Outputs for Function Call SubSystem: '<S1>/State0.ControlLaw.AMPC0' 
-              rtDW.B0[2] = rtb_x[1];
+              rtDW.B_0[2] = rtb_x[1];
 
               // End of Outputs for SubSystem: '<S1>/State0.ControlLaw.AMPC0'
 
@@ -12348,7 +12348,7 @@ void SupervisoryController::step()
 
               // End of Outputs for SubSystem: '<S1>/State0.ControlLaw.AMPC0'
               rtDW.uclean[2] = rtb_Product2;
-              rtY.B_b[static_cast<int32_T>(rtP.chs0) + 5] = rtDW.B0[2];
+              rtY.B_b[static_cast<int32_T>(rtP.chs0) + 5] = rtDW.B_0[2];
 
               // Outport: '<Root>/currTraj' incorporates:
               //   Outport: '<Root>/B'
@@ -12397,12 +12397,12 @@ void SupervisoryController::initialize()
     rtPrevZCX.MemoryX_Reset_ZCE = UNINITIALIZED_ZCSIG;
     rtPrevZCX.MemoryP_Reset_ZCE = UNINITIALIZED_ZCSIG;
     rtPrevZCX.SupervisoryController_Trig_ZCE = UNINITIALIZED_ZCSIG;
-    rtDW.B0[0] = 1.0;
-    rtDW.B0[1] = -0.5;
-    rtDW.B0[2] = -0.5;
+    rtDW.B_0[0] = 1.0;
+    rtDW.B_0[1] = -0.5;
+    rtDW.B_0[2] = -0.5;
     for (i = 0; i < 6; i++) {
-      rtDW.B1[i] = tmp[i];
-      rtDW.B2[i] = tmp_0[i];
+      rtDW.B_1[i] = tmp[i];
+      rtDW.B_2[i] = tmp_0[i];
     }
 
     // SystemInitialize for Outport: '<Root>/B'

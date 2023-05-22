@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.1222
+// Model version                  : 1.1223
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon May 22 00:10:52 2023
+// C/C++ source code generated on : Mon May 22 03:09:57 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -334,9 +334,9 @@ class SupervisoryController final
     real_T ymax1[2];                   // '<Root>/SupervisoryController'
     real_T ymax2[2];                   // '<Root>/SupervisoryController'
     real_T uclean[3];                  // '<Root>/SupervisoryController'
-    real_T B0[3];                      // '<Root>/SupervisoryController'
-    real_T B1[6];                      // '<Root>/SupervisoryController'
-    real_T B2[6];                      // '<Root>/SupervisoryController'
+    real_T B_0[3];                     // '<Root>/SupervisoryController'
+    real_T B_1[6];                     // '<Root>/SupervisoryController'
+    real_T B_2[6];                     // '<Root>/SupervisoryController'
     real_T NextOutput[3];              // '<S4>/Measurement Noise'
     real_T NextOutput_i[3];            // '<S3>/Measurement Noise'
     real_T NextOutput_j[3];            // '<S2>/Measurement Noise'
