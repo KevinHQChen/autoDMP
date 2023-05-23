@@ -33,6 +33,7 @@ class GUI {
   std::shared_ptr<gui::PumpWindow> pumpWindow_;
   std::shared_ptr<gui::ImProcWindow> imProcWindow_;
   std::shared_ptr<gui::CtrlWindow> ctrlWindow_;
+  std::shared_ptr<gui::PlotWindow> plotWindow_;
 
 public:
   GUI(ImCap *imCap, ImProc *imProc, Pump *pump, Supervisor *sv);

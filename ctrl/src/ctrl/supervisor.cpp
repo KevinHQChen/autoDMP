@@ -84,47 +84,12 @@ void Supervisor::start() {
 
       // info("Time: {}", duration_cast<milliseconds>(prevCtrlTime - initTime).count());
       sup->rtU = supIn;
-      // info("y0: {}", sup->rtU.y[0]);
-      // info("y1: {}", sup->rtU.y[1]);
-      // info("y2: {}", sup->rtU.y[2]);
-      // info("y_max0: {}", sup->rtU.y_max[0]);
-      // info("y_max1: {}", sup->rtU.y_max[1]);
-      // info("y_max2: {}", sup->rtU.y_max[2]);
-      // info("y_o0: {}", sup->rtU.y_o[0]);
-      // info("y_o1: {}", sup->rtU.y_o[1]);
-      // info("y_o2: {}", sup->rtU.y_o[2]);
-      // info("u_o0: {}", sup->rtU.u_o[0]);
-      // info("u_o1: {}", sup->rtU.u_o[1]);
-      // info("u_o2: {}", sup->rtU.u_o[2]);
-      // info("y_range0: {}", sup->rtU.y_range[0]);
-      // info("y_range1: {}", sup->rtU.y_range[1]);
-      // info("enAdapt: {}", sup->rtU.enAdapt);
-      // info("u0: {}", sup->rtY.u[0]);
-      // info("u1: {}", sup->rtY.u[1]);
-      // info("u2: {}", sup->rtY.u[2]);
-      // info("yhat0: {}", sup->rtY.yhat[0]);
-      // info("yhat1: {}", sup->rtY.yhat[1]);
-      // info("yhat2: {}", sup->rtY.yhat[2]);
-      // info("inTransRegion: {}", sup->rtY.inTransRegion);
-      // info("requestEvent: {}", sup->rtY.requestEvent);
-      // info("currEv srcState: {}", sup->rtY.currEv.srcState);
-      // info("currEv destState: {}", sup->rtY.currEv.destState);
-      // info("currEv destPos0: {}", sup->rtY.currEv.destPos[0]);
-      // info("currEv destPos1: {}", sup->rtY.currEv.destPos[1]);
-      // info("currEv destPos2: {}", sup->rtY.currEv.destPos[2]);
-      // info("currEv moveTime: {}", sup->rtY.currEv.moveTime);
-      // info("currEv holdTime: {}", sup->rtY.currEv.holdTime);
-      // info("currEv chs0: {}", sup->rtY.currEv.chs[0]);
-      // info("currEv chs1: {}", sup->rtY.currEv.chs[1]);
-      // info("currEv chs2: {}", sup->rtY.currEv.chs[2]);
-      // info("currEv nextChs0: {}", sup->rtY.currEv.nextChs[0]);
-      // info("currEv nextChs1: {}", sup->rtY.currEv.nextChs[1]);
-      // info("currEv nextChs2: {}", sup->rtY.currEv.nextChs[2]);
       sup->step();
       supOut = sup->rtY;
 
-      !simModeActive ? pump->sendSigs(Eigen::Vector3d(supOut.u[0], supOut.u[1], supOut.u[2]))
-                     : info("Pump inputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
+      // !simModeActive ? pump->sendSigs(Eigen::Vector3d(supOut.u[0], supOut.u[1], supOut.u[2]))
+      //                : info("Pump inputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
+      //                : info("Pump inputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
 
       ctrlDataQueuePtr->out << "y: " << (double)supIn.ymeas[0] << ", " << (double)supIn.ymeas[1]
                             << ", " << (double)supIn.ymeas[2]

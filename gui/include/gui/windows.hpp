@@ -5,3 +5,4 @@
 #include "windows/pump_window.hpp"
 #include "windows/sysid_window.hpp"
 #include "windows/ctrl_window.hpp"
+#include "windows/plot_window.hpp"

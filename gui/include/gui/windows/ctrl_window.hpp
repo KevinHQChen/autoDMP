@@ -17,24 +17,6 @@ class CtrlWindow : public Window {
                                ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg |
                                ImGuiTableFlags_NoBordersInBody;
 
-  float guiTime{0.0f}, history{30.0f};
-  ScrollingBuffer u0, u1, u2;
-  ScrollingBuffer y0, y1, y2, yhat0, yhat1, yhat2, yref0, yref1, yref2;
-  ScrollingBuffer param0, param1, param2, param3, param4, param5, param6, param7, param8;
-  std::vector<std::pair<ScrollingBuffer *, std::string>> ctrlVecs{
-      std::make_pair(&u0, "u0"), std::make_pair(&u1, "u1"), std::make_pair(&u2, "u2")};
-  std::vector<std::pair<ScrollingBuffer *, std::string>> measVecs{
-      std::make_pair(&y0, "y0"),       std::make_pair(&y1, "y1"),
-      std::make_pair(&y2, "y2"),       std::make_pair(&yhat0, "yhat0"),
-      std::make_pair(&yhat1, "yhat1"), std::make_pair(&yhat2, "yhat2"),
-      std::make_pair(&yref0, "yref0"), std::make_pair(&yref1, "yref1"),
-      std::make_pair(&yref2, "yref2")};
-  std::vector<std::pair<ScrollingBuffer *, std::string>> paramVecs{
-      std::make_pair(&param0, "param0"), std::make_pair(&param1, "param1"),
-      std::make_pair(&param2, "param2"), std::make_pair(&param3, "param3"),
-      std::make_pair(&param4, "param4"), std::make_pair(&param5, "param5"),
-      std::make_pair(&param6, "param6"), std::make_pair(&param7, "param7"),
-      std::make_pair(&param8, "param8")};
   int srcState, destState, moveTime, holdTime;
   int targetPos[NUM_CHANS];
   bool chs0[NUM_CHANS] = {true, false, false}, chs1[NUM_CHANS] = {false, true, true},
@@ -81,7 +63,7 @@ class CtrlWindow : public Window {
   }
 
 public:
-  bool ctrlSetupVisible_{false}, ctrlVisible_{false}, pauseCtrlDataViz{false};
+  bool ctrlSetupVisible_{false}, ctrlVisible_{false};
 
   CtrlWindow(Supervisor *sv);
   ~CtrlWindow();

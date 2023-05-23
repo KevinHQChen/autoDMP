@@ -30,6 +30,7 @@ GUI::GUI(ImCap *imCap, ImProc *imProc, Pump *pump, Supervisor *sv)
   pumpWindow_ = std::make_shared<gui::PumpWindow>(pump);
   imProcWindow_ = std::make_shared<gui::ImProcWindow>(imCap, imProc);
   ctrlWindow_ = std::make_shared<gui::CtrlWindow>(sv);
+  plotWindow_ = std::make_shared<gui::PlotWindow>(sv);
 
   // for documentation on runnerParam members, go to the associated header file
   runnerParams.appWindowParams.windowTitle = "autoDMP";
@@ -74,6 +75,7 @@ GUI::~GUI() {
   pumpWindow_.reset();
   imProcWindow_.reset();
   ctrlWindow_.reset();
+  plotWindow_.reset();
 }
 
 void GUI::renderMenu() {
@@ -90,6 +92,7 @@ void GUI::renderMenu() {
     ImGui::MenuItem("Start Pump Setup", "p", &pumpWindow_->visible_);
     ImGui::MenuItem("Setup System ID", "y", &sysIDWindow_->visible_);
     ImGui::MenuItem("Setup Supervisory Control", "u", &ctrlWindow_->ctrlSetupVisible_);
+    ImGui::MenuItem("View Real-Time Plot", "v", &plotWindow_->visible_);
     ImGui::EndMenu();
   }
   if (ImGui::BeginMenu("Debug")) {
@@ -104,6 +107,7 @@ void GUI::render() {
   imProcWindow_->render();
   pumpWindow_->render();
   ctrlWindow_->render();
+  plotWindow_->render();
   sysIDWindow_->render();
   if (guiConf.showDebug) {
     ImGui::ShowDemoWindow(&guiConf.showDebug);

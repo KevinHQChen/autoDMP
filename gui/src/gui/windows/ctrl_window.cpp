@@ -203,62 +203,14 @@ void CtrlWindow::render() {
       ImGui::SliderFloat("Excitation Amplitude", &excitationAmp, 0.0f, 10.0f);
       sv_->supIn.excitation = excitationAmp;
 
-      if (!pauseCtrlDataViz)
-        if (ImGui::Button("Pause Data Display"))
-          pauseCtrlDataViz = true;
-      if (pauseCtrlDataViz)
-        if (ImGui::Button("Start Data Display"))
-          pauseCtrlDataViz = false;
-      if (ImGui::Button("Erase Data")) {
-        guiTime = 0;
-        for (auto &vec : std::vector<ScrollingBuffer>{u0, u1, u2, y0, y1, y2, yhat0, yhat1, yhat2,
-                                                      yref0, yref1, yref2})
-          vec.Erase();
-      }
-
       ImGui::PopStyleVar();
       ImGui::End();
     }
   }
 
-  if (ctrlVisible_) {
+  if (ctrlVisible_)
     sv_->startThread();
-    if (ImGui::Begin("Ctrl Data", &ctrlVisible_)) {
-      if (!pauseCtrlDataViz) {
-        guiTime += ImGui::GetIO().DeltaTime;
-        u0.AddPoint(guiTime, sv_->supOut.u[0]);
-        u1.AddPoint(guiTime, sv_->supOut.u[1]);
-        u2.AddPoint(guiTime, sv_->supOut.u[2]);
-        y0.AddPoint(guiTime, sv_->supIn.ymeas[0]);
-        y1.AddPoint(guiTime, sv_->supIn.ymeas[1]);
-        y2.AddPoint(guiTime, sv_->supIn.ymeas[2]);
-        yhat0.AddPoint(guiTime, sv_->supOut.yhat[0]);
-        yhat1.AddPoint(guiTime, sv_->supOut.yhat[1]);
-        yhat2.AddPoint(guiTime, sv_->supOut.yhat[2]);
-        yref0.AddPoint(guiTime, sv_->supOut.currTraj[0]);
-        yref1.AddPoint(guiTime, sv_->supOut.currTraj[1]);
-        yref2.AddPoint(guiTime, sv_->supOut.currTraj[2]);
-        param0.AddPoint(guiTime, sv_->supOut.B_b[0]);
-        param1.AddPoint(guiTime, sv_->supOut.B_b[1]);
-        param2.AddPoint(guiTime, sv_->supOut.B_b[2]);
-        param3.AddPoint(guiTime, sv_->supOut.B_b[3]);
-        param4.AddPoint(guiTime, sv_->supOut.B_b[4]);
-        param5.AddPoint(guiTime, sv_->supOut.B_b[5]);
-        param6.AddPoint(guiTime, sv_->supOut.B_b[6]);
-        param7.AddPoint(guiTime, sv_->supOut.B_b[7]);
-        param8.AddPoint(guiTime, sv_->supOut.B_b[8]);
-      }
-
-      ImGui::SliderFloat("History", &history, 1, 60, "%.1f s");
-      plotVector3d("##Control Input", "time (s)", "voltage (V)", 0, 250, ctrlVecs, guiTime,
-                   history);
-      plotVector3d("##Measured Output", "time (s)", "position (px)", 0, 600, measVecs, guiTime,
-                   history);
-      plotVector3d("##Estimated Output", "time (s)", "position (px)", -10, 10, paramVecs, guiTime,
-                   history);
-      ImGui::End();
-    }
-  } else
+  else
     sv_->stopThread();
 }
 
