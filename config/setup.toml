@@ -14,7 +14,7 @@ showDebug = false
 
 [cam]
 # select camera source [string: "Webcam"/"USBcam"/"File"/"Andor"]
-source      = "USBcam"
+source      = "Andor"
 # if source = "File", the selected video file is used [string]
 file        = ""
 
@@ -76,14 +76,14 @@ confSrc = "fromFile"
 
 [pump]
 # select pump [string: "BARTELS"/"FLUIGENT"]
-type      = "BARTELS"
+type      = "FLUIGENT"
 
 [ctrl]
 # path for control data
 confPath    = "/autoDMP/config/ctrl/"
 dataPath    = "/autoDMP/data/ctrl/"
 # perform all steps but don't send control signal to pump [bool]
-simMode         = true
+simMode         = false
 
 [postproc]
 # path for improc data

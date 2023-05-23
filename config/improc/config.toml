@@ -1,11 +1,11 @@
-chWidth = 69
+chWidth = 38
 numChs = 3
 bgSubHistory = 500
 bgSubThres = 16.0
 
 chROIs = [
-{height=251,width=62,angle=180,chHeight=252.0,y=229,x=282},
-{height=62,width=339,angle=-90,chHeight=62.0,y=229,x=0},
-{height=62,width=354,angle=90,chHeight=62.0,y=229,x=286},
+{height=646,width=38,angle=180,chHeight=628.0,y=234,x=432},
+{height=38,width=470,angle=-90,chHeight=66.0,y=233,x=0},
+{height=38,width=456,angle=90,chHeight=68.0,y=233,x=432},
 ]
 
