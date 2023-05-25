@@ -14,9 +14,11 @@ class PlotWindow : public Window {
 
   float guiTime{0.0f}, history{30.0f};
 
-  ScrollingBuffer u0, u1, u2;
+  ScrollingBuffer u0, u1, u2, uref0, uref1, uref2;
   std::vector<std::pair<ScrollingBuffer *, std::string>> ctrlVecs{
-      std::make_pair(&u0, "u0"), std::make_pair(&u1, "u1"), std::make_pair(&u2, "u2")};
+      std::make_pair(&u0, "u0"),       std::make_pair(&u1, "u1"),
+      std::make_pair(&u2, "u2"),       std::make_pair(&uref0, "uref0"),
+      std::make_pair(&uref1, "uref1"), std::make_pair(&uref2, "uref2")};
 
   ScrollingBuffer y0, y1, y2, yhat0, yhat1, yhat2, yref0, yref1, yref2;
   std::vector<std::pair<ScrollingBuffer *, std::string>> measVecs{
