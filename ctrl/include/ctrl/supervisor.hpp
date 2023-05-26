@@ -52,7 +52,8 @@ public:
                                     {true, false, false},
 
                                     {true, false, false}};
-  event_bus currEv_ = nullEv;
+  event_bus currEv_;
+  std::mutex currEvMtx;
   QueueFPS<event_bus> *evQueue_;
   real_T y[3], y_max[3], y_o[3], u_o[3], y_range[3];
   boolean_T inTransRegion;
@@ -75,6 +76,15 @@ public:
   void stopSysIDThread();
 
   void addEvent(event_bus e) { evQueue_->push_back(e); }
+
+  void setCurrEv(event_bus e) {
+    std::lock_guard<std::mutex> lock(currEvMtx);
+    currEv_ = e;
+  }
+  event_bus getCurrEv() {
+    std::lock_guard<std::mutex> lock(currEvMtx);
+    return currEv_;
+  }
 
   std::string getDataPath() const { return dataPath; }
   std::string getConfPath() const { return confPath; }

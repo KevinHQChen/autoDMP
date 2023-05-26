@@ -141,23 +141,22 @@ void CtrlWindow::render() {
           ImGui::TableSetupColumn("nextChs");
           ImGui::TableHeadersRow();
 
+          currEv_ = sv_->getCurrEv();
           ImGui::TableNextRow();
           ImGui::TableSetColumnIndex(0);
-          ImGui::Text("%f", sv_->currEv_.srcState);
+          ImGui::Text("%f", currEv_.srcState);
+          ImGui::TableSetColumnIndex(1);
+          ImGui::Text("%f", currEv_.destState);
           ImGui::TableSetColumnIndex(2);
-          ImGui::Text("%f", sv_->currEv_.destState);
+          ImGui::Text("(%f, %f, %f)", currEv_.destPos[0], currEv_.destPos[1], currEv_.destPos[2]);
           ImGui::TableSetColumnIndex(3);
-          ImGui::Text("(%f, %f, %f)", sv_->currEv_.destPos[0], sv_->currEv_.destPos[1],
-                      sv_->currEv_.destPos[2]);
+          ImGui::Text("%f", currEv_.moveTime);
           ImGui::TableSetColumnIndex(4);
-          ImGui::Text("%f", sv_->currEv_.moveTime);
+          ImGui::Text("%f", currEv_.holdTime);
           ImGui::TableSetColumnIndex(5);
-          ImGui::Text("%f", sv_->currEv_.holdTime);
+          ImGui::Text("%d, %d, %d", currEv_.chs[0], currEv_.chs[1], currEv_.chs[2]);
           ImGui::TableSetColumnIndex(6);
-          ImGui::Text("%d, %d, %d", sv_->currEv_.chs[0], sv_->currEv_.chs[1], sv_->currEv_.chs[2]);
-          ImGui::TableSetColumnIndex(7);
-          ImGui::Text("%d, %d, %d", sv_->currEv_.nextChs[0], sv_->currEv_.nextChs[1],
-                      sv_->currEv_.nextChs[2]);
+          ImGui::Text("%d, %d, %d", currEv_.nextChs[0], currEv_.nextChs[1], currEv_.nextChs[2]);
           ImGui::EndTable();
         }
         ImGui::Separator();

@@ -12,7 +12,7 @@ Supervisor::Supervisor(ImProc *imProc, Pump *pump)
       sup(new SupervisoryController()), supIn({}), supOut({}),
       evQueue_(new QueueFPS<event_bus>(dataPath + "eventQueue.txt")), currState_(new State0(this)),
       currEvent_(new Event(0, 0, Eigen::Vector3d(0.5, 0, 0), Eigen::Vector3d(10, 0, 0))),
-      ctrlDataQueuePtr(new QueueFPS<int>(dataPath + "ctrlDataQueue.txt")) {}
+      currEv_(nullEv), ctrlDataQueuePtr(new QueueFPS<int>(dataPath + "ctrlDataQueue.txt")) {}
 
 Supervisor::~Supervisor() {
   delete evQueue_;
@@ -74,7 +74,7 @@ void Supervisor::start() {
     if (!imProc->procData->empty()) {
       if (supOut.requestEvent && !evQueue_->empty()) {
         supIn.nextEv = evQueue_->get();
-        currEv_ = supIn.nextEv;
+        setCurrEv(supIn.nextEv);
       } else
         supIn.nextEv = nullEv;
 
@@ -87,9 +87,8 @@ void Supervisor::start() {
       sup->step();
       supOut = sup->rtY;
 
-      // !simModeActive ? pump->sendSigs(Eigen::Vector3d(supOut.u[0], supOut.u[1], supOut.u[2]))
-      //                : info("Pump inputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
-      //                : info("Pump inputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
+      !simModeActive ? pump->sendSigs(Eigen::Vector3d(supOut.u[0], supOut.u[1], supOut.u[2]))
+                     : info("Pump inputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
 
       ctrlDataQueuePtr->out << "y: " << (double)supIn.ymeas[0] << ", " << (double)supIn.ymeas[1]
                             << ", " << (double)supIn.ymeas[2]
@@ -101,6 +100,9 @@ void Supervisor::start() {
                             << ", nextChs: " << (bool)supOut.currEv.nextChs[0]
                             << (bool)supOut.currEv.nextChs[1] << (bool)supOut.currEv.nextChs[2]
                             << "\n";
+      ctrlDataQueuePtr->out << "poses: " << p[0].p[0] << ", " << p[1].p[0] << ", " << p[1].p[1]
+                            << ", " << p[1].p[2] << ", " << p[2].p[0] << ", " << p[2].p[1] << ", "
+                            << p[2].p[2] << "\n";
       ctrlDataQueuePtr->out << "params: " << supOut.B_b[0] << ", " << supOut.B_b[1] << ", "
                             << supOut.B_b[2] << ", " << supOut.B_b[3] << ", " << supOut.B_b[4]
                             << ", " << supOut.B_b[5] << ", " << supOut.B_b[6] << ", "

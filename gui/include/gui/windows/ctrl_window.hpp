@@ -17,6 +17,7 @@ class CtrlWindow : public Window {
                                ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg |
                                ImGuiTableFlags_NoBordersInBody;
 
+  event_bus currEv_;
   int srcState, destState, moveTime, holdTime;
   int targetPos[NUM_CHANS];
   bool chs0[NUM_CHANS] = {true, false, false}, chs1[NUM_CHANS] = {false, true, true},
