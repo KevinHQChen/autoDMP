@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.1223
+// Model version                  : 1.1338
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon May 22 03:09:57 2023
+// C/C++ source code generated on : Fri May 26 01:18:29 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -126,7 +126,7 @@ struct struct_k8WKy8tDBVlN8BL9RXVTiF
 
 #endif
 
-// Custom Type definition for MATLAB Function: '<S147>/RLS'
+// Custom Type definition for MATLAB Function: '<S232>/RLS'
 #ifndef struct_c_controllib_internal_blocks_rl
 #define struct_c_controllib_internal_blocks_rl
 
@@ -280,53 +280,51 @@ class SupervisoryController final
 {
   // public data and function members
  public:
-  // Block signals and states (default storage) for system '<S147>/RLS'
-  struct DW_RLS {
-    d_controllib_internal_blocks_rl rlsEstimator;// '<S147>/RLS'
-    boolean_T rlsEstimator_not_empty;  // '<S147>/RLS'
+  // Block signals and states (default storage) for system '<S170>/MeasurementUpdate' 
+  struct DW_MeasurementUpdate {
+    boolean_T MeasurementUpdate_MODE;  // '<S170>/MeasurementUpdate'
   };
 
-  // Block signals and states (default storage) for system '<S220>/MeasurementUpdate' 
-  struct DW_MeasurementUpdate {
-    boolean_T MeasurementUpdate_MODE;  // '<S220>/MeasurementUpdate'
+  // Block signals and states (default storage) for system '<S232>/RLS'
+  struct DW_RLS {
+    d_controllib_internal_blocks_rl rlsEstimator;// '<S232>/RLS'
+    boolean_T rlsEstimator_not_empty;  // '<S232>/RLS'
   };
 
   // Block signals and states (default storage) for system '<Root>'
   struct DW {
-    DW_MeasurementUpdate MeasurementUpdate_a;// '<S355>/MeasurementUpdate'
-    DW_RLS sf_RLS_h;                   // '<S283>/RLS'
-    DW_RLS sf_RLS_er;                  // '<S282>/RLS'
-    DW_MeasurementUpdate MeasurementUpdate_cg;// '<S220>/MeasurementUpdate'
-    DW_RLS sf_RLS_f;                   // '<S148>/RLS'
-    DW_RLS sf_RLS_e;                   // '<S147>/RLS'
+    DW_MeasurementUpdate MeasurementUpdate_a;// '<S305>/MeasurementUpdate'
+    DW_RLS sf_RLS_h;                   // '<S233>/RLS'
+    DW_RLS sf_RLS_e;                   // '<S232>/RLS'
+    DW_MeasurementUpdate MeasurementUpdate_cg;// '<S170>/MeasurementUpdate'
     d_controllib_internal_blocks_rl rlsEstimator;// '<S39>/RLS'
-    real_T Product3[4];                // '<S379>/Product3'
-    real_T Product3_p[4];              // '<S244>/Product3'
+    real_T Product3[4];                // '<S329>/Product3'
+    real_T Product3_p[4];              // '<S194>/Product3'
     real_T Product3_l[2];              // '<S109>/Product3'
-    real_T last_mv_DSTATE[3];          // '<S251>/last_mv'
-    real_T UnitDelay1_DSTATE[3];       // '<S249>/Unit Delay1'
-    real_T UnitDelay7_DSTATE[2];       // '<S249>/Unit Delay7'
-    real_T delayTheta_DSTATE[3];       // '<S282>/delayTheta'
-    real_T delayL_DSTATE[9];           // '<S282>/delayL'
-    real_T delayTheta_DSTATE_k[3];     // '<S283>/delayTheta'
-    real_T delayL_DSTATE_h[9];         // '<S283>/delayL'
-    real_T MemoryX_DSTATE[4];          // '<S336>/MemoryX'
-    real_T MemoryP_DSTATE[16];         // '<S336>/MemoryP'
+    real_T last_mv_DSTATE[3];          // '<S201>/last_mv'
+    real_T UnitDelay1_DSTATE[3];       // '<S199>/Unit Delay1'
+    real_T UnitDelay7_DSTATE[2];       // '<S199>/Unit Delay7'
+    real_T delayTheta_DSTATE[3];       // '<S232>/delayTheta'
+    real_T delayL_DSTATE[9];           // '<S232>/delayL'
+    real_T delayTheta_DSTATE_k[3];     // '<S233>/delayTheta'
+    real_T delayL_DSTATE_h[9];         // '<S233>/delayL'
+    real_T MemoryX_DSTATE[4];          // '<S286>/MemoryX'
+    real_T MemoryP_DSTATE[16];         // '<S286>/MemoryP'
     real_T DiscreteFilter_states[118]; // '<S4>/Discrete Filter'
     real_T last_mv_DSTATE_j[3];        // '<S116>/last_mv'
+    real_T Delay_DSTATE[3];            // '<S148>/Delay'
     real_T UnitDelay2_DSTATE[3];       // '<S114>/Unit Delay2'
     real_T UnitDelay3_DSTATE[2];       // '<S114>/Unit Delay3'
-    real_T delayTheta_DSTATE_d[3];     // '<S147>/delayTheta'
-    real_T delayL_DSTATE_a[9];         // '<S147>/delayL'
-    real_T delayTheta_DSTATE_kz[3];    // '<S148>/delayTheta'
-    real_T delayL_DSTATE_l[9];         // '<S148>/delayL'
-    real_T MemoryX_DSTATE_m[4];        // '<S201>/MemoryX'
-    real_T MemoryP_DSTATE_a[16];       // '<S201>/MemoryP'
+    real_T Delay1_DSTATE[9];           // '<S148>/Delay1'
+    real_T Delay_DSTATE_d[3];          // '<S147>/Delay'
+    real_T Delay1_DSTATE_j[9];         // '<S147>/Delay1'
+    real_T MemoryX_DSTATE_m[4];        // '<S151>/MemoryX'
+    real_T MemoryP_DSTATE_a[16];       // '<S151>/MemoryP'
     real_T DiscreteFilter_states_b[118];// '<S3>/Discrete Filter'
     real_T last_mv_DSTATE_h[3];        // '<S9>/last_mv'
     real_T UnitDelay2_DSTATE_g[3];     // '<S7>/Unit Delay2'
     real_T delayTheta_DSTATE_p[2];     // '<S39>/delayTheta'
-    real_T delayL_DSTATE_a2[4];        // '<S39>/delayL'
+    real_T delayL_DSTATE_a[4];         // '<S39>/delayL'
     real_T MemoryX_DSTATE_a[2];        // '<S66>/MemoryX'
     real_T MemoryP_DSTATE_d[4];        // '<S66>/MemoryP'
     real_T DiscreteFilter_states_d[59];// '<S2>/Discrete Filter'
@@ -353,14 +351,10 @@ class SupervisoryController final
     real_T d_data[3597];
     real_T t_data[1199];
     real_T tmp_data[3597];
-    real_T delayBuffery_DSTATE;        // '<S282>/delayBuffery'
-    real_T delayBufferH_DSTATE;        // '<S282>/delayBufferH'
-    real_T delayBuffery_DSTATE_e;      // '<S283>/delayBuffery'
-    real_T delayBufferH_DSTATE_o;      // '<S283>/delayBufferH'
-    real_T delayBuffery_DSTATE_l;      // '<S147>/delayBuffery'
-    real_T delayBufferH_DSTATE_m;      // '<S147>/delayBufferH'
-    real_T delayBuffery_DSTATE_m;      // '<S148>/delayBuffery'
-    real_T delayBufferH_DSTATE_c;      // '<S148>/delayBufferH'
+    real_T delayBuffery_DSTATE;        // '<S232>/delayBuffery'
+    real_T delayBufferH_DSTATE;        // '<S232>/delayBufferH'
+    real_T delayBuffery_DSTATE_e;      // '<S233>/delayBuffery'
+    real_T delayBufferH_DSTATE_o;      // '<S233>/delayBufferH'
     real_T UnitDelay3_DSTATE_c;        // '<S7>/Unit Delay3'
     real_T holdT;                      // '<Root>/SupervisoryController'
     real_T ymax0;                      // '<Root>/SupervisoryController'
@@ -374,36 +368,32 @@ class SupervisoryController final
     uint8_T is_EventHandler_n;         // '<Root>/SupervisoryController'
     uint8_T is_EventHandler_k;         // '<Root>/SupervisoryController'
     uint8_T is_active_c6_SupervisoryControl;// '<Root>/SupervisoryController'
-    boolean_T Memory_PreviousInput[86];// '<S251>/Memory'
+    boolean_T Memory_PreviousInput[86];// '<S201>/Memory'
     boolean_T Memory_PreviousInput_b[86];// '<S116>/Memory'
     boolean_T Memory_PreviousInput_c[46];// '<S9>/Memory'
     boolean_T evDone;                  // '<Root>/SupervisoryController'
-    boolean_T icLoad;                  // '<S282>/delayBuffery'
-    boolean_T icLoad_k;                // '<S282>/delayBufferH'
-    boolean_T icLoad_n;                // '<S282>/delayTheta'
-    boolean_T icLoad_kv;               // '<S282>/delayL'
-    boolean_T icLoad_e;                // '<S283>/delayBuffery'
-    boolean_T icLoad_k0;               // '<S283>/delayBufferH'
-    boolean_T icLoad_p;                // '<S283>/delayTheta'
-    boolean_T icLoad_nc;               // '<S283>/delayL'
-    boolean_T icLoad_j;                // '<S336>/MemoryX'
-    boolean_T icLoad_d;                // '<S336>/MemoryP'
-    boolean_T icLoad_a;                // '<S147>/delayBuffery'
-    boolean_T icLoad_c;                // '<S147>/delayBufferH'
-    boolean_T icLoad_l;                // '<S147>/delayTheta'
-    boolean_T icLoad_m;                // '<S147>/delayL'
-    boolean_T icLoad_j2;               // '<S148>/delayBuffery'
-    boolean_T icLoad_p5;               // '<S148>/delayBufferH'
-    boolean_T icLoad_h;                // '<S148>/delayTheta'
-    boolean_T icLoad_i;                // '<S148>/delayL'
-    boolean_T icLoad_do;               // '<S201>/MemoryX'
-    boolean_T icLoad_jj;               // '<S201>/MemoryP'
-    boolean_T icLoad_ho;               // '<S39>/delayBuffery'
+    boolean_T icLoad;                  // '<S232>/delayBuffery'
+    boolean_T icLoad_k;                // '<S232>/delayBufferH'
+    boolean_T icLoad_n;                // '<S232>/delayTheta'
+    boolean_T icLoad_kv;               // '<S232>/delayL'
+    boolean_T icLoad_e;                // '<S233>/delayBuffery'
+    boolean_T icLoad_k0;               // '<S233>/delayBufferH'
+    boolean_T icLoad_p;                // '<S233>/delayTheta'
+    boolean_T icLoad_nc;               // '<S233>/delayL'
+    boolean_T icLoad_j;                // '<S286>/MemoryX'
+    boolean_T icLoad_d;                // '<S286>/MemoryP'
+    boolean_T icLoad_i;                // '<S148>/Delay'
+    boolean_T icLoad_f;                // '<S148>/Delay1'
+    boolean_T icLoad_dj;               // '<S147>/Delay'
+    boolean_T icLoad_c;                // '<S147>/Delay1'
+    boolean_T icLoad_do;               // '<S151>/MemoryX'
+    boolean_T icLoad_jj;               // '<S151>/MemoryP'
+    boolean_T icLoad_h;                // '<S39>/delayBuffery'
     boolean_T icLoad_nb;               // '<S39>/delayBufferH'
-    boolean_T icLoad_mt;               // '<S39>/delayTheta'
+    boolean_T icLoad_m;                // '<S39>/delayTheta'
     boolean_T icLoad_et;               // '<S39>/delayL'
     boolean_T icLoad_k0i;              // '<S66>/MemoryX'
-    boolean_T icLoad_f;                // '<S66>/MemoryP'
+    boolean_T icLoad_fq;               // '<S66>/MemoryP'
     boolean_T rlsEstimator_not_empty;  // '<S39>/RLS'
     boolean_T MeasurementUpdate_MODE;  // '<S85>/MeasurementUpdate'
   };
@@ -411,10 +401,10 @@ class SupervisoryController final
   // Zero-crossing (trigger) state
   struct PrevZCX {
     ZCSigState SupervisoryController_Trig_ZCE;// '<Root>/SupervisoryController'
-    ZCSigState MemoryX_Reset_ZCE;      // '<S336>/MemoryX'
-    ZCSigState MemoryP_Reset_ZCE;      // '<S336>/MemoryP'
-    ZCSigState MemoryX_Reset_ZCE_h;    // '<S201>/MemoryX'
-    ZCSigState MemoryP_Reset_ZCE_c;    // '<S201>/MemoryP'
+    ZCSigState MemoryX_Reset_ZCE;      // '<S286>/MemoryX'
+    ZCSigState MemoryP_Reset_ZCE;      // '<S286>/MemoryP'
+    ZCSigState MemoryX_Reset_ZCE_h;    // '<S151>/MemoryX'
+    ZCSigState MemoryP_Reset_ZCE_c;    // '<S151>/MemoryP'
     ZCSigState MemoryX_Reset_ZCE_j;    // '<S66>/MemoryX'
     ZCSigState MemoryP_Reset_ZCE_a;    // '<S66>/MemoryP'
   };
@@ -444,10 +434,10 @@ class SupervisoryController final
     real_T paramEstErr[3];             // '<Root>/paramEstErr'
   };
 
-  // Parameters for system: '<S220>/MeasurementUpdate'
+  // Parameters for system: '<S170>/MeasurementUpdate'
   struct P_MeasurementUpdate {
     real_T Lykyhatkk1_Y0;              // Expression: 0
-                                          //  Referenced by: '<S244>/L*(y[k]-yhat[k|k-1])'
+                                          //  Referenced by: '<S194>/L*(y[k]-yhat[k|k-1])'
 
   };
 
@@ -463,7 +453,7 @@ class SupervisoryController final
                                           //  Referenced by: '<S115>/MATLAB Function'
 
     real_T Aod2[4];                    // Variable: Aod2
-                                          //  Referenced by: '<S250>/MATLAB Function'
+                                          //  Referenced by: '<S200>/MATLAB Function'
 
     real_T Bod0;                       // Variable: Bod0
                                           //  Referenced by: '<S8>/MATLAB Function'
@@ -472,7 +462,7 @@ class SupervisoryController final
                                           //  Referenced by: '<S115>/MATLAB Function'
 
     real_T Bod2[4];                    // Variable: Bod2
-                                          //  Referenced by: '<S250>/MATLAB Function'
+                                          //  Referenced by: '<S200>/MATLAB Function'
 
     real_T Cod0;                       // Variable: Cod0
                                           //  Referenced by: '<S8>/MATLAB Function'
@@ -481,7 +471,7 @@ class SupervisoryController final
                                           //  Referenced by: '<S115>/MATLAB Function'
 
     real_T Cod2[4];                    // Variable: Cod2
-                                          //  Referenced by: '<S250>/MATLAB Function'
+                                          //  Referenced by: '<S200>/MATLAB Function'
 
     real_T Dmn0;                       // Variable: Dmn0
                                           //  Referenced by: '<S8>/MATLAB Function'
@@ -490,7 +480,7 @@ class SupervisoryController final
                                           //  Referenced by: '<S115>/MATLAB Function'
 
     real_T Dmn2[4];                    // Variable: Dmn2
-                                          //  Referenced by: '<S250>/MATLAB Function'
+                                          //  Referenced by: '<S200>/MATLAB Function'
 
     real_T Dod0;                       // Variable: Dod0
                                           //  Referenced by: '<S8>/MATLAB Function'
@@ -499,10 +489,17 @@ class SupervisoryController final
                                           //  Referenced by: '<S115>/MATLAB Function'
 
     real_T Dod2[4];                    // Variable: Dod2
-                                          //  Referenced by: '<S250>/MATLAB Function'
+                                          //  Referenced by: '<S200>/MATLAB Function'
 
     real_T dt;                         // Variable: dt
                                           //  Referenced by: '<Root>/SupervisoryController'
+
+    real_T forgettingFactor;           // Variable: forgettingFactor
+                                          //  Referenced by:
+                                          //    '<S147>/addLambda'
+                                          //    '<S147>/forgetting'
+                                          //    '<S148>/addLambda'
+                                          //    '<S148>/forgetting'
 
     real_T lpfDen;                     // Variable: lpfDen
                                           //  Referenced by:
@@ -747,36 +744,11 @@ class SupervisoryController final
     real_T UnitDelay3_InitialCondition_g;// Expression: 0
                                             //  Referenced by: '<S114>/Unit Delay3'
 
-    real_T ForgettingFactor_Value_h;   // Expression: initializationParams.adg1
-                                          //  Referenced by: '<S147>/Forgetting Factor'
+    real_T Constant4_Value[9];         // Expression: 1e4*eye(3)
+                                          //  Referenced by: '<S114>/Constant4'
 
-    real_T NormalizationBias_Value_g;  // Expression: initializationParams.adg2
-                                          //  Referenced by: '<S147>/Normalization Bias'
-
-    real_T InitialOutputs_Value_j;
-                              // Expression: initializationParams.initialOutputs
-                                 //  Referenced by: '<S147>/InitialOutputs'
-
-    real_T InitialRegressors_Value_l;
-                           // Expression: initializationParams.initialRegressors
-                              //  Referenced by: '<S147>/InitialRegressors'
-
-    real_T Constant_Value_bh;          // Expression: 1e4
-                                          //  Referenced by: '<S114>/Constant'
-
-    real_T ForgettingFactor_Value_a;   // Expression: initializationParams.adg1
-                                          //  Referenced by: '<S148>/Forgetting Factor'
-
-    real_T NormalizationBias_Value_m;  // Expression: initializationParams.adg2
-                                          //  Referenced by: '<S148>/Normalization Bias'
-
-    real_T InitialOutputs_Value_m;
-                              // Expression: initializationParams.initialOutputs
-                                 //  Referenced by: '<S148>/InitialOutputs'
-
-    real_T InitialRegressors_Value_o;
-                           // Expression: initializationParams.initialRegressors
-                              //  Referenced by: '<S148>/InitialRegressors'
+    real_T Constant5_Value[9];         // Expression: 1e4*eye(3)
+                                          //  Referenced by: '<S114>/Constant5'
 
     real_T Constant12_Value_a[4];      // Expression: G1.C
                                           //  Referenced by: '<S114>/Constant12'
@@ -794,7 +766,7 @@ class SupervisoryController final
                                           //  Referenced by: '<S115>/Constant'
 
     real_T X0_Value_m[4];              // Expression: pInitialization.X0
-                                          //  Referenced by: '<S201>/X0'
+                                          //  Referenced by: '<S151>/X0'
 
     real_T ym_zero_Value_a[2];         // Expression: zeros(nym,1)
                                           //  Referenced by: '<S116>/ym_zero'
@@ -845,16 +817,16 @@ class SupervisoryController final
                                           //  Referenced by: '<S112>/ecr.wt_zero'
 
     real_T P0_Value_a[16];             // Expression: pInitialization.P0
-                                          //  Referenced by: '<S201>/P0'
+                                          //  Referenced by: '<S151>/P0'
 
     real_T Constant_Value_nl;          // Expression: 1
                                           //  Referenced by: '<S3>/Constant'
 
     real_T H_Value_o[8];               // Expression: pInitialization.H
-                                          //  Referenced by: '<S201>/H'
+                                          //  Referenced by: '<S151>/H'
 
     real_T G_Value_a[16];              // Expression: pInitialization.G
-                                          //  Referenced by: '<S201>/G'
+                                          //  Referenced by: '<S151>/G'
 
     real_T u_scale_Gain_g[3];          // Expression: MVscale
                                           //  Referenced by: '<S116>/u_scale'
@@ -900,152 +872,152 @@ class SupervisoryController final
                                           //  Referenced by: '<S4>/uclean'
 
     real_T G_zero_Value_c;             // Expression: zeros(1,1)
-                                          //  Referenced by: '<S247>/G_zero'
+                                          //  Referenced by: '<S197>/G_zero'
 
     real_T LastPcov_InitialCondition_d[16];// Expression: lastPcov
-                                              //  Referenced by: '<S251>/LastPcov'
+                                              //  Referenced by: '<S201>/LastPcov'
 
     real_T ywt_zero_Value_l3[2];       // Expression: zeros(2,1)
-                                          //  Referenced by: '<S247>/y.wt_zero'
+                                          //  Referenced by: '<S197>/y.wt_zero'
 
     real_T uwt_zero_Value_b[3];        // Expression: zeros(3,1)
-                                          //  Referenced by: '<S247>/u.wt_zero'
+                                          //  Referenced by: '<S197>/u.wt_zero'
 
     real_T duwt_zero_Value_p[3];       // Expression: zeros(3,1)
-                                          //  Referenced by: '<S247>/du.wt_zero'
+                                          //  Referenced by: '<S197>/du.wt_zero'
 
     real_T extmv_zero_Value_m[3];      // Expression: zeros(3,1)
-                                          //  Referenced by: '<S247>/ext.mv_zero'
+                                          //  Referenced by: '<S197>/ext.mv_zero'
 
     real_T extmv_scale_Gain_n[3];      // Expression: RMVscale
-                                          //  Referenced by: '<S251>/ext.mv_scale'
+                                          //  Referenced by: '<S201>/ext.mv_scale'
 
     real_T last_mv_InitialCondition_f[3];// Expression: lastu+uoff
-                                            //  Referenced by: '<S251>/last_mv'
+                                            //  Referenced by: '<S201>/last_mv'
 
     real_T Constant10_Value_h[4];      // Expression: G2.A
-                                          //  Referenced by: '<S249>/Constant10'
+                                          //  Referenced by: '<S199>/Constant10'
 
     real_T UnitDelay1_InitialCondition;// Expression: 0
-                                          //  Referenced by: '<S249>/Unit Delay1'
+                                          //  Referenced by: '<S199>/Unit Delay1'
 
     real_T UnitDelay7_InitialCondition;// Expression: 0
-                                          //  Referenced by: '<S249>/Unit Delay7'
+                                          //  Referenced by: '<S199>/Unit Delay7'
 
     real_T Constant2_Value_m;          // Expression: 0
                                           //  Referenced by: '<S4>/Constant2'
 
     real_T ForgettingFactor_Value_o;   // Expression: initializationParams.adg1
-                                          //  Referenced by: '<S282>/Forgetting Factor'
+                                          //  Referenced by: '<S232>/Forgetting Factor'
 
     real_T NormalizationBias_Value_b;  // Expression: initializationParams.adg2
-                                          //  Referenced by: '<S282>/Normalization Bias'
+                                          //  Referenced by: '<S232>/Normalization Bias'
 
     real_T InitialOutputs_Value_l;
                               // Expression: initializationParams.initialOutputs
-                                 //  Referenced by: '<S282>/InitialOutputs'
+                                 //  Referenced by: '<S232>/InitialOutputs'
 
     real_T InitialRegressors_Value_d;
                            // Expression: initializationParams.initialRegressors
-                              //  Referenced by: '<S282>/InitialRegressors'
+                              //  Referenced by: '<S232>/InitialRegressors'
 
     real_T Constant_Value_o;           // Expression: 1e4
-                                          //  Referenced by: '<S249>/Constant'
+                                          //  Referenced by: '<S199>/Constant'
 
     real_T ForgettingFactor_Value_i;   // Expression: initializationParams.adg1
-                                          //  Referenced by: '<S283>/Forgetting Factor'
+                                          //  Referenced by: '<S233>/Forgetting Factor'
 
     real_T NormalizationBias_Value_h;  // Expression: initializationParams.adg2
-                                          //  Referenced by: '<S283>/Normalization Bias'
+                                          //  Referenced by: '<S233>/Normalization Bias'
 
     real_T InitialOutputs_Value_f;
                               // Expression: initializationParams.initialOutputs
-                                 //  Referenced by: '<S283>/InitialOutputs'
+                                 //  Referenced by: '<S233>/InitialOutputs'
 
     real_T InitialRegressors_Value_n;
                            // Expression: initializationParams.initialRegressors
-                              //  Referenced by: '<S283>/InitialRegressors'
+                              //  Referenced by: '<S233>/InitialRegressors'
 
-    real_T Constant4_Value[4];         // Expression: G2.C
-                                          //  Referenced by: '<S249>/Constant4'
+    real_T Constant4_Value_a[4];       // Expression: G2.C
+                                          //  Referenced by: '<S199>/Constant4'
 
-    real_T Constant5_Value[6];         // Expression: G2.D
-                                          //  Referenced by: '<S249>/Constant5'
+    real_T Constant5_Value_c[6];       // Expression: G2.D
+                                          //  Referenced by: '<S199>/Constant5'
 
     real_T Constant3_Value_m;          // Expression: 1
-                                          //  Referenced by: '<S249>/Constant3'
+                                          //  Referenced by: '<S199>/Constant3'
 
     real_T Constant6_Value[2];         // Expression: [0;0]
-                                          //  Referenced by: '<S249>/Constant6'
+                                          //  Referenced by: '<S199>/Constant6'
 
     real_T Constant_Value_h[2];        // Expression: [0;0]
-                                          //  Referenced by: '<S250>/Constant'
+                                          //  Referenced by: '<S200>/Constant'
 
     real_T X0_Value_a[4];              // Expression: pInitialization.X0
-                                          //  Referenced by: '<S336>/X0'
+                                          //  Referenced by: '<S286>/X0'
 
     real_T ym_zero_Value_o[2];         // Expression: zeros(nym,1)
-                                          //  Referenced by: '<S251>/ym_zero'
+                                          //  Referenced by: '<S201>/ym_zero'
 
     real_T md_zero_Value_c;            // Expression: zeros(1,1)
-                                          //  Referenced by: '<S247>/md_zero'
+                                          //  Referenced by: '<S197>/md_zero'
 
     real_T umin_zero_Value_o[3];       // Expression: zeros(3,1)
-                                          //  Referenced by: '<S247>/umin_zero'
+                                          //  Referenced by: '<S197>/umin_zero'
 
     real_T umax_zero_Value_j[3];       // Expression: zeros(3,1)
-                                          //  Referenced by: '<S247>/umax_zero'
+                                          //  Referenced by: '<S197>/umax_zero'
 
     real_T ymin_zero_Value_f[2];       // Expression: zeros(2,1)
-                                          //  Referenced by: '<S247>/ymin_zero'
+                                          //  Referenced by: '<S197>/ymin_zero'
 
     real_T ymax_zero_Value_e[2];       // Expression: zeros(2,1)
-                                          //  Referenced by: '<S247>/ymax_zero'
+                                          //  Referenced by: '<S197>/ymax_zero'
 
     real_T E_zero_Value_b[3];          // Expression: zeros(1,3)
-                                          //  Referenced by: '<S247>/E_zero'
+                                          //  Referenced by: '<S197>/E_zero'
 
     real_T umin_scale4_Gain_p[3];  // Expression: MVscale(:,ones(1,max(nCC,1)))'
-                                      //  Referenced by: '<S251>/umin_scale4'
+                                      //  Referenced by: '<S201>/umin_scale4'
 
     real_T F_zero_Value_b[2];          // Expression: zeros(1,2)
-                                          //  Referenced by: '<S247>/F_zero'
+                                          //  Referenced by: '<S197>/F_zero'
 
     real_T ymin_scale1_Gain_e[2];   // Expression: Yscale(:,ones(1,max(nCC,1)))'
-                                       //  Referenced by: '<S251>/ymin_scale1'
+                                       //  Referenced by: '<S201>/ymin_scale1'
 
     real_T S_zero_Value_o;             // Expression: zeros(1,1)
-                                          //  Referenced by: '<S247>/S_zero'
+                                          //  Referenced by: '<S197>/S_zero'
 
     real_T ymin_scale2_Gain_gp;    // Expression: MDscale(:,ones(1,max(nCC,1)))'
-                                      //  Referenced by: '<S251>/ymin_scale2'
+                                      //  Referenced by: '<S201>/ymin_scale2'
 
     real_T switch_zero_Value_f;        // Expression: zeros(1,1)
-                                          //  Referenced by: '<S247>/switch_zero'
+                                          //  Referenced by: '<S197>/switch_zero'
 
     real_T mvtarget_zero_Value_e[3];   // Expression: zeros(3,1)
-                                          //  Referenced by: '<S247>/mv.target_zero'
+                                          //  Referenced by: '<S197>/mv.target_zero'
 
     real_T uref_scale_Gain_g[3];       // Expression: RMVscale
-                                          //  Referenced by: '<S251>/uref_scale'
+                                          //  Referenced by: '<S201>/uref_scale'
 
     real_T ecrwt_zero_Value_p;         // Expression: zeros(1,1)
-                                          //  Referenced by: '<S247>/ecr.wt_zero'
+                                          //  Referenced by: '<S197>/ecr.wt_zero'
 
     real_T P0_Value_n[16];             // Expression: pInitialization.P0
-                                          //  Referenced by: '<S336>/P0'
+                                          //  Referenced by: '<S286>/P0'
 
     real_T Constant_Value_j;           // Expression: 1
                                           //  Referenced by: '<S4>/Constant'
 
     real_T H_Value_f[8];               // Expression: pInitialization.H
-                                          //  Referenced by: '<S336>/H'
+                                          //  Referenced by: '<S286>/H'
 
     real_T G_Value_o[16];              // Expression: pInitialization.G
-                                          //  Referenced by: '<S336>/G'
+                                          //  Referenced by: '<S286>/G'
 
     real_T u_scale_Gain_c[3];          // Expression: MVscale
-                                          //  Referenced by: '<S251>/u_scale'
+                                          //  Referenced by: '<S201>/u_scale'
 
     real_T MeasurementNoise_Mean_j[3]; // Expression: [0 0 0]
                                           //  Referenced by: '<S4>/Measurement Noise'
@@ -1073,7 +1045,7 @@ class SupervisoryController final
                                             //  Referenced by: '<S144>/FixedHorizonOptimizer'
 
     int32_T FixedHorizonOptimizer_Ndis_c;// Expression: Ndis
-                                            //  Referenced by: '<S279>/FixedHorizonOptimizer'
+                                            //  Referenced by: '<S229>/FixedHorizonOptimizer'
 
     boolean_T Memory_InitialCondition[46];// Expression: iA
                                              //  Referenced by: '<S9>/Memory'
@@ -1090,47 +1062,35 @@ class SupervisoryController final
     boolean_T Memory_InitialCondition_p[86];// Expression: iA
                                                //  Referenced by: '<S116>/Memory'
 
-    boolean_T Delay_InitialCondition_f;// Expression: true()
-                                          //  Referenced by: '<S166>/Delay'
-
-    boolean_T Delay_InitialCondition_b;// Expression: true()
-                                          //  Referenced by: '<S192>/Delay'
-
     boolean_T isSqrtUsed_Value_l;      // Expression: pInitialization.isSqrtUsed
-                                          //  Referenced by: '<S242>/isSqrtUsed'
+                                          //  Referenced by: '<S192>/isSqrtUsed'
 
     boolean_T Constant1_Value_h;       // Expression: true
                                           //  Referenced by: '<S3>/Constant1'
 
-    boolean_T Constant_Value_nq;       // Expression: false()
-                                          //  Referenced by: '<S166>/Constant'
-
-    boolean_T Constant_Value_f;        // Expression: false()
-                                          //  Referenced by: '<S192>/Constant'
-
     boolean_T Memory_InitialCondition_l[86];// Expression: iA
-                                               //  Referenced by: '<S251>/Memory'
+                                               //  Referenced by: '<S201>/Memory'
 
     boolean_T Constant1_Value_k;       // Expression: true
                                           //  Referenced by: '<S4>/Constant1'
 
-    boolean_T Delay_InitialCondition_f1;// Expression: true()
-                                           //  Referenced by: '<S301>/Delay'
+    boolean_T Delay_InitialCondition_f;// Expression: true()
+                                          //  Referenced by: '<S251>/Delay'
 
-    boolean_T Delay_InitialCondition_bj;// Expression: true()
-                                           //  Referenced by: '<S327>/Delay'
+    boolean_T Delay_InitialCondition_b;// Expression: true()
+                                          //  Referenced by: '<S277>/Delay'
 
     boolean_T isSqrtUsed_Value_d;      // Expression: pInitialization.isSqrtUsed
-                                          //  Referenced by: '<S377>/isSqrtUsed'
+                                          //  Referenced by: '<S327>/isSqrtUsed'
 
     boolean_T Constant_Value_p;        // Expression: false()
-                                          //  Referenced by: '<S301>/Constant'
+                                          //  Referenced by: '<S251>/Constant'
 
     boolean_T Constant_Value_e;        // Expression: false()
-                                          //  Referenced by: '<S327>/Constant'
+                                          //  Referenced by: '<S277>/Constant'
 
-    P_MeasurementUpdate MeasurementUpdate_a;// '<S355>/MeasurementUpdate'
-    P_MeasurementUpdate MeasurementUpdate_cg;// '<S220>/MeasurementUpdate'
+    P_MeasurementUpdate MeasurementUpdate_a;// '<S305>/MeasurementUpdate'
+    P_MeasurementUpdate MeasurementUpdate_cg;// '<S170>/MeasurementUpdate'
   };
 
   // Copy Constructor
@@ -1180,37 +1140,24 @@ class SupervisoryController final
   // private member function(s) for subsystem '<S3>/MATLAB Function'
   static void MATLABFunction(const real_T rtu_e[2], real_T *rty_decay);
 
-  // private member function(s) for subsystem '<S147>/ProcessInitialCovariance'
-  static void ProcessInitialCovariance(real_T rtu_u, real_T rty_y[9]);
+  // private member function(s) for subsystem '<S147>/MATLAB Function'
+  static void MATLABFunction_l(const real_T rtu_theta[3], const real_T rtu_P[9],
+    real_T rtu_epsil, const real_T rtu_phi[3], real_T rtu_ms_, real_T rtu_EN,
+    real_T rty_dtheta[3], real_T rty_dP[9]);
 
-  // private member function(s) for subsystem '<S147>/RLS'
-  void RLS(const real_T rtu_H[3], real_T rtu_y, boolean_T rtu_isEnabled, real_T
-           rtu_adg1, real_T *rty_e, real_T rty_x[3], real_T rty_L[9], DW_RLS
-           *localDW);
-  real_T xnrm2(int32_T n, const real_T x[4], int32_T ix0);
-  real_T qrFactor(const real_T A[3], const real_T S[9], real_T Ns);
-  void trisolve(real_T A, real_T B_1[3]);
-  real_T xnrm2_c(int32_T n, const real_T x[12], int32_T ix0);
-  void xgemv(int32_T m, int32_T n, const real_T A[12], int32_T ia0, const real_T
-             x[12], int32_T ix0, real_T y[3]);
-  void xgerc(int32_T m, int32_T n, real_T alpha1, int32_T ix0, const real_T y[3],
-             real_T A[12], int32_T ia0);
-  void sqrtMeasurementUpdate(real_T L[9], const real_T H[3], real_T a0, real_T
-    K[3]);
-
-  // private member function(s) for subsystem '<S201>/CalculatePL'
+  // private member function(s) for subsystem '<S151>/CalculatePL'
   void CalculatePL(const real_T rtu_Ak[16], const real_T rtu_Ck[8], const real_T
                    rtu_Qbark[16], const real_T rtu_Rbark[4], const real_T
                    rtu_Nbark[8], boolean_T rtu_Enablek, const real_T rtu_Pk[16],
                    real_T rty_Mk[8], real_T rty_Lk[8], real_T rty_Zk[16], real_T
                    rty_Pk1[16]);
-  void mrdiv(const real_T A[8], const real_T B_2[4], real_T Y[8]);
+  void mrdiv(const real_T A[8], const real_T B_0[4], real_T Y[8]);
 
-  // private member function(s) for subsystem '<S242>/SqrtUsedFcn'
+  // private member function(s) for subsystem '<S192>/SqrtUsedFcn'
   static void SqrtUsedFcn(const real_T rtu_u[16], boolean_T rtu_isSqrtUsed,
     real_T rty_P[16]);
 
-  // private member function(s) for subsystem '<S220>/MeasurementUpdate'
+  // private member function(s) for subsystem '<S170>/MeasurementUpdate'
   static void MeasurementUpdate_Init(real_T rty_Lykyhatkk1[4],
     P_MeasurementUpdate *localP);
   static void MeasurementUpdate_Disable(real_T rty_Lykyhatkk1[4],
@@ -1220,16 +1167,34 @@ class SupervisoryController final
     real_T rtu_Dk[6], const real_T rtu_uk[3], real_T rty_Lykyhatkk1[4],
     DW_MeasurementUpdate *localDW, P_MeasurementUpdate *localP);
 
-  // private member function(s) for subsystem '<S201>/ReducedQRN'
+  // private member function(s) for subsystem '<S151>/ReducedQRN'
   static void ReducedQRN(const real_T rtu_G[16], const real_T rtu_H[8], const
     real_T rtu_Q[16], const real_T rtu_R[4], const real_T rtu_N[8], real_T
     rty_Qbar[16], real_T rty_Rbar[4], real_T rty_Nbar[8]);
 
-  // private member function(s) for subsystem '<S201>/ScalarExpansionQ'
+  // private member function(s) for subsystem '<S151>/ScalarExpansionQ'
   static void ScalarExpansionQ(const real_T rtu_u[16], real_T rty_y[16]);
 
-  // private member function(s) for subsystem '<S201>/ScalarExpansionR'
+  // private member function(s) for subsystem '<S151>/ScalarExpansionR'
   static void ScalarExpansionR(const real_T rtu_u[4], real_T rty_y[4]);
+
+  // private member function(s) for subsystem '<S232>/ProcessInitialCovariance'
+  static void ProcessInitialCovariance(real_T rtu_u, real_T rty_y[9]);
+
+  // private member function(s) for subsystem '<S232>/RLS'
+  void RLS(const real_T rtu_H[3], real_T rtu_y, boolean_T rtu_isEnabled, real_T
+           rtu_adg1, real_T *rty_e, real_T rty_x[3], real_T rty_L[9], DW_RLS
+           *localDW);
+  real_T xnrm2(int32_T n, const real_T x[4], int32_T ix0);
+  real_T qrFactor(const real_T A[3], const real_T S[9], real_T Ns);
+  void trisolve(real_T A, real_T B_2[3]);
+  real_T xnrm2_e(int32_T n, const real_T x[12], int32_T ix0);
+  void xgemv(int32_T m, int32_T n, const real_T A[12], int32_T ia0, const real_T
+             x[12], int32_T ix0, real_T y[3]);
+  void xgerc(int32_T m, int32_T n, real_T alpha1, int32_T ix0, const real_T y[3],
+             real_T A[12], int32_T ia0);
+  void sqrtMeasurementUpdate(real_T L[9], const real_T H[3], real_T a0, real_T
+    K[3]);
 
   // private member function(s) for subsystem '<Root>'
   boolean_T isequal(const event_bus varargin_1, const event_bus varargin_2);
@@ -1423,154 +1388,115 @@ class SupervisoryController final
 //  Block '<S116>/useq_scale1' : Unused code path elimination
 //  Block '<S112>/m_zero' : Unused code path elimination
 //  Block '<S112>/p_zero' : Unused code path elimination
-//  Block '<S149>/S-Function' : Unused code path elimination
-//  Block '<S150>/Dimension' : Unused code path elimination
-//  Block '<S152>/Dimension' : Unused code path elimination
-//  Block '<S147>/Check Same Ts' : Unused code path elimination
-//  Block '<S154>/Output Dimension' : Unused code path elimination
-//  Block '<S154>/Regressors Dimension' : Unused code path elimination
-//  Block '<S154>/Sample Times and Data Type' : Unused code path elimination
-//  Block '<S155>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S156>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S157>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S158>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S159>/Data Type Duplicate' : Unused code path elimination
+//  Block '<S114>/P' : Unused code path elimination
 //  Block '<S160>/Data Type Duplicate' : Unused code path elimination
 //  Block '<S161>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S162>/Data Type Duplicate' : Unused code path elimination
 //  Block '<S163>/Data Type Duplicate' : Unused code path elimination
 //  Block '<S164>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S173>/S-Function' : Unused code path elimination
-//  Block '<S172>/Gain' : Unused code path elimination
-//  Block '<S172>/Selector' : Unused code path elimination
-//  Block '<S175>/S-Function' : Unused code path elimination
-//  Block '<S176>/Dimension' : Unused code path elimination
-//  Block '<S178>/Dimension' : Unused code path elimination
-//  Block '<S148>/Check Same Ts' : Unused code path elimination
-//  Block '<S180>/Output Dimension' : Unused code path elimination
-//  Block '<S180>/Regressors Dimension' : Unused code path elimination
-//  Block '<S180>/Sample Times and Data Type' : Unused code path elimination
-//  Block '<S181>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S182>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S183>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S184>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S185>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S186>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S187>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S188>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S189>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S190>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S199>/S-Function' : Unused code path elimination
-//  Block '<S198>/Gain' : Unused code path elimination
-//  Block '<S198>/Selector' : Unused code path elimination
-//  Block '<S210>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S211>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S213>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S214>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S217>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S218>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S226>/CheckSignalProperties' : Unused code path elimination
-//  Block '<S227>/CheckSignalProperties' : Unused code path elimination
-//  Block '<S228>/CheckSignalProperties' : Unused code path elimination
-//  Block '<S229>/CheckSignalProperties' : Unused code path elimination
-//  Block '<S230>/CheckSignalProperties' : Unused code path elimination
-//  Block '<S233>/CheckSignalProperties' : Unused code path elimination
-//  Block '<S235>/CheckSignalProperties' : Unused code path elimination
-//  Block '<S236>/CheckSignalProperties' : Unused code path elimination
-//  Block '<S237>/CheckSignalProperties' : Unused code path elimination
-//  Block '<S239>/CheckSignalProperties' : Unused code path elimination
-//  Block '<S240>/CheckSignalProperties' : Unused code path elimination
-//  Block '<S251>/Floor' : Unused code path elimination
-//  Block '<S251>/Floor1' : Unused code path elimination
-//  Block '<S252>/Matrix Dimension Check' : Unused code path elimination
-//  Block '<S253>/Matrix Dimension Check' : Unused code path elimination
-//  Block '<S254>/Matrix Dimension Check' : Unused code path elimination
-//  Block '<S255>/Matrix Dimension Check' : Unused code path elimination
-//  Block '<S256>/Matrix Dimension Check' : Unused code path elimination
-//  Block '<S257>/Matrix Dimension Check' : Unused code path elimination
-//  Block '<S258>/Matrix Dimension Check' : Unused code path elimination
-//  Block '<S259>/Matrix Dimension Check' : Unused code path elimination
-//  Block '<S260>/Matrix Dimension Check' : Unused code path elimination
-//  Block '<S261>/Matrix Dimension Check' : Unused code path elimination
-//  Block '<S262>/Matrix Dimension Check' : Unused code path elimination
-//  Block '<S263>/Matrix Dimension Check' : Unused code path elimination
-//  Block '<S264>/Matrix Dimension Check' : Unused code path elimination
-//  Block '<S265>/Matrix Dimension Check' : Unused code path elimination
-//  Block '<S266>/Matrix Dimension Check' : Unused code path elimination
-//  Block '<S267>/Matrix Dimension Check' : Unused code path elimination
-//  Block '<S268>/Matrix Dimension Check' : Unused code path elimination
-//  Block '<S269>/Matrix Dimension Check' : Unused code path elimination
-//  Block '<S270>/Matrix Dimension Check' : Unused code path elimination
-//  Block '<S271>/Matrix Dimension Check' : Unused code path elimination
-//  Block '<S272>/Vector Dimension Check' : Unused code path elimination
-//  Block '<S273>/Vector Dimension Check' : Unused code path elimination
-//  Block '<S274>/Vector Dimension Check' : Unused code path elimination
-//  Block '<S275>/Vector Dimension Check' : Unused code path elimination
-//  Block '<S276>/Vector Dimension Check' : Unused code path elimination
-//  Block '<S277>/Vector Dimension Check' : Unused code path elimination
-//  Block '<S251>/last_x' : Unused code path elimination
-//  Block '<S278>/Vector Dimension Check' : Unused code path elimination
-//  Block '<S251>/useq_scale' : Unused code path elimination
-//  Block '<S251>/useq_scale1' : Unused code path elimination
-//  Block '<S247>/m_zero' : Unused code path elimination
-//  Block '<S247>/p_zero' : Unused code path elimination
+//  Block '<S167>/Data Type Duplicate' : Unused code path elimination
+//  Block '<S168>/Data Type Duplicate' : Unused code path elimination
+//  Block '<S176>/CheckSignalProperties' : Unused code path elimination
+//  Block '<S177>/CheckSignalProperties' : Unused code path elimination
+//  Block '<S178>/CheckSignalProperties' : Unused code path elimination
+//  Block '<S179>/CheckSignalProperties' : Unused code path elimination
+//  Block '<S180>/CheckSignalProperties' : Unused code path elimination
+//  Block '<S183>/CheckSignalProperties' : Unused code path elimination
+//  Block '<S185>/CheckSignalProperties' : Unused code path elimination
+//  Block '<S186>/CheckSignalProperties' : Unused code path elimination
+//  Block '<S187>/CheckSignalProperties' : Unused code path elimination
+//  Block '<S189>/CheckSignalProperties' : Unused code path elimination
+//  Block '<S190>/CheckSignalProperties' : Unused code path elimination
+//  Block '<S201>/Floor' : Unused code path elimination
+//  Block '<S201>/Floor1' : Unused code path elimination
+//  Block '<S202>/Matrix Dimension Check' : Unused code path elimination
+//  Block '<S203>/Matrix Dimension Check' : Unused code path elimination
+//  Block '<S204>/Matrix Dimension Check' : Unused code path elimination
+//  Block '<S205>/Matrix Dimension Check' : Unused code path elimination
+//  Block '<S206>/Matrix Dimension Check' : Unused code path elimination
+//  Block '<S207>/Matrix Dimension Check' : Unused code path elimination
+//  Block '<S208>/Matrix Dimension Check' : Unused code path elimination
+//  Block '<S209>/Matrix Dimension Check' : Unused code path elimination
+//  Block '<S210>/Matrix Dimension Check' : Unused code path elimination
+//  Block '<S211>/Matrix Dimension Check' : Unused code path elimination
+//  Block '<S212>/Matrix Dimension Check' : Unused code path elimination
+//  Block '<S213>/Matrix Dimension Check' : Unused code path elimination
+//  Block '<S214>/Matrix Dimension Check' : Unused code path elimination
+//  Block '<S215>/Matrix Dimension Check' : Unused code path elimination
+//  Block '<S216>/Matrix Dimension Check' : Unused code path elimination
+//  Block '<S217>/Matrix Dimension Check' : Unused code path elimination
+//  Block '<S218>/Matrix Dimension Check' : Unused code path elimination
+//  Block '<S219>/Matrix Dimension Check' : Unused code path elimination
+//  Block '<S220>/Matrix Dimension Check' : Unused code path elimination
+//  Block '<S221>/Matrix Dimension Check' : Unused code path elimination
+//  Block '<S222>/Vector Dimension Check' : Unused code path elimination
+//  Block '<S223>/Vector Dimension Check' : Unused code path elimination
+//  Block '<S224>/Vector Dimension Check' : Unused code path elimination
+//  Block '<S225>/Vector Dimension Check' : Unused code path elimination
+//  Block '<S226>/Vector Dimension Check' : Unused code path elimination
+//  Block '<S227>/Vector Dimension Check' : Unused code path elimination
+//  Block '<S201>/last_x' : Unused code path elimination
+//  Block '<S228>/Vector Dimension Check' : Unused code path elimination
+//  Block '<S201>/useq_scale' : Unused code path elimination
+//  Block '<S201>/useq_scale1' : Unused code path elimination
+//  Block '<S197>/m_zero' : Unused code path elimination
+//  Block '<S197>/p_zero' : Unused code path elimination
+//  Block '<S234>/S-Function' : Unused code path elimination
+//  Block '<S235>/Dimension' : Unused code path elimination
+//  Block '<S237>/Dimension' : Unused code path elimination
+//  Block '<S232>/Check Same Ts' : Unused code path elimination
+//  Block '<S239>/Output Dimension' : Unused code path elimination
+//  Block '<S239>/Regressors Dimension' : Unused code path elimination
+//  Block '<S239>/Sample Times and Data Type' : Unused code path elimination
+//  Block '<S240>/Data Type Duplicate' : Unused code path elimination
+//  Block '<S241>/Data Type Duplicate' : Unused code path elimination
+//  Block '<S242>/Data Type Duplicate' : Unused code path elimination
+//  Block '<S243>/Data Type Duplicate' : Unused code path elimination
+//  Block '<S244>/Data Type Duplicate' : Unused code path elimination
+//  Block '<S245>/Data Type Duplicate' : Unused code path elimination
+//  Block '<S246>/Data Type Duplicate' : Unused code path elimination
+//  Block '<S247>/Data Type Duplicate' : Unused code path elimination
+//  Block '<S248>/Data Type Duplicate' : Unused code path elimination
+//  Block '<S249>/Data Type Duplicate' : Unused code path elimination
+//  Block '<S258>/S-Function' : Unused code path elimination
+//  Block '<S257>/Gain' : Unused code path elimination
+//  Block '<S257>/Selector' : Unused code path elimination
+//  Block '<S260>/S-Function' : Unused code path elimination
+//  Block '<S261>/Dimension' : Unused code path elimination
+//  Block '<S263>/Dimension' : Unused code path elimination
+//  Block '<S233>/Check Same Ts' : Unused code path elimination
+//  Block '<S265>/Output Dimension' : Unused code path elimination
+//  Block '<S265>/Regressors Dimension' : Unused code path elimination
+//  Block '<S265>/Sample Times and Data Type' : Unused code path elimination
+//  Block '<S266>/Data Type Duplicate' : Unused code path elimination
+//  Block '<S267>/Data Type Duplicate' : Unused code path elimination
+//  Block '<S268>/Data Type Duplicate' : Unused code path elimination
+//  Block '<S269>/Data Type Duplicate' : Unused code path elimination
+//  Block '<S270>/Data Type Duplicate' : Unused code path elimination
+//  Block '<S271>/Data Type Duplicate' : Unused code path elimination
+//  Block '<S272>/Data Type Duplicate' : Unused code path elimination
+//  Block '<S273>/Data Type Duplicate' : Unused code path elimination
+//  Block '<S274>/Data Type Duplicate' : Unused code path elimination
+//  Block '<S275>/Data Type Duplicate' : Unused code path elimination
 //  Block '<S284>/S-Function' : Unused code path elimination
-//  Block '<S285>/Dimension' : Unused code path elimination
-//  Block '<S287>/Dimension' : Unused code path elimination
-//  Block '<S282>/Check Same Ts' : Unused code path elimination
-//  Block '<S289>/Output Dimension' : Unused code path elimination
-//  Block '<S289>/Regressors Dimension' : Unused code path elimination
-//  Block '<S289>/Sample Times and Data Type' : Unused code path elimination
-//  Block '<S290>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S291>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S292>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S293>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S294>/Data Type Duplicate' : Unused code path elimination
+//  Block '<S283>/Gain' : Unused code path elimination
+//  Block '<S283>/Selector' : Unused code path elimination
 //  Block '<S295>/Data Type Duplicate' : Unused code path elimination
 //  Block '<S296>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S297>/Data Type Duplicate' : Unused code path elimination
 //  Block '<S298>/Data Type Duplicate' : Unused code path elimination
 //  Block '<S299>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S308>/S-Function' : Unused code path elimination
-//  Block '<S307>/Gain' : Unused code path elimination
-//  Block '<S307>/Selector' : Unused code path elimination
-//  Block '<S310>/S-Function' : Unused code path elimination
-//  Block '<S311>/Dimension' : Unused code path elimination
-//  Block '<S313>/Dimension' : Unused code path elimination
-//  Block '<S283>/Check Same Ts' : Unused code path elimination
-//  Block '<S315>/Output Dimension' : Unused code path elimination
-//  Block '<S315>/Regressors Dimension' : Unused code path elimination
-//  Block '<S315>/Sample Times and Data Type' : Unused code path elimination
-//  Block '<S316>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S317>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S318>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S319>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S320>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S321>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S322>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S323>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S324>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S325>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S334>/S-Function' : Unused code path elimination
-//  Block '<S333>/Gain' : Unused code path elimination
-//  Block '<S333>/Selector' : Unused code path elimination
-//  Block '<S345>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S346>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S348>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S349>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S352>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S353>/Data Type Duplicate' : Unused code path elimination
-//  Block '<S361>/CheckSignalProperties' : Unused code path elimination
-//  Block '<S362>/CheckSignalProperties' : Unused code path elimination
-//  Block '<S363>/CheckSignalProperties' : Unused code path elimination
-//  Block '<S364>/CheckSignalProperties' : Unused code path elimination
-//  Block '<S365>/CheckSignalProperties' : Unused code path elimination
-//  Block '<S368>/CheckSignalProperties' : Unused code path elimination
-//  Block '<S370>/CheckSignalProperties' : Unused code path elimination
-//  Block '<S371>/CheckSignalProperties' : Unused code path elimination
-//  Block '<S372>/CheckSignalProperties' : Unused code path elimination
-//  Block '<S374>/CheckSignalProperties' : Unused code path elimination
-//  Block '<S375>/CheckSignalProperties' : Unused code path elimination
+//  Block '<S302>/Data Type Duplicate' : Unused code path elimination
+//  Block '<S303>/Data Type Duplicate' : Unused code path elimination
+//  Block '<S311>/CheckSignalProperties' : Unused code path elimination
+//  Block '<S312>/CheckSignalProperties' : Unused code path elimination
+//  Block '<S313>/CheckSignalProperties' : Unused code path elimination
+//  Block '<S314>/CheckSignalProperties' : Unused code path elimination
+//  Block '<S315>/CheckSignalProperties' : Unused code path elimination
+//  Block '<S318>/CheckSignalProperties' : Unused code path elimination
+//  Block '<S320>/CheckSignalProperties' : Unused code path elimination
+//  Block '<S321>/CheckSignalProperties' : Unused code path elimination
+//  Block '<S322>/CheckSignalProperties' : Unused code path elimination
+//  Block '<S324>/CheckSignalProperties' : Unused code path elimination
+//  Block '<S325>/CheckSignalProperties' : Unused code path elimination
 //  Block '<S9>/Reshape' : Reshape block reduction
 //  Block '<S9>/Reshape1' : Reshape block reduction
 //  Block '<S9>/Reshape2' : Reshape block reduction
@@ -1597,56 +1523,46 @@ class SupervisoryController final
 //  Block '<S116>/Reshape3' : Reshape block reduction
 //  Block '<S116>/Reshape4' : Reshape block reduction
 //  Block '<S116>/Reshape5' : Reshape block reduction
-//  Block '<S157>/Conversion' : Eliminate redundant data type conversion
-//  Block '<S159>/Conversion' : Eliminate redundant data type conversion
-//  Block '<S161>/Conversion' : Eliminate redundant data type conversion
-//  Block '<S162>/Conversion' : Eliminate redundant data type conversion
-//  Block '<S163>/Conversion' : Eliminate redundant data type conversion
-//  Block '<S164>/Conversion' : Eliminate redundant data type conversion
-//  Block '<S183>/Conversion' : Eliminate redundant data type conversion
-//  Block '<S185>/Conversion' : Eliminate redundant data type conversion
-//  Block '<S187>/Conversion' : Eliminate redundant data type conversion
-//  Block '<S188>/Conversion' : Eliminate redundant data type conversion
-//  Block '<S189>/Conversion' : Eliminate redundant data type conversion
-//  Block '<S190>/Conversion' : Eliminate redundant data type conversion
 //  Block '<S114>/Reshape' : Reshape block reduction
-//  Block '<S213>/Conversion' : Eliminate redundant data type conversion
-//  Block '<S217>/Conversion' : Eliminate redundant data type conversion
-//  Block '<S220>/Reshape' : Reshape block reduction
-//  Block '<S201>/ReshapeX0' : Reshape block reduction
-//  Block '<S201>/Reshapeu' : Reshape block reduction
-//  Block '<S201>/Reshapexhat' : Reshape block reduction
-//  Block '<S201>/Reshapey' : Reshape block reduction
-//  Block '<S201>/Reshapeyhat' : Reshape block reduction
-//  Block '<S251>/Reshape' : Reshape block reduction
-//  Block '<S251>/Reshape1' : Reshape block reduction
-//  Block '<S251>/Reshape2' : Reshape block reduction
-//  Block '<S251>/Reshape3' : Reshape block reduction
-//  Block '<S251>/Reshape4' : Reshape block reduction
-//  Block '<S251>/Reshape5' : Reshape block reduction
-//  Block '<S292>/Conversion' : Eliminate redundant data type conversion
-//  Block '<S294>/Conversion' : Eliminate redundant data type conversion
-//  Block '<S296>/Conversion' : Eliminate redundant data type conversion
-//  Block '<S297>/Conversion' : Eliminate redundant data type conversion
+//  Block '<S147>/Reshape1' : Reshape block reduction
+//  Block '<S148>/Reshape1' : Reshape block reduction
+//  Block '<S163>/Conversion' : Eliminate redundant data type conversion
+//  Block '<S167>/Conversion' : Eliminate redundant data type conversion
+//  Block '<S170>/Reshape' : Reshape block reduction
+//  Block '<S151>/ReshapeX0' : Reshape block reduction
+//  Block '<S151>/Reshapeu' : Reshape block reduction
+//  Block '<S151>/Reshapexhat' : Reshape block reduction
+//  Block '<S151>/Reshapey' : Reshape block reduction
+//  Block '<S151>/Reshapeyhat' : Reshape block reduction
+//  Block '<S201>/Reshape' : Reshape block reduction
+//  Block '<S201>/Reshape1' : Reshape block reduction
+//  Block '<S201>/Reshape2' : Reshape block reduction
+//  Block '<S201>/Reshape3' : Reshape block reduction
+//  Block '<S201>/Reshape4' : Reshape block reduction
+//  Block '<S201>/Reshape5' : Reshape block reduction
+//  Block '<S242>/Conversion' : Eliminate redundant data type conversion
+//  Block '<S244>/Conversion' : Eliminate redundant data type conversion
+//  Block '<S246>/Conversion' : Eliminate redundant data type conversion
+//  Block '<S247>/Conversion' : Eliminate redundant data type conversion
+//  Block '<S248>/Conversion' : Eliminate redundant data type conversion
+//  Block '<S249>/Conversion' : Eliminate redundant data type conversion
+//  Block '<S232>/DataTypeConversionEnable' : Eliminate redundant data type conversion
+//  Block '<S268>/Conversion' : Eliminate redundant data type conversion
+//  Block '<S270>/Conversion' : Eliminate redundant data type conversion
+//  Block '<S272>/Conversion' : Eliminate redundant data type conversion
+//  Block '<S273>/Conversion' : Eliminate redundant data type conversion
+//  Block '<S274>/Conversion' : Eliminate redundant data type conversion
+//  Block '<S275>/Conversion' : Eliminate redundant data type conversion
+//  Block '<S233>/DataTypeConversionEnable' : Eliminate redundant data type conversion
+//  Block '<S199>/Reshape' : Reshape block reduction
 //  Block '<S298>/Conversion' : Eliminate redundant data type conversion
-//  Block '<S299>/Conversion' : Eliminate redundant data type conversion
-//  Block '<S282>/DataTypeConversionEnable' : Eliminate redundant data type conversion
-//  Block '<S318>/Conversion' : Eliminate redundant data type conversion
-//  Block '<S320>/Conversion' : Eliminate redundant data type conversion
-//  Block '<S322>/Conversion' : Eliminate redundant data type conversion
-//  Block '<S323>/Conversion' : Eliminate redundant data type conversion
-//  Block '<S324>/Conversion' : Eliminate redundant data type conversion
-//  Block '<S325>/Conversion' : Eliminate redundant data type conversion
-//  Block '<S283>/DataTypeConversionEnable' : Eliminate redundant data type conversion
-//  Block '<S249>/Reshape' : Reshape block reduction
-//  Block '<S348>/Conversion' : Eliminate redundant data type conversion
-//  Block '<S352>/Conversion' : Eliminate redundant data type conversion
-//  Block '<S355>/Reshape' : Reshape block reduction
-//  Block '<S336>/ReshapeX0' : Reshape block reduction
-//  Block '<S336>/Reshapeu' : Reshape block reduction
-//  Block '<S336>/Reshapexhat' : Reshape block reduction
-//  Block '<S336>/Reshapey' : Reshape block reduction
-//  Block '<S336>/Reshapeyhat' : Reshape block reduction
+//  Block '<S302>/Conversion' : Eliminate redundant data type conversion
+//  Block '<S305>/Reshape' : Reshape block reduction
+//  Block '<S286>/ReshapeX0' : Reshape block reduction
+//  Block '<S286>/Reshapeu' : Reshape block reduction
+//  Block '<S286>/Reshapexhat' : Reshape block reduction
+//  Block '<S286>/Reshapey' : Reshape block reduction
+//  Block '<S286>/Reshapeyhat' : Reshape block reduction
 
 
 //-
@@ -1813,241 +1729,191 @@ class SupervisoryController final
 //  '<S144>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Adaptive MPC Controller/MPC/optimizer'
 //  '<S145>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Adaptive MPC Controller/MPC/optimizer/FixedHorizonOptimizer'
 //  '<S146>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/MATLAB Function1'
-//  '<S147>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1'
-//  '<S148>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2'
-//  '<S149>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1/Check Enable Signal'
-//  '<S150>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1/Check Initial Covariance'
-//  '<S151>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1/Check Initial Outputs'
-//  '<S152>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1/Check Initial Parameters'
-//  '<S153>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1/Check Initial Regressors'
-//  '<S154>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1/Check Signals'
-//  '<S155>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1/Data Type Conversion - AdaptationParameter1'
-//  '<S156>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1/Data Type Conversion - AdaptationParameter2'
-//  '<S157>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1/Data Type Conversion - InitialCovariance'
-//  '<S158>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1/Data Type Conversion - InitialOutputs'
-//  '<S159>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1/Data Type Conversion - InitialParameters'
-//  '<S160>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1/Data Type Conversion - InitialRegressors'
-//  '<S161>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1/Data Type Conversion - L'
-//  '<S162>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1/Data Type Conversion - Theta'
-//  '<S163>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1/Data Type Conversion - bufferH'
-//  '<S164>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1/Data Type Conversion - buffery'
-//  '<S165>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1/MultiplyWithTranspose'
-//  '<S166>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1/Process Reset'
-//  '<S167>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1/ProcessInitialCovariance'
-//  '<S168>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1/ProcessInitialOutputs'
-//  '<S169>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1/ProcessInitialParameters'
-//  '<S170>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1/ProcessInitialRegressors'
-//  '<S171>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1/RLS'
-//  '<S172>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1/Reset'
-//  '<S173>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1/Process Reset/Check Reset'
-//  '<S174>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator1/ProcessInitialCovariance/ScalarExpansion'
-//  '<S175>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2/Check Enable Signal'
-//  '<S176>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2/Check Initial Covariance'
-//  '<S177>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2/Check Initial Outputs'
-//  '<S178>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2/Check Initial Parameters'
-//  '<S179>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2/Check Initial Regressors'
-//  '<S180>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2/Check Signals'
-//  '<S181>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2/Data Type Conversion - AdaptationParameter1'
-//  '<S182>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2/Data Type Conversion - AdaptationParameter2'
-//  '<S183>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2/Data Type Conversion - InitialCovariance'
-//  '<S184>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2/Data Type Conversion - InitialOutputs'
-//  '<S185>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2/Data Type Conversion - InitialParameters'
-//  '<S186>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2/Data Type Conversion - InitialRegressors'
-//  '<S187>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2/Data Type Conversion - L'
-//  '<S188>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2/Data Type Conversion - Theta'
-//  '<S189>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2/Data Type Conversion - bufferH'
-//  '<S190>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2/Data Type Conversion - buffery'
-//  '<S191>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2/MultiplyWithTranspose'
-//  '<S192>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2/Process Reset'
-//  '<S193>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2/ProcessInitialCovariance'
-//  '<S194>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2/ProcessInitialOutputs'
-//  '<S195>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2/ProcessInitialParameters'
-//  '<S196>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2/ProcessInitialRegressors'
-//  '<S197>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2/RLS'
-//  '<S198>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2/Reset'
-//  '<S199>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2/Process Reset/Check Reset'
-//  '<S200>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Recursive Least Squares Estimator2/ProcessInitialCovariance/ScalarExpansion'
-//  '<S201>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2'
-//  '<S202>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/MATLAB Function'
-//  '<S203>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/CalculatePL'
-//  '<S204>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/CalculateYhat'
-//  '<S205>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/CovarianceOutputConfigurator'
-//  '<S206>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionA'
-//  '<S207>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionB'
-//  '<S208>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionC'
-//  '<S209>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionD'
-//  '<S210>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionG'
-//  '<S211>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionH'
-//  '<S212>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionN'
-//  '<S213>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionP'
-//  '<S214>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionP0'
-//  '<S215>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionQ'
-//  '<S216>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionR'
-//  '<S217>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionX'
-//  '<S218>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionX0'
-//  '<S219>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionu'
-//  '<S220>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/Observer'
-//  '<S221>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/ReducedQRN'
-//  '<S222>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/ScalarExpansionP0'
-//  '<S223>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/ScalarExpansionQ'
-//  '<S224>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/ScalarExpansionR'
-//  '<S225>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/UseCurrentEstimator'
-//  '<S226>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checkA'
-//  '<S227>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checkB'
-//  '<S228>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checkC'
-//  '<S229>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checkD'
-//  '<S230>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checkEnable'
-//  '<S231>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checkG'
-//  '<S232>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checkH'
-//  '<S233>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checkN'
-//  '<S234>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checkP0'
-//  '<S235>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checkQ'
-//  '<S236>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checkR'
-//  '<S237>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checkReset'
-//  '<S238>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checkX0'
-//  '<S239>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checku'
-//  '<S240>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checky'
-//  '<S241>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/CalculatePL/Discrete-Time KF - Calculate PLMZ'
-//  '<S242>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/CovarianceOutputConfigurator/decideOutput'
-//  '<S243>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/CovarianceOutputConfigurator/decideOutput/SqrtUsedFcn'
-//  '<S244>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/Observer/MeasurementUpdate'
-//  '<S245>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/ScalarExpansionQ/ScalarExpansion'
-//  '<S246>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/ScalarExpansionR/ScalarExpansion'
-//  '<S247>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller'
-//  '<S248>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/MATLAB Function'
-//  '<S249>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator'
-//  '<S250>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)'
-//  '<S251>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC'
-//  '<S252>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Matrix Signal Check'
-//  '<S253>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Matrix Signal Check A'
-//  '<S254>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Matrix Signal Check B'
-//  '<S255>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Matrix Signal Check C'
-//  '<S256>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Matrix Signal Check D'
-//  '<S257>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Matrix Signal Check DX'
-//  '<S258>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Matrix Signal Check U'
-//  '<S259>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Matrix Signal Check X'
-//  '<S260>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Matrix Signal Check Y'
-//  '<S261>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Matrix Signal Check1'
-//  '<S262>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Matrix Signal Check2'
-//  '<S263>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Preview Signal Check'
-//  '<S264>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Preview Signal Check1'
-//  '<S265>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Preview Signal Check2'
-//  '<S266>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Preview Signal Check3'
-//  '<S267>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Preview Signal Check4'
-//  '<S268>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Preview Signal Check5'
-//  '<S269>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Preview Signal Check6'
-//  '<S270>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Preview Signal Check7'
-//  '<S271>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Preview Signal Check8'
-//  '<S272>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Scalar Signal Check'
-//  '<S273>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Scalar Signal Check1'
-//  '<S274>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Scalar Signal Check2'
-//  '<S275>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Vector Signal Check'
-//  '<S276>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Vector Signal Check1'
-//  '<S277>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Vector Signal Check6'
-//  '<S278>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/moorx'
-//  '<S279>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/optimizer'
-//  '<S280>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/optimizer/FixedHorizonOptimizer'
-//  '<S281>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/MATLAB Function2'
-//  '<S282>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3'
-//  '<S283>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4'
-//  '<S284>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Check Enable Signal'
-//  '<S285>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Check Initial Covariance'
-//  '<S286>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Check Initial Outputs'
-//  '<S287>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Check Initial Parameters'
-//  '<S288>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Check Initial Regressors'
-//  '<S289>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Check Signals'
-//  '<S290>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Data Type Conversion - AdaptationParameter1'
-//  '<S291>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Data Type Conversion - AdaptationParameter2'
-//  '<S292>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Data Type Conversion - InitialCovariance'
-//  '<S293>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Data Type Conversion - InitialOutputs'
-//  '<S294>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Data Type Conversion - InitialParameters'
-//  '<S295>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Data Type Conversion - InitialRegressors'
-//  '<S296>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Data Type Conversion - L'
-//  '<S297>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Data Type Conversion - Theta'
-//  '<S298>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Data Type Conversion - bufferH'
-//  '<S299>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Data Type Conversion - buffery'
-//  '<S300>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/MultiplyWithTranspose'
-//  '<S301>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Process Reset'
-//  '<S302>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/ProcessInitialCovariance'
-//  '<S303>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/ProcessInitialOutputs'
-//  '<S304>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/ProcessInitialParameters'
-//  '<S305>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/ProcessInitialRegressors'
-//  '<S306>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/RLS'
-//  '<S307>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Reset'
-//  '<S308>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Process Reset/Check Reset'
-//  '<S309>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/ProcessInitialCovariance/ScalarExpansion'
-//  '<S310>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Check Enable Signal'
-//  '<S311>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Check Initial Covariance'
-//  '<S312>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Check Initial Outputs'
-//  '<S313>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Check Initial Parameters'
-//  '<S314>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Check Initial Regressors'
-//  '<S315>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Check Signals'
-//  '<S316>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Data Type Conversion - AdaptationParameter1'
-//  '<S317>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Data Type Conversion - AdaptationParameter2'
-//  '<S318>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Data Type Conversion - InitialCovariance'
-//  '<S319>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Data Type Conversion - InitialOutputs'
-//  '<S320>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Data Type Conversion - InitialParameters'
-//  '<S321>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Data Type Conversion - InitialRegressors'
-//  '<S322>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Data Type Conversion - L'
-//  '<S323>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Data Type Conversion - Theta'
-//  '<S324>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Data Type Conversion - bufferH'
-//  '<S325>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Data Type Conversion - buffery'
-//  '<S326>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/MultiplyWithTranspose'
-//  '<S327>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Process Reset'
-//  '<S328>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/ProcessInitialCovariance'
-//  '<S329>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/ProcessInitialOutputs'
-//  '<S330>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/ProcessInitialParameters'
-//  '<S331>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/ProcessInitialRegressors'
-//  '<S332>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/RLS'
-//  '<S333>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Reset'
-//  '<S334>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Process Reset/Check Reset'
-//  '<S335>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/ProcessInitialCovariance/ScalarExpansion'
-//  '<S336>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2'
-//  '<S337>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/MATLAB Function'
-//  '<S338>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/CalculatePL'
-//  '<S339>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/CalculateYhat'
-//  '<S340>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/CovarianceOutputConfigurator'
-//  '<S341>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionA'
-//  '<S342>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionB'
-//  '<S343>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionC'
-//  '<S344>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionD'
-//  '<S345>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionG'
-//  '<S346>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionH'
-//  '<S347>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionN'
-//  '<S348>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionP'
-//  '<S349>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionP0'
-//  '<S350>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionQ'
-//  '<S351>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionR'
-//  '<S352>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionX'
-//  '<S353>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionX0'
-//  '<S354>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionu'
-//  '<S355>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/Observer'
-//  '<S356>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/ReducedQRN'
-//  '<S357>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/ScalarExpansionP0'
-//  '<S358>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/ScalarExpansionQ'
-//  '<S359>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/ScalarExpansionR'
-//  '<S360>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/UseCurrentEstimator'
-//  '<S361>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checkA'
-//  '<S362>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checkB'
-//  '<S363>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checkC'
-//  '<S364>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checkD'
-//  '<S365>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checkEnable'
-//  '<S366>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checkG'
-//  '<S367>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checkH'
-//  '<S368>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checkN'
-//  '<S369>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checkP0'
-//  '<S370>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checkQ'
-//  '<S371>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checkR'
-//  '<S372>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checkReset'
-//  '<S373>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checkX0'
-//  '<S374>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checku'
-//  '<S375>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checky'
-//  '<S376>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/CalculatePL/Discrete-Time KF - Calculate PLMZ'
-//  '<S377>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/CovarianceOutputConfigurator/decideOutput'
-//  '<S378>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/CovarianceOutputConfigurator/decideOutput/SqrtUsedFcn'
-//  '<S379>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/Observer/MeasurementUpdate'
-//  '<S380>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/ScalarExpansionQ/ScalarExpansion'
-//  '<S381>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/ScalarExpansionR/ScalarExpansion'
+//  '<S147>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Subsystem1'
+//  '<S148>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Subsystem2'
+//  '<S149>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Subsystem1/MATLAB Function'
+//  '<S150>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/Model Estimator/Subsystem2/MATLAB Function'
+//  '<S151>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2'
+//  '<S152>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/MATLAB Function'
+//  '<S153>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/CalculatePL'
+//  '<S154>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/CalculateYhat'
+//  '<S155>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/CovarianceOutputConfigurator'
+//  '<S156>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionA'
+//  '<S157>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionB'
+//  '<S158>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionC'
+//  '<S159>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionD'
+//  '<S160>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionG'
+//  '<S161>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionH'
+//  '<S162>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionN'
+//  '<S163>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionP'
+//  '<S164>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionP0'
+//  '<S165>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionQ'
+//  '<S166>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionR'
+//  '<S167>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionX'
+//  '<S168>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionX0'
+//  '<S169>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/DataTypeConversionu'
+//  '<S170>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/Observer'
+//  '<S171>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/ReducedQRN'
+//  '<S172>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/ScalarExpansionP0'
+//  '<S173>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/ScalarExpansionQ'
+//  '<S174>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/ScalarExpansionR'
+//  '<S175>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/UseCurrentEstimator'
+//  '<S176>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checkA'
+//  '<S177>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checkB'
+//  '<S178>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checkC'
+//  '<S179>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checkD'
+//  '<S180>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checkEnable'
+//  '<S181>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checkG'
+//  '<S182>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checkH'
+//  '<S183>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checkN'
+//  '<S184>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checkP0'
+//  '<S185>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checkQ'
+//  '<S186>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checkR'
+//  '<S187>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checkReset'
+//  '<S188>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checkX0'
+//  '<S189>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checku'
+//  '<S190>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/checky'
+//  '<S191>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/CalculatePL/Discrete-Time KF - Calculate PLMZ'
+//  '<S192>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/CovarianceOutputConfigurator/decideOutput'
+//  '<S193>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/CovarianceOutputConfigurator/decideOutput/SqrtUsedFcn'
+//  '<S194>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/Observer/MeasurementUpdate'
+//  '<S195>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/ScalarExpansionQ/ScalarExpansion'
+//  '<S196>' : 'T_junction_mpc/SupervisoryController/State1.ControlLaw.AMPC1/State Estimator (KF)/Kalman Filter2/ScalarExpansionR/ScalarExpansion'
+//  '<S197>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller'
+//  '<S198>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/MATLAB Function'
+//  '<S199>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator'
+//  '<S200>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)'
+//  '<S201>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC'
+//  '<S202>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Matrix Signal Check'
+//  '<S203>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Matrix Signal Check A'
+//  '<S204>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Matrix Signal Check B'
+//  '<S205>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Matrix Signal Check C'
+//  '<S206>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Matrix Signal Check D'
+//  '<S207>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Matrix Signal Check DX'
+//  '<S208>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Matrix Signal Check U'
+//  '<S209>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Matrix Signal Check X'
+//  '<S210>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Matrix Signal Check Y'
+//  '<S211>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Matrix Signal Check1'
+//  '<S212>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Matrix Signal Check2'
+//  '<S213>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Preview Signal Check'
+//  '<S214>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Preview Signal Check1'
+//  '<S215>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Preview Signal Check2'
+//  '<S216>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Preview Signal Check3'
+//  '<S217>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Preview Signal Check4'
+//  '<S218>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Preview Signal Check5'
+//  '<S219>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Preview Signal Check6'
+//  '<S220>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Preview Signal Check7'
+//  '<S221>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Preview Signal Check8'
+//  '<S222>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Scalar Signal Check'
+//  '<S223>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Scalar Signal Check1'
+//  '<S224>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Scalar Signal Check2'
+//  '<S225>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Vector Signal Check'
+//  '<S226>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Vector Signal Check1'
+//  '<S227>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/MPC Vector Signal Check6'
+//  '<S228>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/moorx'
+//  '<S229>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/optimizer'
+//  '<S230>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Adaptive MPC Controller/MPC/optimizer/FixedHorizonOptimizer'
+//  '<S231>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/MATLAB Function2'
+//  '<S232>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3'
+//  '<S233>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4'
+//  '<S234>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Check Enable Signal'
+//  '<S235>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Check Initial Covariance'
+//  '<S236>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Check Initial Outputs'
+//  '<S237>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Check Initial Parameters'
+//  '<S238>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Check Initial Regressors'
+//  '<S239>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Check Signals'
+//  '<S240>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Data Type Conversion - AdaptationParameter1'
+//  '<S241>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Data Type Conversion - AdaptationParameter2'
+//  '<S242>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Data Type Conversion - InitialCovariance'
+//  '<S243>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Data Type Conversion - InitialOutputs'
+//  '<S244>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Data Type Conversion - InitialParameters'
+//  '<S245>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Data Type Conversion - InitialRegressors'
+//  '<S246>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Data Type Conversion - L'
+//  '<S247>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Data Type Conversion - Theta'
+//  '<S248>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Data Type Conversion - bufferH'
+//  '<S249>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Data Type Conversion - buffery'
+//  '<S250>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/MultiplyWithTranspose'
+//  '<S251>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Process Reset'
+//  '<S252>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/ProcessInitialCovariance'
+//  '<S253>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/ProcessInitialOutputs'
+//  '<S254>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/ProcessInitialParameters'
+//  '<S255>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/ProcessInitialRegressors'
+//  '<S256>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/RLS'
+//  '<S257>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Reset'
+//  '<S258>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/Process Reset/Check Reset'
+//  '<S259>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator3/ProcessInitialCovariance/ScalarExpansion'
+//  '<S260>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Check Enable Signal'
+//  '<S261>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Check Initial Covariance'
+//  '<S262>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Check Initial Outputs'
+//  '<S263>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Check Initial Parameters'
+//  '<S264>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Check Initial Regressors'
+//  '<S265>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Check Signals'
+//  '<S266>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Data Type Conversion - AdaptationParameter1'
+//  '<S267>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Data Type Conversion - AdaptationParameter2'
+//  '<S268>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Data Type Conversion - InitialCovariance'
+//  '<S269>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Data Type Conversion - InitialOutputs'
+//  '<S270>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Data Type Conversion - InitialParameters'
+//  '<S271>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Data Type Conversion - InitialRegressors'
+//  '<S272>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Data Type Conversion - L'
+//  '<S273>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Data Type Conversion - Theta'
+//  '<S274>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Data Type Conversion - bufferH'
+//  '<S275>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Data Type Conversion - buffery'
+//  '<S276>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/MultiplyWithTranspose'
+//  '<S277>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Process Reset'
+//  '<S278>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/ProcessInitialCovariance'
+//  '<S279>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/ProcessInitialOutputs'
+//  '<S280>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/ProcessInitialParameters'
+//  '<S281>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/ProcessInitialRegressors'
+//  '<S282>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/RLS'
+//  '<S283>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Reset'
+//  '<S284>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/Process Reset/Check Reset'
+//  '<S285>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/Model Estimator/Recursive Least Squares Estimator4/ProcessInitialCovariance/ScalarExpansion'
+//  '<S286>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2'
+//  '<S287>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/MATLAB Function'
+//  '<S288>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/CalculatePL'
+//  '<S289>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/CalculateYhat'
+//  '<S290>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/CovarianceOutputConfigurator'
+//  '<S291>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionA'
+//  '<S292>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionB'
+//  '<S293>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionC'
+//  '<S294>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionD'
+//  '<S295>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionG'
+//  '<S296>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionH'
+//  '<S297>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionN'
+//  '<S298>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionP'
+//  '<S299>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionP0'
+//  '<S300>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionQ'
+//  '<S301>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionR'
+//  '<S302>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionX'
+//  '<S303>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionX0'
+//  '<S304>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/DataTypeConversionu'
+//  '<S305>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/Observer'
+//  '<S306>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/ReducedQRN'
+//  '<S307>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/ScalarExpansionP0'
+//  '<S308>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/ScalarExpansionQ'
+//  '<S309>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/ScalarExpansionR'
+//  '<S310>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/UseCurrentEstimator'
+//  '<S311>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checkA'
+//  '<S312>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checkB'
+//  '<S313>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checkC'
+//  '<S314>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checkD'
+//  '<S315>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checkEnable'
+//  '<S316>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checkG'
+//  '<S317>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checkH'
+//  '<S318>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checkN'
+//  '<S319>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checkP0'
+//  '<S320>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checkQ'
+//  '<S321>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checkR'
+//  '<S322>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checkReset'
+//  '<S323>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checkX0'
+//  '<S324>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checku'
+//  '<S325>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/checky'
+//  '<S326>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/CalculatePL/Discrete-Time KF - Calculate PLMZ'
+//  '<S327>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/CovarianceOutputConfigurator/decideOutput'
+//  '<S328>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/CovarianceOutputConfigurator/decideOutput/SqrtUsedFcn'
+//  '<S329>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/Observer/MeasurementUpdate'
+//  '<S330>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/ScalarExpansionQ/ScalarExpansion'
+//  '<S331>' : 'T_junction_mpc/SupervisoryController/State2.ControlLaw.AMPC2/State Estimator (KF)/Kalman Filter2/ScalarExpansionR/ScalarExpansion'
 
 
 //-
