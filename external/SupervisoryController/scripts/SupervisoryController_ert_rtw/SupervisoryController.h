@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.1338
+// Model version                  : 1.1356
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Fri May 26 01:18:29 2023
+// C/C++ source code generated on : Fri May 26 04:00:57 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -316,8 +316,8 @@ class SupervisoryController final
     real_T UnitDelay2_DSTATE[3];       // '<S114>/Unit Delay2'
     real_T UnitDelay3_DSTATE[2];       // '<S114>/Unit Delay3'
     real_T Delay1_DSTATE[9];           // '<S148>/Delay1'
-    real_T Delay_DSTATE_d[3];          // '<S147>/Delay'
-    real_T Delay1_DSTATE_j[9];         // '<S147>/Delay1'
+    real_T Delay_DSTATE_m[3];          // '<S147>/Delay'
+    real_T Delay1_DSTATE_g[9];         // '<S147>/Delay1'
     real_T MemoryX_DSTATE_m[4];        // '<S151>/MemoryX'
     real_T MemoryP_DSTATE_a[16];       // '<S151>/MemoryP'
     real_T DiscreteFilter_states_b[118];// '<S3>/Discrete Filter'
@@ -384,8 +384,8 @@ class SupervisoryController final
     boolean_T icLoad_d;                // '<S286>/MemoryP'
     boolean_T icLoad_i;                // '<S148>/Delay'
     boolean_T icLoad_f;                // '<S148>/Delay1'
-    boolean_T icLoad_dj;               // '<S147>/Delay'
-    boolean_T icLoad_c;                // '<S147>/Delay1'
+    boolean_T icLoad_c;                // '<S147>/Delay'
+    boolean_T icLoad_pp;               // '<S147>/Delay1'
     boolean_T icLoad_do;               // '<S151>/MemoryX'
     boolean_T icLoad_jj;               // '<S151>/MemoryP'
     boolean_T icLoad_h;                // '<S39>/delayBuffery'
@@ -418,6 +418,8 @@ class SupervisoryController final
     event_bus nextEv;                  // '<Root>/nextEv'
     boolean_T enAdapt[3];              // '<Root>/enAdapt'
     real_T excitation;                 // '<Root>/excitation'
+    real_T dPmod_;                     // '<Root>/dPmod_'
+    real_T p_;                         // '<Root>/p_'
     real_T measAvail;                  // '<Root>/measAvail'
   };
 
@@ -428,7 +430,7 @@ class SupervisoryController final
     boolean_T requestEvent;            // '<Root>/requestEvent'
     real_T currTraj[3];                // '<Root>/currTraj'
     real_T yhat[3];                    // '<Root>/yhat'
-    real_T B_b[9];                     // '<Root>/B'
+    real_T B_a[9];                     // '<Root>/B'
     real_T uref[3];                    // '<Root>/uref'
     real_T uoffset[3];                 // '<Root>/uoffset'
     real_T paramEstErr[3];             // '<Root>/paramEstErr'
@@ -1141,9 +1143,9 @@ class SupervisoryController final
   static void MATLABFunction(const real_T rtu_e[2], real_T *rty_decay);
 
   // private member function(s) for subsystem '<S147>/MATLAB Function'
-  static void MATLABFunction_l(const real_T rtu_theta[3], const real_T rtu_P[9],
+  static void MATLABFunction_m(const real_T rtu_theta[3], const real_T rtu_P[9],
     real_T rtu_epsil, const real_T rtu_phi[3], real_T rtu_ms_, real_T rtu_EN,
-    real_T rty_dtheta[3], real_T rty_dP[9]);
+    real_T rtu_p_, real_T rtu_dPmod_, real_T rty_dtheta[3], real_T rty_dP[9]);
 
   // private member function(s) for subsystem '<S151>/CalculatePL'
   void CalculatePL(const real_T rtu_Ak[16], const real_T rtu_Ck[8], const real_T
