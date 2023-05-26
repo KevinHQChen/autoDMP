@@ -75,9 +75,9 @@ void ImProc::start() {
       // (optionally update background model at preset learning rate),
       // then apply dilation/erosion to remove noise
       pBackSub->apply(preFrame, fgMask, 0);
-      cv::dilate(fgMask, tempFgMask, cv::Mat(), cv::Point(-1, -1), 3);
-      cv::erode(tempFgMask, tempFgMask, cv::Mat(), cv::Point(-1, -1), 9);
-      cv::dilate(tempFgMask, tempFgMask, cv::Mat(), cv::Point(-1, -1), 3);
+      cv::dilate(fgMask, tempFgMask, cv::Mat(), cv::Point(-1, -1), 2);
+      cv::erode(tempFgMask, tempFgMask, cv::Mat(), cv::Point(-1, -1), 4);
+      cv::dilate(tempFgMask, tempFgMask, cv::Mat(), cv::Point(-1, -1), 2);
 
       for (int ch = 0; ch < impConf.numChs_; ++ch) {
         // segment each channel

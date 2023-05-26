@@ -202,6 +202,14 @@ void CtrlWindow::render() {
       ImGui::SliderFloat("Excitation Amplitude", &excitationAmp, 0.0f, 10.0f);
       sv_->supIn.excitation = excitationAmp;
 
+      paramLowerBound = sv_->supIn.p_;
+      ImGui::SliderFloat("Param Lower Bound", &paramLowerBound, 0.001f, 0.1f);
+      sv_->supIn.p_ = paramLowerBound;
+
+      covModification = sv_->supIn.dPmod_;
+      ImGui::SliderFloat("Cov Modification", &covModification, 0.001f, 0.1f);
+      sv_->supIn.dPmod_ = covModification;
+
       ImGui::PopStyleVar();
       ImGui::End();
     }

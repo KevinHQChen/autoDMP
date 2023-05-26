@@ -30,15 +30,15 @@ void PlotWindow::render() {
         yref1.AddPoint(guiTime, sv_->supOut.currTraj[1]);
         yref2.AddPoint(guiTime, sv_->supOut.currTraj[2]);
 
-        b11.AddPoint(guiTime, sv_->supOut.B_b[0]);
-        b21.AddPoint(guiTime, sv_->supOut.B_b[1]);
-        b31.AddPoint(guiTime, sv_->supOut.B_b[2]);
-        b12.AddPoint(guiTime, sv_->supOut.B_b[3]);
-        b22.AddPoint(guiTime, sv_->supOut.B_b[4]);
-        b32.AddPoint(guiTime, sv_->supOut.B_b[5]);
-        b13.AddPoint(guiTime, sv_->supOut.B_b[6]);
-        b23.AddPoint(guiTime, sv_->supOut.B_b[7]);
-        b33.AddPoint(guiTime, sv_->supOut.B_b[8]);
+        b11.AddPoint(guiTime, sv_->supOut.B_a[0]);
+        b21.AddPoint(guiTime, sv_->supOut.B_a[1]);
+        b31.AddPoint(guiTime, sv_->supOut.B_a[2]);
+        b12.AddPoint(guiTime, sv_->supOut.B_a[3]);
+        b22.AddPoint(guiTime, sv_->supOut.B_a[4]);
+        b32.AddPoint(guiTime, sv_->supOut.B_a[5]);
+        b13.AddPoint(guiTime, sv_->supOut.B_a[6]);
+        b23.AddPoint(guiTime, sv_->supOut.B_a[7]);
+        b33.AddPoint(guiTime, sv_->supOut.B_a[8]);
       }
 
       ImGui::SliderFloat("History", &history, 1, 60, "%.1f s");

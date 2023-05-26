@@ -103,10 +103,10 @@ void Supervisor::start() {
       ctrlDataQueuePtr->out << "poses: " << p[0].p[0] << ", " << p[1].p[0] << ", " << p[1].p[1]
                             << ", " << p[1].p[2] << ", " << p[2].p[0] << ", " << p[2].p[1] << ", "
                             << p[2].p[2] << "\n";
-      ctrlDataQueuePtr->out << "params: " << supOut.B_b[0] << ", " << supOut.B_b[1] << ", "
-                            << supOut.B_b[2] << ", " << supOut.B_b[3] << ", " << supOut.B_b[4]
-                            << ", " << supOut.B_b[5] << ", " << supOut.B_b[6] << ", "
-                            << supOut.B_b[7] << ", " << supOut.B_b[8] << "\n";
+      ctrlDataQueuePtr->out << "params: " << supOut.B_a[0] << ", " << supOut.B_a[1] << ", "
+                            << supOut.B_a[2] << ", " << supOut.B_a[3] << ", " << supOut.B_a[4]
+                            << ", " << supOut.B_a[5] << ", " << supOut.B_a[6] << ", "
+                            << supOut.B_a[7] << ", " << supOut.B_a[8] << "\n";
     }
   }
 }
