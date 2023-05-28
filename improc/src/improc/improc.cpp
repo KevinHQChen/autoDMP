@@ -138,50 +138,52 @@ void ImProc::chImProc(int ch) {
 
   case 1:
   case 2:
-    // pose 0: extension of ch1/2 to ch0
-    if (p[0].found[0] && p[0].p[0] < yMax[0]) {
+    // pose 0: extend ch1/2 into ch0 if no fg pixels in junction
+    if (p[0].found[0] && (p[0].p[0] < yMax[0]) && !p[ch].found[1]) {
       p[ch].p[0] =
           yMax[ch] + std::sqrt(2 * std::pow(impConf.getChWidth() / 2.0, 2)) + yMax[0] - p[0].p[0];
       p[ch].found[0] = true;
       p[ch].loc[0] = cv::Point(0, 0);
-
       return;
-    } else {
-      // pose 1: fg pixel closest to yMaxPos
-      cv::findNonZero(
-          procFrameArr[ch](cv::Rect(0, yMax[ch], impConf.getChWidth(), impConf.getChWidth())),
-          fgLocs);
-      if (!fgLocs.empty()) {
-        cv::Point yMaxPos = cv::Point(impConf.getChWidth() / 2.0, 0);
-        currLoc = *std::min_element(fgLocs.begin(), fgLocs.end(),
-                                    [&yMaxPos](const cv::Point &p1, const cv::Point &p2) {
-                                      return cv::norm(p1 - yMaxPos) < cv::norm(p2 - yMaxPos);
-                                    });
-        p[ch].p[1] = yMax[ch] + cv::norm(currLoc - yMaxPos);
-        p[ch].found[1] = true;
-        currLoc.y = currLoc.y + yMax[ch];
-        p[ch].loc[1] = currLoc;
-      }
+    }
 
-      // pose 2: fg pixel in center column of ch1/2 farthest/closest to junction
-      cv::findNonZero(procFrameArr[ch].col(procFrameArr[ch].cols / 2), fgLocs);
-      if (!fgLocs.empty()) {
-        // fg pixel in center column of ch1/2 farthest from junction
-        currLoc =
-            *std::min_element(fgLocs.begin(), fgLocs.end(),
-                              [](const cv::Point &p1, const cv::Point &p2) { return p1.y < p2.y; });
-        p[ch].p[2] = currLoc.y;
-        p[ch].found[2] = true;
-        currLoc.x = procFrameArr[ch].cols / 2;
-        p[ch].loc[2] = currLoc;
-        // fg pixel in center column of ch1/2 closest to junction
+    // pose 1: fg pixel closest to yMaxPos
+    cv::findNonZero(
+        procFrameArr[ch](cv::Rect(0, yMax[ch], impConf.getChWidth(), impConf.getChWidth())),
+        fgLocs);
+    if (!fgLocs.empty()) {
+      cv::Point yMaxPos = cv::Point(impConf.getChWidth() / 2.0, 0);
+      currLoc = *std::min_element(fgLocs.begin(), fgLocs.end(),
+                                  [&yMaxPos](const cv::Point &p1, const cv::Point &p2) {
+                                    return cv::norm(p1 - yMaxPos) < cv::norm(p2 - yMaxPos);
+                                  });
+      p[ch].p[1] = yMax[ch] + cv::norm(currLoc - yMaxPos);
+      p[ch].found[1] = true;
+      currLoc.y = currLoc.y + yMax[ch];
+      p[ch].loc[1] = currLoc;
+    }
+
+    // pose 2: fg pixel in center column of ch1/2 farthest/closest to junction
+    cv::findNonZero(procFrameArr[ch].col(procFrameArr[ch].cols / 2), fgLocs);
+    if (!fgLocs.empty()) {
+      // fg pixel in center column of ch1/2 farthest from junction
+      currLoc =
+          *std::min_element(fgLocs.begin(), fgLocs.end(),
+                            [](const cv::Point &p1, const cv::Point &p2) { return p1.y < p2.y; });
+      p[ch].p[2] = currLoc.y;
+      p[ch].found[2] = true;
+      currLoc.x = procFrameArr[ch].cols / 2;
+      p[ch].loc[2] = currLoc;
+      // fg pixel in center column of ch1/2 closest to junction
+      if (!p[ch].found[1]) {
         currLoc =
             *std::max_element(fgLocs.begin(), fgLocs.end(),
                               [](const cv::Point &p1, const cv::Point &p2) { return p1.y < p2.y; });
-        if (currLoc.y < yMax[ch])
+        if (currLoc.y < yMax[ch]) {
           p[ch].p[2] = currLoc.y;
-        currLoc.x = procFrameArr[ch].cols / 2;
-        p[ch].loc[2] = currLoc;
+          currLoc.x = procFrameArr[ch].cols / 2;
+          p[ch].loc[2] = currLoc;
+        }
       }
     }
     break;

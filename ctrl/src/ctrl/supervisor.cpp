@@ -87,8 +87,9 @@ void Supervisor::start() {
       sup->step();
       supOut = sup->rtY;
 
-      !simModeActive ? pump->sendSigs(Eigen::Vector3d(supOut.u[0], supOut.u[1], supOut.u[2]))
-                     : info("Pump inputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
+      // !simModeActive ? pump->sendSigs(Eigen::Vector3d(supOut.u[0], supOut.u[1], supOut.u[2]))
+      //                : info("Pump inputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
+      info("Pump inputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
 
       ctrlDataQueuePtr->out << "y: " << (double)supIn.ymeas[0] << ", " << (double)supIn.ymeas[1]
                             << ", " << (double)supIn.ymeas[2]
@@ -140,8 +141,8 @@ void Supervisor::updateMeas() {
       supIn.ymeas[1] = (p[1].p[2] > imProc->yMax[1]) ? p[1].p[1] : p[1].p[2];
       supIn.ymeas[2] = (p[2].p[2] > imProc->yMax[2]) ? p[2].p[1] : p[2].p[2];
     }
-    if ((p[0].found[0] && p[0].p[0] < imProc->yMax[0]) &&
-        (p[2].found[2] && p[2].p[2] < imProc->yMax[2])) { // state1 -> state2
+    if ((p[0].found[0] && (p[0].p[0] < imProc->yMax[0]) && (!p[1].found[1]) && !p[2].found[1]) &&
+        (p[2].found[2] && (p[2].p[2] < imProc->yMax[2]))) { // state1 -> state2
       supIn.ymeas[0] = p[0].p[0];
       supIn.ymeas[1] = 0;
       supIn.ymeas[2] = p[2].p[2];

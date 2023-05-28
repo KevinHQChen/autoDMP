@@ -63,6 +63,10 @@ class CtrlWindow : public Window {
     return e;
   }
 
+  void renderAddEventDialog();
+  void renderEventQueueContents();
+  void renderSupervisorStatus();
+
 public:
   bool ctrlSetupVisible_{false}, ctrlVisible_{false};
 
