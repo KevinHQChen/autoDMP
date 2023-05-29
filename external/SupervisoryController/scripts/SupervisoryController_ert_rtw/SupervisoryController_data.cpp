@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.1356
+// Model version                  : 1.1452
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Fri May 26 04:00:57 2023
+// C/C++ source code generated on : Sun May 28 20:01:01 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -44,12 +44,9 @@ SupervisoryController::P SupervisoryController::rtP{
   1.0,
 
   // Variable: Aod1
-  //  Referenced by: '<S115>/MATLAB Function'
-
-  { 1.0, 0.0, 0.0, 1.0 },
-
-  // Variable: Aod2
-  //  Referenced by: '<S200>/MATLAB Function'
+  //  Referenced by:
+  //    '<S90>/MATLAB Function'
+  //    '<S175>/MATLAB Function'
 
   { 1.0, 0.0, 0.0, 1.0 },
 
@@ -59,12 +56,9 @@ SupervisoryController::P SupervisoryController::rtP{
   0.025,
 
   // Variable: Bod1
-  //  Referenced by: '<S115>/MATLAB Function'
-
-  { 0.025, 0.0, 0.0, 0.025 },
-
-  // Variable: Bod2
-  //  Referenced by: '<S200>/MATLAB Function'
+  //  Referenced by:
+  //    '<S90>/MATLAB Function'
+  //    '<S175>/MATLAB Function'
 
   { 0.025, 0.0, 0.0, 0.025 },
 
@@ -74,12 +68,9 @@ SupervisoryController::P SupervisoryController::rtP{
   1.0,
 
   // Variable: Cod1
-  //  Referenced by: '<S115>/MATLAB Function'
-
-  { 1.0, 0.0, 0.0, 1.0 },
-
-  // Variable: Cod2
-  //  Referenced by: '<S200>/MATLAB Function'
+  //  Referenced by:
+  //    '<S90>/MATLAB Function'
+  //    '<S175>/MATLAB Function'
 
   { 1.0, 0.0, 0.0, 1.0 },
 
@@ -89,12 +80,9 @@ SupervisoryController::P SupervisoryController::rtP{
   1.0,
 
   // Variable: Dmn1
-  //  Referenced by: '<S115>/MATLAB Function'
-
-  { 1.0, 0.0, 0.0, 1.0 },
-
-  // Variable: Dmn2
-  //  Referenced by: '<S200>/MATLAB Function'
+  //  Referenced by:
+  //    '<S90>/MATLAB Function'
+  //    '<S175>/MATLAB Function'
 
   { 1.0, 0.0, 0.0, 1.0 },
 
@@ -104,12 +92,9 @@ SupervisoryController::P SupervisoryController::rtP{
   0.0,
 
   // Variable: Dod1
-  //  Referenced by: '<S115>/MATLAB Function'
-
-  { 0.0, 0.0, 0.0, 0.0 },
-
-  // Variable: Dod2
-  //  Referenced by: '<S200>/MATLAB Function'
+  //  Referenced by:
+  //    '<S90>/MATLAB Function'
+  //    '<S175>/MATLAB Function'
 
   { 0.0, 0.0, 0.0, 0.0 },
 
@@ -120,10 +105,16 @@ SupervisoryController::P SupervisoryController::rtP{
 
   // Variable: forgettingFactor
   //  Referenced by:
-  //    '<S147>/addLambda'
-  //    '<S147>/forgetting'
-  //    '<S148>/addLambda'
-  //    '<S148>/forgetting'
+  //    '<S39>/addLambda'
+  //    '<S39>/divByLambda'
+  //    '<S122>/addLambda'
+  //    '<S122>/divByLambda'
+  //    '<S123>/addLambda'
+  //    '<S123>/divByLambda'
+  //    '<S207>/addLambda'
+  //    '<S207>/divByLambda'
+  //    '<S208>/addLambda'
+  //    '<S208>/divByLambda'
 
   0.995,
 
@@ -178,7 +169,7 @@ SupervisoryController::P SupervisoryController::rtP{
   { 1U, 3U },
 
   // Expression: 0
-  //  Referenced by: '<S109>/L*(y[k]-yhat[k|k-1])'
+  //  Referenced by: '<S84>/L*(y[k]-yhat[k|k-1])'
 
   0.0,
 
@@ -192,8 +183,8 @@ SupervisoryController::P SupervisoryController::rtP{
 
   0.0,
 
-  // Computed Parameter: params_Y0
-  //  Referenced by: '<S2>/params'
+  // Computed Parameter: prms_Y0
+  //  Referenced by: '<S2>/prms'
 
   0.0,
 
@@ -202,8 +193,8 @@ SupervisoryController::P SupervisoryController::rtP{
 
   0.0,
 
-  // Computed Parameter: paramErr_Y0
-  //  Referenced by: '<S2>/paramErr'
+  // Computed Parameter: prmErr_Y0
+  //  Referenced by: '<S2>/prmErr'
 
   0.0,
 
@@ -262,30 +253,10 @@ SupervisoryController::P SupervisoryController::rtP{
 
   0.0,
 
-  // Expression: initializationParams.adg1
-  //  Referenced by: '<S39>/Forgetting Factor'
+  // Expression: 1e4*eye(2)
+  //  Referenced by: '<S7>/Constant4'
 
-  0.995,
-
-  // Expression: initializationParams.adg2
-  //  Referenced by: '<S39>/Normalization Bias'
-
-  0.0,
-
-  // Expression: initializationParams.initialOutputs
-  //  Referenced by: '<S39>/InitialOutputs'
-
-  0.0,
-
-  // Expression: initializationParams.initialRegressors
-  //  Referenced by: '<S39>/InitialRegressors'
-
-  0.0,
-
-  // Expression: 1e4
-  //  Referenced by: '<S7>/Constant'
-
-  10000.0,
+  { 10000.0, 0.0, 0.0, 10000.0 },
 
   // Expression: G0.D
   //  Referenced by: '<S7>/Constant13'
@@ -293,7 +264,7 @@ SupervisoryController::P SupervisoryController::rtP{
   { 0.0, 0.0, 0.0 },
 
   // Expression: G0.A
-  //  Referenced by: '<S7>/Constant2'
+  //  Referenced by: '<S7>/Constant3'
 
   1.0,
 
@@ -308,7 +279,7 @@ SupervisoryController::P SupervisoryController::rtP{
   1.0,
 
   // Expression: 0
-  //  Referenced by: '<S7>/Constant10'
+  //  Referenced by: '<S7>/Constant2'
 
   0.0,
 
@@ -318,7 +289,7 @@ SupervisoryController::P SupervisoryController::rtP{
   0.0,
 
   // Expression: pInitialization.X0
-  //  Referenced by: '<S66>/X0'
+  //  Referenced by: '<S41>/X0'
 
   { 0.0, 0.0 },
 
@@ -403,12 +374,12 @@ SupervisoryController::P SupervisoryController::rtP{
   0.0,
 
   // Expression: pInitialization.H
-  //  Referenced by: '<S66>/H'
+  //  Referenced by: '<S41>/H'
 
   { 0.0, 0.0 },
 
   // Expression: pInitialization.G
-  //  Referenced by: '<S66>/G'
+  //  Referenced by: '<S41>/G'
 
   { 1.0, 0.0, 0.0, 1.0 },
 
@@ -418,7 +389,7 @@ SupervisoryController::P SupervisoryController::rtP{
   1.0,
 
   // Expression: pInitialization.P0
-  //  Referenced by: '<S66>/P0'
+  //  Referenced by: '<S41>/P0'
 
   { 1.0, 0.0, 0.0, 1.0 },
 
@@ -428,17 +399,17 @@ SupervisoryController::P SupervisoryController::rtP{
   { 1.0, 1.0, 1.0 },
 
   // Expression: [0 0 0]
-  //  Referenced by: '<S2>/Measurement Noise'
+  //  Referenced by: '<S2>/excitation'
 
   { 0.0, 0.0, 0.0 },
 
-  // Computed Parameter: MeasurementNoise_StdDev
-  //  Referenced by: '<S2>/Measurement Noise'
+  // Computed Parameter: excitation_StdDev
+  //  Referenced by: '<S2>/excitation'
 
   { 1.0, 1.0, 1.0 },
 
   // Expression: [12345 12345 12345]
-  //  Referenced by: '<S2>/Measurement Noise'
+  //  Referenced by: '<S2>/excitation'
 
   { 12345.0, 12345.0, 12345.0 },
 
@@ -467,8 +438,8 @@ SupervisoryController::P SupervisoryController::rtP{
 
   0.0,
 
-  // Computed Parameter: params_Y0_l
-  //  Referenced by: '<S3>/params'
+  // Computed Parameter: prms_Y0_l
+  //  Referenced by: '<S3>/prms'
 
   0.0,
 
@@ -477,8 +448,8 @@ SupervisoryController::P SupervisoryController::rtP{
 
   0.0,
 
-  // Computed Parameter: paramErr_Y0_k
-  //  Referenced by: '<S3>/paramErr'
+  // Computed Parameter: prmErr_Y0_k
+  //  Referenced by: '<S3>/prmErr'
 
   0.0,
 
@@ -488,183 +459,183 @@ SupervisoryController::P SupervisoryController::rtP{
   0.0,
 
   // Expression: zeros(1,1)
-  //  Referenced by: '<S112>/G_zero'
+  //  Referenced by: '<S87>/G_zero'
 
   0.0,
 
   // Expression: lastPcov
-  //  Referenced by: '<S116>/LastPcov'
+  //  Referenced by: '<S91>/LastPcov'
 
   { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0 },
 
   // Expression: zeros(2,1)
-  //  Referenced by: '<S112>/y.wt_zero'
+  //  Referenced by: '<S87>/y.wt_zero'
 
   { 0.0, 0.0 },
 
   // Expression: zeros(3,1)
-  //  Referenced by: '<S112>/u.wt_zero'
+  //  Referenced by: '<S87>/u.wt_zero'
 
   { 0.0, 0.0, 0.0 },
 
   // Expression: zeros(3,1)
-  //  Referenced by: '<S112>/du.wt_zero'
+  //  Referenced by: '<S87>/du.wt_zero'
 
   { 0.0, 0.0, 0.0 },
 
   // Expression: zeros(3,1)
-  //  Referenced by: '<S112>/ext.mv_zero'
+  //  Referenced by: '<S87>/ext.mv_zero'
 
   { 0.0, 0.0, 0.0 },
 
   // Expression: RMVscale
-  //  Referenced by: '<S116>/ext.mv_scale'
+  //  Referenced by: '<S91>/ext.mv_scale'
 
   { 1.0, 1.0, 1.0 },
 
   // Expression: lastu+uoff
-  //  Referenced by: '<S116>/last_mv'
+  //  Referenced by: '<S91>/last_mv'
 
   { 0.0, 0.0, 0.0 },
 
   // Expression: G1.A
-  //  Referenced by: '<S114>/Constant3'
+  //  Referenced by: '<S89>/Constant3'
 
   { 1.0, 0.0, 0.0, 1.0 },
 
   // Expression: 0
-  //  Referenced by: '<S114>/Unit Delay2'
+  //  Referenced by: '<S89>/Unit Delay2'
 
   0.0,
 
   // Expression: 0
-  //  Referenced by: '<S114>/Unit Delay3'
+  //  Referenced by: '<S89>/Unit Delay3'
 
   0.0,
 
   // Expression: 1e4*eye(3)
-  //  Referenced by: '<S114>/Constant4'
+  //  Referenced by: '<S89>/Constant4'
 
   { 10000.0, 0.0, 0.0, 0.0, 10000.0, 0.0, 0.0, 0.0, 10000.0 },
 
   // Expression: 1e4*eye(3)
-  //  Referenced by: '<S114>/Constant5'
+  //  Referenced by: '<S89>/Constant5'
 
   { 10000.0, 0.0, 0.0, 0.0, 10000.0, 0.0, 0.0, 0.0, 10000.0 },
 
   // Expression: G1.C
-  //  Referenced by: '<S114>/Constant12'
+  //  Referenced by: '<S89>/Constant12'
 
   { 1.0, 0.0, 0.0, 1.0 },
 
   // Expression: G1.D
-  //  Referenced by: '<S114>/Constant13'
+  //  Referenced by: '<S89>/Constant13'
 
   { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
 
   // Expression: 1
-  //  Referenced by: '<S114>/Constant11'
+  //  Referenced by: '<S89>/Constant11'
 
   1.0,
 
   // Expression: [0;0]
-  //  Referenced by: '<S114>/Constant2'
+  //  Referenced by: '<S89>/Constant2'
 
   { 0.0, 0.0 },
 
   // Expression: [0;0]
-  //  Referenced by: '<S115>/Constant'
+  //  Referenced by: '<S90>/Constant'
 
   { 0.0, 0.0 },
 
   // Expression: pInitialization.X0
-  //  Referenced by: '<S151>/X0'
+  //  Referenced by: '<S126>/X0'
 
   { 0.0, 0.0, 0.0, 0.0 },
 
   // Expression: zeros(nym,1)
-  //  Referenced by: '<S116>/ym_zero'
+  //  Referenced by: '<S91>/ym_zero'
 
   { 0.0, 0.0 },
 
   // Expression: zeros(1,1)
-  //  Referenced by: '<S112>/md_zero'
+  //  Referenced by: '<S87>/md_zero'
 
   0.0,
 
   // Expression: zeros(3,1)
-  //  Referenced by: '<S112>/umin_zero'
+  //  Referenced by: '<S87>/umin_zero'
 
   { 0.0, 0.0, 0.0 },
 
   // Expression: zeros(3,1)
-  //  Referenced by: '<S112>/umax_zero'
+  //  Referenced by: '<S87>/umax_zero'
 
   { 0.0, 0.0, 0.0 },
 
   // Expression: zeros(2,1)
-  //  Referenced by: '<S112>/ymin_zero'
+  //  Referenced by: '<S87>/ymin_zero'
 
   { 0.0, 0.0 },
 
   // Expression: zeros(2,1)
-  //  Referenced by: '<S112>/ymax_zero'
+  //  Referenced by: '<S87>/ymax_zero'
 
   { 0.0, 0.0 },
 
   // Expression: zeros(1,3)
-  //  Referenced by: '<S112>/E_zero'
+  //  Referenced by: '<S87>/E_zero'
 
   { 0.0, 0.0, 0.0 },
 
   // Expression: MVscale(:,ones(1,max(nCC,1)))'
-  //  Referenced by: '<S116>/umin_scale4'
+  //  Referenced by: '<S91>/umin_scale4'
 
   { 1.0, 1.0, 1.0 },
 
   // Expression: zeros(1,2)
-  //  Referenced by: '<S112>/F_zero'
+  //  Referenced by: '<S87>/F_zero'
 
   { 0.0, 0.0 },
 
   // Expression: Yscale(:,ones(1,max(nCC,1)))'
-  //  Referenced by: '<S116>/ymin_scale1'
+  //  Referenced by: '<S91>/ymin_scale1'
 
   { 1.0, 1.0 },
 
   // Expression: zeros(1,1)
-  //  Referenced by: '<S112>/S_zero'
+  //  Referenced by: '<S87>/S_zero'
 
   0.0,
 
   // Expression: MDscale(:,ones(1,max(nCC,1)))'
-  //  Referenced by: '<S116>/ymin_scale2'
+  //  Referenced by: '<S91>/ymin_scale2'
 
   1.0,
 
   // Expression: zeros(1,1)
-  //  Referenced by: '<S112>/switch_zero'
+  //  Referenced by: '<S87>/switch_zero'
 
   0.0,
 
   // Expression: zeros(3,1)
-  //  Referenced by: '<S112>/mv.target_zero'
+  //  Referenced by: '<S87>/mv.target_zero'
 
   { 0.0, 0.0, 0.0 },
 
   // Expression: RMVscale
-  //  Referenced by: '<S116>/uref_scale'
+  //  Referenced by: '<S91>/uref_scale'
 
   { 1.0, 1.0, 1.0 },
 
   // Expression: zeros(1,1)
-  //  Referenced by: '<S112>/ecr.wt_zero'
+  //  Referenced by: '<S87>/ecr.wt_zero'
 
   0.0,
 
   // Expression: pInitialization.P0
-  //  Referenced by: '<S151>/P0'
+  //  Referenced by: '<S126>/P0'
 
   { 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
     1.0 },
@@ -675,18 +646,18 @@ SupervisoryController::P SupervisoryController::rtP{
   1.0,
 
   // Expression: pInitialization.H
-  //  Referenced by: '<S151>/H'
+  //  Referenced by: '<S126>/H'
 
   { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
 
   // Expression: pInitialization.G
-  //  Referenced by: '<S151>/G'
+  //  Referenced by: '<S126>/G'
 
   { 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
     1.0 },
 
   // Expression: MVscale
-  //  Referenced by: '<S116>/u_scale'
+  //  Referenced by: '<S91>/u_scale'
 
   { 1.0, 1.0, 1.0 },
 
@@ -696,17 +667,17 @@ SupervisoryController::P SupervisoryController::rtP{
   0.0,
 
   // Expression: [0 0 0]
-  //  Referenced by: '<S3>/Measurement Noise'
+  //  Referenced by: '<S3>/excitation'
 
   { 0.0, 0.0, 0.0 },
 
-  // Computed Parameter: MeasurementNoise_StdDev_k
-  //  Referenced by: '<S3>/Measurement Noise'
+  // Computed Parameter: excitation_StdDev_k
+  //  Referenced by: '<S3>/excitation'
 
   { 1.0, 1.0, 1.0 },
 
   // Expression: [12345 12346 12347]
-  //  Referenced by: '<S3>/Measurement Noise'
+  //  Referenced by: '<S3>/excitation'
 
   { 12345.0, 12346.0, 12347.0 },
 
@@ -725,254 +696,214 @@ SupervisoryController::P SupervisoryController::rtP{
 
   0.0,
 
-  // Computed Parameter: u_Y0_l
+  // Computed Parameter: u_Y0_h
   //  Referenced by: '<S4>/u'
 
   0.0,
 
-  // Computed Parameter: yhat_Y0_a
+  // Computed Parameter: yhat_Y0_i
   //  Referenced by: '<S4>/yhat'
 
   0.0,
 
-  // Computed Parameter: params_Y0_b
-  //  Referenced by: '<S4>/params'
+  // Computed Parameter: prms_Y0_e
+  //  Referenced by: '<S4>/prms'
 
   0.0,
 
-  // Computed Parameter: uref_Y0_i
+  // Computed Parameter: uref_Y0_km
   //  Referenced by: '<S4>/uref'
 
   0.0,
 
-  // Computed Parameter: paramErr_Y0_kg
-  //  Referenced by: '<S4>/paramErr'
+  // Computed Parameter: prmErr_Y0_c
+  //  Referenced by: '<S4>/prmErr'
 
   0.0,
 
-  // Computed Parameter: uclean_Y0_m
+  // Computed Parameter: uclean_Y0_k
   //  Referenced by: '<S4>/uclean'
 
   0.0,
 
   // Expression: zeros(1,1)
-  //  Referenced by: '<S197>/G_zero'
+  //  Referenced by: '<S172>/G_zero'
 
   0.0,
 
   // Expression: lastPcov
-  //  Referenced by: '<S201>/LastPcov'
+  //  Referenced by: '<S176>/LastPcov'
 
   { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0 },
 
   // Expression: zeros(2,1)
-  //  Referenced by: '<S197>/y.wt_zero'
+  //  Referenced by: '<S172>/y.wt_zero'
 
   { 0.0, 0.0 },
 
   // Expression: zeros(3,1)
-  //  Referenced by: '<S197>/u.wt_zero'
+  //  Referenced by: '<S172>/u.wt_zero'
 
   { 0.0, 0.0, 0.0 },
 
   // Expression: zeros(3,1)
-  //  Referenced by: '<S197>/du.wt_zero'
+  //  Referenced by: '<S172>/du.wt_zero'
 
   { 0.0, 0.0, 0.0 },
 
   // Expression: zeros(3,1)
-  //  Referenced by: '<S197>/ext.mv_zero'
+  //  Referenced by: '<S172>/ext.mv_zero'
 
   { 0.0, 0.0, 0.0 },
 
   // Expression: RMVscale
-  //  Referenced by: '<S201>/ext.mv_scale'
+  //  Referenced by: '<S176>/ext.mv_scale'
 
   { 1.0, 1.0, 1.0 },
 
   // Expression: lastu+uoff
-  //  Referenced by: '<S201>/last_mv'
+  //  Referenced by: '<S176>/last_mv'
 
   { 0.0, 0.0, 0.0 },
 
   // Expression: G2.A
-  //  Referenced by: '<S199>/Constant10'
+  //  Referenced by: '<S174>/Constant3'
 
   { 1.0, 0.0, 0.0, 1.0 },
 
   // Expression: 0
-  //  Referenced by: '<S199>/Unit Delay1'
+  //  Referenced by: '<S174>/Unit Delay2'
 
   0.0,
 
   // Expression: 0
-  //  Referenced by: '<S199>/Unit Delay7'
+  //  Referenced by: '<S174>/Unit Delay3'
 
   0.0,
 
-  // Expression: 0
-  //  Referenced by: '<S4>/Constant2'
+  // Expression: 1e4*eye(3)
+  //  Referenced by: '<S174>/Constant4'
 
-  0.0,
+  { 10000.0, 0.0, 0.0, 0.0, 10000.0, 0.0, 0.0, 0.0, 10000.0 },
 
-  // Expression: initializationParams.adg1
-  //  Referenced by: '<S232>/Forgetting Factor'
+  // Expression: 1e4*eye(3)
+  //  Referenced by: '<S174>/Constant5'
 
-  0.995,
-
-  // Expression: initializationParams.adg2
-  //  Referenced by: '<S232>/Normalization Bias'
-
-  0.0,
-
-  // Expression: initializationParams.initialOutputs
-  //  Referenced by: '<S232>/InitialOutputs'
-
-  0.0,
-
-  // Expression: initializationParams.initialRegressors
-  //  Referenced by: '<S232>/InitialRegressors'
-
-  0.0,
-
-  // Expression: 1e4
-  //  Referenced by: '<S199>/Constant'
-
-  10000.0,
-
-  // Expression: initializationParams.adg1
-  //  Referenced by: '<S233>/Forgetting Factor'
-
-  0.995,
-
-  // Expression: initializationParams.adg2
-  //  Referenced by: '<S233>/Normalization Bias'
-
-  0.0,
-
-  // Expression: initializationParams.initialOutputs
-  //  Referenced by: '<S233>/InitialOutputs'
-
-  0.0,
-
-  // Expression: initializationParams.initialRegressors
-  //  Referenced by: '<S233>/InitialRegressors'
-
-  0.0,
+  { 10000.0, 0.0, 0.0, 0.0, 10000.0, 0.0, 0.0, 0.0, 10000.0 },
 
   // Expression: G2.C
-  //  Referenced by: '<S199>/Constant4'
+  //  Referenced by: '<S174>/Constant12'
 
   { 1.0, 0.0, 0.0, 1.0 },
 
   // Expression: G2.D
-  //  Referenced by: '<S199>/Constant5'
+  //  Referenced by: '<S174>/Constant13'
 
   { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
 
   // Expression: 1
-  //  Referenced by: '<S199>/Constant3'
+  //  Referenced by: '<S174>/Constant11'
 
   1.0,
 
   // Expression: [0;0]
-  //  Referenced by: '<S199>/Constant6'
+  //  Referenced by: '<S174>/Constant2'
 
   { 0.0, 0.0 },
 
   // Expression: [0;0]
-  //  Referenced by: '<S200>/Constant'
+  //  Referenced by: '<S175>/Constant'
 
   { 0.0, 0.0 },
 
   // Expression: pInitialization.X0
-  //  Referenced by: '<S286>/X0'
+  //  Referenced by: '<S211>/X0'
 
   { 0.0, 0.0, 0.0, 0.0 },
 
   // Expression: zeros(nym,1)
-  //  Referenced by: '<S201>/ym_zero'
+  //  Referenced by: '<S176>/ym_zero'
 
   { 0.0, 0.0 },
 
   // Expression: zeros(1,1)
-  //  Referenced by: '<S197>/md_zero'
+  //  Referenced by: '<S172>/md_zero'
 
   0.0,
 
   // Expression: zeros(3,1)
-  //  Referenced by: '<S197>/umin_zero'
+  //  Referenced by: '<S172>/umin_zero'
 
   { 0.0, 0.0, 0.0 },
 
   // Expression: zeros(3,1)
-  //  Referenced by: '<S197>/umax_zero'
+  //  Referenced by: '<S172>/umax_zero'
 
   { 0.0, 0.0, 0.0 },
 
   // Expression: zeros(2,1)
-  //  Referenced by: '<S197>/ymin_zero'
+  //  Referenced by: '<S172>/ymin_zero'
 
   { 0.0, 0.0 },
 
   // Expression: zeros(2,1)
-  //  Referenced by: '<S197>/ymax_zero'
+  //  Referenced by: '<S172>/ymax_zero'
 
   { 0.0, 0.0 },
 
   // Expression: zeros(1,3)
-  //  Referenced by: '<S197>/E_zero'
+  //  Referenced by: '<S172>/E_zero'
 
   { 0.0, 0.0, 0.0 },
 
   // Expression: MVscale(:,ones(1,max(nCC,1)))'
-  //  Referenced by: '<S201>/umin_scale4'
+  //  Referenced by: '<S176>/umin_scale4'
 
   { 1.0, 1.0, 1.0 },
 
   // Expression: zeros(1,2)
-  //  Referenced by: '<S197>/F_zero'
+  //  Referenced by: '<S172>/F_zero'
 
   { 0.0, 0.0 },
 
   // Expression: Yscale(:,ones(1,max(nCC,1)))'
-  //  Referenced by: '<S201>/ymin_scale1'
+  //  Referenced by: '<S176>/ymin_scale1'
 
   { 1.0, 1.0 },
 
   // Expression: zeros(1,1)
-  //  Referenced by: '<S197>/S_zero'
+  //  Referenced by: '<S172>/S_zero'
 
   0.0,
 
   // Expression: MDscale(:,ones(1,max(nCC,1)))'
-  //  Referenced by: '<S201>/ymin_scale2'
+  //  Referenced by: '<S176>/ymin_scale2'
 
   1.0,
 
   // Expression: zeros(1,1)
-  //  Referenced by: '<S197>/switch_zero'
+  //  Referenced by: '<S172>/switch_zero'
 
   0.0,
 
   // Expression: zeros(3,1)
-  //  Referenced by: '<S197>/mv.target_zero'
+  //  Referenced by: '<S172>/mv.target_zero'
 
   { 0.0, 0.0, 0.0 },
 
   // Expression: RMVscale
-  //  Referenced by: '<S201>/uref_scale'
+  //  Referenced by: '<S176>/uref_scale'
 
   { 1.0, 1.0, 1.0 },
 
   // Expression: zeros(1,1)
-  //  Referenced by: '<S197>/ecr.wt_zero'
+  //  Referenced by: '<S172>/ecr.wt_zero'
 
   0.0,
 
   // Expression: pInitialization.P0
-  //  Referenced by: '<S286>/P0'
+  //  Referenced by: '<S211>/P0'
 
   { 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
     1.0 },
@@ -983,35 +914,40 @@ SupervisoryController::P SupervisoryController::rtP{
   1.0,
 
   // Expression: pInitialization.H
-  //  Referenced by: '<S286>/H'
+  //  Referenced by: '<S211>/H'
 
   { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
 
   // Expression: pInitialization.G
-  //  Referenced by: '<S286>/G'
+  //  Referenced by: '<S211>/G'
 
   { 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
     1.0 },
 
   // Expression: MVscale
-  //  Referenced by: '<S201>/u_scale'
+  //  Referenced by: '<S176>/u_scale'
 
   { 1.0, 1.0, 1.0 },
 
+  // Expression: 0
+  //  Referenced by: '<S4>/Constant2'
+
+  0.0,
+
   // Expression: [0 0 0]
-  //  Referenced by: '<S4>/Measurement Noise'
+  //  Referenced by: '<S4>/excitation'
 
   { 0.0, 0.0, 0.0 },
 
-  // Computed Parameter: MeasurementNoise_StdDev_l
-  //  Referenced by: '<S4>/Measurement Noise'
+  // Computed Parameter: excitation_StdDev_h
+  //  Referenced by: '<S4>/excitation'
 
   { 1.0, 1.0, 1.0 },
 
-  // Expression: 12345
-  //  Referenced by: '<S4>/Measurement Noise'
+  // Expression: [12345 12346 12347]
+  //  Referenced by: '<S4>/excitation'
 
-  12345.0,
+  { 12345.0, 12346.0, 12347.0 },
 
   // Expression: 0
   //  Referenced by: '<S4>/Discrete Filter'
@@ -1034,12 +970,12 @@ SupervisoryController::P SupervisoryController::rtP{
   0,
 
   // Expression: Ndis
-  //  Referenced by: '<S144>/FixedHorizonOptimizer'
+  //  Referenced by: '<S119>/FixedHorizonOptimizer'
 
   0,
 
   // Expression: Ndis
-  //  Referenced by: '<S229>/FixedHorizonOptimizer'
+  //  Referenced by: '<S204>/FixedHorizonOptimizer'
 
   0,
 
@@ -1052,23 +988,13 @@ SupervisoryController::P SupervisoryController::rtP{
     false, false, false, false, false, false, false, false, false, false, false,
     false, false },
 
-  // Expression: true()
-  //  Referenced by: '<S57>/Delay'
-
-  true,
-
   // Expression: pInitialization.isSqrtUsed
-  //  Referenced by: '<S107>/isSqrtUsed'
-
-  false,
-
-  // Expression: false()
-  //  Referenced by: '<S57>/Constant'
+  //  Referenced by: '<S82>/isSqrtUsed'
 
   false,
 
   // Expression: iA
-  //  Referenced by: '<S116>/Memory'
+  //  Referenced by: '<S91>/Memory'
 
   { false, false, false, false, false, false, false, false, false, false, false,
     false, false, false, false, false, false, false, false, false, false, false,
@@ -1080,7 +1006,7 @@ SupervisoryController::P SupervisoryController::rtP{
     false, false, false, false, false, false, false, false, false },
 
   // Expression: pInitialization.isSqrtUsed
-  //  Referenced by: '<S192>/isSqrtUsed'
+  //  Referenced by: '<S167>/isSqrtUsed'
 
   false,
 
@@ -1090,7 +1016,7 @@ SupervisoryController::P SupervisoryController::rtP{
   true,
 
   // Expression: iA
-  //  Referenced by: '<S201>/Memory'
+  //  Referenced by: '<S176>/Memory'
 
   { false, false, false, false, false, false, false, false, false, false, false,
     false, false, false, false, false, false, false, false, false, false, false,
@@ -1101,55 +1027,35 @@ SupervisoryController::P SupervisoryController::rtP{
     false, false, false, false, false, false, false, false, false, false, false,
     false, false, false, false, false, false, false, false, false },
 
+  // Expression: pInitialization.isSqrtUsed
+  //  Referenced by: '<S252>/isSqrtUsed'
+
+  false,
+
   // Expression: true
   //  Referenced by: '<S4>/Constant1'
 
   true,
 
-  // Expression: true()
-  //  Referenced by: '<S251>/Delay'
-
-  true,
-
-  // Expression: true()
-  //  Referenced by: '<S277>/Delay'
-
-  true,
-
-  // Expression: pInitialization.isSqrtUsed
-  //  Referenced by: '<S327>/isSqrtUsed'
-
-  false,
-
-  // Expression: false()
-  //  Referenced by: '<S251>/Constant'
-
-  false,
-
-  // Expression: false()
-  //  Referenced by: '<S277>/Constant'
-
-  false,
-
-  // Start of '<S305>/MeasurementUpdate'
+  // Start of '<S230>/MeasurementUpdate'
   {
     // Expression: 0
-    //  Referenced by: '<S329>/L*(y[k]-yhat[k|k-1])'
+    //  Referenced by: '<S254>/L*(y[k]-yhat[k|k-1])'
 
     0.0
   }
   ,
 
-  // End of '<S305>/MeasurementUpdate'
+  // End of '<S230>/MeasurementUpdate'
 
-  // Start of '<S170>/MeasurementUpdate'
+  // Start of '<S145>/MeasurementUpdate'
   {
     // Expression: 0
-    //  Referenced by: '<S194>/L*(y[k]-yhat[k|k-1])'
+    //  Referenced by: '<S169>/L*(y[k]-yhat[k|k-1])'
 
     0.0
   }
-  // End of '<S170>/MeasurementUpdate'
+  // End of '<S145>/MeasurementUpdate'
 };
 
 //
