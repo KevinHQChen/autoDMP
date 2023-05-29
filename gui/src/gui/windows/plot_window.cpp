@@ -56,11 +56,11 @@ void PlotWindow::render() {
           vec.Erase();
       }
 
-      plotVector3d("##Control Input", "time (s)", "voltage (V)", 0, 250, ctrlVecs, guiTime,
+      plotVector3d("##Control Input", "time (s)", "voltage (V)", 0, 90, ctrlVecs, guiTime,
                    history);
-      plotVector3d("##Measured Output", "time (s)", "position (px)", 0, 600, measVecs, guiTime,
+      plotVector3d("##Measured Output", "time (s)", "position (px)", 0, 750, measVecs, guiTime,
                    history);
-      plotVector3d("##Estimated Output", "time (s)", "position (px)", -10, 10, paramVecs, guiTime,
+      plotVector3d("##Param Estimates", "time (s)", "value", -1, 1, paramVecs, guiTime,
                    history);
       ImGui::End();
     }

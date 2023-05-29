@@ -100,7 +100,7 @@ class ImProc {
   cv::Ptr<cv::BackgroundSubtractor> pBackSub;
 
   std::vector<cv::Mat> procFrameArr;
-  std::vector<Pose> p;
+  std::vector<Pose> p, pPrev;
 
   std::atomic<bool> startedImProc{false};
   std::thread procThread;

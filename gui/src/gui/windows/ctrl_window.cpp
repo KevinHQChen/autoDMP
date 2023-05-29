@@ -57,12 +57,12 @@ void CtrlWindow::renderAddEventDialog() {
     ImGui::SliderInt("Droplet length", &dropletLength, 0, 85);
     ImGui::SliderInt("Number of Droplets", &numDroplets, 0, 85);
     if (ImGui::Button("Generate Droplets")) {
-      sv_->addEvent(getEvent(0, 1, std::array<int, 3>{200, 0, 0}, 10, 0));
+      sv_->addEvent(getEvent(0, 1, std::array<int, 3>{105, 0, 0}, 10, 0));
       for (int i = 0; i < numDroplets; ++i) {
-        sv_->addEvent(getEvent(1, 1, std::array<int, 3>{0, 84, 85 - dropletLength}, 2, 1));
-        sv_->addEvent(getEvent(1, 2, std::array<int, 3>{0, 200, 85 - dropletLength}, 2, 0));
-        sv_->addEvent(getEvent(2, 2, std::array<int, 3>{80, 0, 80}, 2, 1));
-        sv_->addEvent(getEvent(2, 1, std::array<int, 3>{200, 0, 50}, 2, 1));
+        sv_->addEvent(getEvent(1, 1, std::array<int, 3>{0, 84, 85 - dropletLength}, 10, 15));
+        sv_->addEvent(getEvent(1, 2, std::array<int, 3>{0, 200, 85 - dropletLength}, 5, 0));
+        sv_->addEvent(getEvent(2, 2, std::array<int, 3>{80, 0, 10}, 20, 20));
+        sv_->addEvent(getEvent(2, 1, std::array<int, 3>{105, 0, 10}, 15, 0));
       }
     }
 
@@ -213,11 +213,11 @@ void CtrlWindow::render() {
       sv_->supIn.excitation = excitationAmp;
 
       paramLowerBound = sv_->supIn.p_;
-      ImGui::SliderFloat("Param Lower Bound", &paramLowerBound, 0.001f, 0.1f);
+      ImGui::SliderFloat("Param Lower Bound", &paramLowerBound, 0.0005f, 0.1f);
       sv_->supIn.p_ = paramLowerBound;
 
       covModification = sv_->supIn.dPmod_;
-      ImGui::SliderFloat("Cov Modification", &covModification, 0.001f, 0.1f);
+      ImGui::SliderFloat("Cov Modification", &covModification, 0.0005f, 0.1f);
       sv_->supIn.dPmod_ = covModification;
 
       ImGui::PopStyleVar();

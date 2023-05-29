@@ -41,6 +41,7 @@ void ImProc::startProcThread() {
     for (int ch = 0; ch < impConf.numChs_; ch++) {
       procFrameArr.push_back(cv::Mat());
       p.push_back(Pose());
+      pPrev.push_back(Pose());
       // TODO add support for non-90-degree channels
       if (ch == 0)
         yMax.push_back(impConf.getChROIs()[ch].height - impConf.getChWidth());
@@ -76,7 +77,7 @@ void ImProc::start() {
       // then apply dilation/erosion to remove noise
       pBackSub->apply(preFrame, fgMask, 0);
       cv::dilate(fgMask, tempFgMask, cv::Mat(), cv::Point(-1, -1), 2);
-      cv::erode(tempFgMask, tempFgMask, cv::Mat(), cv::Point(-1, -1), 4);
+      cv::erode(tempFgMask, tempFgMask, cv::Mat(), cv::Point(-1, -1), 6);
       cv::dilate(tempFgMask, tempFgMask, cv::Mat(), cv::Point(-1, -1), 2);
 
       for (int ch = 0; ch < impConf.numChs_; ++ch) {
@@ -108,6 +109,7 @@ void ImProc::start() {
         procFrameArr[ch] = tempRotChFgMask;
         chImProc(ch);
       }
+      pPrev = p;
       procData->push(p);
       procFrameBuf.set(procFrameArr);
       stopTime = high_resolution_clock::now();
@@ -139,12 +141,11 @@ void ImProc::chImProc(int ch) {
   case 1:
   case 2:
     // pose 0: extend ch1/2 into ch0 if no fg pixels in junction
-    if (p[0].found[0] && (p[0].p[0] < yMax[0]) && !p[ch].found[1]) {
+    if (p[0].found[0] && (p[0].p[0] < yMax[0]) && !pPrev[ch].found[1]) {
       p[ch].p[0] =
           yMax[ch] + std::sqrt(2 * std::pow(impConf.getChWidth() / 2.0, 2)) + yMax[0] - p[0].p[0];
       p[ch].found[0] = true;
       p[ch].loc[0] = cv::Point(0, 0);
-      return;
     }
 
     // pose 1: fg pixel closest to yMaxPos
@@ -175,11 +176,11 @@ void ImProc::chImProc(int ch) {
       currLoc.x = procFrameArr[ch].cols / 2;
       p[ch].loc[2] = currLoc;
       // fg pixel in center column of ch1/2 closest to junction
-      if (!p[ch].found[1]) {
+      if (!p[ch].found[1] || (p[ch].p[2] < 0.4*yMax[ch])) {
         currLoc =
             *std::max_element(fgLocs.begin(), fgLocs.end(),
                               [](const cv::Point &p1, const cv::Point &p2) { return p1.y < p2.y; });
-        if (currLoc.y < yMax[ch]) {
+        if (currLoc.y < yMax[ch] + 0.4 * impConf.getChWidth()) {
           p[ch].p[2] = currLoc.y;
           currLoc.x = procFrameArr[ch].cols / 2;
           p[ch].loc[2] = currLoc;

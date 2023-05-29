@@ -87,9 +87,12 @@ void Supervisor::start() {
       sup->step();
       supOut = sup->rtY;
 
-      // !simModeActive ? pump->sendSigs(Eigen::Vector3d(supOut.u[0], supOut.u[1], supOut.u[2]))
-      //                : info("Pump inputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
-      info("Pump inputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
+      for (int p = 0; p < NUM_PUMPS; ++p)
+        supOut.u[p] = std::clamp(supOut.u[p], 0.0, 100.0);
+
+      !simModeActive ? pump->sendSigs(Eigen::Vector3d(supOut.u[0], supOut.u[1], supOut.u[2]))
+                     : info("Pump inputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
+      // info("Pump inputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
 
       ctrlDataQueuePtr->out << "y: " << (double)supIn.ymeas[0] << ", " << (double)supIn.ymeas[1]
                             << ", " << (double)supIn.ymeas[2]
@@ -103,7 +106,9 @@ void Supervisor::start() {
                             << "\n";
       ctrlDataQueuePtr->out << "poses: " << p[0].p[0] << ", " << p[1].p[0] << ", " << p[1].p[1]
                             << ", " << p[1].p[2] << ", " << p[2].p[0] << ", " << p[2].p[1] << ", "
-                            << p[2].p[2] << "\n";
+                            << p[2].p[2] << ", " << p[0].found[0] << ", " << p[1].found[0] << ", "
+                            << p[1].found[1] << ", " << p[1].found[2] << ", " << p[2].found[0]
+                            << ", " << p[2].found[1] << ", " << p[2].found[2] << "\n";
       ctrlDataQueuePtr->out << "params: " << supOut.B_a[0] << ", " << supOut.B_a[1] << ", "
                             << supOut.B_a[2] << ", " << supOut.B_a[3] << ", " << supOut.B_a[4]
                             << ", " << supOut.B_a[5] << ", " << supOut.B_a[6] << ", "
@@ -126,23 +131,25 @@ void Supervisor::updateMeas() {
   }
 
   if (currEv_.srcState == 1) {
+    supIn.ymeas[0] = 0;
     if (p[1].found[0] && p[2].found[0]) {
-      supIn.ymeas[0] = 0;
       supIn.ymeas[1] = p[1].p[0];
       supIn.ymeas[2] = p[2].p[0];
     }
     if (p[1].found[1] && p[2].found[1]) {
-      supIn.ymeas[0] = 0;
       supIn.ymeas[1] = p[1].p[1];
       supIn.ymeas[2] = p[2].p[1];
     }
-    if (p[1].found[2] && p[2].found[2]) {
-      supIn.ymeas[0] = 0;
-      supIn.ymeas[1] = (p[1].p[2] > imProc->yMax[1]) ? p[1].p[1] : p[1].p[2];
-      supIn.ymeas[2] = (p[2].p[2] > imProc->yMax[2]) ? p[2].p[1] : p[2].p[2];
-    }
+    if (p[1].found[2])
+      supIn.ymeas[1] = (p[1].p[2] < imProc->yMax[1]) ? p[1].p[2] : p[1].p[1];
+    if (p[2].found[2])
+      supIn.ymeas[2] = (p[2].p[2] < imProc->yMax[2]) ? p[2].p[2] : p[2].p[1];
+    // state1->state2 tx conditions:
+    // - fg px found in ch0 outside junction
+    // - no fg px found in junction
+    // - fg px found in ch2 outside junction
     if ((p[0].found[0] && (p[0].p[0] < imProc->yMax[0]) && (!p[1].found[1]) && !p[2].found[1]) &&
-        (p[2].found[2] && (p[2].p[2] < imProc->yMax[2]))) { // state1 -> state2
+        (p[2].found[2] && (p[2].p[2] < imProc->yMax[2]))) {
       supIn.ymeas[0] = p[0].p[0];
       supIn.ymeas[1] = 0;
       supIn.ymeas[2] = p[2].p[2];
@@ -150,15 +157,19 @@ void Supervisor::updateMeas() {
   }
 
   if (currEv_.srcState == 2) {
-    if (p[0].found[0] && p[2].found[2]) {
+    supIn.ymeas[1] = 0;
+    if (p[0].found[0])
       supIn.ymeas[0] = p[0].p[0];
-      supIn.ymeas[1] = 0;
+    if (p[2].found[2])
       supIn.ymeas[2] = p[2].p[2];
-    }
-    if (p[1].found[1] && p[2].found[1]) { // state2 -> state1
-      supIn.ymeas[0] = 0;
-      supIn.ymeas[1] = p[1].p[1];
-      supIn.ymeas[2] = p[2].p[1];
+    if (p[1].found[1] && p[2].found[1]) {
+      if (currEv_.destState == 2)
+        supIn.ymeas[2] = p[2].p[1];
+      else { // state2 -> state1
+        supIn.ymeas[0] = 0;
+        supIn.ymeas[1] = p[1].p[1];
+        supIn.ymeas[2] = p[2].p[1];
+      }
     }
   }
   supIn.measAvail = !supIn.measAvail;
