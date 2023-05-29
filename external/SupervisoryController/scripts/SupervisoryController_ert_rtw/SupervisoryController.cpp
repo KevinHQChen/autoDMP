@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.1452
+// Model version                  : 1.1453
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Sun May 28 20:01:01 2023
+// C/C++ source code generated on : Sun May 28 23:10:14 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -5038,16 +5038,16 @@ void SupervisoryController::State2(void)
   // '<S1>:207:1' sf_internal_predicateOutput = currEv.destState == 1 & evDone;
   if ((rtY.currEv.destState == 1.0) && rtDW.evDone) {
     // Transition: '<S1>:207'
-    // '<S1>:207:2' uref = uclean;
+    // '<S1>:207:2' uref = uclean/2;
     // '<S1>:207:3' uoffset = uref;
     // '<S1>:207:4' yhat = zeros(3, 1);
-    rtY.uref[0] = rtDW.uclean[0];
+    rtY.uref[0] = rtDW.uclean[0] / 2.0;
     rtY.uoffset[0] = rtY.uref[0];
     rtY.yhat[0] = 0.0;
-    rtY.uref[1] = rtDW.uclean[1];
+    rtY.uref[1] = rtDW.uclean[1] / 2.0;
     rtY.uoffset[1] = rtY.uref[1];
     rtY.yhat[1] = 0.0;
-    rtY.uref[2] = rtDW.uclean[2];
+    rtY.uref[2] = rtDW.uclean[2] / 2.0;
     rtY.uoffset[2] = rtY.uref[2];
     rtY.yhat[2] = 0.0;
 
@@ -8244,16 +8244,16 @@ void SupervisoryController::State1(void)
   // '<S1>:47:1' sf_internal_predicateOutput = currEv.destState == 0 & evDone;
   if ((rtY.currEv.destState == 0.0) && rtDW.evDone) {
     // Transition: '<S1>:47'
-    // '<S1>:47:2' uref = uclean;
+    // '<S1>:47:2' uref = uclean/2;
     // '<S1>:47:3' uoffset = uref;
     // '<S1>:47:4' yhat = zeros(3, 1);
-    rtY.uref[0] = rtDW.uclean[0];
+    rtY.uref[0] = rtDW.uclean[0] / 2.0;
     rtY.uoffset[0] = rtY.uref[0];
     rtY.yhat[0] = 0.0;
-    rtY.uref[1] = rtDW.uclean[1];
+    rtY.uref[1] = rtDW.uclean[1] / 2.0;
     rtY.uoffset[1] = rtY.uref[1];
     rtY.yhat[1] = 0.0;
-    rtY.uref[2] = rtDW.uclean[2];
+    rtY.uref[2] = rtDW.uclean[2] / 2.0;
     rtY.uoffset[2] = rtY.uref[2];
     rtY.yhat[2] = 0.0;
 
@@ -8319,16 +8319,16 @@ void SupervisoryController::State1(void)
     // '<S1>:204:1' sf_internal_predicateOutput = currEv.destState == 2 & evDone; 
   } else if ((rtY.currEv.destState == 2.0) && rtDW.evDone) {
     // Transition: '<S1>:204'
-    // '<S1>:204:2' uref = uclean;
+    // '<S1>:204:2' uref = uclean/2;
     // '<S1>:204:3' uoffset = uref;
     // '<S1>:204:4' yhat = zeros(3, 1);
-    rtY.uref[0] = rtDW.uclean[0];
+    rtY.uref[0] = rtDW.uclean[0] / 2.0;
     rtY.uoffset[0] = rtY.uref[0];
     rtY.yhat[0] = 0.0;
-    rtY.uref[1] = rtDW.uclean[1];
+    rtY.uref[1] = rtDW.uclean[1] / 2.0;
     rtY.uoffset[1] = rtY.uref[1];
     rtY.yhat[1] = 0.0;
-    rtY.uref[2] = rtDW.uclean[2];
+    rtY.uref[2] = rtDW.uclean[2] / 2.0;
     rtY.uoffset[2] = rtY.uref[2];
     rtY.yhat[2] = 0.0;
 
@@ -10072,13 +10072,13 @@ void SupervisoryController::step()
           if ((rtY.currEv.destState == 1.0) && rtDW.evDone) {
             // Outport: '<Root>/uref'
             // Transition: '<S1>:46'
-            // '<S1>:46:2' uref = uclean;
+            // '<S1>:46:2' uref = uclean/2;
             // '<S1>:46:3' uoffset = uref;
             // '<S1>:46:4' yhat = zeros(3, 1);
             // Exit Internal 'State0': '<S1>:1'
             // Exit 'ControlLaw': '<S1>:59'
             // '<S1>:59:10' B_0 = B(chs0,:);
-            rtY.uref[0] = rtDW.uclean[0];
+            rtY.uref[0] = rtDW.uclean[0] / 2.0;
 
             // Outport: '<Root>/uoffset' incorporates:
             //   Outport: '<Root>/uref'
@@ -10092,7 +10092,7 @@ void SupervisoryController::step()
             // Outport: '<Root>/uref' incorporates:
             //   Outport: '<Root>/B'
 
-            rtY.uref[1] = rtDW.uclean[1];
+            rtY.uref[1] = rtDW.uclean[1] / 2.0;
 
             // Outport: '<Root>/uoffset' incorporates:
             //   Outport: '<Root>/uref'
@@ -10106,7 +10106,7 @@ void SupervisoryController::step()
             // Outport: '<Root>/uref' incorporates:
             //   Outport: '<Root>/B'
 
-            rtY.uref[2] = rtDW.uclean[2];
+            rtY.uref[2] = rtDW.uclean[2] / 2.0;
 
             // Outport: '<Root>/uoffset' incorporates:
             //   Outport: '<Root>/uref'
