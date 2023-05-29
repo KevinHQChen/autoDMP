@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.1453
+// Model version                  : 1.1473
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Sun May 28 23:10:14 2023
+// C/C++ source code generated on : Sun May 28 23:52:39 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -396,8 +396,8 @@ void SupervisoryController::MATLABFunction1(const real_T rtu_B1[3], const real_T
 //
 void SupervisoryController::MATLABFunction_n(const real_T rtu_theta[3], const
   real_T rtu_P[9], real_T rtu_epsil, const real_T rtu_phi[3], real_T rtu_ms_,
-  real_T rtu_EN, real_T rtu_p_, real_T rtu_dPmod_, real_T rty_dtheta[3], real_T
-  rty_dP[9])
+  boolean_T rtu_EN, real_T rtu_p_, real_T rtu_dPmod_, real_T rty_dtheta[3],
+  real_T rty_dP[9])
 {
   static const int8_T b_b[9]{ 1, 0, 0, 0, 1, 0, 0, 0, 1 };
 
@@ -454,7 +454,7 @@ void SupervisoryController::MATLABFunction_n(const real_T rtu_theta[3], const
   }
 
   // 'rls_:12' if ~EN
-  if (!(rtu_EN != 0.0)) {
+  if (!rtu_EN) {
     // 'rls_:13' dtheta = zeros(3,1);
     rty_dtheta[0] = 0.0;
     rty_dtheta[1] = 0.0;
@@ -4990,9 +4990,9 @@ void SupervisoryController::State2(void)
   real_T tmp[3];
   real_T tmp_0[3];
   real_T yi2_0[3];
+  real_T DiscreteFilter_tmp[2];
   real_T Y[2];
   real_T d_data[2];
-  real_T prmEst_a[2];
   real_T rtb_C_0[2];
   real_T rtb_D_0[2];
   real_T rtb_Product1_n[2];
@@ -5013,7 +5013,6 @@ void SupervisoryController::State2(void)
   //   Delay: '<S208>/Delay'
   //   Delay: '<S211>/MemoryP'
   //   Delay: '<S211>/MemoryX'
-  //   Inport: '<Root>/enAdapt'
   //   Inport: '<Root>/nextEv'
   //   Inport: '<Root>/y'
   //   Inport: '<Root>/y0'
@@ -5051,9 +5050,12 @@ void SupervisoryController::State2(void)
     rtY.uoffset[2] = rtY.uref[2];
     rtY.yhat[2] = 0.0;
 
+    // '<S1>:207:5' rstP = true;
+    rtDW.rstP = true;
+
     // Exit Internal 'State2': '<S1>:278'
     // Exit 'ControlLaw': '<S1>:272'
-    // '<S1>:272:10' B_2 = B(chs2,:);
+    // '<S1>:272:11' B_2 = B(chs2,:);
     for (int32_T i{0}; i < 3; i++) {
       int32_T iU;
       iU = i << 1UL;
@@ -5244,17 +5246,12 @@ void SupervisoryController::State2(void)
 
       // '<S1>:272:4' [u, yhat(chs2), B(chs2,:), uref, paramEstErr(chs2), uclean]... 
       // '<S1>:272:5'         = AMPC2(traj(chs2, waypt), y(chs2), y0(chs2), uref,... 
-      // '<S1>:272:6'         B_2, enAdapt(chs2), excitation, p_, dPmod_);
+      // '<S1>:272:6'         B_2, enAdapt(chs2), excitation, p_, dPmod_, rstP); 
       yi2[0] = rtU.y0[static_cast<int32_T>(rtP.chs2[0]) - 1];
       yi2[1] = rtU.y0[static_cast<int32_T>(rtP.chs2[1]) - 1];
-      prmEst_a[0] = rtU.enAdapt[static_cast<int32_T>(rtP.chs2[0]) - 1] ? 1.0 :
-        0.0;
-      prmEst_a[1] = rtU.enAdapt[static_cast<int32_T>(rtP.chs2[1]) - 1] ? 1.0 :
-        0.0;
 
       // Outputs for Function Call SubSystem: '<S1>/State2.ControlLaw.AMPC2'
       // Math: '<S174>/Transpose' incorporates:
-      //   Inport: '<Root>/enAdapt'
       //   Inport: '<Root>/y0'
 
       // Simulink Function 'AMPC2': '<S1>:370'
@@ -5347,6 +5344,10 @@ void SupervisoryController::State2(void)
       // Delay: '<S207>/Delay1' incorporates:
       //   Constant: '<S174>/Constant4'
 
+      rtDW.icLoad_m = ((rtDW.rstP && (static_cast<uint32_T>
+        (rtPrevZCX.Delay1_Reset_ZCE) != POS_ZCSIG)) || rtDW.icLoad_m);
+      rtPrevZCX.Delay1_Reset_ZCE = rtDW.rstP ? static_cast<ZCSigState>(1) :
+        static_cast<ZCSigState>(0);
       if (rtDW.icLoad_m) {
         (void)std::memcpy(&rtDW.Delay1_DSTATE[0], &rtP.Constant4_Value_j[0], 9U *
                           sizeof(real_T));
@@ -5371,12 +5372,14 @@ void SupervisoryController::State2(void)
       //   Delay: '<S207>/Delay'
       //   Delay: '<S207>/Delay1'
       //   Inport: '<Root>/dPmod_'
+      //   Inport: '<Root>/enAdapt'
       //   Inport: '<Root>/p_'
       //   Product: '<S207>/phi'*P*phi'
 
       MATLABFunction_n(rtDW.Delay_DSTATE, rtDW.Delay1_DSTATE, rtb_Sum2,
-                       rtb_Product2, yi2_tmp_0 + rtP.forgettingFactor, prmEst_a
-                       [0], rtU.p_, rtU.dPmod_, rtb_dtheta_f, rtb_dP_l);
+                       rtb_Product2, yi2_tmp_0 + rtP.forgettingFactor,
+                       rtU.enAdapt[static_cast<int32_T>(rtP.chs2[0]) - 1],
+                       rtU.p_, rtU.dPmod_, rtb_dtheta_f, rtb_dP_l);
 
       // Sum: '<S207>/Sum' incorporates:
       //   Delay: '<S207>/Delay'
@@ -5528,6 +5531,10 @@ void SupervisoryController::State2(void)
       // Delay: '<S208>/Delay1' incorporates:
       //   Constant: '<S174>/Constant5'
 
+      rtDW.icLoad_p = ((rtDW.rstP && (static_cast<uint32_T>
+        (rtPrevZCX.Delay1_Reset_ZCE_g) != POS_ZCSIG)) || rtDW.icLoad_p);
+      rtPrevZCX.Delay1_Reset_ZCE_g = rtDW.rstP ? static_cast<ZCSigState>(1) :
+        static_cast<ZCSigState>(0);
       if (rtDW.icLoad_p) {
         (void)std::memcpy(&rtDW.Delay1_DSTATE_c[0], &rtP.Constant5_Value_l[0],
                           9U * sizeof(real_T));
@@ -5552,12 +5559,14 @@ void SupervisoryController::State2(void)
       //   Delay: '<S208>/Delay'
       //   Delay: '<S208>/Delay1'
       //   Inport: '<Root>/dPmod_'
+      //   Inport: '<Root>/enAdapt'
       //   Inport: '<Root>/p_'
       //   Product: '<S208>/phi'*P*phi'
 
       MATLABFunction_n(rtDW.Delay_DSTATE_c, rtDW.Delay1_DSTATE_c, rtb_Sum2_o,
                        rtb_Product3, rtb_decay_j + rtP.forgettingFactor,
-                       prmEst_a[1], rtU.p_, rtU.dPmod_, rtb_Product2, rtb_dP);
+                       rtU.enAdapt[static_cast<int32_T>(rtP.chs2[1]) - 1],
+                       rtU.p_, rtU.dPmod_, rtb_Product2, rtb_dP);
 
       // Sum: '<S208>/Sum' incorporates:
       //   Delay: '<S208>/Delay'
@@ -6089,15 +6098,16 @@ void SupervisoryController::State2(void)
       // RelationalOperator: '<S4>/Relational Operator1' incorporates:
       //   Constant: '<S4>/Constant1'
       //   Constant: '<S4>/Constant2'
+      //   Inport: '<Root>/enAdapt'
       //   RelationalOperator: '<S4>/Relational Operator'
       //   Sum: '<S4>/Sum of Elements'
 
       rtb_RelationalOperator1 = (static_cast<real_T>(static_cast<uint8_T>(
-        static_cast<uint32_T>(prmEst_a[0] == (rtP.Constant1_Value_m ? 1.0 : 0.0)
-        ? static_cast<int32_T>(1) : static_cast<int32_T>(0)) +
-        static_cast<uint32_T>(prmEst_a[1] == (rtP.Constant1_Value_m ? 1.0 : 0.0)
-        ? static_cast<int32_T>(1) : static_cast<int32_T>(0)))) >
-        rtP.Constant2_Value_l);
+        static_cast<uint32_T>(rtU.enAdapt[static_cast<int32_T>(rtP.chs2[0]) - 1]
+        == rtP.Constant1_Value_m ? static_cast<int32_T>(1) : static_cast<int32_T>
+        (0)) + static_cast<uint32_T>(rtU.enAdapt[static_cast<int32_T>(rtP.chs2[1])
+        - 1] == rtP.Constant1_Value_m ? static_cast<int32_T>(1) :
+        static_cast<int32_T>(0)))) > rtP.Constant2_Value_l);
 
       // Sum: '<S4>/Sum' incorporates:
       //   Inport: '<Root>/excitation'
@@ -6157,13 +6167,13 @@ void SupervisoryController::State2(void)
       //   DataTypeConversion: '<S211>/DataTypeConversionEnable'
       //   Delay: '<S211>/MemoryX'
 
-      prmEst_a[0] = rtb_Sum2;
-      prmEst_a[1] = rtb_Sum2_o;
+      Y[0] = rtb_Sum2;
+      Y[1] = rtb_Sum2_o;
 
       // DiscreteFilter: '<S4>/Discrete Filter'
       for (i = 0; i < 2; i++) {
         d_size_idx_0 = i * 59;
-        rtb_Sum2_o = prmEst_a[i] / rtP.lpfDen;
+        rtb_Sum2_o = Y[i] / rtP.lpfDen;
         rtb_Sum2 = rtP.lpfNum[0] * rtb_Sum2_o;
         b_utarget_tmp = 1;
         for (iU = 0; iU < 59; iU++) {
@@ -6173,7 +6183,7 @@ void SupervisoryController::State2(void)
         }
 
         rtb_Product1_n[i] = rtb_Sum2;
-        Y[i] = rtb_Sum2_o;
+        DiscreteFilter_tmp[i] = rtb_Sum2_o;
       }
 
       // MATLAB Function: '<S4>/MATLAB Function' incorporates:
@@ -6224,7 +6234,7 @@ void SupervisoryController::State2(void)
           _mm_set1_pd(rtb_Sum1_e_tmp)), tmp_1));
         tmp_3 = _mm_loadu_pd(&rtb_C_0[i]);
         tmp_1 = _mm_loadu_pd(&rtb_D_0[i]);
-        (void)_mm_storeu_pd(&prmEst_a[i], _mm_add_pd(tmp_3, tmp_1));
+        (void)_mm_storeu_pd(&Y[i], _mm_add_pd(tmp_3, tmp_1));
 
         // End of Outputs for SubSystem: '<S1>/State2.ControlLaw.AMPC2'
       }
@@ -6404,7 +6414,7 @@ void SupervisoryController::State2(void)
             rtDW.DiscreteFilter_states[b_utarget_tmp + 57];
         }
 
-        rtDW.DiscreteFilter_states[d_size_idx_0] = Y[i];
+        rtDW.DiscreteFilter_states[d_size_idx_0] = DiscreteFilter_tmp[i];
       }
 
       // End of Outputs for SubSystem: '<S1>/State2.ControlLaw.AMPC2'
@@ -6425,8 +6435,8 @@ void SupervisoryController::State2(void)
       rtY.u[2] = holdT;
 
       // Outputs for Function Call SubSystem: '<S1>/State2.ControlLaw.AMPC2'
-      rtY.yhat[static_cast<int32_T>(rtP.chs2[0]) - 1] = prmEst_a[0] + yi2[0];
-      rtY.yhat[static_cast<int32_T>(rtP.chs2[1]) - 1] = prmEst_a[1] + yi2[1];
+      rtY.yhat[static_cast<int32_T>(rtP.chs2[0]) - 1] = Y[0] + yi2[0];
+      rtY.yhat[static_cast<int32_T>(rtP.chs2[1]) - 1] = Y[1] + yi2[1];
 
       // Switch: '<S4>/Switch' incorporates:
       //   BusCreator: '<S174>/Bus Creator1'
@@ -6471,6 +6481,9 @@ void SupervisoryController::State2(void)
       rtY.currTraj[1] = rtDW.traj[i + 1];
       rtDW.uclean[2] = rtb_Product_g[2];
       rtY.currTraj[2] = rtDW.traj[i + 2];
+
+      // '<S1>:272:8' rstP = false;
+      rtDW.rstP = false;
     }
   }
 
@@ -8196,9 +8209,9 @@ void SupervisoryController::State1(void)
   real_T tmp[3];
   real_T tmp_0[3];
   real_T tmp_1[3];
+  real_T DiscreteFilter_tmp_l[2];
   real_T Y[2];
   real_T d_data[2];
-  real_T prmEst[2];
   real_T rtb_C_d[2];
   real_T rtb_D_a[2];
   real_T rtb_Product1_iy[2];
@@ -8219,7 +8232,6 @@ void SupervisoryController::State1(void)
   //   Delay: '<S123>/Delay'
   //   Delay: '<S126>/MemoryP'
   //   Delay: '<S126>/MemoryX'
-  //   Inport: '<Root>/enAdapt'
   //   Inport: '<Root>/nextEv'
   //   Inport: '<Root>/y'
   //   Inport: '<Root>/y0'
@@ -8257,9 +8269,12 @@ void SupervisoryController::State1(void)
     rtY.uoffset[2] = rtY.uref[2];
     rtY.yhat[2] = 0.0;
 
+    // '<S1>:47:5' rstP = true;
+    rtDW.rstP = true;
+
     // Exit Internal 'State1': '<S1>:249'
     // Exit 'ControlLaw': '<S1>:247'
-    // '<S1>:247:10' B_1 = B(chs1,:);
+    // '<S1>:247:11' B_1 = B(chs1,:);
     for (int32_T i{0}; i < 3; i++) {
       int32_T iU;
       iU = i << 1UL;
@@ -8332,9 +8347,12 @@ void SupervisoryController::State1(void)
     rtY.uoffset[2] = rtY.uref[2];
     rtY.yhat[2] = 0.0;
 
+    // '<S1>:204:5' rstP = true;
+    rtDW.rstP = true;
+
     // Exit Internal 'State1': '<S1>:249'
     // Exit 'ControlLaw': '<S1>:247'
-    // '<S1>:247:10' B_1 = B(chs1,:);
+    // '<S1>:247:11' B_1 = B(chs1,:);
     for (int32_T i{0}; i < 3; i++) {
       int32_T iU;
       iU = i << 1UL;
@@ -8525,15 +8543,12 @@ void SupervisoryController::State1(void)
 
       // '<S1>:247:4' [u, yhat(chs1), B(chs1,:), uref, paramEstErr(chs1), uclean]... 
       // '<S1>:247:5'         = AMPC1(traj(chs1, waypt), y(chs1), y0(chs1), uref,... 
-      // '<S1>:247:6'         B_1, enAdapt(chs1), excitation, p_, dPmod_);
+      // '<S1>:247:6'         B_1, enAdapt(chs1), excitation, p_, dPmod_, rstP); 
       yi1[0] = rtU.y0[static_cast<int32_T>(rtP.chs1[0]) - 1];
       yi1[1] = rtU.y0[static_cast<int32_T>(rtP.chs1[1]) - 1];
-      prmEst[0] = rtU.enAdapt[static_cast<int32_T>(rtP.chs1[0]) - 1] ? 1.0 : 0.0;
-      prmEst[1] = rtU.enAdapt[static_cast<int32_T>(rtP.chs1[1]) - 1] ? 1.0 : 0.0;
 
       // Outputs for Function Call SubSystem: '<S1>/State1.ControlLaw.AMPC1'
       // Math: '<S89>/Transpose' incorporates:
-      //   Inport: '<Root>/enAdapt'
       //   Inport: '<Root>/y0'
 
       // Simulink Function 'AMPC1': '<S1>:271'
@@ -8626,6 +8641,10 @@ void SupervisoryController::State1(void)
       // Delay: '<S122>/Delay1' incorporates:
       //   Constant: '<S89>/Constant4'
 
+      rtDW.icLoad_f = ((rtDW.rstP && (static_cast<uint32_T>
+        (rtPrevZCX.Delay1_Reset_ZCE_d) != POS_ZCSIG)) || rtDW.icLoad_f);
+      rtPrevZCX.Delay1_Reset_ZCE_d = rtDW.rstP ? static_cast<ZCSigState>(1) :
+        static_cast<ZCSigState>(0);
       if (rtDW.icLoad_f) {
         (void)std::memcpy(&rtDW.Delay1_DSTATE_cq[0], &rtP.Constant4_Value_k[0],
                           9U * sizeof(real_T));
@@ -8650,12 +8669,14 @@ void SupervisoryController::State1(void)
       //   Delay: '<S122>/Delay'
       //   Delay: '<S122>/Delay1'
       //   Inport: '<Root>/dPmod_'
+      //   Inport: '<Root>/enAdapt'
       //   Inport: '<Root>/p_'
       //   Product: '<S122>/phi'*P*phi'
 
       MATLABFunction_n(rtDW.Delay_DSTATE_l, rtDW.Delay1_DSTATE_cq, rtb_Sum2_d,
-                       rtb_Product2_a, yi1_tmp_0 + rtP.forgettingFactor, prmEst
-                       [0], rtU.p_, rtU.dPmod_, rtb_dtheta_i, rtb_dP_gk);
+                       rtb_Product2_a, yi1_tmp_0 + rtP.forgettingFactor,
+                       rtU.enAdapt[static_cast<int32_T>(rtP.chs1[0]) - 1],
+                       rtU.p_, rtU.dPmod_, rtb_dtheta_i, rtb_dP_gk);
 
       // Sum: '<S122>/Sum' incorporates:
       //   Delay: '<S122>/Delay'
@@ -8668,8 +8689,8 @@ void SupervisoryController::State1(void)
       } else if (rtb_Transpose_o[0] < 0.0) {
         holdT = -1.0;
       } else {
-        holdT = static_cast<real_T>(rtb_Transpose_o[0] > 0.0 ?
-          static_cast<int32_T>(1) : static_cast<int32_T>(0));
+        holdT = static_cast<real_T>(rtb_Transpose_o[0] > 0.0 ? static_cast<
+          int32_T>(1) : static_cast<int32_T>(0));
       }
 
       // Product: '<S122>/Product' incorporates:
@@ -8807,6 +8828,10 @@ void SupervisoryController::State1(void)
       // Delay: '<S123>/Delay1' incorporates:
       //   Constant: '<S89>/Constant5'
 
+      rtDW.icLoad_pp = ((rtDW.rstP && (static_cast<uint32_T>
+        (rtPrevZCX.Delay1_Reset_ZCE_o) != POS_ZCSIG)) || rtDW.icLoad_pp);
+      rtPrevZCX.Delay1_Reset_ZCE_o = rtDW.rstP ? static_cast<ZCSigState>(1) :
+        static_cast<ZCSigState>(0);
       if (rtDW.icLoad_pp) {
         (void)std::memcpy(&rtDW.Delay1_DSTATE_g[0], &rtP.Constant5_Value[0], 9U *
                           sizeof(real_T));
@@ -8831,12 +8856,14 @@ void SupervisoryController::State1(void)
       //   Delay: '<S123>/Delay'
       //   Delay: '<S123>/Delay1'
       //   Inport: '<Root>/dPmod_'
+      //   Inport: '<Root>/enAdapt'
       //   Inport: '<Root>/p_'
       //   Product: '<S123>/phi'*P*phi'
 
       MATLABFunction_n(rtDW.Delay_DSTATE_m, rtDW.Delay1_DSTATE_g, rtb_Sum2_ar,
                        rtb_Product3_d, rtb_decay_k + rtP.forgettingFactor,
-                       prmEst[1], rtU.p_, rtU.dPmod_, rtb_Product2_a, rtb_dP_lp);
+                       rtU.enAdapt[static_cast<int32_T>(rtP.chs1[1]) - 1],
+                       rtU.p_, rtU.dPmod_, rtb_Product2_a, rtb_dP_lp);
 
       // Sum: '<S123>/Sum' incorporates:
       //   Delay: '<S123>/Delay'
@@ -8849,8 +8876,8 @@ void SupervisoryController::State1(void)
       } else if (rtb_Transpose_o[3] < 0.0) {
         holdT = -1.0;
       } else {
-        holdT = static_cast<real_T>(rtb_Transpose_o[3] > 0.0 ?
-          static_cast<int32_T>(1) : static_cast<int32_T>(0));
+        holdT = static_cast<real_T>(rtb_Transpose_o[3] > 0.0 ? static_cast<
+          int32_T>(1) : static_cast<int32_T>(0));
       }
 
       // Product: '<S123>/Product' incorporates:
@@ -9368,15 +9395,16 @@ void SupervisoryController::State1(void)
       // RelationalOperator: '<S3>/Relational Operator1' incorporates:
       //   Constant: '<S3>/Constant1'
       //   Constant: '<S3>/Constant2'
+      //   Inport: '<Root>/enAdapt'
       //   RelationalOperator: '<S3>/Relational Operator'
       //   Sum: '<S3>/Sum of Elements'
 
       rtb_RelationalOperator1_d = (static_cast<real_T>(static_cast<uint8_T>(
-        static_cast<uint32_T>(prmEst[0] == (rtP.Constant1_Value_h ? 1.0 : 0.0) ?
-        static_cast<int32_T>(1) : static_cast<int32_T>(0)) +
-        static_cast<uint32_T>(prmEst[1] == (rtP.Constant1_Value_h ? 1.0 : 0.0) ?
-        static_cast<int32_T>(1) : static_cast<int32_T>(0)))) >
-        rtP.Constant2_Value_j);
+        static_cast<uint32_T>(rtU.enAdapt[static_cast<int32_T>(rtP.chs1[0]) - 1]
+        == rtP.Constant1_Value_h ? static_cast<int32_T>(1) : static_cast<int32_T>
+        (0)) + static_cast<uint32_T>(rtU.enAdapt[static_cast<int32_T>(rtP.chs1[1])
+        - 1] == rtP.Constant1_Value_h ? static_cast<int32_T>(1) :
+        static_cast<int32_T>(0)))) > rtP.Constant2_Value_j);
 
       // Sum: '<S3>/Sum' incorporates:
       //   Inport: '<Root>/excitation'
@@ -9437,13 +9465,13 @@ void SupervisoryController::State1(void)
       //   DataTypeConversion: '<S126>/DataTypeConversionEnable'
       //   Delay: '<S126>/MemoryX'
 
-      prmEst[0] = rtb_Sum2_d;
-      prmEst[1] = rtb_Sum2_ar;
+      Y[0] = rtb_Sum2_d;
+      Y[1] = rtb_Sum2_ar;
 
       // DiscreteFilter: '<S3>/Discrete Filter'
       for (i = 0; i < 2; i++) {
         d_size_idx_0 = i * 59;
-        rtb_Sum2_ar = prmEst[i] / rtP.lpfDen;
+        rtb_Sum2_ar = Y[i] / rtP.lpfDen;
         rtb_Sum2_d = rtP.lpfNum[0] * rtb_Sum2_ar;
         b_utarget_tmp = 1;
         for (iU = 0; iU < 59; iU++) {
@@ -9453,7 +9481,7 @@ void SupervisoryController::State1(void)
         }
 
         rtb_Product1_iy[i] = rtb_Sum2_d;
-        Y[i] = rtb_Sum2_ar;
+        DiscreteFilter_tmp_l[i] = rtb_Sum2_ar;
       }
 
       // MATLAB Function: '<S3>/MATLAB Function' incorporates:
@@ -9504,7 +9532,7 @@ void SupervisoryController::State1(void)
           _mm_set1_pd(rtb_Sum1_o_tmp)), tmp_2));
         tmp_4 = _mm_loadu_pd(&rtb_C_d[i]);
         tmp_2 = _mm_loadu_pd(&rtb_D_a[i]);
-        (void)_mm_storeu_pd(&prmEst[i], _mm_add_pd(tmp_4, tmp_2));
+        (void)_mm_storeu_pd(&Y[i], _mm_add_pd(tmp_4, tmp_2));
 
         // End of Outputs for SubSystem: '<S1>/State1.ControlLaw.AMPC1'
       }
@@ -9688,7 +9716,7 @@ void SupervisoryController::State1(void)
             rtDW.DiscreteFilter_states_b[b_utarget_tmp + 57];
         }
 
-        rtDW.DiscreteFilter_states_b[d_size_idx_0] = Y[i];
+        rtDW.DiscreteFilter_states_b[d_size_idx_0] = DiscreteFilter_tmp_l[i];
       }
 
       // End of Outputs for SubSystem: '<S1>/State1.ControlLaw.AMPC1'
@@ -9709,8 +9737,8 @@ void SupervisoryController::State1(void)
       rtY.u[2] = holdT;
 
       // Outputs for Function Call SubSystem: '<S1>/State1.ControlLaw.AMPC1'
-      rtY.yhat[static_cast<int32_T>(rtP.chs1[0]) - 1] = prmEst[0] + yi1[0];
-      rtY.yhat[static_cast<int32_T>(rtP.chs1[1]) - 1] = prmEst[1] + yi1[1];
+      rtY.yhat[static_cast<int32_T>(rtP.chs1[0]) - 1] = Y[0] + yi1[0];
+      rtY.yhat[static_cast<int32_T>(rtP.chs1[1]) - 1] = Y[1] + yi1[1];
 
       // Switch: '<S3>/Switch' incorporates:
       //   BusCreator: '<S89>/Bus Creator1'
@@ -9755,6 +9783,9 @@ void SupervisoryController::State1(void)
       rtY.currTraj[1] = rtDW.traj[i + 1];
       rtDW.uclean[2] = rtb_Product_i[2];
       rtY.currTraj[2] = rtDW.traj[i + 2];
+
+      // '<S1>:247:8' rstP = false;
+      rtDW.rstP = false;
     }
   }
 
@@ -10070,11 +10101,14 @@ void SupervisoryController::step()
           // During 'State0': '<S1>:1'
           // '<S1>:46:1' sf_internal_predicateOutput = currEv.destState == 1 & evDone; 
           if ((rtY.currEv.destState == 1.0) && rtDW.evDone) {
-            // Outport: '<Root>/uref'
             // Transition: '<S1>:46'
             // '<S1>:46:2' uref = uclean/2;
             // '<S1>:46:3' uoffset = uref;
             // '<S1>:46:4' yhat = zeros(3, 1);
+            // '<S1>:46:5' rstP = true;
+            rtDW.rstP = true;
+
+            // Outport: '<Root>/uref'
             // Exit Internal 'State0': '<S1>:1'
             // Exit 'ControlLaw': '<S1>:59'
             // '<S1>:59:10' B_0 = B(chs0,:);
@@ -11834,8 +11868,12 @@ void SupervisoryController::initialize()
     uint32_T tseed;
     rtPrevZCX.MemoryX_Reset_ZCE_j = UNINITIALIZED_ZCSIG;
     rtPrevZCX.MemoryP_Reset_ZCE_a = UNINITIALIZED_ZCSIG;
+    rtPrevZCX.Delay1_Reset_ZCE_d = POS_ZCSIG;
+    rtPrevZCX.Delay1_Reset_ZCE_o = POS_ZCSIG;
     rtPrevZCX.MemoryX_Reset_ZCE_h = UNINITIALIZED_ZCSIG;
     rtPrevZCX.MemoryP_Reset_ZCE_c = UNINITIALIZED_ZCSIG;
+    rtPrevZCX.Delay1_Reset_ZCE = POS_ZCSIG;
+    rtPrevZCX.Delay1_Reset_ZCE_g = POS_ZCSIG;
     rtPrevZCX.MemoryX_Reset_ZCE = UNINITIALIZED_ZCSIG;
     rtPrevZCX.MemoryP_Reset_ZCE = UNINITIALIZED_ZCSIG;
     rtPrevZCX.SupervisoryController_Trig_ZCE = UNINITIALIZED_ZCSIG;

@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.1453
+// Model version                  : 1.1473
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Sun May 28 23:10:14 2023
+// C/C++ source code generated on : Sun May 28 23:52:39 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -342,6 +342,7 @@ class SupervisoryController final
     boolean_T Memory_PreviousInput_b[86];// '<S91>/Memory'
     boolean_T Memory_PreviousInput_c[46];// '<S9>/Memory'
     boolean_T evDone;                  // '<Root>/SupervisoryController'
+    boolean_T rstP;                    // '<Root>/SupervisoryController'
     boolean_T icLoad;                  // '<S207>/Delay'
     boolean_T icLoad_m;                // '<S207>/Delay1'
     boolean_T icLoad_a;                // '<S208>/Delay'
@@ -364,8 +365,12 @@ class SupervisoryController final
   // Zero-crossing (trigger) state
   struct PrevZCX {
     ZCSigState SupervisoryController_Trig_ZCE;// '<Root>/SupervisoryController'
+    ZCSigState Delay1_Reset_ZCE;       // '<S207>/Delay1'
+    ZCSigState Delay1_Reset_ZCE_g;     // '<S208>/Delay1'
     ZCSigState MemoryX_Reset_ZCE;      // '<S211>/MemoryX'
     ZCSigState MemoryP_Reset_ZCE;      // '<S211>/MemoryP'
+    ZCSigState Delay1_Reset_ZCE_d;     // '<S122>/Delay1'
+    ZCSigState Delay1_Reset_ZCE_o;     // '<S123>/Delay1'
     ZCSigState MemoryX_Reset_ZCE_h;    // '<S126>/MemoryX'
     ZCSigState MemoryP_Reset_ZCE_c;    // '<S126>/MemoryP'
     ZCSigState MemoryX_Reset_ZCE_j;    // '<S41>/MemoryX'
@@ -1052,7 +1057,7 @@ class SupervisoryController final
 
   // private member function(s) for subsystem '<S122>/MATLAB Function'
   static void MATLABFunction_n(const real_T rtu_theta[3], const real_T rtu_P[9],
-    real_T rtu_epsil, const real_T rtu_phi[3], real_T rtu_ms_, real_T rtu_EN,
+    real_T rtu_epsil, const real_T rtu_phi[3], real_T rtu_ms_, boolean_T rtu_EN,
     real_T rtu_p_, real_T rtu_dPmod_, real_T rty_dtheta[3], real_T rty_dP[9]);
 
   // private member function(s) for subsystem '<S126>/CalculatePL'
