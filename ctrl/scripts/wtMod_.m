@@ -1,8 +1,5 @@
-function [ywt, ywtT, uwt, uwtT] = wtMod_(ytotal, yDest, ywtT, uwtT, dt)
+function [ywt, ywtT, uwt, uwtT] = wtMod_(ytotal, yDest, ywtT, uwtT, dt, no, ni)
 %#codegen
-no = size(ytotal, 1)/2;
-ni = no;
-
 ywt = zeros(1,2*no);
 uwt = zeros(1,ni);
 

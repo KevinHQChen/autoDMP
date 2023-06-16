@@ -1,27 +1,23 @@
-function [traj, numWaypts] = trajGen_(event, y, ymax, dt)
+function [traj, numWaypts] = trajGen_(event, y, ymax, dt, no)
 %#codegen
-traj = zeros(size(y,1), 2400);
-yDest = zeros(size(y));
+traj = zeros(2*no, 2400);
+yDest = zeros(2*no, 1);
 chs = find(event.r); % directly measured channels
-invChs = setdiff(1:size(y,1), chs); % indirectly measured channels
+invChs = setdiff(1:2*no, chs); % indirectly measured channels
 
 numWaypts = cast(event.moveT/dt, "uint16");
 assert(numWaypts < 1200);
 
-% generate trajectory for directly measured channels
-for i=1:length(chs)
+for i=1:length(chs) % directly measured channels
     yDest(chs(i)) = ymax(chs(i)).*event.r(chs(i));
-    traj(chs(i), 1:numWaypts) = trapveltraj(...
-        [y(chs(i)), yDest(chs(i))],...
-        numWaypts,...
-        PeakVelocity=abs( y(chs(i)) - yDest(chs(i)) ) / event.moveT);
+end
+for i=1:length(invChs) % indirectly measured channels (by applying KCL/conservation of charge)
+    yDest(invChs(i)) = -sum(yDest(chs)) / length(invChs);
 end
 
-% generate trajectory for indirectly measured channels
-for i=1:length(invChs)
-    yDest(invChs(i)) = -sum(yDest(chs)) / length(invChs); % apply KCL to estimate unmeasurable channels
-    traj(invChs(i), 1:numWaypts) = trapveltraj(...
-        [y(invChs(i)), yDest(invChs(i))],...
+for i=1:size(y,1)
+    traj(i, 1:numWaypts) = trapveltraj(...
+        [y(i), yDest(i)],...
         numWaypts,...
-        PeakVelocity=abs( y(invChs(i)) - yDest(invChs(i)) ) / event.moveT);
+        PeakVelocity=abs( y(i) - yDest(i) ) / event.moveT);
 end

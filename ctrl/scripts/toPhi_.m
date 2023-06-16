@@ -1,8 +1,5 @@
-function phi_ = toPhi_(y, u, sign)
+function phi_ = toPhi_(y, u, sign, no, ni, np)
 %#codegen
-no = size(y,1);
-ni = no;
-np = ni+1;
 phi_ = zeros(np*no, no);
 
 regs = [y'; repmat(u, 1, no)]; % normalized regressor matrix

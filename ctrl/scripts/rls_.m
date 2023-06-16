@@ -1,8 +1,5 @@
-function [dtheta, dP, L] = rls_(theta, phi, epsil, EN, p_, dPmod_, lambda, P)
+function [dtheta, dP, L] = rls_(theta, phi, epsil, EN, p_, dPmod_, lambda, P, no, ni, np)
 %#codegen
-no = size(phi,2);
-ni = no;
-np = ni + 1;
 dtheta = zeros(np*no, 1);
 dP = zeros(np*no,np*no);
 L = zeros(np*no, no);
