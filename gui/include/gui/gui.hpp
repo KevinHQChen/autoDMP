@@ -29,7 +29,6 @@ class GUI {
   Pump *pump_;
   Supervisor *sv_;
 
-  std::shared_ptr<gui::SysIdWindow> sysIDWindow_;
   std::shared_ptr<gui::PumpWindow> pumpWindow_;
   std::shared_ptr<gui::ImProcWindow> imProcWindow_;
   std::shared_ptr<gui::CtrlWindow> ctrlWindow_;

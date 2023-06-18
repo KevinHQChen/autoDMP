@@ -76,6 +76,18 @@ inline void displayArray3d(const char *arrName, double arr[3], const char *helpT
   }
 }
 
+inline void displayArray6d(const char *arrName, double arr[6], const char *helpText = "") {
+  ImGui::TableNextRow();
+  ImGui::TableSetColumnIndex(0);
+  ImGui::Text("%s", arrName);
+  ImGui::SameLine();
+  HelpMarker(helpText);
+  for (int i = 0; i < 6; ++i) {
+    ImGui::TableSetColumnIndex(i + 1);
+    ImGui::Text("%f", arr[i]);
+  }
+}
+
 inline void displayArray3b(const char *arrName, bool arr[3], const char *helpText = "") {
   ImGui::TableNextRow();
   ImGui::TableSetColumnIndex(0);
@@ -83,6 +95,18 @@ inline void displayArray3b(const char *arrName, bool arr[3], const char *helpTex
   ImGui::SameLine();
   HelpMarker(helpText);
   for (int i = 0; i < 3; ++i) {
+    ImGui::TableSetColumnIndex(i + 1);
+    ImGui::Text("%d", arr[i]);
+  }
+}
+
+inline void displayArray6b(const char *arrName, bool arr[6], const char *helpText = "") {
+  ImGui::TableNextRow();
+  ImGui::TableSetColumnIndex(0);
+  ImGui::Text("%s", arrName);
+  ImGui::SameLine();
+  HelpMarker(helpText);
+  for (int i = 0; i < 6; ++i) {
     ImGui::TableSetColumnIndex(i + 1);
     ImGui::Text("%d", arr[i]);
   }

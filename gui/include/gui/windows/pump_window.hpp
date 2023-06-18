@@ -5,7 +5,6 @@
 #include "window.hpp"
 
 #include "pump/pump.hpp"
-#include <ctrl/state/state.hpp>
 
 #define NUM_PUMPS 4
 

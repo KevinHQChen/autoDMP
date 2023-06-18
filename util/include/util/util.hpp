@@ -31,9 +31,6 @@
 
 using namespace spdlog;
 using namespace std::chrono;
-using Vector1d = Eigen::Matrix<double, 1, 1>;
-using Vector1ui = Eigen::Matrix<unsigned int, 1, 1>;
-using Vector2ui = Eigen::Matrix<unsigned int, 2, 1>;
 
 using ordered_value = toml::basic_value<toml::discard_comments, tsl::ordered_map, std::vector>;
 
@@ -123,10 +120,6 @@ template <class T> mstream &operator<<(mstream &st, T val) {
   std::cout << val;
   return st;
 };
-
-void saveData(std::string fileName, Eigen::MatrixXd matrix);
-
-Eigen::MatrixXd openData(std::string fileToOpen);
 
 template <typename T> class SharedBuffer {
 public:

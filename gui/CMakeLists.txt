@@ -3,7 +3,6 @@ add_library(gui
   "./src/gui/windows/window.cpp"
   "./src/gui/windows/improc_window.cpp"
   "./src/gui/windows/pump_window.cpp"
-  "./src/gui/windows/sysid_window.cpp"
   "./src/gui/windows/ctrl_window.cpp"
   "./src/gui/windows/plot_window.cpp")
 
@@ -15,7 +14,7 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/pthom/imgui_bundle.git
     GIT_PROGRESS TRUE
     # Enter the desired git tag below
-    GIT_TAG "main"
+    GIT_TAG "v0.8.5"
 )
 FetchContent_MakeAvailable(imgui_bundle)
 

@@ -1,10 +1,5 @@
 add_library(ctrl
-  "./src/ctrl/supervisor.cpp"
-  "./src/ctrl/state/sysidstate.cpp"
-  "./src/ctrl/state/state.cpp"
-  "./src/ctrl/state/state0.cpp"
-  "./src/ctrl/state/state1.cpp"
-  "./src/ctrl/state/state2.cpp")
+  "./src/ctrl/supervisor.cpp")
 
 # includes
 set(ctrl_INCLUDE_DIR

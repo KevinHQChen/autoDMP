@@ -1,5 +1,4 @@
 #include "gui/gui.hpp"
-#include "ctrl/state/state.hpp"
 
 void GUI::imguiConfig() {
   ImGuiIO &io = ImGui::GetIO();
@@ -26,7 +25,6 @@ void GUI::imguiStyle() {
 GUI::GUI(ImCap *imCap, ImProc *imProc, Pump *pump, Supervisor *sv)
     : conf(Config::conf), guiConf(Config::guiConf), imCap_(imCap), imProc_(imProc), pump_(pump),
       sv_(sv) {
-  sysIDWindow_ = std::make_shared<gui::SysIdWindow>(sv);
   pumpWindow_ = std::make_shared<gui::PumpWindow>(pump);
   imProcWindow_ = std::make_shared<gui::ImProcWindow>(imCap, imProc);
   ctrlWindow_ = std::make_shared<gui::CtrlWindow>(sv);
@@ -71,7 +69,6 @@ GUI::GUI(ImCap *imCap, ImProc *imProc, Pump *pump, Supervisor *sv)
 }
 
 GUI::~GUI() {
-  sysIDWindow_.reset();
   pumpWindow_.reset();
   imProcWindow_.reset();
   ctrlWindow_.reset();
@@ -90,7 +87,6 @@ void GUI::renderMenu() {
     ImGui::MenuItem("Setup Image Processing", "s", &imProcWindow_->improcSetupVisible_);
     ImGui::MenuItem("Start Image Processing", "i", &imProcWindow_->improcVisible_);
     ImGui::MenuItem("Start Pump Setup", "p", &pumpWindow_->visible_);
-    ImGui::MenuItem("Setup System ID", "y", &sysIDWindow_->visible_);
     ImGui::MenuItem("Setup Supervisory Control", "u", &ctrlWindow_->ctrlSetupVisible_);
     ImGui::MenuItem("View Real-Time Plot", "v", &plotWindow_->visible_);
     ImGui::EndMenu();
@@ -108,7 +104,6 @@ void GUI::render() {
   pumpWindow_->render();
   ctrlWindow_->render();
   plotWindow_->render();
-  sysIDWindow_->render();
   if (guiConf.showDebug) {
     ImGui::ShowDemoWindow(&guiConf.showDebug);
     ImPlot::ShowDemoWindow(&guiConf.showDebug);

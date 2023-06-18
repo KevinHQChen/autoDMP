@@ -3,12 +3,6 @@
 #include "imcap/imcap.hpp"
 #include "util/util.hpp"
 
-struct Pose {
-  cv::Point loc[3];
-  double p[3];
-  bool found[3];
-};
-
 void rotateMat(cv::Mat &src, cv::Mat &dst, double angle);
 
 class RotRect : public cv::Rect {
@@ -93,25 +87,29 @@ class ImProc {
 
   std::vector<int> compParams;
 
-  cv::Mat preFrame, fgMask, tempFgMask, tempChFgMask, tempRotChFgMask;
+  cv::Mat preFrame, fgMask, tempFgMask;
   std::vector<cv::Point> fgLocs;
+  std::vector<std::vector<double>> fgClstrs, yVecs;
   cv::Point currLoc;
 
   cv::Ptr<cv::BackgroundSubtractor> pBackSub;
 
   std::vector<cv::Mat> procFrameArr;
-  std::vector<Pose> p, pPrev;
+  std::vector<double> y, y1, y2, yPrev1, yPrev2;
 
   std::atomic<bool> startedImProc{false};
   std::thread procThread;
   // Called within imProcThread context
   void start();
   void chImProc(int ch);
+  void segAndOrientCh(cv::Mat &srcImg, cv::Mat &destImg, RotRect &chROI, int &chWidth);
+  void findClusters(const std::vector<cv::Point> &fgLocs, std::vector<double> &clusters,
+                    int tolerance);
 
 public:
   std::vector<int> yMax;
   ImProcConfig impConf;
-  QueueFPS<std::vector<Pose>> *procData;
+  QueueFPS<std::vector<double>> *procData;
 
   ImProc(ImCap *imCap);
   ~ImProc();
