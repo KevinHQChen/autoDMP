@@ -89,7 +89,7 @@ class ImProc {
 
   cv::Mat preFrame, fgMask, tempFgMask;
   std::vector<cv::Point> fgLocs;
-  std::vector<std::vector<double>> fgClstrs, yVecs;
+  std::vector<std::vector<double>> fgClstrs, fgClstrsFull;
   cv::Point currLoc;
 
   cv::Ptr<cv::BackgroundSubtractor> pBackSub;

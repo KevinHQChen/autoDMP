@@ -1,80 +1,99 @@
 #include "improc/improc.hpp"
 #include <numeric>
 
-void combinations(std::vector<std::vector<double>> &clstrs, std::vector<std::vector<double>> &yVecs,
-                  std::vector<double> y, int ch, int selChs) {
-  // selChs base case: we've selected enough chs,
-  // fill remaining chs with -1 and add y to yVecs
-  if (selChs == 0) {
-    while (y.size() < clstrs.size()) {
-      y.push_back(-1);
-    }
-    yVecs.push_back(y);
+void findCombs(const std::vector<std::vector<double>> &sets, std::vector<int> &indices,
+               int setIndex, std::function<void(const std::vector<int> &)> callback) {
+  if (setIndex == sets.size()) {
+    callback(indices);
     return;
   }
 
-  // ch base case: we've processed all chs, don't add this combination to yVecs
-  if (ch == clstrs.size())
+  for (int i = 0; i < sets[setIndex].size(); ++i) {
+    indices[setIndex] = i;
+    findCombs(sets, indices, setIndex + 1, callback);
+  }
+}
+
+void findCombinations(int offset, int j, int m, std::vector<int> &combination,
+                      std::vector<std::vector<int>> &combinations) {
+  if (j == 0) {
+    combinations.push_back(combination);
     return;
-
-  // recursive case: call combinations for each cluster in current ch
-  for (int i = 0; i < clstrs[ch].size(); ++i) {
-    // Add current cluster location to y
-    y.push_back(clstrs[ch][i]);
-    // Recursively call combinations with the next ch and one less selChs
-    combinations(clstrs, yVecs, y, ch + 1, selChs - 1);
-    // reset y for next iteration
-    y.pop_back();
   }
-
-  // recursive case: call combinations for next ch, assume no clusters exist in current ch
-  y.push_back(-1);
-  combinations(clstrs, yVecs, y, ch + 1, selChs);
-  y.pop_back();
+  for (int i = offset; i <= m - j; ++i) {
+    combination.push_back(i);
+    findCombinations(i + 1, j - 1, m, combination, combinations);
+    combination.pop_back();
+  }
 }
 
-std::vector<std::vector<double>> findCombinations(std::vector<std::vector<double>> &clstrs) {
-  std::vector<std::vector<double>> yVecs;
-  // Call combinations for each possible selChs up to numChs - 1
-  for (int selChs = 1; selChs < clstrs.size(); ++selChs) {
-    std::vector<double> y;
-    combinations(clstrs, yVecs, y, 0, selChs);
-  }
-  // return yVecs which now contains all combinations
-  return yVecs;
+double minDist(std::vector<double>& vec, double value) {
+    return *std::min_element(vec.begin(), vec.end(), [value](double a, double b) {
+        return std::abs(a - value) < std::abs(b - value);
+    });
 }
 
-void applyKCL(std::vector<std::vector<double>> &yVecs) {
-  // Apply KCl to approximate unmeasured channels in yVecs
-  for (auto &y : yVecs) {
-    int sum = 0;
+std::vector<std::vector<double>> computeNewClstrs(const std::vector<std::vector<double>> &clstrs) {
+  int n = clstrs.size();
+  std::vector<std::vector<double>> newClstrs(n);
 
-    for (auto &num : y)
-      if (num >= 0)
-        sum += num;
+  for (int i = 0; i < n; ++i) {
+    std::cout << "##For clstrs " << i << ":\n";
+    // store all non-empty elements of `newClstrs` except `newClstrs[i]` in `otherClstrs`
+    std::vector<std::vector<double>> otherClstrs(clstrs);
+    otherClstrs.erase(otherClstrs.begin() + i);
+    otherClstrs.erase(std::remove_if(otherClstrs.begin(), otherClstrs.end(),
+                                     [](const std::vector<double> &v) { return v.empty(); }),
+                      otherClstrs.end());
+    int m = otherClstrs.size();
+    std::cout << m << " otherClstrs selected\n";
 
-    for (auto &num : y) {
-      if (num >= 0)
-        num = -num;
-      else
-        num = (y.size() - 1) == 0 ? 0 : sum / (y.size() - 1.0);
+    for (int j = 1; j < m+1; ++j) {
+      std::cout << j << " selected channels\n";
+      // find all distinct combinations of j indices from all indices of `otherClstrs`
+      std::vector<std::vector<int>> clstrIndices;
+      std::vector<int> clstrIdx;
+      findCombinations(0, j, m, clstrIdx, clstrIndices);
+      int l = clstrIndices.size();
+      std::cout << l << " set combinations found\n";
+      for (int i = 0; i < l; ++i) {
+        std::cout << "clstrIndices[" << i << "] = {";
+        for (int j = 0; j < clstrIndices[i].size(); ++j) {
+          std::cout << clstrIndices[i][j];
+          if (j != clstrIndices[i].size() - 1)
+            std::cout << ", ";
+        }
+        std::cout << "}\n";
+      }
+
+      for (int k = 0; k < l; ++k) {
+        std::cout << "combination " << k << ", ";
+        // given the k-th combination of j indices, store the elements of `otherClstrs` at the
+        // corresponding indices in `selClstrs`
+        std::vector<std::vector<double>> selClstrs;
+        for (int x = 0; x < j; ++x) {
+          std::cout << "selClstrs idx " << clstrIndices[k][x];
+          selClstrs.push_back(otherClstrs[clstrIndices[k][x]]);
+          for (int i = 0; i < otherClstrs[clstrIndices[k][x]].size(); ++i)
+            std::cout << ", val " << otherClstrs[clstrIndices[k][x]][i];
+          std::cout << "\n";
+        }
+
+        // find all distinct combinations of j elements from `selClstrs`
+        std::vector<int> indices(j, 0);
+        findCombs(selClstrs, indices, 0, [&](const std::vector<int> &indices) {
+          double sum = 0;
+          for (int j_ = 0; j_ < j; ++j_)
+            sum += selClstrs[j_][indices[j_]];
+          newClstrs[i].push_back(-sum / (n - 1));
+        });
+      }
     }
+
+    newClstrs[i].insert(newClstrs[i].end(), clstrs[i].begin(), clstrs[i].end());
   }
-}
 
-double l2Norm(const std::vector<double> &a, const std::vector<double> &b) {
-  return std::sqrt(std::inner_product(a.begin(), a.end(), b.begin(), 0.0, std::plus<double>(),
-                                      [](double x, double y) { return (x - y) * (x - y); }));
-}
-
-std::vector<double> minL2Norm(const std::vector<std::vector<double>> &yVecs,
-                              const std::vector<double> &yPrev) {
-  auto yMinL2 =
-      std::min_element(yVecs.begin(), yVecs.end(),
-                       [&yPrev](const std::vector<double> &y1, const std::vector<double> &y2) {
-                         return l2Norm(y1, yPrev) < l2Norm(y2, yPrev);
-                       });
-  return *yMinL2;
+  return newClstrs;
 }
 
 ImProc::ImProc(ImCap *imCap)
@@ -172,16 +191,18 @@ void ImProc::start() {
         findClusters(fgLocs, fgClstrs[ch], 0);
       }
 
-      yVecs = findCombinations(fgClstrs);
-      applyKCL(yVecs);
-      y1 = minL2Norm(yVecs, yPrev1);
-      y2 = minL2Norm(yVecs, yPrev2);
-      yPrev1 = y1;
-      yPrev2 = y2;
+      fgClstrsFull = computeNewClstrs(fgClstrs);
+
+      for (int ch = 0; ch < impConf.numChs_; ++ch) {
+        y1[ch] = minDist(fgClstrsFull[ch], yPrev1[ch]);
+        y2[ch] = minDist(fgClstrsFull[ch], yPrev2[ch]);
+        yPrev1[ch] = y1[ch];
+        yPrev2[ch] = y2[ch];
+      }
 
       y.clear();
-      y.insert( y.end(), y1.begin(), y1.end() );
-      y.insert( y.end(), y2.begin(), y2.end() );
+      y.insert(y.end(), y1.begin(), y1.end());
+      y.insert(y.end(), y2.begin(), y2.end());
       procData->push(y);
       procFrameBuf.set(procFrameArr);
 
