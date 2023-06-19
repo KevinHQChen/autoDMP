@@ -28,6 +28,9 @@ void findChCombs(int offset, int j, int m, std::vector<int> &combination,
 }
 
 double minDist(std::vector<double> &vec, double value) {
+  if (vec.empty())
+    return value;
+
   return *std::min_element(vec.begin(), vec.end(), [value](double a, double b) {
     return std::abs(a - value) < std::abs(b - value);
   });
@@ -99,7 +102,7 @@ std::vector<std::vector<double>> findOtherClstrs(const std::vector<std::vector<d
 ImProc::ImProc(ImCap *imCap)
     : conf(Config::conf), confPath(toml::get<std::string>(conf["improc"]["confPath"])),
       dataPath(toml::get<std::string>(conf["postproc"]["procDataPath"])), imCap(imCap),
-      procData(new QueueFPS<std::vector<double>>(dataPath + "procDataQueue.txt")) {
+      currEv(nullEv), procData(new QueueFPS<std::vector<double>>(dataPath + "procDataQueue.txt")) {
   for (int ch = 0; ch < impConf.numChs_; ch++)
     procData->out << "time (ms), maxLoc.x (px), maxLoc.y (px)\n";
 
@@ -192,8 +195,8 @@ void ImProc::start() {
         cv::findNonZero(procFrameArr[ch].col(procFrameArr[ch].cols / 2), fgLocs);
 
         // print fgLocs
-        for (int i = 0; i < fgLocs.size(); ++i)
-          info("ch: {}, i: {}, fgLocs: {}", ch, i, fgLocs[i]);
+        // for (int i = 0; i < fgLocs.size(); ++i)
+        //   info("ch: {}, i: {}, fgLocs: {}", ch, i, fgLocs[i]);
 
         findClusters(fgLocs, fgClstrs[ch]);
         for (auto &fgChClstrs : fgClstrs)
@@ -201,31 +204,35 @@ void ImProc::start() {
             clstrLoc *= -1;
 
         // print each cluster
-        for (int i = 0; i < fgClstrs[ch].size(); ++i)
-          info("ch: {}, i: {}, fgClstrs: {}", ch, i, fgClstrs[ch][i]);
+        // for (int i = 0; i < fgClstrs[ch].size(); ++i)
+        //   info("ch: {}, i: {}, fgClstrs: {}", ch, i, fgClstrs[ch][i]);
       }
 
       fgClstrsFull = findOtherClstrs(fgClstrs);
 
       // print each cluster
-      for (int ch = 0; ch < impConf.numChs_; ++ch)
-        for (int i = 0; i < fgClstrsFull[ch].size(); ++i)
-          info("ch: {}, i: {}, fgClstrsFull: {}", ch, i, fgClstrsFull[ch][i]);
+      // for (int ch = 0; ch < impConf.numChs_; ++ch)
+      //   for (int i = 0; i < fgClstrsFull[ch].size(); ++i)
+      //     info("ch: {}, i: {}, fgClstrsFull: {}", ch, i, fgClstrsFull[ch][i]);
 
-      // for (int ch = 0; ch < impConf.numChs_; ++ch) {
-      //   y1[ch] = minDist(fgClstrsFull[ch], yPrev1[ch]);
-      //   y2[ch] = minDist(fgClstrsFull[ch], yPrev2[ch]);
-      //   yPrev1[ch] = y1[ch];
-      //   yPrev2[ch] = y2[ch];
-      // }
+      for (int ch = 0; ch < impConf.numChs_; ++ch) {
+        y1[ch] = minDist(fgClstrsFull[ch], yPrev1[ch]);
+        y2[ch] = minDist(fgClstrsFull[ch], yPrev2[ch]);
+        yPrev1[ch] = y1[ch];
+        yPrev2[ch] = y2[ch];
+      }
 
-      // rstOnZeroCross();
+      rstOnZeroCross();
 
-      // y.clear();
-      // y.insert(y.end(), y1.begin(), y1.end());
-      // y.insert(y.end(), y2.begin(), y2.end());
-      // procData->push(y);
+      y.clear();
+      y.insert(y.end(), y1.begin(), y1.end());
+      y.insert(y.end(), y2.begin(), y2.end());
+      procData->push(y);
       procFrameBuf.set(procFrameArr);
+
+      // print y1 and y2
+      for (int ch = 0; ch < impConf.numChs_; ++ch)
+        info("ch: {}, y1: {}, y2: {}", ch, y1[ch], y2[ch]);
 
       stopTime = high_resolution_clock::now();
       auto duration = duration_cast<milliseconds>(stopTime - startTime);

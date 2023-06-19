@@ -111,6 +111,7 @@ class ImProc {
   std::mutex dataMtx;
 
 public:
+  constexpr static event_bus nullEv{{0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, 0.0, 0.0, 0.0};
   std::vector<int> yMax;
   event_bus currEv;
   ImProcConfig impConf;
