@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SupervisoryController.h" // Model header file
 #include "imcap/imcap.hpp"
 #include "util/util.hpp"
 
@@ -87,7 +88,7 @@ class ImProc {
 
   std::vector<int> compParams;
 
-  cv::Mat preFrame, fgMask, tempFgMask;
+  cv::Mat preFrame, fgMask, tempFgMask, tempChFgMask;
   std::vector<cv::Point> fgLocs;
   std::vector<std::vector<double>> fgClstrs, fgClstrsFull;
   cv::Point currLoc;
@@ -102,12 +103,16 @@ class ImProc {
   // Called within imProcThread context
   void start();
   void chImProc(int ch);
-  void segAndOrientCh(cv::Mat &srcImg, cv::Mat &destImg, RotRect &chROI, int &chWidth);
-  void findClusters(const std::vector<cv::Point> &fgLocs, std::vector<double> &clusters,
-                    int tolerance);
+  void segAndOrientCh(cv::Mat &srcImg, cv::Mat &tmpImg, cv::Mat &destImg, RotRect &chROI,
+                      int &chWidth);
+  void findClusters(const std::vector<cv::Point> &fgLocs, std::vector<double> &clusters);
+  void rstOnZeroCross();
+
+  std::mutex dataMtx;
 
 public:
   std::vector<int> yMax;
+  event_bus currEv;
   ImProcConfig impConf;
   QueueFPS<std::vector<double>> *procData;
 

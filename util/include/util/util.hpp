@@ -12,6 +12,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <stdexcept>
 
 #include "opencv2/core.hpp"
 #include "opencv2/highgui.hpp"

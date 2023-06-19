@@ -120,11 +120,14 @@ void CtrlWindow::renderSupervisorStatus() {
     ImGui::Separator();
 
     ImGui::Text("Current State");
-    if (ImGui::BeginTable("currStateTable", 4, tableFlags)) {
+    if (ImGui::BeginTable("currStateTable", 7, tableFlags)) {
       ImGui::TableSetupColumn("Vector");
-      ImGui::TableSetupColumn("ch0");
-      ImGui::TableSetupColumn("ch1");
-      ImGui::TableSetupColumn("ch2");
+      ImGui::TableSetupColumn("ch0_1");
+      ImGui::TableSetupColumn("ch1_1");
+      ImGui::TableSetupColumn("ch2_1");
+      ImGui::TableSetupColumn("ch0_2");
+      ImGui::TableSetupColumn("ch1_2");
+      ImGui::TableSetupColumn("ch2_2");
       ImGui::TableHeadersRow();
 
       displayArray6d("y", sv_->supIn.y);

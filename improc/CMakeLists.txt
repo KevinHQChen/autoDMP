@@ -11,6 +11,7 @@ target_include_directories(improc PUBLIC
   "$<INSTALL_INTERFACE:./${CMAKE_INSTALL_INCLUDEDIR}>")
 
 target_link_libraries(improc PRIVATE
+  supervisor
   util
   imcap
   cam)

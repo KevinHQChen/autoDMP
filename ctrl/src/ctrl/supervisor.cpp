@@ -66,6 +66,7 @@ void Supervisor::start() {
       if (supOut.requestEvent && !evQueue_->empty()) {
         supIn.nextEv = evQueue_->get();
         setCurrEv(supIn.nextEv);
+        imProc->currEv = getCurrEv();
       } else
         supIn.nextEv = nullEv;
 
