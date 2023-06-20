@@ -11,6 +11,7 @@ target_include_directories(util PUBLIC
 # find dependencies
 set(util_DEPENDENCIES_CONFIGURED
     fmt
+    Boost
     spdlog
     CLI11
     toml11
@@ -33,7 +34,6 @@ target_link_libraries(util PRIVATE
     toml11::toml11
     tsl::ordered_map
     ${OpenCV_LIBS}
-    # Boost::program_options
 )
 
 # tests

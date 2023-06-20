@@ -29,6 +29,7 @@
 #include <tsl/ordered_map.h>
 
 #include <string_view>
+#include <boost/pfr.hpp>
 
 using namespace spdlog;
 using namespace std::chrono;
