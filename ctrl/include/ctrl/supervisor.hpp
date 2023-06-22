@@ -7,49 +7,48 @@
 #include <numeric>
 #include <pybind11/embed.h>
 
+void *getSupervisorParam(rtwCAPI_ModelMappingInfo *mmi, uint_T paramIdx);
+
 class Supervisor {
   std::atomic<bool> startedCtrl{false}, startedSysIDFlag{false};
   std::thread ctrlThread, sysIDThread;
+
+  ordered_value conf;
+  std::string dataPath, confPath;
+  bool simModeActive;
+
+  std::vector<double> y;
+
+  event_bus currEv_;
+  std::mutex currEvMtx;
+
+  time_point<steady_clock> initTime{steady_clock::now()};
+  time_point<steady_clock> prevCtrlTime = initTime;
 
   // Called within thread context
   void start();
 
 public:
-  ordered_value conf;
-  bool simModeActive;
-  std::string dataPath, confPath;
+  Supervisor(ImProc *imProc, Pump *pump);
+  ~Supervisor();
 
   Pump *pump;
   ImProc *imProc;
 
-  std::vector<double> y;
-
   SupervisoryController *sup;
   SupervisoryController::ExtU supIn;
   SupervisoryController::ExtY supOut;
+  SupervisoryController::RT_MODEL *rtM;
 
-  // defined in SupervisoryControler_data.cpp in SupervisoryController::P SupervisoryController::rtP
-  constexpr static event_bus nullEv{{0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, 0.0, 0.0, 0.0};
-  event_bus currEv_;
-  std::mutex currEvMtx;
-  QueueFPS<event_bus> *evQueue_;
-  real_T y_max[3], y_o[3], u_o[3], y_range[3];
-  boolean_T inTransRegion;
-  bool measAvail_;
-  bool trueMeasAvail[3];
-  time_point<steady_clock> initTime{steady_clock::now()};
-  time_point<steady_clock> prevCtrlTime = initTime;
-
-  QueueFPS<int> *ctrlDataQueuePtr;
-
-  Supervisor(ImProc *imProc, Pump *pump);
-  ~Supervisor();
+  // defined in SupervisoryController_data.cpp in SupervisoryController::P
+  // SupervisoryController::rtP
+  event_bus nullEv;
 
   void startThread();
   void stopThread();
 
+  QueueFPS<event_bus> *evQueue_;
   void addEvent(event_bus e) { evQueue_->push_back(e); }
-
   void setCurrEv(event_bus e) {
     std::lock_guard<std::mutex> lock(currEvMtx);
     currEv_ = e;
@@ -59,7 +58,9 @@ public:
     return currEv_;
   }
 
+  QueueFPS<int> *ctrlDataQueuePtr;
+  void clearCtrlDataQueue();
+
   std::string getDataPath() const { return dataPath; }
   std::string getConfPath() const { return confPath; }
-  void clearCtrlDataQueue();
 };

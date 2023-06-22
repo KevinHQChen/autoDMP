@@ -2,6 +2,7 @@
 
 #include "imgui.h"
 #include "implot/implot.h"
+#include "util/util.hpp"
 #include <vector>
 
 // utility structure for realtime plot
@@ -30,15 +31,38 @@ struct ScrollingBuffer {
   }
 };
 
-inline void plotVector3d(const char *plotName, const char *xAx, const char *yAx, double yMin, double yMax,
-                  std::vector<std::pair<ScrollingBuffer *, std::string>> &vecs, float guiTime, float history) {
-  if (ImPlot::BeginPlot(plotName, ImVec2(-1, 300))) {
+inline void plotVectorNN(std::string plotName, const char *xAx, const char *yAx, double yMin,
+                         double yMax, std::vector<std::string> dataNames,
+                         const std::vector<std::vector<ScrollingBuffer *>> &vecs, float guiTime,
+                         float history) {
+  if (ImPlot::BeginPlot(plotName.c_str(), ImVec2(-1, 300))) {
+    ImPlot::SetupAxes(xAx, yAx); //, implotFlags, implotFlags);
+    ImPlot::SetupAxisLimits(ImAxis_X1, guiTime - history, guiTime, ImGuiCond_Always);
+    ImPlot::SetupAxisLimits(ImAxis_Y1, yMin, yMax);
+    std::string label;
+    for (int i = 0; i < dataNames.size(); ++i) {
+      for (int j = 0; j < vecs[i].size(); ++j) {
+        label = dataNames[i] + std::to_string(j);
+        ImPlot::PlotLine(label.c_str(), &vecs[i][j]->Data[0].x, &vecs[i][j]->Data[0].y,
+                         vecs[i][j]->Data.size(), 0, vecs[i][j]->Offset, 2 * sizeof(float));
+      }
+    }
+    ImPlot::EndPlot();
+  }
+}
+
+inline void plotVectorN(std::string plotName, const char *xAx, const char *yAx, double yMin,
+                        double yMax, std::string dataName,
+                        const std::vector<ScrollingBuffer *> &vecs, float guiTime, float history) {
+  if (ImPlot::BeginPlot(plotName.c_str(), ImVec2(-1, 300))) {
+    int idx = 0;
     ImPlot::SetupAxes(xAx, yAx); //, implotFlags, implotFlags);
     ImPlot::SetupAxisLimits(ImAxis_X1, guiTime - history, guiTime, ImGuiCond_Always);
     ImPlot::SetupAxisLimits(ImAxis_Y1, yMin, yMax);
     for (auto &vec : vecs)
-      ImPlot::PlotLine(vec.second.c_str(), &vec.first->Data[0].x, &vec.first->Data[0].y,
-                       vec.first->Data.size(), 0, vec.first->Offset, 2 * sizeof(float));
+      ImPlot::PlotLine((dataName + std::to_string(idx++)).c_str(), &vec->Data[0].x, &vec->Data[0].y,
+                       vec->Data.size(), 0, vec->Offset, 2 * sizeof(float));
+
     ImPlot::EndPlot();
   }
 }
@@ -76,13 +100,14 @@ inline void displayArray3d(const char *arrName, double arr[3], const char *helpT
   }
 }
 
-inline void displayArray6d(const char *arrName, double arr[6], const char *helpText = "") {
+inline void displayArrayNd(const char *arrName, const std::vector<double> &arr,
+                           const char *helpText = "") {
   ImGui::TableNextRow();
   ImGui::TableSetColumnIndex(0);
   ImGui::Text("%s", arrName);
   ImGui::SameLine();
   HelpMarker(helpText);
-  for (int i = 0; i < 6; ++i) {
+  for (size_t i = 0; i < arr.size(); ++i) {
     ImGui::TableSetColumnIndex(i + 1);
     ImGui::Text("%f", arr[i]);
   }
@@ -94,19 +119,7 @@ inline void displayArray3b(const char *arrName, bool arr[3], const char *helpTex
   ImGui::Text("%s", arrName);
   ImGui::SameLine();
   HelpMarker(helpText);
-  for (int i = 0; i < 3; ++i) {
-    ImGui::TableSetColumnIndex(i + 1);
-    ImGui::Text("%d", arr[i]);
-  }
-}
-
-inline void displayArray6b(const char *arrName, bool arr[6], const char *helpText = "") {
-  ImGui::TableNextRow();
-  ImGui::TableSetColumnIndex(0);
-  ImGui::Text("%s", arrName);
-  ImGui::SameLine();
-  HelpMarker(helpText);
-  for (int i = 0; i < 6; ++i) {
+  for (int i = 0; i < NUM_CHANS; ++i) {
     ImGui::TableSetColumnIndex(i + 1);
     ImGui::Text("%d", arr[i]);
   }

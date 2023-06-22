@@ -42,14 +42,14 @@ public:
     // TODO set slider size:
     // ImGui::SetNextItemWidth(ImGui::GetFontSize() * 8);
     if (horizontal_) {
-      if constexpr (std::is_same<T, int>::value)
+      if constexpr (std::is_same_v<T, int>)
         ImGui::SliderInt(label_.c_str(), value_, min_, max_, format_.c_str());
-      else if constexpr (std::is_same<T, float>::value)
+      else if constexpr (std::is_same_v<T, float>)
         ImGui::SliderFloat(label_.c_str(), value_, min_, max_);
     } else {
-      if constexpr (std::is_same<T, int>::value)
+      if constexpr (std::is_same_v<T, int>)
         ImGui::VSliderInt(label_.c_str(), sliderSize_, value_, min_, max_, format_.c_str());
-      else if constexpr (std::is_same<T, float>::value)
+      else if constexpr (std::is_same_v<T, float>)
         ImGui::VSliderFloat(label_.c_str(), sliderSize_, value_, min_, max_);
     }
     ImGui::EndGroup();
@@ -99,15 +99,15 @@ public:
     for (int i = 0; i < numSliders_; ++i) {
       std::string label = "##" + label_ + std::to_string(i);
       if (horizontal_) {
-        if constexpr (std::is_same<T, int>::value)
+        if constexpr (std::is_same_v<T, int>)
           ImGui::SliderInt(label.c_str(), &(*values_)[i], min_, max_, format_.c_str());
-        else if constexpr (std::is_same<T, float>::value)
+        else if constexpr (std::is_same_v<T, float>)
           ImGui::SliderFloat(label.c_str(), &(*values_)[i], min_, max_);
       } else {
-        if constexpr (std::is_same<T, int>::value)
+        if constexpr (std::is_same_v<T, int>)
           ImGui::VSliderInt(label.c_str(), sliderSize_, &(*values_)[i], min_, max_,
                             format_.c_str());
-        else if constexpr (std::is_same<T, float>::value)
+        else if constexpr (std::is_same_v<T, float>)
           ImGui::VSliderFloat(label.c_str(), sliderSize_, &(*values_)[i], min_, max_);
         ImGui::SameLine();
       }

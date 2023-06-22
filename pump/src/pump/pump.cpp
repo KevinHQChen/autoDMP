@@ -11,12 +11,11 @@ Pump::Pump() {
 
     // only initialize MFCS-EZ (SN is populated sequentially for each detected controller)
     for (unsigned char controllerIdx = 0; controllerIdx < numControllers; controllerIdx++) {
-      if (instrumentType[controllerIdx] == fgt_INSTRUMENT_TYPE::MFCS_EZ) {
+      if (instrumentType[controllerIdx] == fgt_INSTRUMENT_TYPE::MFCS_EZ)
         std::cout << "MFCS-EZ instrument detected at index: " << int(controllerIdx)
                   << ", serial number: " << SN[controllerIdx] << "\n";
-      } else {
+      else
         SN[controllerIdx] = 0;
-      }
     }
     Fgt_initEx(SN);
 
@@ -27,19 +26,23 @@ Pump::Pump() {
     // Get detailed info about all pressure channels
     Fgt_get_pressureChannelsInfo(channelInfo);
 
-    for (unsigned char chanIdx = 0; chanIdx < numPressureChannels; chanIdx++) {
+    for (unsigned char ch = 0; ch < numPressureChannels; ch++) {
+      // initialize data structures
+      outputs.push_back(0.0);
+      prevOutputs.push_back(0.0);
+
       // Get pressure limits
-      unsigned int idx = channelInfo[chanIdx].index;
+      unsigned int idx = channelInfo[ch].index;
       Fgt_get_pressureRange(idx, &minPressure, &maxPressure);
       std::cout << "Channel " << idx << " max pressure: " << maxPressure << " mbar\n";
       std::cout << "Channel " << idx << " min pressure: " << minPressure << " mbar\n";
 
       // Calibrate pressure channels (set pressure commands will not be accepted during this time)
-      if (chanIdx == 0) {
-        std::cout << "Beginning pressure channel calibration, unplug all tubing from pump.\n";
-        // std::cout << "Press enter to continue...\n";
-        // getchar();
-      }
+      // if (ch == 0) {
+      //   std::cout << "Beginning pressure channel calibration, unplug all tubing from pump.\n";
+      //   // std::cout << "Press enter to continue...\n";
+      //   // getchar();
+      // }
       std::cout << "Calibrating pressure channel " << idx << "\n";
       Fgt_calibratePressure(idx);
       std::cout << "Done.\n";
@@ -111,8 +114,8 @@ Pump::~Pump() {
 
   if (pumpType_ == "FLUIGENT") {
     // set all pressures to 0mbar before closing
-    for (unsigned char chanIdx = 0; chanIdx < numPressureChannels; chanIdx++)
-      Fgt_set_pressure(channelInfo[chanIdx].index, 0);
+    for (unsigned char ch = 0; ch < numPressureChannels; ch++)
+      Fgt_set_pressure(channelInfo[ch].index, 0);
 
     Fgt_close();
   } else if (pumpType_ == "BARTELS") {
@@ -121,25 +124,31 @@ Pump::~Pump() {
   }
 }
 
-bool Pump::setVoltage(unsigned int pumpIdx, float voltage) {
+bool Pump::setOutput(unsigned int pumpIdx, float voltage) {
   std::lock_guard lock(mutex);
 
   if (pumpType_ == "FLUIGENT") {
-    // Check if voltage is different from current voltage, return early if it's the same
-    if (voltage == prevPumpVoltages[pumpIdx])
+    // check pump index
+    if (pumpIdx >= numPressureChannels) {
+      error("Pump index {} out of range (max {})", pumpIdx, numPressureChannels - 1);
+      return false;
+    }
+
+    // do nothing if pump output has not changed
+    if (voltage == prevOutputs[pumpIdx])
       return true;
 
     if (!simModeActive)
       Fgt_set_pressure(pumpIdx, voltage);
 
     // sim mode is active or command was successful
-    pumpVoltages[pumpIdx] = voltage;
-    prevPumpVoltages[pumpIdx] = voltage;
+    outputs[pumpIdx] = voltage;
+    prevOutputs[pumpIdx] = voltage;
     info("Pump {} set to {} V.", pumpIdx + 1, voltage);
     return true;
   } else if (pumpType_ == "BARTELS") {
     // Check if voltage is different from current voltage, return early if it's the same
-    if (voltage == prevPumpVoltages[pumpIdx])
+    if (voltage == prevOutputs[pumpIdx])
       return true;
 
     auto presCommand = "P" + std::to_string(pumpIdx + 1) + "V" + std::to_string(voltage) + "\r\n";
@@ -150,8 +159,8 @@ bool Pump::setVoltage(unsigned int pumpIdx, float voltage) {
     }
 
     // sim mode is active or command was successful
-    pumpVoltages[pumpIdx] = voltage;
-    prevPumpVoltages[pumpIdx] = voltage;
+    outputs[pumpIdx] = voltage;
+    prevOutputs[pumpIdx] = voltage;
     info("Pump {} set to {} V.", pumpIdx + 1, voltage);
     return true;
   } else {
@@ -236,10 +245,12 @@ bool Pump::sendCmd(std::string cmd, int len) {
   return ret;
 }
 
-void Pump::sendSigs(Eigen::Vector3d u) {
-  // channel -> pump mapping
-  setVoltage(0, u(0)); // ch1 = P1, P2
-  setVoltage(1, u(1)); // ch1 = P1, P2
-  setVoltage(2, u(2)); // ch2 = P3
-  setVoltage(3, 0); // ch3 = P4
+void Pump::setOutputs(std::vector<double> u) {
+  if (pumpType_ == "FLUIGENT")
+    for (int ch = 0; ch < numPressureChannels; ++ch)
+      setOutput(ch, u[ch]);
 }
+
+std::string Pump::getPumpType() { return pumpType_; }
+
+int Pump::getNumPumps() { return numPressureChannels; }

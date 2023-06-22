@@ -18,6 +18,79 @@ ImProcWindow::~ImProcWindow() {
   //   chImages_[i].reset();
 }
 
+void ImProcWindow::render() {
+  renderImCap();
+  renderImProc();
+}
+
+void ImProcWindow::renderImCap() {
+  if (ImGui::IsKeyPressed(ImGuiKey_C))
+    !imCap_->started() ? imCap_->startCaptureThread() : imCap_->stopCaptureThread();
+  if (ImGui::IsKeyPressed(ImGuiKey_Enter))
+    visible_ = !visible_;
+  if (visible_) {
+    if (ImGui::Begin("Raw Image Capture", &visible_)) {
+      // draw image
+      rawFrame = imCap_->getFrame();
+      ImGui::Image((ImTextureID)rawFrame.texture, ImVec2(rawFrame.width, rawFrame.height));
+      imgOrigin = ImGui::GetItemRectMin();
+
+      // improc setup
+      if (ImGui::IsKeyPressed(ImGuiKey_S))
+        improcSetupVisible_ = !improcSetupVisible_;
+      if (improcSetupVisible_) {
+        if (ImGui::Button("Select Junction"))
+          drawJunc = true;
+        ImGui::SameLine();
+        if (ImGui::Button("Select Channel"))
+          drawChs = true;
+        draw();
+        renderImProcConfigTable();
+
+        if (ImGui::Button("Update ImProc Config")) {
+          imProc_->impConf.setChROIs(chBBoxes);
+          imProc_->impConf.setChWidth(chWidth);
+          imProc_->impConf.setNumChs(numChs);
+          imProc_->impConf.setBgSubHistory(bgSubHistory);
+          imProc_->impConf.setBgSubThres(bgSubThres);
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Save ImProc Config"))
+          imProc_->saveConfig();
+        ImGui::SameLine();
+        if (ImGui::Button("Load ImProc Config")) {
+          imProc_->loadConfig();
+          chBBoxes = imProc_->impConf.getChROIs();
+          chWidth = imProc_->impConf.getChWidth();
+          numChs = imProc_->impConf.getNumChs();
+          bgSubHistory = imProc_->impConf.getBgSubHistory();
+          bgSubThres = imProc_->impConf.getBgSubThres();
+        }
+      }
+      ImGui::End();
+    }
+  }
+}
+
+void ImProcWindow::renderImProc() {
+  if (ImGui::IsKeyPressed(ImGuiKey_I))
+    improcVisible_ = !improcVisible_;
+  if (improcVisible_) {
+    imProc_->startThread();
+    if (ImGui::Begin("Channels", &improcVisible_)) {
+      for (int i = 0; i < imProc_->impConf.getNumChs(); ++i) {
+        if (i != 0)
+          ImGui::SameLine();
+        procGUIFrames[i] = imProc_->getProcFrame(i);
+        ImGui::Image((ImTextureID)procGUIFrames[i].texture,
+                     ImVec2(procGUIFrames[i].width, procGUIFrames[i].height));
+      }
+      ImGui::End();
+    }
+  } else
+    imProc_->stopThread();
+}
+
 void ImProcWindow::renderImProcConfigTable() {
   // Add table to display and edit properties
   if (ImGui::BeginTable("prop_table", 7)) {
@@ -86,72 +159,6 @@ void ImProcWindow::renderImProcConfigTable() {
   ImGui::InputDouble("BgSub Threshold", &bgSubThres);
 
   ImGui::Text("Image dimensions: %dx%d", rawFrame.width, rawFrame.height);
-}
-
-void ImProcWindow::render() {
-  if (ImGui::IsKeyPressed(ImGuiKey_C))
-    !imCap_->started() ? imCap_->startCaptureThread() : imCap_->stopCaptureThread();
-  if (ImGui::IsKeyPressed(ImGuiKey_Enter))
-    visible_ = !visible_;
-  if (visible_) {
-    if (ImGui::Begin("Raw Image Capture", &visible_)) {
-      // draw image
-      rawFrame = imCap_->getFrame();
-      ImGui::Image((ImTextureID)rawFrame.texture, ImVec2(rawFrame.width, rawFrame.height));
-      imgOrigin = ImGui::GetItemRectMin();
-
-      // improc setup
-      if (ImGui::IsKeyPressed(ImGuiKey_S))
-        improcSetupVisible_ = !improcSetupVisible_;
-      if (improcSetupVisible_) {
-        if (ImGui::Button("Select Junction"))
-          drawJunc = true;
-        ImGui::SameLine();
-        if (ImGui::Button("Select Channel"))
-          drawChs = true;
-        draw();
-        renderImProcConfigTable();
-
-        if (ImGui::Button("Update ImProc Config")) {
-          imProc_->impConf.setChROIs(chBBoxes);
-          imProc_->impConf.setChWidth(chWidth);
-          imProc_->impConf.setNumChs(numChs);
-          imProc_->impConf.setBgSubHistory(bgSubHistory);
-          imProc_->impConf.setBgSubThres(bgSubThres);
-        }
-        ImGui::SameLine();
-        if (ImGui::Button("Save ImProc Config"))
-          imProc_->saveConfig();
-        ImGui::SameLine();
-        if (ImGui::Button("Load ImProc Config")) {
-          imProc_->loadConfig();
-          chBBoxes = imProc_->impConf.getChROIs();
-          chWidth = imProc_->impConf.getChWidth();
-          numChs = imProc_->impConf.getNumChs();
-          bgSubHistory = imProc_->impConf.getBgSubHistory();
-          bgSubThres = imProc_->impConf.getBgSubThres();
-        }
-      }
-      ImGui::End();
-    }
-  }
-
-  if (ImGui::IsKeyPressed(ImGuiKey_I))
-    improcVisible_ = !improcVisible_;
-  if (improcVisible_) {
-    imProc_->startProcThread();
-    if (ImGui::Begin("Channels", &improcVisible_)) {
-      for (int i = 0; i < imProc_->impConf.getNumChs(); ++i) {
-        if (i != 0)
-          ImGui::SameLine();
-        procGUIFrames[i] = imProc_->getProcFrame(i);
-        ImGui::Image((ImTextureID)procGUIFrames[i].texture,
-                     ImVec2(procGUIFrames[i].width, procGUIFrames[i].height));
-      }
-      ImGui::End();
-    }
-  } else
-    imProc_->stopProcThread();
 }
 
 } // namespace gui

@@ -5,8 +5,12 @@ Supervisor::Supervisor(ImProc *imProc, Pump *pump)
       dataPath(toml::get<std::string>(conf["ctrl"]["dataPath"])),
       confPath(toml::get<std::string>(conf["ctrl"]["confPath"])), pump(pump), imProc(imProc),
       sup(new SupervisoryController()), supIn({}), supOut({}),
-      evQueue_(new QueueFPS<event_bus>(dataPath + "eventQueue.txt")), currEv_(nullEv),
-      ctrlDataQueuePtr(new QueueFPS<int>(dataPath + "ctrlDataQueue.txt")) {}
+      evQueue_(new QueueFPS<event_bus>(dataPath + "eventQueue.txt")),
+      ctrlDataQueuePtr(new QueueFPS<int>(dataPath + "ctrlDataQueue.txt")) {
+  rtM = sup->getRTM();
+  nullEv = *(event_bus *)getSupervisorParam(&rtM->DataMapInfo.mmi, 55);
+  currEv_ = nullEv;
+}
 
 Supervisor::~Supervisor() {
   delete evQueue_;
@@ -23,21 +27,21 @@ void Supervisor::startThread() {
 
     // initialize SupervisoryController (y_range, y_max, y_o, u_o, yhat)
     supIn.excitation = 5;
-    for (int ch = 0; ch < imProc->impConf.numChs_; ++ch) {
+    for (int ch = 0; ch < NUM_CHANS; ++ch) {
       // primary
       supIn.ymax[ch] = imProc->yMax[ch];
       supIn.y0[ch] = 0;
       supOut.yhat[ch] = 0;
       // secondary
-      supIn.ymax[imProc->impConf.numChs_ + ch] = imProc->yMax[ch];
-      supIn.y0[imProc->impConf.numChs_ + ch] = 0;
-      supOut.yhat[imProc->impConf.numChs_ + ch] = 0;
+      supIn.ymax[NUM_CHANS + ch] = imProc->yMax[ch];
+      supIn.y0[NUM_CHANS + ch] = 0;
+      supOut.yhat[NUM_CHANS + ch] = 0;
 
-      supIn.u0[ch] = pump->pumpVoltages[ch];
+      supIn.u0[ch] = pump->outputs[ch];
     }
     sup->initialize();
 
-    if (!simModeActive)
+    if (!simModeActive && pump->getPumpType() == "BARTELS")
       pump->setFreq(200);
     ctrlThread = std::thread(&Supervisor::start, this);
     ctrlThread.detach();
@@ -66,13 +70,13 @@ void Supervisor::start() {
       if (supOut.requestEvent && !evQueue_->empty()) {
         supIn.nextEv = evQueue_->get();
         setCurrEv(supIn.nextEv);
-        imProc->currEv = getCurrEv();
+        imProc->setR(getCurrEv().r);
       } else
         supIn.nextEv = nullEv;
 
       prevCtrlTime = steady_clock::now();
       y = imProc->procData->get();
-      for (int ch = 0; ch < 2 * imProc->impConf.numChs_; ++ch)
+      for (int ch = 0; ch < 2 * NUM_CHANS; ++ch)
         supIn.y[ch] = y[ch];
       supIn.measAvail = !supIn.measAvail;
 
@@ -81,8 +85,8 @@ void Supervisor::start() {
       sup->step();
       supOut = sup->rtY;
 
-      !simModeActive ? pump->sendSigs(Eigen::Vector3d(supOut.u[0], supOut.u[1], supOut.u[2]))
-                     : info("Pump inputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
+      !simModeActive ? pump->setOutputs(std::vector<double>(supOut.u, supOut.u + NUM_CHANS))
+                     : info("Pump outputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
       // info("Pump inputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
 
       ctrlDataQueuePtr->out << "y: " << (double)supIn.y[0] << ", " << (double)supIn.y[1] << ", "
@@ -106,4 +110,34 @@ void Supervisor::start() {
                             << supOut.theta[22] << ", " << supOut.theta[23] << "\n";
     }
   }
+}
+
+void *getSupervisorParam(rtwCAPI_ModelMappingInfo *mmi, uint_T paramIdx) {
+  const rtwCAPI_ModelParameters *modelParams;
+  void **dataAddrMap;
+
+  uint_T addrIdx;
+
+  void *paramAddress;
+
+  /* Assert the parameter index is less than total number of parameters */
+  assert(paramIdx < rtwCAPI_GetNumModelParameters(mmi));
+
+  /* Get modelParams, an array of rtwCAPI_ModelParameters structure  */
+  modelParams = rtwCAPI_GetModelParameters(mmi);
+  if (modelParams == NULL) {
+    error("Model parameters not available");
+    return nullptr;
+  }
+
+  /* Get the address to this parameter */
+  dataAddrMap = rtwCAPI_GetDataAddressMap(mmi);
+  addrIdx = rtwCAPI_GetModelParameterAddrIdx(modelParams, paramIdx);
+  paramAddress = (void *)rtwCAPI_GetDataAddress(dataAddrMap, addrIdx);
+  if (paramAddress == NULL) {
+    error("Model parameter address not available");
+    return nullptr;
+  }
+
+  return paramAddress;
 }

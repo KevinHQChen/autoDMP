@@ -1,6 +1,23 @@
 #include "improc/improc.hpp"
 #include <numeric>
 
+ImProc::ImProc(ImCap *imCap)
+    : conf(Config::conf), confPath(toml::get<std::string>(conf["improc"]["confPath"])),
+      dataPath(toml::get<std::string>(conf["postproc"]["procDataPath"])), imCap(imCap),
+      procData(new QueueFPS<std::vector<double>>(dataPath + "procDataQueue.txt")) {
+  for (int ch = 0; ch < impConf.numChs_; ch++)
+    procData->out << "time (ms), maxLoc.x (px), maxLoc.y (px)\n";
+
+  // save images with proper format PNG, CV_16UC1
+  compParams.push_back(cv::IMWRITE_PNG_COMPRESSION);
+  compParams.push_back(0);
+}
+
+ImProc::~ImProc() {
+  stopThread();
+  delete procData;
+}
+
 void findMeasCombs(const std::vector<std::vector<double>> &sets, std::vector<int> &indices,
                    int setIndex, std::function<void(const std::vector<int> &)> callback) {
   if (setIndex == sets.size()) {
@@ -25,15 +42,6 @@ void findChCombs(int offset, int j, int m, std::vector<int> &combination,
     findChCombs(i + 1, j - 1, m, combination, combinations);
     combination.pop_back();
   }
-}
-
-double minDist(std::vector<double> &vec, double value) {
-  if (vec.empty())
-    return value;
-
-  return *std::min_element(vec.begin(), vec.end(), [value](double a, double b) {
-    return std::abs(a - value) < std::abs(b - value);
-  });
 }
 
 std::vector<std::vector<double>> findOtherClstrs(const std::vector<std::vector<double>> &clstrs) {
@@ -99,23 +107,6 @@ std::vector<std::vector<double>> findOtherClstrs(const std::vector<std::vector<d
   return newClstrs;
 }
 
-ImProc::ImProc(ImCap *imCap)
-    : conf(Config::conf), confPath(toml::get<std::string>(conf["improc"]["confPath"])),
-      dataPath(toml::get<std::string>(conf["postproc"]["procDataPath"])), imCap(imCap),
-      currEv(nullEv), procData(new QueueFPS<std::vector<double>>(dataPath + "procDataQueue.txt")) {
-  for (int ch = 0; ch < impConf.numChs_; ch++)
-    procData->out << "time (ms), maxLoc.x (px), maxLoc.y (px)\n";
-
-  // save images with proper format PNG, CV_16UC1
-  compParams.push_back(cv::IMWRITE_PNG_COMPRESSION);
-  compParams.push_back(0);
-}
-
-ImProc::~ImProc() {
-  stopProcThread();
-  delete procData;
-}
-
 // load channel/template images, bounding boxes from file
 void ImProc::loadConfig() {
   // load bboxes from file
@@ -131,7 +122,7 @@ void ImProc::saveConfig() {
   out.close();
 }
 
-void ImProc::startProcThread() {
+void ImProc::startThread() {
   if (!started()) {
     info("Starting image processing...");
     startedImProc = true;
@@ -155,7 +146,7 @@ void ImProc::startProcThread() {
   }
 }
 
-void ImProc::stopProcThread() {
+void ImProc::stopThread() {
   if (started()) {
     info("Stopping image processing...");
     startedImProc = false;
@@ -244,6 +235,17 @@ void ImProc::start() {
   }
 }
 
+bool ImProc::started() { return startedImProc; }
+
+double ImProc::minDist(std::vector<double> &vec, double value) {
+  if (vec.empty())
+    return value;
+
+  return *std::min_element(vec.begin(), vec.end(), [value](double a, double b) {
+    return std::abs(a - value) < std::abs(b - value);
+  });
+}
+
 void ImProc::segAndOrientCh(cv::Mat &srcImg, cv::Mat &tmpImg, cv::Mat &destImg, RotRect &chROI,
                             int &chWidth) {
   tmpImg = srcImg(chROI);
@@ -298,7 +300,14 @@ void ImProc::findClusters(const std::vector<cv::Point> &fgLocs, std::vector<doub
   clusters.push_back(clusterCenter);
 }
 
-bool anyZeroCross(const std::vector<double> &vec1, const std::vector<double> &vec2) {
+bool ImProc::anyNonZero(std::size_t start, std::size_t end) {
+  for (std::size_t i = start; i < end; i++)
+    if (r[i] == 0)
+      return false;
+  return true;
+}
+
+bool ImProc::anyZeroCross(const std::vector<double> &vec1, const std::vector<double> &vec2) {
   if (vec1.size() != vec2.size())
     throw std::invalid_argument("Vectors are not the same size");
 
@@ -308,28 +317,22 @@ bool anyZeroCross(const std::vector<double> &vec1, const std::vector<double> &ve
   return it.first != vec1.end();
 }
 
-bool anyNonZero(event_bus &eb, std::size_t start, std::size_t end) {
-  for (std::size_t i = start; i < end; i++)
-    if (eb.r[i] == 0)
-      return false;
-  return true;
-}
-
 void ImProc::rstOnZeroCross() {
-  std::size_t rSize = sizeof(currEv.r) / sizeof(currEv.r[0]);
-
   // if y1 is being controlled and any y2 crosses zero, reset y2
-  if (anyNonZero(currEv, 0, rSize / 2))
+  if (anyNonZero(0, NUM_CHANS))
     if (anyZeroCross(y2, yPrev2))
       std::fill(y2.begin(), y2.end(), 0);
 
   // if y2 is being controlled and any y1 crosses zero, reset y1
-  if (anyNonZero(currEv, rSize / 2, rSize))
+  if (anyNonZero(NUM_CHANS, 2 * NUM_CHANS))
     if (anyZeroCross(y1, yPrev1))
       std::fill(y1.begin(), y1.end(), 0);
 }
 
-bool ImProc::started() { return startedImProc; }
+void ImProc::setR(double currTraj[2 * NUM_CHANS]) {
+  for (int i = 0; i < 2 * NUM_CHANS; ++i)
+    r[i] = currTraj[i];
+}
 
 cv::Mat ImProc::getProcFrame(int idx) { return procFrameBuf.get()[idx]; }
 

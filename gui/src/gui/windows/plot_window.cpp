@@ -2,9 +2,33 @@
 
 namespace gui {
 
-PlotWindow::PlotWindow(Supervisor *sv) : sv_(sv) {}
+PlotWindow::PlotWindow(Supervisor *sv) : sv_(sv) {
+  for (int ch = 0; ch < 2 * NUM_CHANS; ++ch) {
+    y.push_back(new ScrollingBuffer());
+    yhat.push_back(new ScrollingBuffer());
 
-PlotWindow::~PlotWindow() {}
+    u.push_back(new ScrollingBuffer());
+
+    ywt.push_back(new ScrollingBuffer());
+  }
+
+  int np = 4;
+  for (int i = 0; i < np * 2 * NUM_CHANS; ++i)
+    theta.push_back(new ScrollingBuffer());
+}
+
+PlotWindow::~PlotWindow() {
+  for (auto &vec : y)
+    delete vec;
+  for (auto &vec : yhat)
+    delete vec;
+  for (auto &vec : u)
+    delete vec;
+  for (auto &vec : ywt)
+    delete vec;
+  for (auto &vec : theta)
+    delete vec;
+}
 
 void PlotWindow::render() {
   if (ImGui::IsKeyPressed(ImGuiKey_V))
@@ -13,19 +37,15 @@ void PlotWindow::render() {
     if (ImGui::Begin("Real Time Plot", &visible_)) {
       if (!pausePlot) {
         guiTime += ImGui::GetIO().DeltaTime;
-        u0.AddPoint(guiTime, sv_->supOut.u[0]);
-        u1.AddPoint(guiTime, sv_->supOut.u[1]);
-        u2.AddPoint(guiTime, sv_->supOut.u[2]);
-
-        y0.AddPoint(guiTime, sv_->supIn.y[0]);
-        y1.AddPoint(guiTime, sv_->supIn.y[1]);
-        y2.AddPoint(guiTime, sv_->supIn.y[2]);
-        yhat0.AddPoint(guiTime, sv_->supOut.yhat[0]);
-        yhat1.AddPoint(guiTime, sv_->supOut.yhat[1]);
-        yhat2.AddPoint(guiTime, sv_->supOut.yhat[2]);
-        yref0.AddPoint(guiTime, sv_->supOut.currTraj[0]);
-        yref1.AddPoint(guiTime, sv_->supOut.currTraj[1]);
-        yref2.AddPoint(guiTime, sv_->supOut.currTraj[2]);
+        for (int ch = 0; ch < 2 * NUM_CHANS; ++ch) {
+          y[ch]->AddPoint(guiTime, sv_->supIn.y[ch]);
+          yhat[ch]->AddPoint(guiTime, sv_->supOut.yhat[ch]);
+          u[ch]->AddPoint(guiTime, sv_->supOut.u[ch]);
+          ywt[ch]->AddPoint(guiTime, sv_->supOut.ywt[ch]);
+        }
+        int np = 4;
+        for (int i = 0; i < np * 2 * NUM_CHANS; ++i)
+          theta[i]->AddPoint(guiTime, sv_->supOut.theta[i]);
       }
 
       ImGui::SliderFloat("History", &history, 1, 60, "%.1f s");
@@ -37,18 +57,24 @@ void PlotWindow::render() {
           pausePlot = false;
       if (ImGui::Button("Erase Data")) {
         guiTime = 0;
-        for (auto &vec : std::vector<ScrollingBuffer>{u0,    u1,    u2,    y0,    y1,    y2,  yhat0,
-                                                      yhat1, yhat2, yref0, yref1, yref2, b11, b21,
-                                                      b31,   b12,   b22,   b32,   b13,   b23, b33})
-          vec.Erase();
+        for (auto &vec : y)
+          vec->Erase();
+        for (auto &vec : yhat)
+          vec->Erase();
+        for (auto &vec : u)
+          vec->Erase();
+        for (auto &vec : ywt)
+          vec->Erase();
+        for (auto &vec : theta)
+          vec->Erase();
       }
 
-      plotVector3d("##Control Input", "time (s)", "voltage (V)", 0, 90, ctrlVecs, guiTime,
-                   history);
-      plotVector3d("##Measured Output", "time (s)", "position (px)", 0, 750, measVecs, guiTime,
-                   history);
-      plotVector3d("##Param Estimates", "time (s)", "value", -1, 1, paramVecs, guiTime,
-                   history);
+      plotVectorNN("##Output", "time (s)", "position (px)", 0, 80, {"y", "yhat"}, {y, yhat},
+                   guiTime, history);
+      plotVectorN("##Input", "time (s)", "input (mbar)", 0, 80, "u", u, guiTime, history);
+      plotVectorN("##Output Weight", "time (s)", "output weight", 0, 1, "ywt", ywt, guiTime,
+                  history);
+      plotVectorN("##Param Estimates", "time (s)", "value", -1, 1, "th", theta, guiTime, history);
       ImGui::End();
     }
   }

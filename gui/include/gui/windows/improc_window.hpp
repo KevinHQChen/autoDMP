@@ -107,6 +107,8 @@ class ImProcWindow : public Window {
     }
   }
 
+  void renderImCap();
+  void renderImProc();
   void renderImProcConfigTable();
 
 public:

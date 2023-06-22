@@ -17,7 +17,6 @@ class ImCap {
   void start();
 
 public:
-
   ImCap();
   ~ImCap();
   void startCaptureThread();

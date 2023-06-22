@@ -15,35 +15,40 @@
 /* FLUIGENT END */
 
 class Pump {
-  const std::string pumpType_ = toml::get<std::string>(Config::conf["pump"]["type"]);
 
 public:
-  // pump state (voltages are ints to work with imgui slider)
-  std::vector<float> pumpVoltages{0, 0, 0, 0}, prevPumpVoltages{0, 0, 0, 0};
-  bool valveState[4]{true, true, true, true}, prevValveState[4]{true, true, true, true};
-  int freq{0}, prevFreq{0};
-
-  const bool simModeActive = toml::get<bool>(Config::conf["ctrl"]["simMode"]);
-
   Pump();
   ~Pump();
 
-  bool setVoltage(unsigned int pumpIdx, float voltage);
-  int getVoltage(unsigned int pumpIdx);
+  // generic variables
+  std::vector<float> outputs, prevOutputs;
 
+  /* BARTELS */
+  bool valveState[4]{true, true, true, true}, prevValveState[4]{true, true, true, true};
+  int freq{0}, prevFreq{0};
+  /* BARTELS END */
+
+  // generic functions
+  bool setOutput(unsigned int pumpIdx, float voltage);
+  int getOutput(unsigned int pumpIdx);
+  void setOutputs(std::vector<double> u);
+  std::string getPumpType();
+  int getNumPumps();
+
+  /* BARTELS */
   void setFreq(int freq);
   void getFreq();
-
   void enableValve(unsigned int valveIdx);
   void disableValve(unsigned int valveIdx);
   void setValve(unsigned int pumpIdx, bool state);
   void getValve(unsigned int pumpIdx);
-
   bool sendCmd(std::string cmd, int len);
-  void sendSigs(Eigen::Vector3d u);
+  /* BARTELS END */
 
 private:
   std::mutex mutex;
+  const std::string pumpType_ = toml::get<std::string>(Config::conf["pump"]["type"]);
+  const bool simModeActive = toml::get<bool>(Config::conf["ctrl"]["simMode"]);
 
   /* FLUIGENT */
   // structures holding controller/instrument identification and details

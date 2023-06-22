@@ -16,29 +16,33 @@ class CtrlWindow : public Window {
   ImGuiTableFlags tableFlags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH |
                                ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg |
                                ImGuiTableFlags_NoBordersInBody;
+  const char *dragFmt = "%.01f", *txtFmt = "%.1f";
 
-  event_bus currEv_;
+  event_bus currEv_, newEv_;
   int srcState, destState, moveTime, holdTime;
   int targetPos[2 * NUM_CHANS];
   float excitationAmp, paramLowerBound, covModification;
 
   int openAction = -1;
-  int dropletLength = 0;
+  double dropletLength = 0, dNeck = 0, dPlug = 0, wCh = 0;
   int numDroplets = 0;
 
-  event_bus getEvent(std::array<int, 2 * NUM_CHANS> targetPos, int moveTime, int holdTime) {
+  event_bus getEvent(std::array<double, 2 * NUM_CHANS> r, int preT, int moveT, int postT) {
     event_bus e;
     for (int i = 0; i < 2 * NUM_CHANS; ++i)
-      e.r[i] = targetPos[i] / 100.0;
-    e.moveT = moveTime;
-    e.postT = holdTime;
+      e.r[i] = r[i];
+    e.preT = preT;
+    e.moveT = moveT;
+    e.postT = postT;
 
     return e;
   }
 
   void renderAddEventDialog();
+  void renderDropletGenDialog();
   void renderEventQueueContents();
   void renderSupervisorStatus();
+  void renderControllerTuningDialog();
 
 public:
   bool ctrlSetupVisible_{false}, ctrlVisible_{false};

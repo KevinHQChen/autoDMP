@@ -1,6 +1,5 @@
 #pragma once
 
-#include "SupervisoryController.h" // Model header file
 #include "imcap/imcap.hpp"
 #include "util/util.hpp"
 
@@ -88,32 +87,34 @@ class ImProc {
 
   std::vector<int> compParams;
 
+  cv::Ptr<cv::BackgroundSubtractor> pBackSub;
   cv::Mat preFrame, fgMask, tempFgMask, tempChFgMask;
   std::vector<cv::Point> fgLocs;
   std::vector<std::vector<double>> fgClstrs, fgClstrsFull;
-  cv::Point currLoc;
-
-  cv::Ptr<cv::BackgroundSubtractor> pBackSub;
 
   std::vector<cv::Mat> procFrameArr;
   std::vector<double> y, y1, y2, yPrev1, yPrev2;
+  double r[2 * NUM_CHANS];
 
   std::atomic<bool> startedImProc{false};
   std::thread procThread;
-  // Called within imProcThread context
-  void start();
-  void chImProc(int ch);
+
+  void start(); // Called within imProcThread context
+  bool started();
+
+  double minDist(std::vector<double> &vec, double value);
+
   void segAndOrientCh(cv::Mat &srcImg, cv::Mat &tmpImg, cv::Mat &destImg, RotRect &chROI,
                       int &chWidth);
   void findClusters(const std::vector<cv::Point> &fgLocs, std::vector<double> &clusters);
+  bool anyNonZero(std::size_t start, std::size_t end);
+  bool anyZeroCross(const std::vector<double> &vec1, const std::vector<double> &vec2);
   void rstOnZeroCross();
 
   std::mutex dataMtx;
 
 public:
-  constexpr static event_bus nullEv{{0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, 0.0, 0.0, 0.0};
   std::vector<int> yMax;
-  event_bus currEv;
   ImProcConfig impConf;
   QueueFPS<std::vector<double>> *procData;
 
@@ -124,9 +125,10 @@ public:
   void loadConfig();
   void saveConfig();
 
-  void startProcThread();
-  void stopProcThread();
-  bool started();
+  void startThread();
+  void stopThread();
+
+  void setR(double r[2 * NUM_CHANS]);
 
   cv::Mat getProcFrame(int idx);
 

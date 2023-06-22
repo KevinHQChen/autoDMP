@@ -10,9 +10,10 @@
 #include <map>
 #include <optional>
 #include <sstream>
-#include <string>
-#include <vector>
 #include <stdexcept>
+#include <string>
+#include <variant>
+#include <vector>
 
 #include "opencv2/core.hpp"
 #include "opencv2/highgui.hpp"
@@ -28,8 +29,9 @@
 #include <toml.hpp>
 #include <tsl/ordered_map.h>
 
-#include <string_view>
+// #include <string_view>
 #include <boost/pfr.hpp>
+#include <type_traits>
 
 using namespace spdlog;
 using namespace std::chrono;
@@ -61,6 +63,45 @@ template <typename T> constexpr auto type_name() {
   name.remove_prefix(prefix.size());
   name.remove_suffix(suffix.size());
   return name;
+}
+
+template <typename T> struct isArray : std::false_type {};
+
+template <typename T, std::size_t N> struct isArray<std::array<T, N>> : std::true_type {};
+
+template <typename T> std::vector<std::variant<int, double>> toVector(const T &s) {
+  std::vector<std::variant<int, double>> v;
+  boost::pfr::for_each_field(s, [&](const auto &field) {
+    if constexpr (isArray<std::decay_t<decltype(field)>>::value)
+      for (const auto &item : field)
+        v.push_back(item);
+    else
+      v.push_back(field);
+  });
+  return v;
+}
+
+template <typename T> T toStruct(const std::vector<std::variant<int, double>> &v) {
+  T s;
+  size_t i = 0;
+  boost::pfr::for_each_field(s, [&](auto &field) {
+    if constexpr (isArray<std::decay_t<decltype(field)>>::value) {
+      for (auto &item : field) {
+        if constexpr (std::is_same_v<decltype(item), int &>)
+          item = std::get<int>(v[i]);
+        else if constexpr (std::is_same_v<decltype(item), double &>)
+          item = std::get<double>(v[i]);
+        ++i;
+      }
+    } else {
+      if constexpr (std::is_same_v<decltype(field), int &>)
+        field = std::get<int>(v[i]);
+      else if constexpr (std::is_same_v<decltype(field), double &>)
+        field = std::get<double>(v[i]);
+      ++i;
+    }
+  });
+  return s;
 }
 
 struct guiConfig {

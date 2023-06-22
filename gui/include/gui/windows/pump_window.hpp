@@ -6,8 +6,6 @@
 
 #include "pump/pump.hpp"
 
-#define NUM_PUMPS 4
-
 namespace gui {
 
 class PumpWindow : public Window {
@@ -15,13 +13,14 @@ class PumpWindow : public Window {
   void syncPumps();
   void setValves();
   void setFreq();
-  void setMaxVoltage();
+  void setMaxOutput();
   void resetPump();
 
   Pump *pp_;
+  std::string pumpUnits_;
 
-  std::unique_ptr<Slider<int>> maxVoltageSlider_;
-  std::unique_ptr<SliderArray<float>> voltageSlider_;
+  std::unique_ptr<Slider<int>> maxOutputSlider_;
+  std::unique_ptr<SliderArray<float>> outputSlider_;
   std::unique_ptr<Toggle> syncToggle_;
   std::unique_ptr<Slider<int>> freqSlider_;
   std::unique_ptr<ToggleArray> valveToggle_;
