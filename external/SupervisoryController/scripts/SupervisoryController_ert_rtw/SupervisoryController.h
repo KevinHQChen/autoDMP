@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2117
+// Model version                  : 1.2120
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Fri Jun 16 15:32:20 2023
+// C/C++ source code generated on : Thu Jun 22 11:50:02 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -22,8 +22,19 @@
 #define RTW_HEADER_SupervisoryController_h_
 #include <stdio.h>
 #include "rtwtypes.h"
+#include "rtw_modelmap.h"
 #include <stddef.h>
 #include "zero_crossing_types.h"
+
+// Macros for accessing real-time model data structure
+#ifndef rtmGetDataMapInfo
+#define rtmGetDataMapInfo(rtm)         ((rtm)->DataMapInfo)
+#endif
+
+#ifndef rtmSetDataMapInfo
+#define rtmSetDataMapInfo(rtm, val)    ((rtm)->DataMapInfo = (val))
+#endif
+
 #ifndef DEFINED_TYPEDEF_FOR_event_bus_
 #define DEFINED_TYPEDEF_FOR_event_bus_
 
@@ -116,6 +127,17 @@ struct cell_wrap_9
 
 #endif                                 // struct_cell_wrap_9
 
+#ifndef SS_UINT64
+#define SS_UINT64                      23
+#endif
+
+#ifndef SS_INT64
+#define SS_INT64                       24
+#endif
+
+// Function to get C API Model Mapping Static Info
+extern const rtwCAPI_ModelMappingStaticInfo*
+  SupervisoryController_GetCAPIStaticMap(void);
 extern "C"
 {
   static real_T rtGetInf(void);
@@ -237,9 +259,9 @@ class SupervisoryController final
   // Zero-crossing (trigger) state
   struct PrevZCX {
     ZCSigState SupervisoryController_Trig_ZCE;// '<Root>/SupervisoryController'
-    ZCE_paramEst1 paramEst2;           // '<S1>/paramEst2'
     ZCSigState MemoryX_Reset_ZCE;      // '<S39>/MemoryX'
     ZCSigState MemoryP_Reset_ZCE;      // '<S39>/MemoryP'
+    ZCE_paramEst1 paramEst2;           // '<S1>/paramEst2'
     ZCE_paramEst1 paramEst1_o;         // '<S1>/paramEst1'
   };
 
@@ -476,6 +498,21 @@ class SupervisoryController final
     P_paramEst1 paramEst1_o;           // '<S1>/paramEst1'
   };
 
+  // Real-time Model Data Structure
+  struct RT_MODEL {
+    //
+    //  DataMapInfo:
+    //  The following substructure contains information regarding
+    //  structures generated in the model's C API.
+
+    struct {
+      rtwCAPI_ModelMappingInfo mmi;
+      void* dataAddress[67];
+      int32_T* vardimsAddress[67];
+      RTWLoggingFcnPtr loggingPtrs[67];
+    } DataMapInfo;
+  };
+
   // Copy Constructor
   SupervisoryController(SupervisoryController const&) = delete;
 
@@ -487,6 +524,9 @@ class SupervisoryController final
 
   // Move Assignment Operator
   SupervisoryController& operator= (SupervisoryController &&) = delete;
+
+  // Real-Time Model get method
+  SupervisoryController::RT_MODEL * getRTM();
 
   // External inputs
   ExtU rtU;
@@ -542,7 +582,6 @@ class SupervisoryController final
   void trajGen(const event_bus *event, const real_T y_[6], real_T trajectory
                [14400], uint16_T *trajectorySize);
   void handleEvent(real_T *holdT, boolean_T *eventDone, uint16_T *waypt_) const;
-  boolean_T any(const real_T x[3]);
   void binary_expand_op_n(real_T in1[24], int32_T in2, const real_T in3[24],
     int32_T in4, int32_T in5, const real_T in6[24], int32_T in7, int32_T in8);
   int32_T xpotrf(real_T b_A[16]);
@@ -575,6 +614,9 @@ class SupervisoryController final
     Dv[126], const int32_T b_Mrows[246], const real_T b_RYscale[6], real_T u[3],
     real_T useq[63], real_T *status, boolean_T iAout[246]);
   void mrdiv(const real_T A[108], const real_T B_0[36], real_T Y[108]);
+
+  // Real-Time Model
+  RT_MODEL rtM;
 };
 
 //-

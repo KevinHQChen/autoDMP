@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2117
+// Model version                  : 1.2120
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Fri Jun 16 15:32:20 2023
+// C/C++ source code generated on : Thu Jun 22 11:50:02 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -24,6 +24,7 @@
 #include <cstring>
 #include <cmath>
 #include <emmintrin.h>
+#include "SupervisoryController_capi.h"
 #include "zero_crossing_types.h"
 #include <stddef.h>
 #include "solver_zc.h"
@@ -1374,28 +1375,6 @@ void SupervisoryController::handleEvent(real_T *holdT, boolean_T *eventDone,
   }
 
   *holdT = b_holdT;
-}
-
-// Function for Chart: '<Root>/SupervisoryController'
-boolean_T SupervisoryController::any(const real_T x[3])
-{
-  int32_T k;
-  boolean_T exitg1;
-  boolean_T y;
-  y = false;
-  k = 0;
-  exitg1 = false;
-  while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U)) ==
-          false) && (k < 3)) {
-    if ((!(x[k] == 0.0)) && (!std::isnan(x[k]))) {
-      y = true;
-      exitg1 = true;
-    } else {
-      k++;
-    }
-  }
-
-  return y;
 }
 
 void SupervisoryController::binary_expand_op_n(real_T in1[24], int32_T in2,
@@ -4634,8 +4613,8 @@ void SupervisoryController::step()
   real_T y[270];
   real_T b_Mlim[246];
   real_T b_y[162];
-  real_T P0_j[144];
-  real_T Product1[144];
+  real_T P0[144];
+  real_T Product1_j[144];
   real_T Dv[126];
   real_T rseq[120];
   real_T rtb_Add_i[108];
@@ -4659,7 +4638,7 @@ void SupervisoryController::step()
   real_T rtb_Product1_b[18];
   real_T tmp_0[18];
   real_T h_0[16];
-  real_T Sum[12];
+  real_T Sum_h[12];
   real_T Y[6];
   real_T rtb_Product1_o[6];
   real_T rtb_ywt[6];
@@ -4667,7 +4646,7 @@ void SupervisoryController::step()
   real_T tmp[6];
   real_T tmp_3[6];
   real_T DiscreteFilter1_tmp[3];
-  real_T Sum2[3];
+  real_T Sum2_c[3];
   real_T rtb_Sum_a[3];
   real_T rtb_excitation[3];
   real_T tmp_1[3];
@@ -4676,7 +4655,7 @@ void SupervisoryController::step()
   real_T *rtb_B_e_0;
   uint16_T waypt;
   int8_T b_I[324];
-  int8_T P0_j_tmp[12];
+  int8_T P0_tmp[12];
   boolean_T tmp_7[246];
   ZCEventType zcEvent;
 
@@ -4861,104 +4840,112 @@ void SupervisoryController::step()
         }
       }
 
-      // Outport: '<Root>/currEv' incorporates:
-      //   Inport: '<Root>/P_0'
+      // During 'ControlLaw': '<S1>:59'
+      // '<S1>:59:3' [theta(1:np*no), P(1:np*no, 1:np*no), prmErr(1:no)]...
+      // '<S1>:59:4'     = paramEst1(y(1:no), y0(1:no), u, u0,...
+      // '<S1>:59:5'     enAdapt(1:no), theta0(1:np*no), false, P_0(1:np*no, 1:np*no), false, p_, dPmod_, lambda); 
+      for (k = 0; k < 12; k++) {
+        P0_tmp[k] = static_cast<int8_T>(k + 1);
+      }
+
+      for (k = 0; k < 12; k++) {
+        for (i_2 = 0; i_2 < 12; i_2++) {
+          // Inport: '<Root>/P_0'
+          P0[i_2 + 12 * k] = rtU.P_0[((P0_tmp[k] - 1) * 24 + P0_tmp[i_2]) - 1];
+        }
+      }
+
+      // Outputs for Function Call SubSystem: '<S1>/paramEst1'
+      // Inport: '<Root>/y' incorporates:
       //   Inport: '<Root>/enAdapt'
       //   Inport: '<Root>/lambda'
       //   Inport: '<Root>/p_'
       //   Inport: '<Root>/theta0'
       //   Inport: '<Root>/u0'
-      //   Inport: '<Root>/y'
       //   Inport: '<Root>/y0'
-      //   Outport: '<Root>/P'
-      //   Outport: '<Root>/prmErr'
-      //   Outport: '<Root>/theta'
       //   Outport: '<Root>/u'
-      //   Product: '<S87>/Product1'
-      //   Product: '<S91>/Product1'
+
+      // Simulink Function 'paramEst1': '<S1>:574'
+      paramEst1(&rtU.y[0], &rtU.y0[0], rtY.u, rtU.u0, &rtU.enAdapt[0],
+                &rtU.theta0[0], false, P0, false, rtU.p_, rtU.lambda, Sum_h,
+                Product1_j, Sum2_c, &rtDW.paramEst1_o, &rtPrevZCX.paramEst1_o);
+
+      // End of Outputs for SubSystem: '<S1>/paramEst1'
+
+      // Outport: '<Root>/prmErr' incorporates:
       //   Sum: '<S87>/Sum2'
+
+      rtY.prmErr[0] = Sum2_c[0];
+      rtY.prmErr[1] = Sum2_c[1];
+      rtY.prmErr[2] = Sum2_c[2];
+
+      // '<S1>:59:6' [theta(np*no+1:2*np*no), P(np*no+1:2*np*no, np*no+1:2*np*no), prmErr(no+1:2*no)]... 
+      // '<S1>:59:7'     = paramEst2(y(no+1:2*no), y0(no+1:2*no), u, u0,...
+      // '<S1>:59:8'     enAdapt(no+1:2*no), theta0(np*no+1:2*np*no), false, P_0(np*no+1:2*np*no, np*no+1:2*np*no), false, p_, dPmod_, lambda); 
+      i_1 = 0;
+      i_2 = 0;
+      for (i = 0; i < 12; i++) {
+        // Outport: '<Root>/P' incorporates:
+        //   Product: '<S87>/Product1'
+
+        (void)std::memcpy(&rtY.P_j[i_1], &Product1_j[i_2], 12U * sizeof(real_T));
+
+        // Outport: '<Root>/theta'
+        rtY.theta[i] = Sum_h[i];
+        P0_tmp[i] = static_cast<int8_T>(i + 13);
+        i_1 += 24;
+        i_2 += 12;
+      }
+
+      for (k = 0; k < 12; k++) {
+        for (i_2 = 0; i_2 < 12; i_2++) {
+          // Inport: '<Root>/P_0'
+          P0[i_2 + 12 * k] = rtU.P_0[((P0_tmp[k] - 1) * 24 + P0_tmp[i_2]) - 1];
+        }
+      }
+
+      // Outputs for Function Call SubSystem: '<S1>/paramEst2'
+      // Inport: '<Root>/y' incorporates:
+      //   Inport: '<Root>/enAdapt'
+      //   Inport: '<Root>/lambda'
+      //   Inport: '<Root>/p_'
+      //   Inport: '<Root>/theta0'
+      //   Inport: '<Root>/u0'
+      //   Inport: '<Root>/y0'
+      //   Outport: '<Root>/u'
+
+      // Simulink Function 'paramEst2': '<S1>:755'
+      paramEst1(&rtU.y[3], &rtU.y0[3], rtY.u, rtU.u0, &rtU.enAdapt[3],
+                &rtU.theta0[12], false, P0, false, rtU.p_, rtU.lambda, Sum_h,
+                Product1_j, Sum2_c, &rtDW.paramEst2, &rtPrevZCX.paramEst2);
+
+      // End of Outputs for SubSystem: '<S1>/paramEst2'
+      i_1 = 0;
+      i_2 = 0;
+      for (i = 0; i < 12; i++) {
+        // Outport: '<Root>/P' incorporates:
+        //   Product: '<S91>/Product1'
+
+        (void)std::memcpy(&rtY.P_j[i_1 + 300], &Product1_j[i_2], 12U * sizeof
+                          (real_T));
+
+        // Outport: '<Root>/theta'
+        rtY.theta[i + 12] = Sum_h[i];
+        i_1 += 24;
+        i_2 += 12;
+      }
+
+      // Outport: '<Root>/prmErr' incorporates:
       //   Sum: '<S91>/Sum2'
 
-      // During 'ControlLaw': '<S1>:59'
-      // '<S1>:59:3' if any(currEv.r(1:no))
-      if (any(&rtY.currEv.r[0])) {
-        // '<S1>:59:4' [theta(1:np*no), P(1:np*no, 1:np*no), prmErr(1:no)]...
-        // '<S1>:59:5'         = paramEst1(y(1:no), y0(1:no), u, u0,...
-        // '<S1>:59:6'         enAdapt(1:no), theta0(1:np*no), false, P_0(1:np*no, 1:np*no), false, p_, dPmod_, lambda); 
-        for (k = 0; k < 12; k++) {
-          P0_j_tmp[k] = static_cast<int8_T>(k + 1);
-        }
-
-        for (k = 0; k < 12; k++) {
-          for (i_2 = 0; i_2 < 12; i_2++) {
-            P0_j[i_2 + 12 * k] = rtU.P_0[((P0_j_tmp[k] - 1) * 24 + P0_j_tmp[i_2])
-              - 1];
-          }
-        }
-
-        // Outputs for Function Call SubSystem: '<S1>/paramEst1'
-        // Simulink Function 'paramEst1': '<S1>:574'
-        paramEst1(&rtU.y[0], &rtU.y0[0], rtY.u, rtU.u0, &rtU.enAdapt[0],
-                  &rtU.theta0[0], false, P0_j, false, rtU.p_, rtU.lambda, Sum,
-                  Product1, Sum2, &rtDW.paramEst1_o, &rtPrevZCX.paramEst1_o);
-
-        // End of Outputs for SubSystem: '<S1>/paramEst1'
-        i_1 = 0;
-        i_2 = 0;
-        for (i = 0; i < 12; i++) {
-          (void)std::memcpy(&rtY.P_j[i_1], &Product1[i_2], 12U * sizeof(real_T));
-          rtY.theta[i] = Sum[i];
-          i_1 += 24;
-          i_2 += 12;
-        }
-
-        rtY.prmErr[0] = Sum2[0];
-        rtY.prmErr[1] = Sum2[1];
-        rtY.prmErr[2] = Sum2[2];
-      } else if (any(&rtY.currEv.r[3])) {
-        // '<S1>:59:7' elseif any(currEv.r(no+1:2*no))
-        // '<S1>:59:8' [theta(np*no+1:2*np*no), P(np*no+1:2*np*no, np*no+1:2*np*no), prmErr(no+1:2*no)]... 
-        // '<S1>:59:9'         = paramEst2(y(no+1:2*no), y0(no+1:2*no), u, u0,... 
-        // '<S1>:59:10'         enAdapt(no+1:2*no), theta0(np*no+1:2*np*no), false, P_0(np*no+1:2*np*no, np*no+1:2*np*no), false, p_, dPmod_, lambda); 
-        for (k = 0; k < 12; k++) {
-          P0_j_tmp[k] = static_cast<int8_T>(k + 13);
-        }
-
-        for (k = 0; k < 12; k++) {
-          for (i_2 = 0; i_2 < 12; i_2++) {
-            P0_j[i_2 + 12 * k] = rtU.P_0[((P0_j_tmp[k] - 1) * 24 + P0_j_tmp[i_2])
-              - 1];
-          }
-        }
-
-        // Outputs for Function Call SubSystem: '<S1>/paramEst2'
-        // Simulink Function 'paramEst2': '<S1>:755'
-        paramEst1(&rtU.y[3], &rtU.y0[3], rtY.u, rtU.u0, &rtU.enAdapt[3],
-                  &rtU.theta0[12], false, P0_j, false, rtU.p_, rtU.lambda, Sum,
-                  Product1, Sum2, &rtDW.paramEst2, &rtPrevZCX.paramEst2);
-
-        // End of Outputs for SubSystem: '<S1>/paramEst2'
-        i_1 = 0;
-        i_2 = 0;
-        for (i = 0; i < 12; i++) {
-          (void)std::memcpy(&rtY.P_j[i_1 + 300], &Product1[i_2], 12U * sizeof
-                            (real_T));
-          rtY.theta[i + 12] = Sum[i];
-          i_1 += 24;
-          i_2 += 12;
-        }
-
-        rtY.prmErr[3] = Sum2[0];
-        rtY.prmErr[4] = Sum2[1];
-        rtY.prmErr[5] = Sum2[2];
-      } else {
-        // no actions
-      }
+      rtY.prmErr[3] = Sum2_c[0];
+      rtY.prmErr[4] = Sum2_c[1];
+      rtY.prmErr[5] = Sum2_c[2];
 
       // Outputs for Function Call SubSystem: '<S1>/ampc'
       // MATLAB Function: '<S2>/MATLAB Function'
-      // '<S1>:59:12' [u, ywt, yhat, currTraj]...
-      // '<S1>:59:13'     = ampc(traj(:,waypt), currEv.r, y, ymax, y0, u0, excitation, theta, theta0); 
+      // '<S1>:59:9' [u, ywt, yhat, currTraj]...
+      // '<S1>:59:10'     = ampc(traj(:,waypt), currEv.r, y, ymax, y0, u0, excitation, theta, theta0); 
       // Simulink Function 'ampc': '<S1>:461'
       // MATLAB Function 'SupervisoryController/ampc/MATLAB Function': '<S6>:1'
       // '<S6>:1:2' [ywt, ywtT, uwt, uwtT] = wtMod_(y, yDest, ywtT, uwtT, dt, no, ni); 
@@ -5402,9 +5389,9 @@ void SupervisoryController::step()
 
       (void)std::memset(&b_utarget[0], 0, 60U * sizeof(real_T));
       (void)std::memset(&b_xoff[0], 0, 18U * sizeof(real_T));
-      Sum2[0] = rtU.u0[0];
-      Sum2[1] = rtU.u0[1];
-      Sum2[2] = rtU.u0[2];
+      Sum2_c[0] = rtU.u0[0];
+      Sum2_c[1] = rtU.u0[1];
+      Sum2_c[2] = rtU.u0[2];
       for (i_1 = 0; i_1 < 6; i_1++) {
         Y[i_1] = rtU.y0[i_1];
       }
@@ -5422,18 +5409,18 @@ void SupervisoryController::step()
           dwt -= 0.0 - Y[(k - div_nde_s32_floor(k - 121, static_cast<int32_T>(ny))
                           * static_cast<int32_T>(ny)) - 121];
         } else if (k <= 300) {
-          dwt += 0.0 - Sum2[(k - div_nde_s32_floor(k - 241, static_cast<int32_T>
-            (nu)) * static_cast<int32_T>(nu)) - 241];
+          dwt += 0.0 - Sum2_c[(k - div_nde_s32_floor(k - 241,
+            static_cast<int32_T>(nu)) * static_cast<int32_T>(nu)) - 241];
         } else {
-          dwt -= 0.0 - Sum2[(k - div_nde_s32_floor(k - 301, static_cast<int32_T>
-            (nu)) * static_cast<int32_T>(nu)) - 301];
+          dwt -= 0.0 - Sum2_c[(k - div_nde_s32_floor(k - 301, static_cast<
+            int32_T>(nu)) * static_cast<int32_T>(nu)) - 301];
         }
 
         b_Mlim[i_1] = dwt;
       }
 
       for (i_1 = 0; i_1 < 3; i_1++) {
-        dwt = Sum2[i_1];
+        dwt = Sum2_c[i_1];
         k = 0;
         for (i_2 = 0; i_2 < 20; i_2++) {
           i = k + i_1;
@@ -5591,7 +5578,8 @@ void SupervisoryController::step()
                          b_Mlim, rtDW.f, rtDW.g, rtDW.dv, b_utarget,
                          DiscreteFilter1_tmp, Y, h_0, rtDW.k, rtb_ywt, rtb_Sum_a,
                          tmp_2, l, n, rtb_A, rtDW.Bu, Bv, rtb_C, Dv, b_Mrows,
-                         tmp_3, Sum2, rtb_useq, &dwt, rtDW.Memory_PreviousInput);
+                         tmp_3, Sum2_c, rtb_useq, &dwt,
+                         rtDW.Memory_PreviousInput);
 
       // Delay: '<S39>/MemoryP' incorporates:
       //   Constant: '<S39>/P0'
@@ -6217,7 +6205,7 @@ void SupervisoryController::step()
       //   Inport: '<Root>/excitation'
       //   Product: '<S2>/Product1'
 
-      dwt = rtP.u_scale_Gain[0] * Sum2[0] + rtb_Sum_a[0] * rtU.excitation;
+      dwt = rtP.u_scale_Gain[0] * Sum2_c[0] + rtb_Sum_a[0] * rtU.excitation;
 
       // Saturate: '<S2>/Saturation'
       if (dwt > rtP.Saturation_UpperSat) {
@@ -6246,7 +6234,7 @@ void SupervisoryController::step()
       //   Inport: '<Root>/excitation'
       //   Product: '<S2>/Product1'
 
-      dwt = rtP.u_scale_Gain[1] * Sum2[1] + rtb_Sum_a[1] * rtU.excitation;
+      dwt = rtP.u_scale_Gain[1] * Sum2_c[1] + rtb_Sum_a[1] * rtU.excitation;
 
       // Saturate: '<S2>/Saturation'
       if (dwt > rtP.Saturation_UpperSat) {
@@ -6275,7 +6263,7 @@ void SupervisoryController::step()
       //   Inport: '<Root>/excitation'
       //   Product: '<S2>/Product1'
 
-      dwt = rtP.u_scale_Gain[2] * Sum2[2] + rtb_Sum_a[2] * rtU.excitation;
+      dwt = rtP.u_scale_Gain[2] * Sum2_c[2] + rtb_Sum_a[2] * rtU.excitation;
 
       // Saturate: '<S2>/Saturation'
       if (dwt > rtP.Saturation_UpperSat) {
@@ -6390,9 +6378,9 @@ void SupervisoryController::step()
       }
 
       // Update for UnitDelay: '<S9>/last_mv'
-      rtDW.last_mv_DSTATE[0] = Sum2[0];
-      rtDW.last_mv_DSTATE[1] = Sum2[1];
-      rtDW.last_mv_DSTATE[2] = Sum2[2];
+      rtDW.last_mv_DSTATE[0] = Sum2_c[0];
+      rtDW.last_mv_DSTATE[1] = Sum2_c[1];
+      rtDW.last_mv_DSTATE[2] = Sum2_c[2];
 
       // Update for Delay: '<S39>/MemoryX'
       rtDW.icLoad = false;
@@ -6496,6 +6484,9 @@ void SupervisoryController::initialize()
   // initialize non-finites
   rt_InitInfAndNaN(sizeof(real_T));
 
+  // Initialize DataMapInfo substructure containing ModelMap for C API
+  SupervisoryController_InitializeDataMapInfo((&rtM), &rtP);
+
   {
     static const real_T tmp[24]{ -0.025, 0.028867513459481294,
       -0.014433756729740647, -0.014433756729740647, -0.025,
@@ -6538,6 +6529,11 @@ void SupervisoryController::initialize()
 
     paramEst1_Init(Sum_h, Product1_j, Sum2_c, &rtDW.paramEst1_o,
                    &rtP.paramEst1_o);
+
+    // SystemInitialize for Chart: '<Root>/SupervisoryController' incorporates:
+    //   SubSystem: '<S1>/paramEst2'
+
+    paramEst1_Init(Sum_h, Product1_j, Sum2_c, &rtDW.paramEst2, &rtP.paramEst2);
 
     // SystemInitialize for Chart: '<Root>/SupervisoryController' incorporates:
     //   SubSystem: '<S1>/ampc'
@@ -6639,11 +6635,6 @@ void SupervisoryController::initialize()
     }
 
     // End of SystemInitialize for SubSystem: '<S58>/MeasurementUpdate'
-
-    // SystemInitialize for Chart: '<Root>/SupervisoryController' incorporates:
-    //   SubSystem: '<S1>/paramEst2'
-
-    paramEst1_Init(Sum_h, Product1_j, Sum2_c, &rtDW.paramEst2, &rtP.paramEst2);
   }
 }
 
@@ -6654,11 +6645,12 @@ void SupervisoryController::terminate()
 }
 
 // Constructor
-SupervisoryController::SupervisoryController():
+SupervisoryController::SupervisoryController() :
   rtU(),
   rtY(),
   rtDW(),
-  rtPrevZCX()
+  rtPrevZCX(),
+  rtM()
 {
   // Currently there is no constructor body generated.
 }
@@ -6667,6 +6659,12 @@ SupervisoryController::SupervisoryController():
 SupervisoryController::~SupervisoryController()
 {
   // Currently there is no destructor body generated.
+}
+
+// Real-Time Model get method
+SupervisoryController::RT_MODEL * SupervisoryController::getRTM()
+{
+  return (&rtM);
 }
 
 //
