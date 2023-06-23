@@ -7,8 +7,14 @@ Supervisor::Supervisor(ImProc *imProc, Pump *pump)
       sup(new SupervisoryController()), supIn({}), supOut({}),
       evQueue_(new QueueFPS<event_bus>(dataPath + "eventQueue.txt")),
       ctrlDataQueuePtr(new QueueFPS<int>(dataPath + "ctrlDataQueue.txt")) {
+  info("Initializing Supervisor...");
+  sup->initialize();
   rtM = sup->getRTM();
-  nullEv = *(event_bus *)getSupervisorParam(&rtM->DataMapInfo.mmi, 55);
+  info("Initializing Supervisor...");
+  nullEv = *(event_bus *)getSupervisorParam(&rtM->DataMapInfo.mmi, 0);
+  // print nullEv type
+  info("Null event type: {}", type_name<decltype(nullEv)>());
+
   currEv_ = nullEv;
 }
 
@@ -23,19 +29,21 @@ void Supervisor::startThread() {
     info("Starting Supervisor...");
     startedCtrl = true;
 
-    imProc->clearProcData();
+    imProc->clearData();
+    no = imProc->impConf.getNumChs();
+    info("Supervisor found {} channels.", no);
 
     // initialize SupervisoryController (y_range, y_max, y_o, u_o, yhat)
     supIn.excitation = 5;
-    for (int ch = 0; ch < NUM_CHANS; ++ch) {
+    for (int ch = 0; ch < no; ++ch) {
       // primary
       supIn.ymax[ch] = imProc->yMax[ch];
       supIn.y0[ch] = 0;
       supOut.yhat[ch] = 0;
       // secondary
-      supIn.ymax[NUM_CHANS + ch] = imProc->yMax[ch];
-      supIn.y0[NUM_CHANS + ch] = 0;
-      supOut.yhat[NUM_CHANS + ch] = 0;
+      supIn.ymax[no + ch] = imProc->yMax[ch];
+      supIn.y0[no + ch] = 0;
+      supOut.yhat[no + ch] = 0;
 
       supIn.u0[ch] = pump->outputs[ch];
     }
@@ -59,7 +67,7 @@ void Supervisor::stopThread() {
 
     if (ctrlThread.joinable())
       ctrlThread.join();
-    imProc->clearProcData();
+    imProc->clearData();
     // this->clearCtrlDataQueue();
   }
 }
@@ -76,7 +84,7 @@ void Supervisor::start() {
 
       prevCtrlTime = steady_clock::now();
       y = imProc->procData->get();
-      for (int ch = 0; ch < 2 * NUM_CHANS; ++ch)
+      for (int ch = 0; ch < 2 * no; ++ch)
         supIn.y[ch] = y[ch];
       supIn.measAvail = !supIn.measAvail;
 
@@ -85,7 +93,7 @@ void Supervisor::start() {
       sup->step();
       supOut = sup->rtY;
 
-      !simModeActive ? pump->setOutputs(std::vector<double>(supOut.u, supOut.u + NUM_CHANS))
+      !simModeActive ? pump->setOutputs(std::vector<double>(supOut.u, supOut.u + no))
                      : info("Pump outputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
       // info("Pump inputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
 
@@ -112,6 +120,19 @@ void Supervisor::start() {
   }
 }
 
+/**
+ * Function: getSupervisorParam
+ * ----------------------------
+ * Retrieves the address of indexed variable block parameters defined in
+ * `$GITROOT/external/SupervisoryController/scripts/SupervisoryController_ert_rtw/SupervisoryController_data.cpp`.
+ *
+ * @param mmi: A pointer to the model mapping information structure.
+ * @param paramIdx: The index of the parameter whose address is to be retrieved.
+ *
+ * @return: A void pointer to the address of the specified parameter. This must be cast to the
+ * appropriate type. If the model parameters are not available or the parameter address is not
+ * available, the function returns nullptr.
+ */
 void *getSupervisorParam(rtwCAPI_ModelMappingInfo *mmi, uint_T paramIdx) {
   const rtwCAPI_ModelParameters *modelParams;
   void **dataAddrMap;
@@ -121,6 +142,7 @@ void *getSupervisorParam(rtwCAPI_ModelMappingInfo *mmi, uint_T paramIdx) {
   void *paramAddress;
 
   /* Assert the parameter index is less than total number of parameters */
+  info("SupervisoryController variable block parameters: {}", rtwCAPI_GetNumModelParameters(mmi));
   assert(paramIdx < rtwCAPI_GetNumModelParameters(mmi));
 
   /* Get modelParams, an array of rtwCAPI_ModelParameters structure  */

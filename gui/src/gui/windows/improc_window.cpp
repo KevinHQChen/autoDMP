@@ -3,7 +3,6 @@
 namespace gui {
 
 ImProcWindow::ImProcWindow(ImCap *imCap, ImProc *imProc) : imCap_(imCap), imProc_(imProc) {
-  imProcSetupToggle_ = std::make_unique<Toggle>("ImProc Setup", &improcSetupVisible_);
   // rawImage_ = std::make_unique<IMMImage>("Raw Image", 1);
   // procImage_ = std::make_unique<IMMImage>("Proc Image", 1);
   // for (int i = 0; i < numChans_; i++)
@@ -11,7 +10,6 @@ ImProcWindow::ImProcWindow(ImCap *imCap, ImProc *imProc) : imCap_(imCap), imProc
 }
 
 ImProcWindow::~ImProcWindow() {
-  imProcSetupToggle_.reset();
   // rawImage_.reset();
   // procImage_.reset();
   // for (int i = 0; i < numChans_; i++)
@@ -25,70 +23,77 @@ void ImProcWindow::render() {
 
 void ImProcWindow::renderImCap() {
   if (ImGui::IsKeyPressed(ImGuiKey_C))
-    !imCap_->started() ? imCap_->startCaptureThread() : imCap_->stopCaptureThread();
-  if (ImGui::IsKeyPressed(ImGuiKey_Enter))
+    !imCap_->started() ? imCap_->startThread() : imCap_->stopThread();
+  if (ImGui::IsKeyPressed(ImGuiKey_D))
     visible_ = !visible_;
-  if (visible_) {
-    if (ImGui::Begin("Raw Image Capture", &visible_)) {
-      // draw image
+  if (ImGui::IsKeyPressed(ImGuiKey_S))
+    improcSetupVisible_ = !improcSetupVisible_;
+  if (visible_ && ImGui::Begin("Raw Image Capture", &visible_)) {
+    // draw image
+    if (imCap_->started())
       rawFrame = imCap_->getFrame();
-      ImGui::Image((ImTextureID)rawFrame.texture, ImVec2(rawFrame.width, rawFrame.height));
-      imgOrigin = ImGui::GetItemRectMin();
+    ImGui::Image((ImTextureID)rawFrame.texture, ImVec2(rawFrame.width, rawFrame.height));
+    ImVec2 imgOrigin = ImGui::GetItemRectMin();
 
-      // improc setup
-      if (ImGui::IsKeyPressed(ImGuiKey_S))
-        improcSetupVisible_ = !improcSetupVisible_;
-      if (improcSetupVisible_) {
-        if (ImGui::Button("Select Junction"))
-          drawJunc = true;
-        ImGui::SameLine();
-        if (ImGui::Button("Select Channel"))
-          drawChs = true;
-        draw();
-        renderImProcConfigTable();
+    // improc setup
+    if (improcSetupVisible_) {
+      if (ImGui::Button("Select Junction"))
+        drawJunc = true;
+      ImGui::SameLine();
+      if (ImGui::Button("Select Channel"))
+        drawChs = true;
+      draw(imgOrigin);
+      renderImProcConfigTable();
 
-        if (ImGui::Button("Update ImProc Config")) {
-          imProc_->impConf.setChROIs(chBBoxes);
-          imProc_->impConf.setChWidth(chWidth);
-          imProc_->impConf.setNumChs(numChs);
-          imProc_->impConf.setBgSubHistory(bgSubHistory);
-          imProc_->impConf.setBgSubThres(bgSubThres);
-        }
-        ImGui::SameLine();
-        if (ImGui::Button("Save ImProc Config"))
-          imProc_->saveConfig();
-        ImGui::SameLine();
-        if (ImGui::Button("Load ImProc Config")) {
-          imProc_->loadConfig();
-          chBBoxes = imProc_->impConf.getChROIs();
-          chWidth = imProc_->impConf.getChWidth();
-          numChs = imProc_->impConf.getNumChs();
-          bgSubHistory = imProc_->impConf.getBgSubHistory();
-          bgSubThres = imProc_->impConf.getBgSubThres();
+      if (ImGui::Button("Update ImProc Config")) {
+        imProc_->impConf.setChROIs(chBBoxes);
+        imProc_->impConf.setChWidth(chWidth);
+        imProc_->impConf.setNumChs(no_);
+        imProc_->impConf.setBgSubHistory(bgSubHistory);
+        imProc_->impConf.setBgSubThres(bgSubThres);
+        procGUIFrames.clear();
+        for (int i = 0; i < no_; ++i) {
+          GUIFrame emptyFrame;
+          emptyFrame = cv::Mat(0, 0, CV_8UC1);
+          procGUIFrames.push_back(emptyFrame);
         }
       }
-      ImGui::End();
+      ImGui::SameLine();
+      if (ImGui::Button("Save ImProc Config"))
+        imProc_->saveConfig();
+      ImGui::SameLine();
+      if (ImGui::Button("Load ImProc Config")) {
+        imProc_->loadConfig();
+        chBBoxes = imProc_->impConf.getChROIs();
+        chWidth = imProc_->impConf.getChWidth();
+        no_ = imProc_->impConf.getNumChs();
+        bgSubHistory = imProc_->impConf.getBgSubHistory();
+        bgSubThres = imProc_->impConf.getBgSubThres();
+      }
     }
+    ImGui::End();
   }
 }
 
 void ImProcWindow::renderImProc() {
-  if (ImGui::IsKeyPressed(ImGuiKey_I))
+  if (!improcVisible_ && ImGui::IsKeyPressed(ImGuiKey_I))
+    !imProc_->started() ? imProc_->startThread() : imProc_->stopThread();
+  if (ImGui::IsKeyPressed(ImGuiKey_J))
     improcVisible_ = !improcVisible_;
-  if (improcVisible_) {
-    imProc_->startThread();
-    if (ImGui::Begin("Channels", &improcVisible_)) {
-      for (int i = 0; i < imProc_->impConf.getNumChs(); ++i) {
-        if (i != 0)
-          ImGui::SameLine();
+  if (improcVisible_ && ImGui::Begin("Channels", &improcVisible_)) {
+    if (!imProc_->procData->empty())
+      y = imProc_->dispData->get();
+    for (int i = 0; i < no_; ++i) {
+      if (i != 0)
+        ImGui::SameLine();
+      if (imProc_->started())
         procGUIFrames[i] = imProc_->getProcFrame(i);
-        ImGui::Image((ImTextureID)procGUIFrames[i].texture,
-                     ImVec2(procGUIFrames[i].width, procGUIFrames[i].height));
-      }
-      ImGui::End();
+      ImGui::Image((ImTextureID)procGUIFrames[i].texture,
+                   ImVec2(procGUIFrames[i].width, procGUIFrames[i].height));
+      drawFgLocs(i, ImGui::GetItemRectMin(), y[i], y[i + no_]);
     }
-  } else
-    imProc_->stopThread();
+    ImGui::End();
+  }
 }
 
 void ImProcWindow::renderImProcConfigTable() {
@@ -141,7 +146,7 @@ void ImProcWindow::renderImProcConfigTable() {
     for (int i = deleteFlags.size() - 1; i >= 0; --i)
       if (deleteFlags[i])
         chBBoxes.erase(chBBoxes.begin() + i);
-    numChs = chBBoxes.size();
+    no_ = chBBoxes.size();
 
     // Junction
     ImGui::TableNextRow();
@@ -154,7 +159,7 @@ void ImProcWindow::renderImProcConfigTable() {
     ImGui::EndTable();
   }
   ImGui::InputInt("Channel Width: ", &chWidth);
-  ImGui::InputInt("Num Channels: ", &numChs);
+  ImGui::InputInt("Num Channels: ", &no_);
   ImGui::InputInt("BgSub History", &bgSubHistory);
   ImGui::InputDouble("BgSub Threshold", &bgSubThres);
 

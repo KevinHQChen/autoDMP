@@ -19,8 +19,8 @@ class ImCap {
 public:
   ImCap();
   ~ImCap();
-  void startCaptureThread();
-  void stopCaptureThread();
+  void startThread();
+  void stopThread();
   cv::Mat getRawFrame();
   cv::Mat getFrame();
   void clearRawFrameQueue();

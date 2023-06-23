@@ -5,12 +5,12 @@ ImCap::ImCap()
       cam(new Cam(0, conf)), rawFrameBuf(new SharedBuffer<cv::Mat>()) {}
 
 ImCap::~ImCap() {
-  stopCaptureThread();
+  stopThread();
   delete rawFrameBuf;
   delete cam;
 }
 
-void ImCap::startCaptureThread() {
+void ImCap::startThread() {
   if (!started()) {
     info("Starting image capture...");
     startedImCap = true;
@@ -19,7 +19,7 @@ void ImCap::startCaptureThread() {
   }
 }
 
-void ImCap::stopCaptureThread() {
+void ImCap::stopThread() {
   if (started()) {
     info("Stopping image capture...");
     startedImCap = false;

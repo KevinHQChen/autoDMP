@@ -20,16 +20,15 @@ class CtrlWindow : public Window {
 
   event_bus currEv_, newEv_;
   int srcState, destState, moveTime, holdTime;
-  int targetPos[2 * NUM_CHANS];
   float excitationAmp, paramLowerBound, covModification;
 
   int openAction = -1;
   double dropletLength = 0, dNeck = 0, dPlug = 0, wCh = 0;
   int numDroplets = 0;
 
-  event_bus getEvent(std::array<double, 2 * NUM_CHANS> r, int preT, int moveT, int postT) {
+  event_bus getEvent(std::vector<double> r, int preT, int moveT, int postT) {
     event_bus e;
-    for (int i = 0; i < 2 * NUM_CHANS; ++i)
+    for (int i = 0; i < 2 * sv_->no; ++i)
       e.r[i] = r[i];
     e.preT = preT;
     e.moveT = moveT;

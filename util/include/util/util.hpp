@@ -38,8 +38,6 @@ using namespace std::chrono;
 
 using ordered_value = toml::basic_value<toml::discard_comments, tsl::ordered_map, std::vector>;
 
-#define NUM_CHANS 3
-
 #define TOML11_PARSE_IN_ORDER(...)                                                                 \
   toml::parse<toml::discard_comments, tsl::ordered_map>(__VA_ARGS__)
 

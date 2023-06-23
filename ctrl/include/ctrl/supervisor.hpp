@@ -40,8 +40,8 @@ public:
   SupervisoryController::ExtY supOut;
   SupervisoryController::RT_MODEL *rtM;
 
-  // defined in SupervisoryController_data.cpp in SupervisoryController::P
-  // SupervisoryController::rtP
+  int no;
+
   event_bus nullEv;
 
   void startThread();

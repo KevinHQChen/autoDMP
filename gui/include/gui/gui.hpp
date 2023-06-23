@@ -37,7 +37,7 @@ class GUI {
 public:
   GUI(ImCap *imCap, ImProc *imProc, Pump *pump, Supervisor *sv);
   ~GUI();
-  void startGUIThread();
+  void startThread();
   void imguiConfig();
   void imguiStyle();
   void render();

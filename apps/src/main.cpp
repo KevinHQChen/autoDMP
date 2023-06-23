@@ -20,7 +20,7 @@ int main(int, const char **) {
   info("Config type: {}", type_name<decltype(Config::guiConf)>());
   info("Parsed config: {}", toml::find(Config::conf, "gui"));
   GUI gui(imCap, imProc, pump, sv);
-  gui.startGUIThread();
+  gui.startThread();
 
   delete sv;
   delete pump;

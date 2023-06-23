@@ -12,29 +12,27 @@ CtrlWindow::~CtrlWindow() {}
 void CtrlWindow::render() {
   if (ImGui::IsKeyPressed(ImGuiKey_U))
     ctrlSetupVisible_ = !ctrlSetupVisible_;
-  if (ctrlSetupVisible_) {
-    if (ImGui::Begin("Ctrl Setup", &ctrlSetupVisible_)) {
-      // disable tree node indentation
-      ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.0f);
+  if (ctrlSetupVisible_ && ImGui::Begin("Ctrl Setup", &ctrlSetupVisible_)) {
+    // disable tree node indentation
+    ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.0f);
 
-      openAction = -1;
-      if (ImGui::Button("Open all"))
-        openAction = 1;
-      ImGui::SameLine();
-      if (ImGui::Button("Close all"))
-        openAction = 0;
-      ImGui::SameLine();
-      ImGui::Separator();
+    openAction = -1;
+    if (ImGui::Button("Open all"))
+      openAction = 1;
+    ImGui::SameLine();
+    if (ImGui::Button("Close all"))
+      openAction = 0;
+    ImGui::SameLine();
+    ImGui::Separator();
 
-      renderAddEventDialog();
-      renderDropletGenDialog();
-      renderEventQueueContents();
-      renderSupervisorStatus();
-      renderControllerTuningDialog();
+    renderAddEventDialog();
+    renderDropletGenDialog();
+    renderEventQueueContents();
+    renderSupervisorStatus();
+    renderControllerTuningDialog();
 
-      ImGui::PopStyleVar();
-      ImGui::End();
-    }
+    ImGui::PopStyleVar();
+    ImGui::End();
   }
 
   if (ctrlVisible_)
@@ -60,13 +58,13 @@ void CtrlWindow::renderAddEventDialog() {
       ImGui::Text("%s", "r [%]");
       ImGui::TableSetColumnIndex(1);
       ImGui::PushItemWidth(-FLT_MIN); // Right-aligned (Setup ItemWidth once (more efficient))
-      for (int i = 0; i < NUM_CHANS; ++i)
-        ImGui::DragScalarN("##r1", ImGuiDataType_Double, &newEv_.r, NUM_CHANS, 0.1f, &rMin, &rMax,
+      for (int i = 0; i < sv_->no; ++i)
+        ImGui::DragScalarN("##r1", ImGuiDataType_Double, &newEv_.r, sv_->no, 0.1f, &rMin, &rMax,
                            dragFmt);
       ImGui::Text(" ");
-      for (int i = 0; i < NUM_CHANS; ++i)
-        ImGui::DragScalarN("##r2", ImGuiDataType_Double, &newEv_.r + NUM_CHANS, NUM_CHANS, 0.1f,
-                           &rMin, &rMax, dragFmt);
+      for (int i = 0; i < sv_->no; ++i)
+        ImGui::DragScalarN("##r2", ImGuiDataType_Double, &newEv_.r + sv_->no, sv_->no, 0.1f, &rMin,
+                           &rMax, dragFmt);
 
       ImGui::TableNextRow();
       ImGui::TableSetColumnIndex(0);
@@ -114,19 +112,17 @@ void CtrlWindow::renderDropletGenDialog() {
     if (ImGui::Button("Generate Droplets")) {
       for (int i = 0; i < numDroplets; ++i) {
         // 1. pre-gen: get in position for droplet generation
-        sv_->addEvent(getEvent(
-            std::array<double, 2 * NUM_CHANS>{0, -wCh / 2, -dropletLength, 0, 0, 0}, 0, 10, 10));
+        sv_->addEvent(
+            getEvent(std::vector<double>{0, -wCh / 2, -dropletLength, 0, 0, 0}, 0, 10, 10));
         // 2. gen: perform droplet generation
-        sv_->addEvent(getEvent(
-            std::array<double, 2 * NUM_CHANS>{0, dNeck * 2, -dropletLength, 0, 0, 0}, 0, 10, 0));
+        sv_->addEvent(
+            getEvent(std::vector<double>{0, dNeck * 2, -dropletLength, 0, 0, 0}, 0, 10, 0));
         // 3. post-gen: move droplet out of the way for next droplet
-        sv_->addEvent(getEvent(
-            std::array<double, 2 * NUM_CHANS>{0, 0, 0, -wCh / 2, 0, dropletLength / 2 - 1.0}, 0, 10,
-            10));
+        sv_->addEvent(getEvent(std::vector<double>{0, 0, 0, -wCh / 2, 0, dropletLength / 2 - 1.0},
+                               0, 10, 10));
         // post-gen cont.: get in position for next droplet generation
         sv_->addEvent(
-            getEvent(std::array<double, 2 * NUM_CHANS>{0, 0, 0, dPlug, 0, dropletLength / 2 - 1.0},
-                     0, 10, 0));
+            getEvent(std::vector<double>{0, 0, 0, dPlug, 0, dropletLength / 2 - 1.0}, 0, 10, 0));
       }
     }
     ImGui::TreePop();
@@ -150,7 +146,7 @@ void CtrlWindow::renderEventQueueContents() {
       for (auto &event : *(sv_->evQueue_)) {
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
-        for (int i = 0; i < 2 * NUM_CHANS; ++i) {
+        for (int i = 0; i < 2 * sv_->no; ++i) {
           if (i != 0)
             ImGui::SameLine();
           ImGui::Text(txtFmt, event.r[i]);
@@ -186,7 +182,7 @@ void CtrlWindow::renderSupervisorStatus() {
         currEv_ = sv_->getCurrEv();
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
-        for (int i = 0; i < 2 * NUM_CHANS; ++i) {
+        for (int i = 0; i < 2 * sv_->no; ++i) {
           if (i != 0)
             ImGui::SameLine();
           ImGui::Text(txtFmt, currEv_.r[i]);
@@ -203,33 +199,32 @@ void CtrlWindow::renderSupervisorStatus() {
     }
 
     {
-      int numCols = 7;
+      int numCols = 2 * sv_->no + 1;
       ImGui::Text("Current State");
-      if (ImGui::BeginTable("currStateTable", 7, tableFlags)) {
+      if (ImGui::BeginTable("currStateTable", numCols, tableFlags)) {
         ImGui::TableSetupColumn("Vector");
-        for (int i = 0; i < 2 * NUM_CHANS; ++i)
+        for (int i = 0; i < 2 * sv_->no; ++i)
           ImGui::TableSetupColumn("Chan %d", i);
         ImGui::TableHeadersRow();
 
-        displayArrayNd("y1", std::vector<double>(sv_->supIn.y, sv_->supIn.y + NUM_CHANS));
+        displayArrayNd("y1", std::vector<double>(sv_->supIn.y, sv_->supIn.y + sv_->no));
         displayArrayNd("y2",
-                       std::vector<double>(sv_->supIn.y + NUM_CHANS, sv_->supIn.y + 2 * NUM_CHANS));
-        displayArrayNd("yhat1",
-                       std::vector<double>(sv_->supOut.yhat, sv_->supOut.yhat + NUM_CHANS));
-        displayArrayNd("yhat2", std::vector<double>(sv_->supOut.yhat + NUM_CHANS,
-                                                    sv_->supOut.yhat + 2 * NUM_CHANS));
-        displayArrayNd("y0_1", std::vector<double>(sv_->supIn.y0, sv_->supIn.y0 + NUM_CHANS));
-        displayArrayNd(
-            "y0_2", std::vector<double>(sv_->supIn.y0 + NUM_CHANS, sv_->supIn.y0 + 2 * NUM_CHANS));
-        displayArrayNd("y_max1", std::vector<double>(sv_->supIn.ymax, sv_->supIn.ymax + NUM_CHANS));
-        displayArrayNd("y_max2", std::vector<double>(sv_->supIn.ymax + NUM_CHANS,
-                                                     sv_->supIn.ymax + 2 * NUM_CHANS));
+                       std::vector<double>(sv_->supIn.y + sv_->no, sv_->supIn.y + 2 * sv_->no));
+        displayArrayNd("yhat1", std::vector<double>(sv_->supOut.yhat, sv_->supOut.yhat + sv_->no));
+        displayArrayNd("yhat2", std::vector<double>(sv_->supOut.yhat + sv_->no,
+                                                    sv_->supOut.yhat + 2 * sv_->no));
+        displayArrayNd("y0_1", std::vector<double>(sv_->supIn.y0, sv_->supIn.y0 + sv_->no));
+        displayArrayNd("y0_2",
+                       std::vector<double>(sv_->supIn.y0 + sv_->no, sv_->supIn.y0 + 2 * sv_->no));
+        displayArrayNd("y_max1", std::vector<double>(sv_->supIn.ymax, sv_->supIn.ymax + sv_->no));
+        displayArrayNd("y_max2", std::vector<double>(sv_->supIn.ymax + sv_->no,
+                                                     sv_->supIn.ymax + 2 * sv_->no));
         displayArrayNd("r1",
-                       std::vector<double>(sv_->supOut.currTraj, sv_->supOut.currTraj + NUM_CHANS));
-        displayArrayNd("r2", std::vector<double>(sv_->supOut.currTraj + NUM_CHANS,
-                                                 sv_->supOut.currTraj + 2 * NUM_CHANS));
-        displayArrayNd("u", std::vector<double>(sv_->supOut.u, sv_->supOut.u + NUM_CHANS));
-        displayArrayNd("u0", std::vector<double>(sv_->supIn.u0, sv_->supIn.u0 + NUM_CHANS));
+                       std::vector<double>(sv_->supOut.currTraj, sv_->supOut.currTraj + sv_->no));
+        displayArrayNd("r2", std::vector<double>(sv_->supOut.currTraj + sv_->no,
+                                                 sv_->supOut.currTraj + 2 * sv_->no));
+        displayArrayNd("u", std::vector<double>(sv_->supOut.u, sv_->supOut.u + sv_->no));
+        displayArrayNd("u0", std::vector<double>(sv_->supIn.u0, sv_->supIn.u0 + sv_->no));
         // displayArray3d("y1", sv_->supIn.y);
         // displayArray3d("y2", sv_->supIn.y + NUM_CHANS);
         // displayArray3d("yhat1", sv_->supOut.yhat);
@@ -261,7 +256,7 @@ void CtrlWindow::renderControllerTuningDialog() {
       if (ImGui::Button("Stop Controller"))
         ctrlVisible_ = false;
 
-    for (int ch = 0; ch < 2 * sv_->imProc->impConf.getNumChs(); ++ch) {
+    for (int ch = 0; ch < 2 * sv_->no; ++ch) {
       if (!sv_->supIn.enAdapt[ch])
         if (ImGui::Button(("Start Online Param Est Ch" + std::to_string(ch)).c_str()))
           sv_->supIn.enAdapt[ch] = true;

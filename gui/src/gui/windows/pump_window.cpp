@@ -32,22 +32,20 @@ PumpWindow::~PumpWindow() {
 void PumpWindow::render() {
   if (ImGui::IsKeyPressed(ImGuiKey_P))
     visible_ = !visible_;
-  if (visible_) {
-    if (ImGui::Begin("Pump Setup", &visible_)) {
-      maxOutputSlider_->render();
-      outputSlider_->render();
-      if (controlToggle_->get())
-        for (int p = 0; p < pp_->getNumPumps(); ++p)
-          ImGui::InputFloat(("P" + std::to_string(p + 1)).c_str(), &pp_->outputs[p], 0.1, 1);
-      syncToggle_->render();
-      if (pp_->getPumpType() == "BARTELS") {
-        freqSlider_->render();
-        valveToggle_->render();
-      }
-      controlToggle_->render();
-      resetBtn_->render();
-      ImGui::End();
+  if (visible_ && ImGui::Begin("Pump Setup", &visible_)) {
+    maxOutputSlider_->render();
+    outputSlider_->render();
+    if (controlToggle_->get())
+      for (int p = 0; p < pp_->getNumPumps(); ++p)
+        ImGui::InputFloat(("P" + std::to_string(p + 1)).c_str(), &pp_->outputs[p], 0.1, 1);
+    syncToggle_->render();
+    if (pp_->getPumpType() == "BARTELS") {
+      freqSlider_->render();
+      valveToggle_->render();
     }
+    controlToggle_->render();
+    resetBtn_->render();
+    ImGui::End();
   }
 }
 

@@ -11,38 +11,50 @@
 
 namespace gui {
 
-inline ImVec2 clampToBounds(const ImVec2 &pos, float width, float height) {
-  ImVec2 clamped;
-  clamped.x = std::clamp(pos.x, 0.0f, width);
-  clamped.y = std::clamp(pos.y, 0.0f, height);
-  return clamped;
-}
-
 class ImProcWindow : public Window {
+public:
+  ImProcWindow(ImCap *imCap, ImProc *imProc);
+  ~ImProcWindow();
+
+  bool improcSetupVisible_{false}, improcVisible_{false};
+
+  void render() override;
+
+private:
+  void renderImCap();
+  void renderImProc();
+  void renderImProcConfigTable();
+
   // ImGuiWindowFlags imCapFlags = 0;
   // ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
 
   ImCap *imCap_;
   ImProc *imProc_;
 
-  std::unique_ptr<Toggle> imProcSetupToggle_;
-
   // std::unique_ptr<IMMImage> rawImage_, procImage_;
   // std::array<std::unique_ptr<IMMImage>, numChans_> chImages_;
 
   GUIFrame rawFrame, preFrame;
-  GUIFrame procGUIFrames[3];
+  std::vector<GUIFrame> procGUIFrames;
+  std::vector<double> y;
 
   std::vector<RotRect> chBBoxes;
-  int chWidth, numChs, bgSubHistory;
+  int chWidth, no_, bgSubHistory;
   double bgSubThres;
 
   cv::Point junction;
-  ImVec2 mousePos, startPos, center, endPos, pointPos, imgOrigin;
+  ImVec2 mousePos, startPos, center, endPos, pointPos;
   ImDrawList *drawList;
   bool isDrawing{false}, drawChs{false}, drawJunc{false};
 
-  void draw() {
+  ImVec2 clampToBounds(const ImVec2 &pos, float width, float height) {
+    ImVec2 clamped;
+    clamped.x = std::clamp(pos.x, 0.0f, width);
+    clamped.y = std::clamp(pos.y, 0.0f, height);
+    return clamped;
+  }
+
+  void draw(ImVec2 imgOrigin) {
     drawList = ImGui::GetWindowDrawList();
     // draw current junction position
     drawList->AddCircleFilled(ImVec2(junction.x + imgOrigin.x, junction.y + imgOrigin.y), 5.0f,
@@ -64,11 +76,11 @@ class ImProcWindow : public Window {
       drawList->AddCircleFilled(endPos, 3.0f, IM_COL32(255, 0, 0, 255));
     }
 
-    drawNextChBBox();
-    drawNextJunc();
+    drawNextChBBox(imgOrigin);
+    drawNextJunc(imgOrigin);
   }
 
-  void drawNextChBBox() {
+  void drawNextChBBox(ImVec2 imgOrigin) {
     if (drawChs) {
       mousePos = ImGui::GetIO().MousePos;
       if (ImGui::IsMouseDown(0) && !isDrawing) {
@@ -95,7 +107,7 @@ class ImProcWindow : public Window {
     }
   }
 
-  void drawNextJunc() {
+  void drawNextJunc(ImVec2 imgOrigin) {
     if (drawJunc) {
       mousePos = ImGui::GetIO().MousePos;
       if (ImGui::IsMouseClicked(0)) {
@@ -107,16 +119,14 @@ class ImProcWindow : public Window {
     }
   }
 
-  void renderImCap();
-  void renderImProc();
-  void renderImProcConfigTable();
-
-public:
-  bool improcSetupVisible_{false}, improcVisible_{false};
-
-  ImProcWindow(ImCap *imCap, ImProc *imProc);
-  ~ImProcWindow();
-  void render() override;
+  void drawFgLocs(int ch, ImVec2 imgOrigin, double y1, double y2) {
+    drawList = ImGui::GetWindowDrawList();
+    // draw primary and secondary fgLoc positions
+    drawList->AddCircleFilled(ImVec2(chWidth / 2.0 + imgOrigin.x, y1 + imgOrigin.y), 5.0f,
+                              IM_COL32(0, 255, 0, 255));
+    drawList->AddCircleFilled(ImVec2(chWidth / 2.0 + imgOrigin.x, y2 + imgOrigin.y), 5.0f,
+                              IM_COL32(0, 255, 0, 255));
+  }
 };
 
 } // namespace gui

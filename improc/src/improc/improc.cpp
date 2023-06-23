@@ -4,9 +4,12 @@
 ImProc::ImProc(ImCap *imCap)
     : conf(Config::conf), confPath(toml::get<std::string>(conf["improc"]["confPath"])),
       dataPath(toml::get<std::string>(conf["postproc"]["procDataPath"])), imCap(imCap),
-      procData(new QueueFPS<std::vector<double>>(dataPath + "procDataQueue.txt")) {
-  for (int ch = 0; ch < impConf.numChs_; ch++)
-    procData->out << "time (ms), maxLoc.x (px), maxLoc.y (px)\n";
+      procData(new QueueFPS<std::vector<double>>(dataPath + "procDataQueue.txt")),
+      dispData(new QueueFPS<std::vector<double>>(dataPath + "dispDataQueue.txt")) {
+  for (int ch = 0; ch < impConf.numChs_; ch++) {
+    procData->out << "time (ms), fgLoc.y (px)\n";
+    dispData->out << "time (ms), fgLoc.y (px)\n";
+  }
 
   // save images with proper format PNG, CV_16UC1
   compParams.push_back(cv::IMWRITE_PNG_COMPRESSION);
@@ -16,6 +19,7 @@ ImProc::ImProc(ImCap *imCap)
 ImProc::~ImProc() {
   stopThread();
   delete procData;
+  delete dispData;
 }
 
 void findMeasCombs(const std::vector<std::vector<double>> &sets, std::vector<int> &indices,
@@ -219,6 +223,7 @@ void ImProc::start() {
       y.insert(y.end(), y1.begin(), y1.end());
       y.insert(y.end(), y2.begin(), y2.end());
       procData->push(y);
+      dispData->push(y);
       procFrameBuf.set(procFrameArr);
 
       // print y1 and y2
@@ -300,7 +305,7 @@ void ImProc::findClusters(const std::vector<cv::Point> &fgLocs, std::vector<doub
   clusters.push_back(clusterCenter);
 }
 
-bool ImProc::anyNonZero(std::size_t start, std::size_t end) {
+bool ImProc::anyNonZeroR(std::size_t start, std::size_t end) {
   for (std::size_t i = start; i < end; i++)
     if (r[i] == 0)
       return false;
@@ -319,21 +324,24 @@ bool ImProc::anyZeroCross(const std::vector<double> &vec1, const std::vector<dou
 
 void ImProc::rstOnZeroCross() {
   // if y1 is being controlled and any y2 crosses zero, reset y2
-  if (anyNonZero(0, NUM_CHANS))
+  if (anyNonZeroR(0, impConf.numChs_))
     if (anyZeroCross(y2, yPrev2))
       std::fill(y2.begin(), y2.end(), 0);
 
   // if y2 is being controlled and any y1 crosses zero, reset y1
-  if (anyNonZero(NUM_CHANS, 2 * NUM_CHANS))
+  if (anyNonZeroR(impConf.numChs_, 2 * impConf.numChs_))
     if (anyZeroCross(y1, yPrev1))
       std::fill(y1.begin(), y1.end(), 0);
 }
 
-void ImProc::setR(double currTraj[2 * NUM_CHANS]) {
-  for (int i = 0; i < 2 * NUM_CHANS; ++i)
+void ImProc::setR(double currTraj[2 * MAX_NO]) {
+  for (int i = 0; i < 2 * impConf.numChs_; ++i)
     r[i] = currTraj[i];
 }
 
 cv::Mat ImProc::getProcFrame(int idx) { return procFrameBuf.get()[idx]; }
 
-void ImProc::clearProcData() { procData->clear(); }
+void ImProc::clearData() {
+  procData->clear();
+  dispData->clear();
+}

@@ -119,7 +119,7 @@ inline void displayArray3b(const char *arrName, bool arr[3], const char *helpTex
   ImGui::Text("%s", arrName);
   ImGui::SameLine();
   HelpMarker(helpText);
-  for (int i = 0; i < NUM_CHANS; ++i) {
+  for (int i = 0; i < 3; ++i) {
     ImGui::TableSetColumnIndex(i + 1);
     ImGui::Text("%d", arr[i]);
   }

@@ -110,7 +110,7 @@ void GUI::render() {
   }
 }
 
-void GUI::startGUIThread() {
+void GUI::startThread() {
   guiThread = std::thread([this]() { ImmApp::Run(runnerParams, addOnsParams); });
   guiThread.join();
 }

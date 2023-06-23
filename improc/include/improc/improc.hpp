@@ -3,6 +3,8 @@
 #include "imcap/imcap.hpp"
 #include "util/util.hpp"
 
+#define MAX_NO 20
+
 void rotateMat(cv::Mat &src, cv::Mat &dst, double angle);
 
 class RotRect : public cv::Rect {
@@ -46,12 +48,12 @@ public:
 };
 
 class ImProcConfig {
-public:
   mutable std::mutex chanROIMtx, chWidthMtx, numChsMtx, bgSubHistoryMtx, bgSubThresMtx;
   std::vector<RotRect> chROIs_;
   int chWidth_, numChs_, bgSubHistory_;
   double bgSubThres_;
 
+public:
   ImProcConfig();
   ImProcConfig(const ImProcConfig &other);
   ImProcConfig &operator=(const ImProcConfig &other) {
@@ -77,6 +79,8 @@ public:
 
   void from_toml(const ordered_value &v);
   ordered_value into_toml() const;
+
+  friend class ImProc;
 };
 
 class ImProc {
@@ -94,32 +98,33 @@ class ImProc {
 
   std::vector<cv::Mat> procFrameArr;
   std::vector<double> y, y1, y2, yPrev1, yPrev2;
-  double r[2 * NUM_CHANS];
+  double r[2 * MAX_NO];
 
   std::atomic<bool> startedImProc{false};
   std::thread procThread;
 
   void start(); // Called within imProcThread context
-  bool started();
 
   double minDist(std::vector<double> &vec, double value);
 
   void segAndOrientCh(cv::Mat &srcImg, cv::Mat &tmpImg, cv::Mat &destImg, RotRect &chROI,
                       int &chWidth);
   void findClusters(const std::vector<cv::Point> &fgLocs, std::vector<double> &clusters);
-  bool anyNonZero(std::size_t start, std::size_t end);
+  bool anyNonZeroR(std::size_t start, std::size_t end);
   bool anyZeroCross(const std::vector<double> &vec1, const std::vector<double> &vec2);
   void rstOnZeroCross();
 
   std::mutex dataMtx;
 
 public:
-  std::vector<int> yMax;
-  ImProcConfig impConf;
-  QueueFPS<std::vector<double>> *procData;
-
   ImProc(ImCap *imCap);
   ~ImProc();
+
+  std::vector<int> yMax;
+  ImProcConfig impConf;
+  QueueFPS<std::vector<double>> *procData, *dispData;
+
+  bool started();
 
   // load/save template images, channel bounding boxes into imProcConfig
   void loadConfig();
@@ -128,9 +133,9 @@ public:
   void startThread();
   void stopThread();
 
-  void setR(double r[2 * NUM_CHANS]);
+  void setR(double r[2 * MAX_NO]);
 
   cv::Mat getProcFrame(int idx);
 
-  void clearProcData();
+  void clearData();
 };
