@@ -38,7 +38,7 @@ void ImCap::stopThread() {
 void ImCap::start() {
   cam->start((int)(100 / 1000)); // timerInterval of 100ms
   while (startedImCap) {
-    // auto startTime = high_resolution_clock::now();
+    Timer t("ImCap");
     imCapSuccess = cam->process(currImg);
     if (imCapSuccess) {
       if (toml::get<std::string>(conf["cam"]["source"]) == "Andor")
@@ -46,9 +46,6 @@ void ImCap::start() {
       rawFrameBuf->set(currImg.clone());
     } else
       continue; // error("cannot read image");
-    // auto stopTime = high_resolution_clock::now();
-    // auto duration = duration_cast<milliseconds>(stopTime - startTime);
-    // info("imCap duration: {}", duration.count());
   }
 }
 

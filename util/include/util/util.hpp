@@ -102,6 +102,21 @@ template <typename T> T toStruct(const std::vector<std::variant<int, double>> &v
   return s;
 }
 
+class Timer {
+public:
+  Timer(const std::string &label) : start(high_resolution_clock::now()), label_(label) {}
+
+  ~Timer() {
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<milliseconds>(stop - start);
+    info("{} duration: {} ms", label_, duration.count());
+  }
+
+private:
+  high_resolution_clock::time_point start;
+  std::string label_;
+};
+
 struct guiConfig {
   std::string windowTitle;
   int width;

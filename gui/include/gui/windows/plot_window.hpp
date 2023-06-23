@@ -11,15 +11,20 @@ namespace gui {
 
 class PlotWindow : public Window {
   Supervisor *sv_;
+  ImProc *imProc_;
 
   float guiTime{0.0f}, history{30.0f};
 
+  std::vector<double> y_;
   std::vector<ScrollingBuffer *> u, uref, y, yhat, yref, ywt, theta;
+
+  void initDataVecs();
+  void destroyDataVecs();
 
 public:
   bool pausePlot{false};
 
-  PlotWindow(Supervisor *sv);
+  PlotWindow(ImProc *imProc, Supervisor *sv);
   ~PlotWindow();
   void render() override;
 };

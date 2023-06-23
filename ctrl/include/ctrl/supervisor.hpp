@@ -46,6 +46,7 @@ public:
 
   void startThread();
   void stopThread();
+  bool started();
 
   QueueFPS<event_bus> *evQueue_;
   void addEvent(event_bus e) { evQueue_->push_back(e); }

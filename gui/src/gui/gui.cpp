@@ -28,7 +28,7 @@ GUI::GUI(ImCap *imCap, ImProc *imProc, Pump *pump, Supervisor *sv)
   pumpWindow_ = std::make_shared<gui::PumpWindow>(pump);
   imProcWindow_ = std::make_shared<gui::ImProcWindow>(imCap, imProc);
   ctrlWindow_ = std::make_shared<gui::CtrlWindow>(sv);
-  plotWindow_ = std::make_shared<gui::PlotWindow>(sv);
+  plotWindow_ = std::make_shared<gui::PlotWindow>(imProc, sv);
 
   // for documentation on runnerParam members, go to the associated header file
   runnerParams.appWindowParams.windowTitle = "autoDMP";

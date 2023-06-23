@@ -122,6 +122,7 @@ private:
   void drawFgLocs(int ch, ImVec2 imgOrigin, double y1, double y2) {
     drawList = ImGui::GetWindowDrawList();
     // draw primary and secondary fgLoc positions
+    // info("drawing channel {} at {}, {}, offset by {}", ch, y1, y2, imgOrigin.y);
     drawList->AddCircleFilled(ImVec2(chWidth / 2.0 + imgOrigin.x, y1 + imgOrigin.y), 5.0f,
                               IM_COL32(0, 255, 0, 255));
     drawList->AddCircleFilled(ImVec2(chWidth / 2.0 + imgOrigin.x, y2 + imgOrigin.y), 5.0f,

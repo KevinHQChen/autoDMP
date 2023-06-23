@@ -12,9 +12,6 @@ Supervisor::Supervisor(ImProc *imProc, Pump *pump)
   rtM = sup->getRTM();
   info("Initializing Supervisor...");
   nullEv = *(event_bus *)getSupervisorParam(&rtM->DataMapInfo.mmi, 0);
-  // print nullEv type
-  info("Null event type: {}", type_name<decltype(nullEv)>());
-
   currEv_ = nullEv;
 }
 
@@ -119,6 +116,8 @@ void Supervisor::start() {
     }
   }
 }
+
+bool Supervisor::started() { return startedCtrl; }
 
 /**
  * Function: getSupervisorParam

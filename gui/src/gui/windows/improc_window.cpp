@@ -76,13 +76,12 @@ void ImProcWindow::renderImCap() {
 }
 
 void ImProcWindow::renderImProc() {
-  if (!improcVisible_ && ImGui::IsKeyPressed(ImGuiKey_I))
+  if (ImGui::IsKeyPressed(ImGuiKey_I))
     !imProc_->started() ? imProc_->startThread() : imProc_->stopThread();
   if (ImGui::IsKeyPressed(ImGuiKey_J))
     improcVisible_ = !improcVisible_;
   if (improcVisible_ && ImGui::Begin("Channels", &improcVisible_)) {
-    if (!imProc_->procData->empty())
-      y = imProc_->dispData->get();
+    y = imProc_->getY();
     for (int i = 0; i < no_; ++i) {
       if (i != 0)
         ImGui::SameLine();
@@ -90,7 +89,7 @@ void ImProcWindow::renderImProc() {
         procGUIFrames[i] = imProc_->getProcFrame(i);
       ImGui::Image((ImTextureID)procGUIFrames[i].texture,
                    ImVec2(procGUIFrames[i].width, procGUIFrames[i].height));
-      drawFgLocs(i, ImGui::GetItemRectMin(), y[i], y[i + no_]);
+      drawFgLocs(i, ImGui::GetItemRectMin(), -y[i], -y[i + no_]);
     }
     ImGui::End();
   }

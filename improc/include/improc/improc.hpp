@@ -114,7 +114,7 @@ class ImProc {
   bool anyZeroCross(const std::vector<double> &vec1, const std::vector<double> &vec2);
   void rstOnZeroCross();
 
-  std::mutex dataMtx;
+  std::mutex imProcMtx, yMtx;
 
 public:
   ImProc(ImCap *imCap);
@@ -122,7 +122,7 @@ public:
 
   std::vector<int> yMax;
   ImProcConfig impConf;
-  QueueFPS<std::vector<double>> *procData, *dispData;
+  QueueFPS<std::vector<double>> *procData;
 
   bool started();
 
@@ -134,6 +134,8 @@ public:
   void stopThread();
 
   void setR(double r[2 * MAX_NO]);
+
+  std::vector<double> getY();
 
   cv::Mat getProcFrame(int idx);
 

@@ -4,12 +4,9 @@
 ImProc::ImProc(ImCap *imCap)
     : conf(Config::conf), confPath(toml::get<std::string>(conf["improc"]["confPath"])),
       dataPath(toml::get<std::string>(conf["postproc"]["procDataPath"])), imCap(imCap),
-      procData(new QueueFPS<std::vector<double>>(dataPath + "procDataQueue.txt")),
-      dispData(new QueueFPS<std::vector<double>>(dataPath + "dispDataQueue.txt")) {
-  for (int ch = 0; ch < impConf.numChs_; ch++) {
+      procData(new QueueFPS<std::vector<double>>(dataPath + "procDataQueue.txt")) {
+  for (int ch = 0; ch < impConf.numChs_; ch++)
     procData->out << "time (ms), fgLoc.y (px)\n";
-    dispData->out << "time (ms), fgLoc.y (px)\n";
-  }
 
   // save images with proper format PNG, CV_16UC1
   compParams.push_back(cv::IMWRITE_PNG_COMPRESSION);
@@ -19,7 +16,6 @@ ImProc::ImProc(ImCap *imCap)
 ImProc::~ImProc() {
   stopThread();
   delete procData;
-  delete dispData;
 }
 
 void findMeasCombs(const std::vector<std::vector<double>> &sets, std::vector<int> &indices,
@@ -154,7 +150,7 @@ void ImProc::stopThread() {
   if (started()) {
     info("Stopping image processing...");
     startedImProc = false;
-    std::lock_guard<std::mutex> guard(dataMtx); // wait for procThread to finish
+    std::lock_guard<std::mutex> guard(imProcMtx); // wait for procThread to finish
     procFrameArr.clear();
     fgClstrs.clear();
     y1.clear();
@@ -169,11 +165,10 @@ void ImProc::stopThread() {
 
 void ImProc::start() {
   while (started()) {
-    std::lock_guard<std::mutex> guard(dataMtx);
+    std::lock_guard<std::mutex> guard(imProcMtx);
     preFrame = imCap->getFrame();
     try {
-      auto startTime = high_resolution_clock::now();
-      auto stopTime = high_resolution_clock::now();
+      Timer t("ImProc");
 
       // update foreground mask based on background threshold,
       // (optionally update background model at preset learning rate),
@@ -219,20 +214,20 @@ void ImProc::start() {
 
       rstOnZeroCross();
 
-      y.clear();
-      y.insert(y.end(), y1.begin(), y1.end());
-      y.insert(y.end(), y2.begin(), y2.end());
+      {
+        std::lock_guard<std::mutex> lock(yMtx);
+        y.clear();
+        y.insert(y.end(), y1.begin(), y1.end());
+        y.insert(y.end(), y2.begin(), y2.end());
+      }
+
       procData->push(y);
-      dispData->push(y);
+
       procFrameBuf.set(procFrameArr);
 
       // print y1 and y2
       for (int ch = 0; ch < impConf.numChs_; ++ch)
         info("ch: {}, y1: {}, y2: {}", ch, y1[ch], y2[ch]);
-
-      stopTime = high_resolution_clock::now();
-      auto duration = duration_cast<milliseconds>(stopTime - startTime);
-      // info("imProc duration: {}", duration.count());
     } catch (cv::Exception &e) {
       error("Message: {}", e.what());
       error("Type: {}", type_name<decltype(e)>());
@@ -339,9 +334,11 @@ void ImProc::setR(double currTraj[2 * MAX_NO]) {
     r[i] = currTraj[i];
 }
 
+std::vector<double> ImProc::getY() {
+  std::lock_guard<std::mutex> lock(yMtx);
+  return y;
+}
+
 cv::Mat ImProc::getProcFrame(int idx) { return procFrameBuf.get()[idx]; }
 
-void ImProc::clearData() {
-  procData->clear();
-  dispData->clear();
-}
+void ImProc::clearData() { procData->clear(); }

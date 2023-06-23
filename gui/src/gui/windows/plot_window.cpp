@@ -2,49 +2,34 @@
 
 namespace gui {
 
-PlotWindow::PlotWindow(Supervisor *sv) : sv_(sv) {
-  for (int ch = 0; ch < 2 * sv->no; ++ch) {
-    y.push_back(new ScrollingBuffer());
-    yhat.push_back(new ScrollingBuffer());
+PlotWindow::PlotWindow(ImProc *imProc, Supervisor *sv) : imProc_(imProc), sv_(sv) {}
 
-    u.push_back(new ScrollingBuffer());
-
-    ywt.push_back(new ScrollingBuffer());
-  }
-
-  int np = 4;
-  for (int i = 0; i < np * 2 * sv->no; ++i)
-    theta.push_back(new ScrollingBuffer());
-}
-
-PlotWindow::~PlotWindow() {
-  for (auto &vec : y)
-    delete vec;
-  for (auto &vec : yhat)
-    delete vec;
-  for (auto &vec : u)
-    delete vec;
-  for (auto &vec : ywt)
-    delete vec;
-  for (auto &vec : theta)
-    delete vec;
-}
+PlotWindow::~PlotWindow() { destroyDataVecs(); }
 
 void PlotWindow::render() {
+  initDataVecs();
   if (ImGui::IsKeyPressed(ImGuiKey_V))
     visible_ = !visible_;
   if (visible_ && ImGui::Begin("Real Time Plot", &visible_)) {
     if (!pausePlot) {
       guiTime += ImGui::GetIO().DeltaTime;
-      for (int ch = 0; ch < 2 * sv_->no; ++ch) {
-        y[ch]->AddPoint(guiTime, sv_->supIn.y[ch]);
-        yhat[ch]->AddPoint(guiTime, sv_->supOut.yhat[ch]);
-        u[ch]->AddPoint(guiTime, sv_->supOut.u[ch]);
-        ywt[ch]->AddPoint(guiTime, sv_->supOut.ywt[ch]);
+      if (imProc_->started()) {
+        for (int i = 0; i < 2 * imProc_->impConf.getNumChs(); ++i) {
+          y_ = imProc_->getY();
+          y[i]->AddPoint(guiTime, y_[i]);
+        }
       }
-      int np = 4;
-      for (int i = 0; i < np * 2 * sv_->no; ++i)
-        theta[i]->AddPoint(guiTime, sv_->supOut.theta[i]);
+
+      if (sv_->started()) {
+        for (int i = 0; i < 2 * sv_->no; ++i) {
+          yhat[i]->AddPoint(guiTime, sv_->supOut.yhat[i]);
+          u[i]->AddPoint(guiTime, sv_->supOut.u[i]);
+          ywt[i]->AddPoint(guiTime, sv_->supOut.ywt[i]);
+        }
+        int np = 4;
+        for (int i = 0; i < np * 2 * sv_->no; ++i)
+          theta[i]->AddPoint(guiTime, sv_->supOut.theta[i]);
+      }
     }
 
     ImGui::SliderFloat("History", &history, 1, 60, "%.1f s");
@@ -75,6 +60,53 @@ void PlotWindow::render() {
     plotVectorN("##Param Estimates", "time (s)", "value", -1, 1, "th", theta, guiTime, history);
     ImGui::End();
   }
+}
+
+void PlotWindow::initDataVecs() {
+  if (!imProc_->started() && !y.empty())
+    y.clear();
+  if (imProc_->started() && y.empty())
+    for (int ch = 0; ch < 2 * imProc_->impConf.getNumChs(); ++ch)
+      y.push_back(new ScrollingBuffer());
+
+  if (!sv_->started()) {
+    if (!yhat.empty())
+      yhat.clear();
+    if (!u.empty())
+      u.clear();
+    if (!ywt.empty())
+      ywt.clear();
+    if (!theta.empty())
+      theta.clear();
+  }
+  if (sv_->started()) {
+    if (yhat.empty())
+      for (int ch = 0; ch < 2 * sv_->no; ++ch)
+        yhat.push_back(new ScrollingBuffer());
+    if (u.empty())
+      for (int ch = 0; ch < 2 * sv_->no; ++ch)
+        u.push_back(new ScrollingBuffer());
+    if (ywt.empty())
+      for (int ch = 0; ch < 2 * sv_->no; ++ch)
+        ywt.push_back(new ScrollingBuffer());
+    int np = 4;
+    if (theta.empty())
+      for (int i = 0; i < np * 2 * sv_->no; ++i)
+        theta.push_back(new ScrollingBuffer());
+  }
+}
+
+void PlotWindow::destroyDataVecs() {
+  for (auto &vec : y)
+    delete vec;
+  for (auto &vec : yhat)
+    delete vec;
+  for (auto &vec : u)
+    delete vec;
+  for (auto &vec : ywt)
+    delete vec;
+  for (auto &vec : theta)
+    delete vec;
 }
 
 } // namespace gui
