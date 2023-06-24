@@ -30,15 +30,10 @@ void ImCap::stopThread() {
   }
 }
 
-/*
-** start camera (allocate circular buffer to store frames)
-** timerInterval sets the size of buffers needed (min size of 1) multiplied by the framerate
-** (pretty sure) if timerInterval is less than 1000ms, only 1 buffer (i.e .40 frames) is needed
-*/
 void ImCap::start() {
   cam->start((int)(100 / 1000)); // timerInterval of 100ms
   while (startedImCap) {
-    Timer t("ImCap");
+    // Timer t("ImCap");
     imCapSuccess = cam->process(currImg);
     if (imCapSuccess) {
       if (toml::get<std::string>(conf["cam"]["source"]) == "Andor")

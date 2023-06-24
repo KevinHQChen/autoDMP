@@ -86,10 +86,13 @@ public:
 class ImProc {
   ordered_value conf;
   std::string confPath, dataPath;
-  ImCap *imCap;
-  SharedBuffer<std::vector<cv::Mat>> procFrameBuf;
-
   std::vector<int> compParams;
+  ImCap *imCap;
+
+  std::mutex imProcMtx, yMtx;
+  std::atomic<bool> startedImProc{false};
+  std::thread procThread;
+  SharedBuffer<std::vector<cv::Mat>> procFrameBuf;
 
   cv::Ptr<cv::BackgroundSubtractor> pBackSub;
   cv::Mat preFrame, fgMask, tempFgMask, tempChFgMask;
@@ -99,9 +102,6 @@ class ImProc {
   std::vector<cv::Mat> procFrameArr;
   std::vector<double> y, y1, y2, yPrev1, yPrev2;
   double r[2 * MAX_NO];
-
-  std::atomic<bool> startedImProc{false};
-  std::thread procThread;
 
   void start(); // Called within imProcThread context
 
@@ -113,8 +113,6 @@ class ImProc {
   bool anyNonZeroR(std::size_t start, std::size_t end);
   bool anyZeroCross(const std::vector<double> &vec1, const std::vector<double> &vec2);
   void rstOnZeroCross();
-
-  std::mutex imProcMtx, yMtx;
 
 public:
   ImProc(ImCap *imCap);

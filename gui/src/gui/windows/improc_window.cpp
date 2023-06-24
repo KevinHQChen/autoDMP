@@ -90,6 +90,11 @@ void ImProcWindow::renderImProc() {
       ImGui::Image((ImTextureID)procGUIFrames[i].texture,
                    ImVec2(procGUIFrames[i].width, procGUIFrames[i].height));
       drawFgLocs(i, ImGui::GetItemRectMin(), -y[i], -y[i + no_]);
+      // print y1 and y2
+      ImGui::SameLine();
+      ImGui::Text("y1: %f", y[i]);
+      ImGui::SameLine();
+      ImGui::Text("y2: %f", y[i + no_]);
     }
     ImGui::End();
   }

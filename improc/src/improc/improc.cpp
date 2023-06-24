@@ -5,7 +5,7 @@ ImProc::ImProc(ImCap *imCap)
     : conf(Config::conf), confPath(toml::get<std::string>(conf["improc"]["confPath"])),
       dataPath(toml::get<std::string>(conf["postproc"]["procDataPath"])), imCap(imCap),
       procData(new QueueFPS<std::vector<double>>(dataPath + "procDataQueue.txt")) {
-  for (int ch = 0; ch < impConf.numChs_; ch++)
+  for (int ch = 0; ch < impConf.numChs_; ++ch)
     procData->out << "time (ms), fgLoc.y (px)\n";
 
   // save images with proper format PNG, CV_16UC1
@@ -24,7 +24,6 @@ void findMeasCombs(const std::vector<std::vector<double>> &sets, std::vector<int
     callback(indices);
     return;
   }
-
   for (int i = 0; i < sets[setIndex].size(); ++i) {
     indices[setIndex] = i;
     findMeasCombs(sets, indices, setIndex + 1, callback);
@@ -150,7 +149,7 @@ void ImProc::stopThread() {
   if (started()) {
     info("Stopping image processing...");
     startedImProc = false;
-    std::lock_guard<std::mutex> guard(imProcMtx); // wait for procThread to finish
+    std::lock_guard<std::mutex> guard(imProcMtx); // wait for thread to finish
     procFrameArr.clear();
     fgClstrs.clear();
     y1.clear();
@@ -158,8 +157,6 @@ void ImProc::stopThread() {
     yPrev1.clear();
     yPrev2.clear();
     yMax.clear();
-    if (procThread.joinable())
-      procThread.join();
   }
 }
 
@@ -168,7 +165,7 @@ void ImProc::start() {
     std::lock_guard<std::mutex> guard(imProcMtx);
     preFrame = imCap->getFrame();
     try {
-      Timer t("ImProc");
+      // Timer t("ImProc");
 
       // update foreground mask based on background threshold,
       // (optionally update background model at preset learning rate),
@@ -183,7 +180,6 @@ void ImProc::start() {
                        impConf.chWidth_);
         // find fgLocs in center column
         cv::findNonZero(procFrameArr[ch].col(procFrameArr[ch].cols / 2), fgLocs);
-
         // print fgLocs
         // for (int i = 0; i < fgLocs.size(); ++i)
         //   info("ch: {}, i: {}, fgLocs: {}", ch, i, fgLocs[i]);
@@ -192,14 +188,12 @@ void ImProc::start() {
         for (auto &fgChClstrs : fgClstrs)
           for (auto &clstrLoc : fgChClstrs)
             clstrLoc *= -1;
-
         // print each cluster
         // for (int i = 0; i < fgClstrs[ch].size(); ++i)
         //   info("ch: {}, i: {}, fgClstrs: {}", ch, i, fgClstrs[ch][i]);
       }
 
       fgClstrsFull = findOtherClstrs(fgClstrs);
-
       // print each cluster
       // for (int ch = 0; ch < impConf.numChs_; ++ch)
       //   for (int i = 0; i < fgClstrsFull[ch].size(); ++i)
@@ -212,6 +206,13 @@ void ImProc::start() {
         yPrev2[ch] = y2[ch];
       }
 
+      /*
+      ** zero-crossing conditions for y[i]:
+      ** if any y[i] is +ve (inferred), and a -ve (measured) y[i] is found,
+      ** y[i] switches from inferred to measured
+      ** if any y[i] is -ve (measured), and any part of the measurement touches 0,
+      */
+
       rstOnZeroCross();
 
       {
@@ -222,12 +223,10 @@ void ImProc::start() {
       }
 
       procData->push(y);
-
       procFrameBuf.set(procFrameArr);
-
       // print y1 and y2
-      for (int ch = 0; ch < impConf.numChs_; ++ch)
-        info("ch: {}, y1: {}, y2: {}", ch, y1[ch], y2[ch]);
+      // for (int ch = 0; ch < impConf.numChs_; ++ch)
+      //   info("ch: {}, y1: {}, y2: {}", ch, y1[ch], y2[ch]);
     } catch (cv::Exception &e) {
       error("Message: {}", e.what());
       error("Type: {}", type_name<decltype(e)>());
@@ -301,7 +300,7 @@ void ImProc::findClusters(const std::vector<cv::Point> &fgLocs, std::vector<doub
 }
 
 bool ImProc::anyNonZeroR(std::size_t start, std::size_t end) {
-  for (std::size_t i = start; i < end; i++)
+  for (std::size_t i = start; i < end; ++i)
     if (r[i] == 0)
       return false;
   return true;
@@ -322,7 +321,6 @@ void ImProc::rstOnZeroCross() {
   if (anyNonZeroR(0, impConf.numChs_))
     if (anyZeroCross(y2, yPrev2))
       std::fill(y2.begin(), y2.end(), 0);
-
   // if y2 is being controlled and any y1 crosses zero, reset y1
   if (anyNonZeroR(impConf.numChs_, 2 * impConf.numChs_))
     if (anyZeroCross(y1, yPrev1))

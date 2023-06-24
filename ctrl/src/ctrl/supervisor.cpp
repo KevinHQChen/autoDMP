@@ -57,13 +57,10 @@ void Supervisor::stopThread() {
   if (startedCtrl) {
     info("Stopping Supervisor...");
     startedCtrl = false;
-
+    std::lock_guard<std::mutex> guard(ctrlMtx); // wait for thread to finish
     supIn = {};
     supOut = {};
     sup->terminate();
-
-    if (ctrlThread.joinable())
-      ctrlThread.join();
     imProc->clearData();
     // this->clearCtrlDataQueue();
   }
@@ -71,7 +68,9 @@ void Supervisor::stopThread() {
 
 void Supervisor::start() {
   while (startedCtrl) {
+    std::lock_guard<std::mutex> guard(ctrlMtx);
     if (!imProc->procData->empty()) {
+      // Timer t("ImProc");
       if (supOut.requestEvent && !evQueue_->empty()) {
         supIn.nextEv = evQueue_->get();
         setCurrEv(supIn.nextEv);
@@ -119,19 +118,6 @@ void Supervisor::start() {
 
 bool Supervisor::started() { return startedCtrl; }
 
-/**
- * Function: getSupervisorParam
- * ----------------------------
- * Retrieves the address of indexed variable block parameters defined in
- * `$GITROOT/external/SupervisoryController/scripts/SupervisoryController_ert_rtw/SupervisoryController_data.cpp`.
- *
- * @param mmi: A pointer to the model mapping information structure.
- * @param paramIdx: The index of the parameter whose address is to be retrieved.
- *
- * @return: A void pointer to the address of the specified parameter. This must be cast to the
- * appropriate type. If the model parameters are not available or the parameter address is not
- * available, the function returns nullptr.
- */
 void *getSupervisorParam(rtwCAPI_ModelMappingInfo *mmi, uint_T paramIdx) {
   const rtwCAPI_ModelParameters *modelParams;
   void **dataAddrMap;
