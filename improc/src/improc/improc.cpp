@@ -106,7 +106,6 @@ std::vector<std::vector<double>> findOtherClstrs(const std::vector<std::vector<d
   return newClstrs;
 }
 
-// load channel/template images, bounding boxes from file
 void ImProc::loadConfig() {
   // load bboxes from file
   ordered_value v = toml::parse<toml::discard_comments, tsl::ordered_map>(confPath + "config.toml");
@@ -205,13 +204,6 @@ void ImProc::start() {
         yPrev1[ch] = y1[ch];
         yPrev2[ch] = y2[ch];
       }
-
-      /*
-      ** zero-crossing conditions for y[i]:
-      ** if any y[i] is +ve (inferred), and a -ve (measured) y[i] is found,
-      ** y[i] switches from inferred to measured
-      ** if any y[i] is -ve (measured), and any part of the measurement touches 0,
-      */
 
       rstOnZeroCross();
 

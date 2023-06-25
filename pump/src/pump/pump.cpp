@@ -7,13 +7,13 @@ Pump::Pump() {
   if (pumpType_ == "FLUIGENT") {
     // detect number/type of instrument controllers and their serial numbers
     numControllers = Fgt_detect(SN, instrumentType);
-    std::cout << "Number of controllers detected: " << int(numControllers) << "\n";
+    info("Number of controllers detected: {}", int(numControllers));
 
     // only initialize MFCS-EZ (SN is populated sequentially for each detected controller)
     for (unsigned char controllerIdx = 0; controllerIdx < numControllers; controllerIdx++) {
       if (instrumentType[controllerIdx] == fgt_INSTRUMENT_TYPE::MFCS_EZ)
-        std::cout << "MFCS-EZ instrument detected at index: " << int(controllerIdx)
-                  << ", serial number: " << SN[controllerIdx] << "\n";
+        info("MFCS-EZ instrument detected at index: {}, serial number: {}", int(controllerIdx),
+             SN[controllerIdx]);
       else
         SN[controllerIdx] = 0;
     }
@@ -21,7 +21,7 @@ Pump::Pump() {
 
     // Get total number of initialized pressure channel(s)
     Fgt_get_pressureChannelCount(&numPressureChannels);
-    std::cout << "Total number of pressure channels: " << int(numPressureChannels) << "\n";
+    info("Total number of pressure channels: {}", int(numPressureChannels));
 
     // Get detailed info about all pressure channels
     Fgt_get_pressureChannelsInfo(channelInfo);
@@ -34,8 +34,7 @@ Pump::Pump() {
       // Get pressure limits
       unsigned int idx = channelInfo[ch].index;
       Fgt_get_pressureRange(idx, &minPressure, &maxPressure);
-      std::cout << "Channel " << idx << " max pressure: " << maxPressure << " mbar\n";
-      std::cout << "Channel " << idx << " min pressure: " << minPressure << " mbar\n";
+      info("Channel {} max pressure: {} mbar, min pressure: {} mbar", idx, maxPressure, minPressure);
 
       // Calibrate pressure channels (set pressure commands will not be accepted during this time)
       // if (ch == 0) {
@@ -43,9 +42,9 @@ Pump::Pump() {
       //   // std::cout << "Press enter to continue...\n";
       //   // getchar();
       // }
-      std::cout << "Calibrating pressure channel " << idx << "\n";
+      info("Calibrating pressure channel {}", idx);
       Fgt_calibratePressure(idx);
-      std::cout << "Done.\n";
+      info("Pressure channel {} successfully calibrated", idx);
     }
   } else if (pumpType_ == "BARTELS") {
     // open serial port and check for errors (refer to:

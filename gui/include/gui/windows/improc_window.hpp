@@ -16,7 +16,7 @@ public:
   ImProcWindow(ImCap *imCap, ImProc *imProc);
   ~ImProcWindow();
 
-  bool improcSetupVisible_{false}, improcVisible_{false};
+  bool improcSetupVisible_{false}, improcVisible_{false}, startedImCap_{false}, startedImProc_{false};
 
   void render() override;
 
@@ -33,6 +33,7 @@ private:
 
   // std::unique_ptr<IMMImage> rawImage_, procImage_;
   // std::array<std::unique_ptr<IMMImage>, numChans_> chImages_;
+  std::unique_ptr<Toggle> imCapToggle_, imProcSetupToggle_, imProcToggle_;
 
   GUIFrame rawFrame, preFrame;
   std::vector<GUIFrame> procGUIFrames;

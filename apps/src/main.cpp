@@ -5,6 +5,10 @@ using namespace py::literals;
 
 // NOLINTNEXTLINE(bugprone-exception-escape)
 int main(int, const char **) {
+  // initialize logging
+  // auto console_sink = std::make_shared<ImGuiConsoleSink>();
+  // spdlog::default_logger()->sinks().push_back(console_sink);
+
   // initialize python interpreter
   py::scoped_interpreter python;
   py::eval_file("ctrl/scripts/sysid.py"); // import sysid functions

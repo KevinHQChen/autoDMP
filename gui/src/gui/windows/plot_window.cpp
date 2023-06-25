@@ -53,11 +53,11 @@ void PlotWindow::render() {
         vec->Erase();
     }
 
-    plotVectorNN("##Output", "time (s)", "position (px)", 0, 80, {"y", "yhat"}, {y, yhat}, guiTime,
+    plotVectorNN("Output", "time (s)", "position (px)", 0, 80, {"y", "yhat"}, {y, yhat}, guiTime,
                  history);
-    plotVectorN("##Input", "time (s)", "input (mbar)", 0, 80, "u", u, guiTime, history);
-    plotVectorN("##Output Weight", "time (s)", "output weight", 0, 1, "ywt", ywt, guiTime, history);
-    plotVectorN("##Param Estimates", "time (s)", "value", -1, 1, "th", theta, guiTime, history);
+    plotVectorN("Input", "time (s)", "input (mbar)", 0, 80, "u", u, guiTime, history);
+    plotVectorN("Output Weight", "time (s)", "output weight", 0, 1, "ywt", ywt, guiTime, history);
+    plotVectorN("Param Estimates", "time (s)", "value", -1, 1, "th", theta, guiTime, history);
     ImGui::End();
   }
 }

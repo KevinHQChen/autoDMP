@@ -7,6 +7,9 @@ ImProcWindow::ImProcWindow(ImCap *imCap, ImProc *imProc) : imCap_(imCap), imProc
   // procImage_ = std::make_unique<IMMImage>("Proc Image", 1);
   // for (int i = 0; i < numChans_; i++)
   //   chImages_[i] = std::make_unique<IMMImage>("Channel " + std::to_string(i), 1);
+  imCapToggle_ = std::make_unique<Toggle>("ImCap (c)", &startedImCap_);
+  imProcSetupToggle_ = std::make_unique<Toggle>("ImProc Setup (s)", &improcSetupVisible_);
+  imProcToggle_ = std::make_unique<Toggle>("ImProc (i)", &startedImProc_);
 }
 
 ImProcWindow::~ImProcWindow() {
@@ -14,6 +17,9 @@ ImProcWindow::~ImProcWindow() {
   // procImage_.reset();
   // for (int i = 0; i < numChans_; i++)
   //   chImages_[i].reset();
+  imCapToggle_.reset();
+  imProcSetupToggle_.reset();
+  imProcToggle_.reset();
 }
 
 void ImProcWindow::render() {
@@ -22,7 +28,7 @@ void ImProcWindow::render() {
 }
 
 void ImProcWindow::renderImCap() {
-  if (ImGui::IsKeyPressed(ImGuiKey_C))
+  if (ImGui::IsKeyPressed(ImGuiKey_C) || imCapToggle_->changed())
     !imCap_->started() ? imCap_->startThread() : imCap_->stopThread();
   if (ImGui::IsKeyPressed(ImGuiKey_D))
     visible_ = !visible_;
@@ -30,12 +36,17 @@ void ImProcWindow::renderImCap() {
     improcSetupVisible_ = !improcSetupVisible_;
   if (visible_ && ImGui::Begin("Raw Image Capture", &visible_)) {
     // draw image
-    if (imCap_->started())
+    if (imCap_->started()) {
+      startedImCap_ = true;
       rawFrame = imCap_->getFrame();
+    } else
+      startedImCap_ = false;
     ImGui::Image((ImTextureID)rawFrame.texture, ImVec2(rawFrame.width, rawFrame.height));
     ImVec2 imgOrigin = ImGui::GetItemRectMin();
 
     // improc setup
+    imCapToggle_->render();
+    imProcSetupToggle_->render();
     if (improcSetupVisible_) {
       if (ImGui::Button("Select Junction"))
         drawJunc = true;
@@ -76,7 +87,7 @@ void ImProcWindow::renderImCap() {
 }
 
 void ImProcWindow::renderImProc() {
-  if (ImGui::IsKeyPressed(ImGuiKey_I))
+  if (ImGui::IsKeyPressed(ImGuiKey_I) || imProcToggle_->changed())
     !imProc_->started() ? imProc_->startThread() : imProc_->stopThread();
   if (ImGui::IsKeyPressed(ImGuiKey_J))
     improcVisible_ = !improcVisible_;
@@ -85,8 +96,11 @@ void ImProcWindow::renderImProc() {
     for (int i = 0; i < no_; ++i) {
       if (i != 0)
         ImGui::SameLine();
-      if (imProc_->started())
+      if (imProc_->started()) {
+        startedImProc_ = true;
         procGUIFrames[i] = imProc_->getProcFrame(i);
+      } else
+        startedImProc_ = false;
       ImGui::Image((ImTextureID)procGUIFrames[i].texture,
                    ImVec2(procGUIFrames[i].width, procGUIFrames[i].height));
       drawFgLocs(i, ImGui::GetItemRectMin(), -y[i], -y[i + no_]);
@@ -96,6 +110,7 @@ void ImProcWindow::renderImProc() {
       ImGui::SameLine();
       ImGui::Text("y2: %f", y[i + no_]);
     }
+    imProcToggle_->render();
     ImGui::End();
   }
 }

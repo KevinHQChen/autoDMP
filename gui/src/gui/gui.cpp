@@ -51,8 +51,11 @@ GUI::GUI(ImCap *imCap, ImProc *imProc, Pump *pump, Supervisor *sv)
   runnerParams.fpsIdling.enableIdling = false;
   runnerParams.callbacks.ShowStatus = nullptr; // GUI::renderStatusBar;
 
-  // MENU BAR: enable default (showMenu_App, showMenu_View) + custom menu bar
+  // MENU BAR: disable default menus (showMenu_App, showMenu_View), define custom menu bar
+  // source (menu_statusbar.cpp): HelloImGui::Menu_StatusBar::ShowMenu(RunnerParams &runnerParams))
   runnerParams.imGuiWindowParams.showMenuBar = true;
+  runnerParams.imGuiWindowParams.showMenu_App = false;  // default app menu (quit)
+  runnerParams.imGuiWindowParams.showMenu_View = false; // default view menu (theme, etc)
   runnerParams.callbacks.ShowMenus = [this]() { renderMenu(); };
 
   // define main GUI rendering function
@@ -78,21 +81,18 @@ GUI::~GUI() {
 void GUI::renderMenu() {
   // called by imgui_bundle within BeginMenuBar()/EndMenuBar() context
   if (ImGui::BeginMenu("File")) {
-    runnerParams.appShallExit = ImGui::MenuItem("Quit");
-    ImGui::EndMenu();
-  }
-  if (ImGui::BeginMenu("Setup")) {
-    // shortcuts are just for show, they are not implemented here (yet)
-    ImGui::MenuItem("Start Image Capture", "c", &imProcWindow_->visible_);
-    ImGui::MenuItem("Setup Image Processing", "s", &imProcWindow_->improcSetupVisible_);
-    ImGui::MenuItem("Start Image Processing", "i", &imProcWindow_->improcVisible_);
-    ImGui::MenuItem("Start Pump Setup", "p", &pumpWindow_->visible_);
-    ImGui::MenuItem("Setup Supervisory Control", "u", &ctrlWindow_->ctrlSetupVisible_);
-    ImGui::MenuItem("View Real-Time Plot", "v", &plotWindow_->visible_);
-    ImGui::EndMenu();
-  }
-  if (ImGui::BeginMenu("Debug")) {
+    runnerParams.appShallExit = ImGui::MenuItem("Quit", "q");
     ImGui::MenuItem("Show Demo Window", nullptr, &guiConf.showDebug);
+    ImGui::EndMenu();
+  }
+  if (ImGui::BeginMenu("View")) {
+    // shortcuts are just for show, they are not implemented here (yet)
+    ImGui::MenuItem("Image Capture", "d", &imProcWindow_->visible_);
+    ImGui::MenuItem("Image Processing Setup", "s", &imProcWindow_->improcSetupVisible_);
+    ImGui::MenuItem("Image Processing", "j", &imProcWindow_->improcVisible_);
+    ImGui::MenuItem("Pump Control", "p", &pumpWindow_->visible_);
+    ImGui::MenuItem("Supervisor Setup", "u", &ctrlWindow_->ctrlSetupVisible_);
+    ImGui::MenuItem("Real-Time Plot", "v", &plotWindow_->visible_);
     ImGui::EndMenu();
   }
 }

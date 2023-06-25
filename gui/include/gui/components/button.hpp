@@ -31,7 +31,7 @@ public:
     ImGui::BeginGroup();
     changed_ = ImGui::Toggle(label_.c_str(), value_, toggleSize_);
     ImGui::EndGroup();
-    if (callback_)
+    if (callback_ && changed_)
       callback_();
   }
 
@@ -40,6 +40,8 @@ public:
   void setLabel(std::string label) { label_ = label; }
 
   bool get() const { return *value_; }
+
+  void set(bool value) { *value_ = value; }
 };
 
 class ToggleArray {

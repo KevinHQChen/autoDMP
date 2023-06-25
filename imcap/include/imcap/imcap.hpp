@@ -7,11 +7,14 @@ class ImCap {
   ordered_value conf;
   std::string dataPath;
   Cam *cam;
-  SharedBuffer<cv::Mat> *rawFrameBuf;
-  cv::Mat currImg{0, 0, CV_16UC1};
-  bool imCapSuccess;
+
+  std::mutex imcapMtx;
   std::atomic<bool> startedImCap{false};
   std::thread captureThread;
+  SharedBuffer<cv::Mat> rawFrameBuf;
+
+  cv::Mat currImg{0, 0, CV_16UC1};
+  bool imCapSuccess;
 
   /*
   ** start camera (allocate circular buffer to store frames)

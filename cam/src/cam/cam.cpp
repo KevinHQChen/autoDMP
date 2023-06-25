@@ -65,12 +65,6 @@ Cam::~Cam() {
     delete offlineCam;
 }
 
-/*
-** get Andor features from config file, convert to correct types, and send to camera
-**
-** note: AT_WC = wchar_t is used to represent all feature names, enumerated options, and string
-*feature values
-*/
 int Cam::setFeatures() {
   std::lock_guard<std::mutex> lockGuard(mutex);
   auto &andorConf = toml::find(config, "andor");

@@ -57,8 +57,7 @@ void PumpWindow::setPumps() {
 }
 
 void PumpWindow::syncPumps() {
-  if (syncToggle_->get())
-    pp_->outputs[1] = pp_->outputs[0];
+  pp_->outputs[1] = pp_->outputs[0];
 }
 
 void PumpWindow::setFreq() {

@@ -14,6 +14,7 @@ class PlotWindow : public Window {
   ImProc *imProc_;
 
   float guiTime{0.0f}, history{30.0f};
+  bool pausePlot{false};
 
   std::vector<double> y_;
   std::vector<ScrollingBuffer *> u, uref, y, yhat, yref, ywt, theta;
@@ -22,7 +23,6 @@ class PlotWindow : public Window {
   void destroyDataVecs();
 
 public:
-  bool pausePlot{false};
 
   PlotWindow(ImProc *imProc, Supervisor *sv);
   ~PlotWindow();

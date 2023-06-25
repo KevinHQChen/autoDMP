@@ -124,7 +124,7 @@ public:
 
   bool started();
 
-  // load/save template images, channel bounding boxes into imProcConfig
+  // load/save channel bounding boxes into/from imProcConfig
   void loadConfig();
   void saveConfig();
 
