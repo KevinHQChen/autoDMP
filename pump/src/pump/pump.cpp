@@ -1,7 +1,7 @@
 #include "pump/pump.hpp"
 
-Pump::Pump() {
-  info("Initializing pump...");
+Pump::Pump(std::shared_ptr<logger> log) : lg(log) {
+  lg->info("Initializing pump...");
 
   if (simModeActive)
     return;
@@ -9,12 +9,12 @@ Pump::Pump() {
   if (pumpType_ == "FLUIGENT") {
     // detect number/type of instrument controllers and their serial numbers
     numControllers = Fgt_detect(SN, instrumentType);
-    info("Number of controllers detected: {}", int(numControllers));
+    lg->info("Number of controllers detected: {}", int(numControllers));
 
     // only initialize MFCS-EZ (SN is populated sequentially for each detected controller)
     for (unsigned char controllerIdx = 0; controllerIdx < numControllers; controllerIdx++) {
       if (instrumentType[controllerIdx] == fgt_INSTRUMENT_TYPE::MFCS_EZ)
-        info("MFCS-EZ instrument detected at index: {}, serial number: {}", int(controllerIdx),
+        lg->info("MFCS-EZ instrument detected at index: {}, serial number: {}", int(controllerIdx),
              SN[controllerIdx]);
       else
         SN[controllerIdx] = 0;
@@ -23,7 +23,7 @@ Pump::Pump() {
 
     // Get total number of initialized pressure channel(s)
     Fgt_get_pressureChannelCount(&numPressureChannels);
-    info("Total number of pressure channels: {}", int(numPressureChannels));
+    lg->info("Total number of pressure channels: {}", int(numPressureChannels));
 
     // Get detailed info about all pressure channels
     Fgt_get_pressureChannelsInfo(channelInfo);
@@ -36,7 +36,7 @@ Pump::Pump() {
       // Get pressure limits
       unsigned int idx = channelInfo[ch].index;
       Fgt_get_pressureRange(idx, &minPressure, &maxPressure);
-      info("Channel {} max pressure: {} mbar, min pressure: {} mbar", idx, maxPressure,
+      lg->info("Channel {} max pressure: {} mbar, min pressure: {} mbar", idx, maxPressure,
            minPressure);
 
       // Calibrate pressure channels (set pressure commands will not be accepted during this time)
@@ -45,16 +45,16 @@ Pump::Pump() {
       //   // std::cout << "Press enter to continue...\n";
       //   // getchar();
       // }
-      info("Calibrating pressure channel {}", idx);
+      lg->info("Calibrating pressure channel {}", idx);
       Fgt_calibratePressure(idx);
-      info("Pressure channel {} successfully calibrated", idx);
+      lg->info("Pressure channel {} successfully calibrated", idx);
     }
   } else if (pumpType_ == "BARTELS") {
     // open serial port and check for errors (refer to:
     // https://blog.mbedded.ninja/programming/operating-systems/linux/linux-serial-ports-using-c-cpp/#overview)
     serialPort = open("/dev/ttyACM0", O_RDWR);
     if (serialPort < 0)
-      error("Error {} opening {}: {}", errno, ttyname(serialPort), strerror(errno));
+     lg->error("Error {} opening {}: {}", errno, ttyname(serialPort), strerror(errno));
 
     /* Configure serial port by modifying termios struct */
     // Read in existing settings, and handle any error
@@ -62,7 +62,7 @@ Pump::Pump() {
     // must have been initialized with a call to tcgetattr() overwise behaviour
     // is undefined
     if (tcgetattr(serialPort, &tty) != 0)
-      error("Error {} from tcgetattr: {}", errno, strerror(errno));
+     lg->error("Error {} from tcgetattr: {}", errno, strerror(errno));
 
     // control modes
     // Set 8N1 (8 bits/byte, no parity, one stop bit)
@@ -104,14 +104,14 @@ Pump::Pump() {
 
     // Save tty settings, also checking for error
     if (tcsetattr(serialPort, TCSANOW, &tty) != 0)
-      error("Error {} from tcsetattr: {}", errno, strerror(errno));
+     lg->error("Error {} from tcsetattr: {}", errno, strerror(errno));
 
-    info("Pump serial port {} successfully configured", ttyname(serialPort));
+    lg->info("Pump serial port {} successfully configured", ttyname(serialPort));
   }
 }
 
 Pump::~Pump() {
-  info("Terminating pump...");
+  lg->info("Terminating pump...");
 
   if (simModeActive)
     return;
@@ -123,7 +123,7 @@ Pump::~Pump() {
 
     Fgt_close();
   } else if (pumpType_ == "BARTELS") {
-    info("Closing pump serial port {}", ttyname(serialPort));
+    lg->info("Closing pump serial port {}", ttyname(serialPort));
     close(serialPort);
   }
 }
@@ -134,7 +134,7 @@ bool Pump::setOutput(unsigned int pumpIdx, float voltage) {
   if (pumpType_ == "FLUIGENT") {
     // check pump index
     if (pumpIdx >= numPressureChannels) {
-      error("Pump index {} out of range (max {})", pumpIdx, numPressureChannels - 1);
+     lg->error("Pump index {} out of range (max {})", pumpIdx, numPressureChannels - 1);
       return false;
     }
 
@@ -148,7 +148,7 @@ bool Pump::setOutput(unsigned int pumpIdx, float voltage) {
     // sim mode is active or command was successful
     outputs[pumpIdx] = voltage;
     prevOutputs[pumpIdx] = voltage;
-    info("Pump {} set to {} V.", pumpIdx + 1, voltage);
+    lg->info("Pump {} set to {} V.", pumpIdx + 1, voltage);
     return true;
   } else if (pumpType_ == "BARTELS") {
     // Check if voltage is different from current voltage, return early if it's the same
@@ -158,17 +158,17 @@ bool Pump::setOutput(unsigned int pumpIdx, float voltage) {
     auto presCommand = "P" + std::to_string(pumpIdx + 1) + "V" + std::to_string(voltage) + "\r\n";
 
     if (!simModeActive && (!sendCmd(presCommand, 4) || std::strncmp("OK", readData, 2) != 0)) {
-      error("Error setting pump {} to {} V.", pumpIdx + 1, voltage);
+     lg->error("Error setting pump {} to {} V.", pumpIdx + 1, voltage);
       return false;
     }
 
     // sim mode is active or command was successful
     outputs[pumpIdx] = voltage;
     prevOutputs[pumpIdx] = voltage;
-    info("Pump {} set to {} V.", pumpIdx + 1, voltage);
+    lg->info("Pump {} set to {} V.", pumpIdx + 1, voltage);
     return true;
   } else {
-    error("Pump type {} not supported", pumpType_);
+   lg->error("Pump type {} not supported", pumpType_);
     return false;
   }
 }
@@ -183,7 +183,7 @@ void Pump::setFreq(int freq_) {
   if (simModeActive) {
     freq = freq_;
     prevFreq = freq_;
-    info("Set pump freq to {} Hz.", freq_);
+    lg->info("Set pump freq to {} Hz.", freq_);
     return;
   }
 
@@ -192,11 +192,11 @@ void Pump::setFreq(int freq_) {
   sendCmd(freqCommand, 4);
 
   if (std::strncmp("OK", readData, 2) != 0)
-    error("Error setting pump freq.");
+   lg->error("Error setting pump freq.");
   else {
     freq = freq_;
     prevFreq = freq_;
-    info("Set pump freq to {} Hz.", freq_);
+    lg->info("Set pump freq to {} Hz.", freq_);
   }
 }
 
@@ -206,7 +206,7 @@ void Pump::setValve(unsigned int valveIdx, bool state) {
 
   if (simModeActive) {
     valveState[valveIdx] = state;
-    info("Valve {} set to {}.", valveIdx, state ? "ON" : "OFF");
+    lg->info("Valve {} set to {}.", valveIdx, state ? "ON" : "OFF");
     return;
   }
 
@@ -218,10 +218,10 @@ void Pump::setValve(unsigned int valveIdx, bool state) {
 
   sendCmd(valveCommand, 4);
   if (std::strncmp("OK", readData, 2) != 0)
-    error("Error setting valve {} to {}.", valveIdx + 1, state ? "ON" : "OFF");
+   lg->error("Error setting valve {} to {}.", valveIdx + 1, state ? "ON" : "OFF");
   else {
     valveState[valveIdx] = state;
-    info("Valve {} set to {}.", valveIdx + 1, state ? "ON" : "OFF");
+    lg->info("Valve {} set to {}.", valveIdx + 1, state ? "ON" : "OFF");
   }
 }
 
@@ -233,18 +233,18 @@ bool Pump::sendCmd(std::string cmd, int len) {
   delete readData;
   readData = new char[len];
   if (write(serialPort, cmd.c_str(), cmd.length()) != cmd.length()) {
-    error("Error {} from write: {}", errno, strerror(errno));
+   lg->error("Error {} from write: {}", errno, strerror(errno));
     ret = false;
   }
   std::this_thread::sleep_for(1ms);
   // tcdrain(serialPort); // delay for output
 
   if (read(serialPort, readData, len) != len) {
-    error("Error {} from read: {}", errno, strerror(errno));
+   lg->error("Error {} from read: {}", errno, strerror(errno));
     ret = false;
   }
 
-  info("readData: {}", readData);
+  lg->info("readData: {}", readData);
 
   return ret;
 }

@@ -13,13 +13,14 @@ int main(int, const char **) {
   py::gil_scoped_release release;         // add this to release the GIL
 
   // initialize all subsystems
-  auto imCap = new ImCap();
-  auto imProc = new ImProc(imCap);
-  auto pump = new Pump();
-  auto sv = new Supervisor(imProc, pump);
+  auto cam = new Cam(0, Config::conf, console.getLogger("Cam"));
+  auto imCap = new ImCap(cam, console.getLogger("ImCap"));
+  auto imProc = new ImProc(imCap, console.getLogger("ImProc"));
+  auto pump = new Pump(console.getLogger("Pump"));
+  auto sv = new Supervisor(imProc, pump, console.getLogger("Supervisor"));
 
   // start gui
-  GUI gui(imCap, imProc, pump, sv, console);
+  GUI gui(imCap, imProc, pump, sv, console, console.getLogger("GUI"));
   gui.startThread();
 
   delete sv;

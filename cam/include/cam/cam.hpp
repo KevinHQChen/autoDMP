@@ -16,7 +16,7 @@ public:
           - to open a camera handle, pass in its DeviceIndex,
           and the address of Handle will be updated (pass-by-reference)
   */
-  Cam(int cameraIdx, ordered_value conf);
+  Cam(int cameraIdx, ordered_value conf, std::shared_ptr<logger> log);
 
   /* alternate constructor that uses AT_OpenDevice
    */
@@ -44,6 +44,7 @@ public:
   AT_H handle;
 
 private:
+  std::shared_ptr<logger> lg;
   int cameraIndex;
   ordered_value config;
   ordered_value &camConf;

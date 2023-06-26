@@ -1,22 +1,22 @@
 #include "imcap/imcap.hpp"
 
-ImCap::ImCap()
+ImCap::ImCap(Cam *cam, std::shared_ptr<logger> log)
     : conf(Config::conf), dataPath(toml::get<std::string>(conf["postproc"]["rawDataPath"])),
-      cam(new Cam(0, conf)) {
-  info("Initializing image capture...");
+      cam_(cam), lg(log) {
+  lg->info("Initializing image capture...");
 }
 
 ImCap::~ImCap() {
-  info("Terminating image capture...");
+  lg->info("Terminating image capture...");
   stopThread();
-  delete cam;
+  delete cam_;
 }
 
 void ImCap::startThread() {
   if (!started()) {
-    info("Starting image capture...");
+    lg->info("Starting image capture...");
     startedImCap = true;
-    cam->start((int)(100 / 1000)); // timerInterval of 100ms
+    cam_->start((int)(100 / 1000)); // timerInterval of 100ms
     captureThread = std::thread(&ImCap::start, this);
     captureThread.detach();
   }
@@ -24,10 +24,10 @@ void ImCap::startThread() {
 
 void ImCap::stopThread() {
   if (started()) {
-    info("Stopping image capture...");
+    lg->info("Stopping image capture...");
     startedImCap = false;
     std::lock_guard<std::mutex> guard(imcapMtx); // wait for thread to finish
-    cam->stop();
+    cam_->stop();
   }
 }
 
@@ -35,13 +35,13 @@ void ImCap::start() {
   while (startedImCap) {
     std::lock_guard<std::mutex> guard(imcapMtx);
     // Timer t("ImCap");
-    imCapSuccess = cam->process(currImg);
+    imCapSuccess = cam_->process(currImg);
     if (imCapSuccess) {
       if (toml::get<std::string>(conf["cam"]["source"]) == "Andor")
         currImg.convertTo(currImg, CV_8UC1, 255.0 / 65535);
       rawFrameBuf.set(currImg);
     } else
-      continue; // error("cannot read image");
+      continue; // lg->error("cannot read image");
   }
 }
 

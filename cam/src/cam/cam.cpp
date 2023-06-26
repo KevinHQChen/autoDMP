@@ -1,33 +1,33 @@
 #include "cam/cam.hpp"
 
-Cam::Cam(int cameraIdx, ordered_value conf)
-    : cameraIndex(cameraIdx), config(conf), camConf(toml::find(config, "cam")) {
+Cam::Cam(int cameraIdx, ordered_value conf, std::shared_ptr<logger> log)
+    : cameraIndex(cameraIdx), config(conf), camConf(toml::find(config, "cam")), lg(log) {
   if (toml::get<std::string>(camConf["source"]) == "Andor") {
     // init libs
     returnCode = AT_InitialiseLibrary();
     if (returnCode != AT_SUCCESS) {
-      error("FAIL: zyla can not initialise library, return {}\n", returnCode);
+     lg->error("FAIL: zyla can not initialise library, return {}\n", returnCode);
       return;
     }
-    info("zyla initialized library\n");
+    lg->info("zyla initialized library\n");
     returnCode = AT_InitialiseUtilityLibrary();
     if (returnCode != AT_SUCCESS) {
-      error("FAIL: zyla can not initialise utility library, return {}\n", returnCode);
+     lg->error("FAIL: zyla can not initialise utility library, return {}\n", returnCode);
       return;
     }
-    info("zyla initialized utility library\n");
+    lg->info("zyla initialized utility library\n");
 
     // open handle
     returnCode = AT_Open(cameraIndex, &handle);
     if (returnCode != AT_SUCCESS) {
-      error("FAIL: zyla can not open, return {}\n", returnCode);
+     lg->error("FAIL: zyla can not open, return {}\n", returnCode);
       return;
     }
-    info("zyla opened with handle {}\n", handle);
+    lg->info("zyla opened with handle {}\n", handle);
 
     // set camera features
     if (setFeatures() != AT_SUCCESS) {
-      error("FAIL: zyla could not set all camera features\n");
+     lg->error("FAIL: zyla could not set all camera features\n");
       return;
     }
   } else if (toml::get<std::string>(camConf["source"]) == "File")
@@ -43,24 +43,24 @@ Cam::~Cam() {
     // close handle
     returnCode = AT_Close(handle);
     if (returnCode != AT_SUCCESS) {
-      error("FAIL: zyla can not close, return {}\n", returnCode);
+     lg->error("FAIL: zyla can not close, return {}\n", returnCode);
       return;
     }
-    info("zyla closed\n");
+    lg->info("zyla closed\n");
 
     // clean up libs
     returnCode = AT_FinaliseLibrary();
     if (returnCode != AT_SUCCESS) {
-      error("FAIL: zyla can not finalise library, return {}\n", returnCode);
+     lg->error("FAIL: zyla can not finalise library, return {}\n", returnCode);
       return;
     }
-    info("zyla finalised library\n");
+    lg->info("zyla finalised library\n");
     returnCode = AT_FinaliseUtilityLibrary();
     if (returnCode != AT_SUCCESS) {
-      error("FAIL: zyla can not finalise utility library, return {}\n", returnCode);
+     lg->error("FAIL: zyla can not finalise utility library, return {}\n", returnCode);
       return;
     }
-    info("zyla finalised utility library\n");
+    lg->info("zyla finalised utility library\n");
   } else
     delete offlineCam;
 }
@@ -83,17 +83,17 @@ int Cam::setFeatures() {
     AT_BOOL writable;
     returnCode = AT_IsWritable(handle, wcKey, &writable);
     if (returnCode != AT_SUCCESS) {
-      error("FAIL: can not set {}\n", key);
+     lg->error("FAIL: can not set {}\n", key);
       return returnCode;
     }
-    info("i{}o{}r{}w{}\t{}", impl, readOnly, readable, writable, key);
+    lg->info("i{}o{}r{}w{}\t{}", impl, readOnly, readable, writable, key);
     if (writable) {
       returnCode = AT_SetBool(handle, wcKey, toml::get<AT_BOOL>(val));
       if (returnCode != AT_SUCCESS) {
-        error("FAIL: zyla can not set bool feature {} to {}, return {}\n", key, val, returnCode);
+       lg->error("FAIL: zyla can not set bool feature {} to {}, return {}\n", key, val, returnCode);
         return returnCode;
       }
-      info("zyla set bool feature {} to {}\n", key, val);
+      lg->info("zyla set bool feature {} to {}\n", key, val);
     }
   }
 
@@ -111,17 +111,17 @@ int Cam::setFeatures() {
     AT_BOOL writable;
     returnCode = AT_IsWritable(handle, wcKey, &writable);
     if (returnCode != AT_SUCCESS) {
-      error("FAIL: can not set {}\n", key);
+     lg->error("FAIL: can not set {}\n", key);
       return returnCode;
     }
-    info("i{}o{}r{}w{}\t{}", impl, readOnly, readable, writable, key);
+    lg->info("i{}o{}r{}w{}\t{}", impl, readOnly, readable, writable, key);
     if (writable) {
       returnCode = AT_SetInt(handle, wcKey, toml::get<AT_64>(val));
       if (returnCode != AT_SUCCESS) {
-        error("FAIL: zyla can not set int feature {} to {}, return {}\n", key, val, returnCode);
+       lg->error("FAIL: zyla can not set int feature {} to {}, return {}\n", key, val, returnCode);
         return returnCode;
       }
-      info("zyla set int feature {} to {}\n", key, val);
+      lg->info("zyla set int feature {} to {}\n", key, val);
     }
   }
 
@@ -139,17 +139,17 @@ int Cam::setFeatures() {
     AT_BOOL writable;
     returnCode = AT_IsWritable(handle, wcKey, &writable);
     if (returnCode != AT_SUCCESS) {
-      error("FAIL: can not set {}\n", key);
+     lg->error("FAIL: can not set {}\n", key);
       return returnCode;
     }
-    info("i{}o{}r{}w{}\t{}", impl, readOnly, readable, writable, key);
+    lg->info("i{}o{}r{}w{}\t{}", impl, readOnly, readable, writable, key);
     if (writable) {
       returnCode = AT_SetFloat(handle, wcKey, toml::get<double>(val));
       if (returnCode != AT_SUCCESS) {
-        error("FAIL: zyla can not set float feature {} to {}, return {}\n", key, val, returnCode);
+       lg->error("FAIL: zyla can not set float feature {} to {}, return {}\n", key, val, returnCode);
         return returnCode;
       }
-      info("zyla set float feature {} to {}\n", key, val);
+      lg->info("zyla set float feature {} to {}\n", key, val);
     }
   }
 
@@ -171,17 +171,17 @@ int Cam::setFeatures() {
     AT_BOOL writable;
     returnCode = AT_IsWritable(handle, wcKey, &writable);
     if (returnCode != AT_SUCCESS) {
-      error("FAIL: can not set {}\n", key);
+     lg->error("FAIL: can not set {}\n", key);
       return returnCode;
     }
-    info("i{}o{}r{}w{}\t{}", impl, readOnly, readable, writable, key);
+    lg->info("i{}o{}r{}w{}\t{}", impl, readOnly, readable, writable, key);
     if (writable) {
       returnCode = AT_SetEnumString(handle, wcKey, wcVal);
       if (returnCode != AT_SUCCESS) {
-        error("FAIL: zyla can not set enum feature {} to {}, return {}\n", key, val, returnCode);
+       lg->error("FAIL: zyla can not set enum feature {} to {}, return {}\n", key, val, returnCode);
         return returnCode;
       }
-      info("zyla set enum feature {} to {}\n", key, val);
+      lg->info("zyla set enum feature {} to {}\n", key, val);
     }
   }
 
@@ -247,7 +247,7 @@ void Cam::start(const int &Ts) {
     accumNumFrames = 0;
 
     // print camera settings for debug
-    // info("Frame Size (bytes): {}\n"
+    // lg->info("Frame Size (bytes): {}\n"
     //      "Framerate: {}\n"
     //      "ROI width (pixels): {}\n"
     //      "ROI left (pixels): {}\n"
@@ -296,11 +296,11 @@ bool Cam::process(cv::Mat &image) {
     // put calling thread to sleep until timeout elapses or an image becomes
     // available (if timeout equals 0, only get existing frames without waiting)
     // (btw 0 timeout causes AT_WaitBuffer to hang quite often on Windows)
-    // info("zyla process wait buffer returns ");
+    // lg->info("zyla process wait buffer returns ");
     // check if frame is available, if so store its address in imageData pointer, and size in
     // imageSize
     returnCode = AT_WaitBuffer(handle, &imageData, &imageSize, AT_INFINITE);
-    // info(returnCode);
+    // lg->info(returnCode);
     if (returnCode != AT_SUCCESS)
       return false;
 
@@ -308,17 +308,17 @@ bool Cam::process(cv::Mat &image) {
     returnCode = AT_QueueBuffer(handle, alignedBuffers[accumNumFrames % queueLength], bufferSize);
     // std::cerr << "re-queue returns " << returnCode << "\n";
     accumNumFrames++;
-    // info("accumNumFrames: {}", accumNumFrames);
+    // lg->info("accumNumFrames: {}", accumNumFrames);
     // clean up buffer
     image = cv::Mat(imageHeight, imageWidth, CV_16UC1);
     returnCode = AT_ConvertBuffer(imageData, &image.at<unsigned char>(0, 0), imageWidth,
                                   imageHeight, imageStride, imageEncode, L"Mono16");
-    // info("convert returns {}", returnCode);
+    // lg->info("convert returns {}", returnCode);
     if (returnCode == AT_SUCCESS)
       return true;
   } else {
     if (!offlineCam->read(rawImage)) {
-      error("cannot read frame from video stream");
+     lg->error("cannot read frame from video stream");
       return false;
     }
     cv::cvtColor(rawImage, image, cv::COLOR_RGB2GRAY);

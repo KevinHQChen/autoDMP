@@ -7,42 +7,9 @@
 #include <numeric>
 #include <pybind11/embed.h>
 
-/**
- * Function: getSupervisorParam
- * ----------------------------
- * Retrieves the address of indexed variable block parameters defined in
- * `$GITROOT/external/SupervisoryController/scripts/SupervisoryController_ert_rtw/SupervisoryController_data.cpp`.
- *
- * @param mmi: A pointer to the model mapping information structure.
- * @param paramIdx: The index of the parameter whose address is to be retrieved.
- *
- * @return: A void pointer to the address of the specified parameter. This must be cast to the
- * appropriate type. If the model parameters are not available or the parameter address is not
- * available, the function returns nullptr.
- */
-void *getSupervisorParam(rtwCAPI_ModelMappingInfo *mmi, uint_T paramIdx);
-
 class Supervisor {
-  std::atomic<bool> startedCtrl{false}, startedSysIDFlag{false};
-  std::thread ctrlThread, sysIDThread;
-
-  ordered_value conf;
-  std::string dataPath, confPath;
-  bool simModeActive;
-
-  std::vector<double> y;
-
-  event_bus currEv_;
-  std::mutex ctrlMtx, currEvMtx;
-
-  time_point<steady_clock> initTime{steady_clock::now()};
-  time_point<steady_clock> prevCtrlTime = initTime;
-
-  // Called within thread context
-  void start();
-
 public:
-  Supervisor(ImProc *imProc, Pump *pump);
+  Supervisor(ImProc *imProc, Pump *pump, std::shared_ptr<logger> log);
   ~Supervisor();
 
   Pump *pump;
@@ -77,4 +44,39 @@ public:
 
   std::string getDataPath() const { return dataPath; }
   std::string getConfPath() const { return confPath; }
+
+private:
+  std::shared_ptr<logger> lg;
+  std::atomic<bool> startedCtrl{false}, startedSysIDFlag{false};
+  std::thread ctrlThread, sysIDThread;
+
+  ordered_value conf;
+  std::string dataPath, confPath;
+  bool simModeActive;
+
+  std::vector<double> y;
+
+  event_bus currEv_;
+  std::mutex ctrlMtx, currEvMtx;
+
+  time_point<steady_clock> initTime{steady_clock::now()};
+  time_point<steady_clock> prevCtrlTime = initTime;
+
+  // Called within thread context
+  void start();
+
+  /**
+   * Function: getSupervisorParam
+   * ----------------------------
+   * Retrieves the address of indexed variable block parameters defined in
+   * `$GITROOT/external/SupervisoryController/scripts/SupervisoryController_ert_rtw/SupervisoryController_data.cpp`.
+   *
+   * @param mmi: A pointer to the model mapping information structure.
+   * @param paramIdx: The index of the parameter whose address is to be retrieved.
+   *
+   * @return: A void pointer to the address of the specified parameter. This must be cast to the
+   * appropriate type. If the model parameters are not available or the parameter address is not
+   * available, the function returns nullptr.
+   */
+  void *getSupervisorParam(rtwCAPI_ModelMappingInfo *mmi, uint_T paramIdx);
 };

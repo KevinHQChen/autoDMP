@@ -104,7 +104,8 @@ void ImProcWindow::renderImProc() {
           startedImProc_ = false;
         ImGui::Image((ImTextureID)procGUIFrames[i].texture,
                      ImVec2(procGUIFrames[i].width, procGUIFrames[i].height));
-        drawFgLocs(i, ImGui::GetItemRectMin(), -y[i], -y[i + no_]);
+        drawFgLocs(i, ImGui::GetItemRectMin(), -y[i] + imProc_->impConf.getChWidth() / 2.0,
+                   -y[i + no_] + imProc_->impConf.getChWidth() / 2.0);
         // print y1 and y2
         ImGui::SameLine();
         ImGui::Text("y1: %f", y[i]);

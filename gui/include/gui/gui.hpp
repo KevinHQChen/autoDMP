@@ -17,51 +17,48 @@
 #include <spdlog/async.h>
 #include <spdlog/sinks/base_sink.h>
 #include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace py = pybind11;
 using namespace py::literals;
 
 // Custom sink for spdlog that stores messages in a deque
-template <typename Mutex> class ImGuiConsoleSink : public sinks::base_sink<Mutex> {
+class ImGuiConsoleSinkMt : public sinks::base_sink<std::mutex> {
+public:
+  ImGuiConsoleSinkMt() {
+    // Set a default pattern formatter
+    set_formatter(std::make_unique<spdlog::pattern_formatter>());
+  }
+
+  std::deque<std::string> logBuffer;
+
 protected:
   void sink_it_(const details::log_msg &msg) override {
-    // Store message in deque
-    memory_buf_t formatted;
-    sinks::base_sink<Mutex>::formatter_->format(msg, formatted);
+    // Store formatted message in deque
+    spdlog::memory_buf_t formatted;
+    formatter_->format(msg, formatted);
     logBuffer.push_back(fmt::to_string(formatted));
   }
 
   void flush_() override {
     // Flush could be implemented here
   }
-
-public:
-  std::deque<std::string> logBuffer;
 };
-
-// Convenient typedefs for the console sink
-using ImGuiConsoleSink_mt = ImGuiConsoleSink<std::mutex>;
-using ImGuiConsoleSink_st = ImGuiConsoleSink<details::null_mutex>;
 
 // The ImGui console class
 class ImGuiConsole {
 public:
   ImGuiConsole() {
-    // // Create a thread pool with 1 thread and a queue with room for 8192 log messages
-    // spdlog::init_thread_pool(8192, 1);
-    // auto thread_pool = spdlog::thread_pool();
-
-    // // Create the sink and add it to the spdlog
-    // consoleSink = std::make_shared<ImGuiConsoleSink_mt>();
-    // auto async_logger = std::make_shared<spdlog::async_logger>(
-    //     "async_logger", consoleSink, thread_pool, spdlog::async_overflow_policy::block);
-    // spdlog::set_default_logger(async_logger);
-
-    // Create the sink and add it to the spdlog
-    consoleSink = std::make_shared<ImGuiConsoleSink_mt>();
-    default_logger()->sinks().push_back(consoleSink);
+    consoleSink = std::make_shared<ImGuiConsoleSinkMt>();
     fileSink = std::make_shared<sinks::basic_file_sink_mt>("log.txt", true);
-    default_logger()->sinks().push_back(fileSink);
+    stdOutSink = std::make_shared<sinks::stdout_color_sink_mt>();
+  }
+
+  std::shared_ptr<logger> getLogger(const std::string &name) {
+    auto logger_ =
+        std::make_shared<logger>(name, sinks_init_list{consoleSink, fileSink, stdOutSink});
+    register_logger(logger_);
+    return logger_;
   }
 
   void render() {
@@ -80,11 +77,26 @@ public:
   }
 
 private:
-  std::shared_ptr<ImGuiConsoleSink_mt> consoleSink;
+  std::shared_ptr<ImGuiConsoleSinkMt> consoleSink;
   std::shared_ptr<sinks::basic_file_sink_mt> fileSink;
+  std::shared_ptr<sinks::stdout_color_sink_mt> stdOutSink;
 };
 
 class GUI {
+public:
+  GUI(ImCap *imCap, ImProc *imProc, Pump *pump, Supervisor *sv, ImGuiConsole &consoleSink,
+      std::shared_ptr<logger> log);
+  ~GUI();
+  void startThread();
+  void imguiConfig();
+  void imguiStyle();
+  void render();
+  void renderMenu();
+
+  std::thread guiThread;
+
+private:
+  std::shared_ptr<logger> lg;
   HelloImGui::RunnerParams runnerParams;
   ImmApp::AddOnsParams addOnsParams;
 
@@ -101,15 +113,4 @@ class GUI {
   std::shared_ptr<gui::CtrlWindow> ctrlWindow_;
   std::shared_ptr<gui::PlotWindow> plotWindow_;
   ImGuiConsole &console_;
-
-public:
-  GUI(ImCap *imCap, ImProc *imProc, Pump *pump, Supervisor *sv, ImGuiConsole &consoleSink);
-  ~GUI();
-  void startThread();
-  void imguiConfig();
-  void imguiStyle();
-  void render();
-  void renderMenu();
-
-  std::thread guiThread;
 };

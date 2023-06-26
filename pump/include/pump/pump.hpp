@@ -17,7 +17,7 @@
 class Pump {
 
 public:
-  Pump();
+  Pump(std::shared_ptr<logger> log);
   ~Pump();
 
   // generic variables
@@ -46,6 +46,7 @@ public:
   /* BARTELS END */
 
 private:
+  std::shared_ptr<logger> lg;
   std::mutex mutex;
   const std::string pumpType_ = toml::get<std::string>(Config::conf["pump"]["type"]);
   const bool simModeActive = toml::get<bool>(Config::conf["ctrl"]["simMode"]);

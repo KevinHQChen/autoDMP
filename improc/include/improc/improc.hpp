@@ -84,6 +84,34 @@ public:
 };
 
 class ImProc {
+
+public:
+  ImProc(ImCap *imCap, std::shared_ptr<logger> log);
+  ~ImProc();
+
+  std::vector<int> yMax;
+  ImProcConfig impConf;
+  QueueFPS<std::vector<double>> *procData;
+
+  bool started();
+
+  // load/save channel bounding boxes into/from imProcConfig
+  void loadConfig();
+  void saveConfig();
+
+  void startThread();
+  void stopThread();
+
+  void setR(double r[2 * MAX_NO]);
+
+  std::vector<double> getY();
+
+  cv::Mat getProcFrame(int idx);
+
+  void clearData();
+
+private:
+  std::shared_ptr<logger> lg;
   ordered_value conf;
   std::string confPath, dataPath;
   std::vector<int> compParams;
@@ -113,29 +141,4 @@ class ImProc {
   bool anyNonZeroR(std::size_t start, std::size_t end);
   bool anyZeroCross(const std::vector<double> &vec1, const std::vector<double> &vec2);
   void rstOnZeroCross();
-
-public:
-  ImProc(ImCap *imCap);
-  ~ImProc();
-
-  std::vector<int> yMax;
-  ImProcConfig impConf;
-  QueueFPS<std::vector<double>> *procData;
-
-  bool started();
-
-  // load/save channel bounding boxes into/from imProcConfig
-  void loadConfig();
-  void saveConfig();
-
-  void startThread();
-  void stopThread();
-
-  void setR(double r[2 * MAX_NO]);
-
-  std::vector<double> getY();
-
-  cv::Mat getProcFrame(int idx);
-
-  void clearData();
 };

@@ -4,9 +4,22 @@
 #include "util/util.hpp"
 
 class ImCap {
+public:
+  ImCap(Cam *cam, std::shared_ptr<logger> log);
+  ~ImCap();
+  void startThread();
+  void stopThread();
+  cv::Mat getRawFrame();
+  cv::Mat getFrame();
+  void clearRawFrameQueue();
+  void clearPreFrameQueue();
+  bool started();
+
+private:
+  std::shared_ptr<logger> lg;
   ordered_value conf;
   std::string dataPath;
-  Cam *cam;
+  Cam *cam_;
 
   std::mutex imcapMtx;
   std::atomic<bool> startedImCap{false};
@@ -23,15 +36,4 @@ class ImCap {
   ** (Called within captureThread context)
   */
   void start();
-
-public:
-  ImCap();
-  ~ImCap();
-  void startThread();
-  void stopThread();
-  cv::Mat getRawFrame();
-  cv::Mat getFrame();
-  void clearRawFrameQueue();
-  void clearPreFrameQueue();
-  bool started();
 };

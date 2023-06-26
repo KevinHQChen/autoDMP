@@ -1,11 +1,11 @@
 #include "improc/improc.hpp"
 #include <numeric>
 
-ImProc::ImProc(ImCap *imCap)
+ImProc::ImProc(ImCap *imCap, std::shared_ptr<logger> log)
     : conf(Config::conf), confPath(toml::get<std::string>(conf["improc"]["confPath"])),
       dataPath(toml::get<std::string>(conf["postproc"]["procDataPath"])), imCap(imCap),
-      procData(new QueueFPS<std::vector<double>>(dataPath + "procDataQueue.txt")) {
-  info("Initializing ImProc...");
+      procData(new QueueFPS<std::vector<double>>(dataPath + "procDataQueue.txt")), lg(log) {
+  lg->info("Initializing ImProc...");
   // for (int ch = 0; ch < impConf.numChs_; ++ch)
   //   procData->out << "time (ms), fgLoc.y (px)\n";
 
@@ -15,7 +15,7 @@ ImProc::ImProc(ImCap *imCap)
 }
 
 ImProc::~ImProc() {
-  info("Terminating ImProc...");
+  lg->info("Terminating ImProc...");
   stopThread();
   delete procData;
 }
@@ -124,7 +124,7 @@ void ImProc::saveConfig() {
 
 void ImProc::startThread() {
   if (!started()) {
-    info("Starting image processing...");
+    lg->info("Starting image processing...");
     startedImProc = true;
     pBackSub =
         cv::createBackgroundSubtractorMOG2(impConf.bgSubHistory_, impConf.bgSubThres_, false);
@@ -148,7 +148,7 @@ void ImProc::startThread() {
 
 void ImProc::stopThread() {
   if (started()) {
-    info("Stopping image processing...");
+    lg->info("Stopping image processing...");
     startedImProc = false;
     std::lock_guard<std::mutex> guard(imProcMtx); // wait for thread to finish
     procFrameArr.clear();
@@ -183,30 +183,43 @@ void ImProc::start() {
         cv::findNonZero(procFrameArr[ch].col(procFrameArr[ch].cols / 2), fgLocs);
         // print fgLocs
         // for (int i = 0; i < fgLocs.size(); ++i)
-        //   info("ch: {}, i: {}, fgLocs: {}", ch, i, fgLocs[i]);
+        //   lg->info("ch: {}, i: {}, fgLocs: {}", ch, i, fgLocs[i]);
 
         findClusters(fgLocs, fgClstrs[ch]);
+
+        // coordinate transformation
         for (auto &fgChClstrs : fgClstrs)
           for (auto &clstrLoc : fgChClstrs)
-            clstrLoc *= -1;
+            clstrLoc = -(clstrLoc - impConf.chWidth_ / 2.0);
         // print each cluster
         // for (int i = 0; i < fgClstrs[ch].size(); ++i)
-        //   info("ch: {}, i: {}, fgClstrs: {}", ch, i, fgClstrs[ch][i]);
+        //   lg->info("ch: {}, i: {}, fgClstrs: {}", ch, i, fgClstrs[ch][i]);
       }
 
       fgClstrsFull = findOtherClstrs(fgClstrs);
       // print each cluster
       // for (int ch = 0; ch < impConf.numChs_; ++ch)
       //   for (int i = 0; i < fgClstrsFull[ch].size(); ++i)
-      //     info("ch: {}, i: {}, fgClstrsFull: {}", ch, i, fgClstrsFull[ch][i]);
+      //     lg->info("ch: {}, i: {}, fgClstrsFull: {}", ch, i, fgClstrsFull[ch][i]);
 
       for (int ch = 0; ch < impConf.numChs_; ++ch) {
         y1[ch] = minDist(fgClstrsFull[ch], yPrev1[ch]);
         y2[ch] = minDist(fgClstrsFull[ch], yPrev2[ch]);
+        // y1[ch] = (y1[ch] != yPrev1[ch]) ? y1[ch] + impConf.chWidth_ / 2.0 : y1[ch];
+        // y2[ch] = (y2[ch] != yPrev2[ch]) ? y2[ch] + impConf.chWidth_ / 2.0 : y2[ch];
         yPrev1[ch] = y1[ch];
         yPrev2[ch] = y2[ch];
       }
 
+      /*
+      ** - each channel can be in 2 states: direct or inferred
+      ** - these states correspond to the 2 types of measurements
+      ** - direct measurements are always -ve, inferred are always +ve
+      ** - when a direct measurement crosses from -ve to +ve,
+      **     it becomes an inferred measurement and we discard any future direct measurements
+      ** - when an inferred measurement crosses from +ve to -ve,
+      **     it becomes a direct measurement and we discard any future inferred measurements
+      */
       rstOnZeroCross();
 
       {
@@ -220,10 +233,10 @@ void ImProc::start() {
       procFrameBuf.set(procFrameArr);
       // print y1 and y2
       // for (int ch = 0; ch < impConf.numChs_; ++ch)
-      //   info("ch: {}, y1: {}, y2: {}", ch, y1[ch], y2[ch]);
+      //   lg->info("ch: {}, y1: {}, y2: {}", ch, y1[ch], y2[ch]);
     } catch (cv::Exception &e) {
-      error("Message: {}", e.what());
-      error("Type: {}", type_name<decltype(e)>());
+      lg->error("Message: {}", e.what());
+      lg->error("Type: {}", type_name<decltype(e)>());
     }
   }
 }
@@ -305,7 +318,7 @@ bool ImProc::anyZeroCross(const std::vector<double> &vec1, const std::vector<dou
     throw std::invalid_argument("Vectors are not the same size");
 
   auto it = std::mismatch(vec1.begin(), vec1.end(), vec2.begin(),
-                          [](double val1, double val2) { return (val1 >= 0) == (val2 >= 0); });
+                          [this](double val1, double val2) { return (val1 >= 0) == (val2 >= 0); });
 
   return it.first != vec1.end();
 }

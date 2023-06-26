@@ -1,21 +1,21 @@
 #include "ctrl/supervisor.hpp"
 
-Supervisor::Supervisor(ImProc *imProc, Pump *pump)
+Supervisor::Supervisor(ImProc *imProc, Pump *pump, std::shared_ptr<logger> log)
     : conf(Config::conf), simModeActive(toml::get<bool>(conf["ctrl"]["simMode"])),
       dataPath(toml::get<std::string>(conf["ctrl"]["dataPath"])),
       confPath(toml::get<std::string>(conf["ctrl"]["confPath"])), pump(pump), imProc(imProc),
       sup(new SupervisoryController()), supIn({}), supOut({}),
       evQueue_(new QueueFPS<event_bus>(dataPath + "eventQueue.txt")),
-      ctrlDataQueuePtr(new QueueFPS<int>(dataPath + "ctrlDataQueue.txt")) {
+      ctrlDataQueuePtr(new QueueFPS<int>(dataPath + "ctrlDataQueue.txt")), lg(log) {
+  lg->info("Initializing Supervisor...");
   sup->initialize();
   rtM = sup->getRTM();
-  info("Initializing Supervisor...");
   nullEv = *(event_bus *)getSupervisorParam(&rtM->DataMapInfo.mmi, 0);
   currEv_ = nullEv;
 }
 
 Supervisor::~Supervisor() {
-  info("Terminating Supervisor...");
+  lg->info("Terminating Supervisor...");
   stopThread();
   delete evQueue_;
   delete sup;
@@ -24,12 +24,12 @@ Supervisor::~Supervisor() {
 
 void Supervisor::startThread() {
   if (!startedCtrl) {
-    info("Starting Supervisor...");
+    lg->info("Starting Supervisor...");
     startedCtrl = true;
 
     imProc->clearData();
     no = imProc->impConf.getNumChs();
-    info("Supervisor found {} channels.", no);
+    lg->info("Supervisor found {} channels.", no);
 
     // initialize SupervisoryController (y_range, y_max, y_o, u_o, yhat)
     supIn.excitation = 5;
@@ -56,7 +56,7 @@ void Supervisor::startThread() {
 
 void Supervisor::stopThread() {
   if (startedCtrl) {
-    info("Stopping Supervisor...");
+    lg->info("Stopping Supervisor...");
     startedCtrl = false;
     std::lock_guard<std::mutex> guard(ctrlMtx); // wait for thread to finish
     supIn = {};
@@ -85,14 +85,14 @@ void Supervisor::start() {
         supIn.y[ch] = y[ch];
       supIn.measAvail = !supIn.measAvail;
 
-      // info("Time: {}", duration_cast<milliseconds>(prevCtrlTime - initTime).count());
+      // lg->info("Time: {}", duration_cast<milliseconds>(prevCtrlTime - initTime).count());
       sup->rtU = supIn;
       sup->step();
       supOut = sup->rtY;
 
       !simModeActive ? pump->setOutputs(std::vector<double>(supOut.u, supOut.u + no))
-                     : info("Pump outputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
-      // info("Pump inputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
+                     : lg->info("Pump outputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
+      // lg->info("Pump inputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
 
       ctrlDataQueuePtr->out << "y: " << (double)supIn.y[0] << ", " << (double)supIn.y[1] << ", "
                             << (double)supIn.y[2] << ", " << (double)supIn.y[3] << ", "
@@ -119,7 +119,7 @@ void Supervisor::start() {
 
 bool Supervisor::started() { return startedCtrl; }
 
-void *getSupervisorParam(rtwCAPI_ModelMappingInfo *mmi, uint_T paramIdx) {
+void *Supervisor::getSupervisorParam(rtwCAPI_ModelMappingInfo *mmi, uint_T paramIdx) {
   const rtwCAPI_ModelParameters *modelParams;
   void **dataAddrMap;
 
@@ -128,13 +128,14 @@ void *getSupervisorParam(rtwCAPI_ModelMappingInfo *mmi, uint_T paramIdx) {
   void *paramAddress;
 
   /* Assert the parameter index is less than total number of parameters */
-  info("SupervisoryController variable block parameters: {}", rtwCAPI_GetNumModelParameters(mmi));
+  lg->info("SupervisoryController variable block parameters: {}",
+           rtwCAPI_GetNumModelParameters(mmi));
   assert(paramIdx < rtwCAPI_GetNumModelParameters(mmi));
 
   /* Get modelParams, an array of rtwCAPI_ModelParameters structure  */
   modelParams = rtwCAPI_GetModelParameters(mmi);
   if (modelParams == NULL) {
-    error("Model parameters not available");
+    lg->error("Model parameters not available");
     return nullptr;
   }
 
@@ -143,7 +144,7 @@ void *getSupervisorParam(rtwCAPI_ModelMappingInfo *mmi, uint_T paramIdx) {
   addrIdx = rtwCAPI_GetModelParameterAddrIdx(modelParams, paramIdx);
   paramAddress = (void *)rtwCAPI_GetDataAddress(dataAddrMap, addrIdx);
   if (paramAddress == NULL) {
-    error("Model parameter address not available");
+    lg->error("Model parameter address not available");
     return nullptr;
   }
 
