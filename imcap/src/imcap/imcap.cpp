@@ -2,9 +2,12 @@
 
 ImCap::ImCap()
     : conf(Config::conf), dataPath(toml::get<std::string>(conf["postproc"]["rawDataPath"])),
-      cam(new Cam(0, conf)) {}
+      cam(new Cam(0, conf)) {
+  info("Initializing image capture...");
+}
 
 ImCap::~ImCap() {
+  info("Terminating image capture...");
   stopThread();
   delete cam;
 }
@@ -13,6 +16,7 @@ void ImCap::startThread() {
   if (!started()) {
     info("Starting image capture...");
     startedImCap = true;
+    cam->start((int)(100 / 1000)); // timerInterval of 100ms
     captureThread = std::thread(&ImCap::start, this);
     captureThread.detach();
   }
@@ -28,7 +32,6 @@ void ImCap::stopThread() {
 }
 
 void ImCap::start() {
-  cam->start((int)(100 / 1000)); // timerInterval of 100ms
   while (startedImCap) {
     std::lock_guard<std::mutex> guard(imcapMtx);
     // Timer t("ImCap");

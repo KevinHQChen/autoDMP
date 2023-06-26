@@ -4,8 +4,7 @@ bgSubHistory = 500
 bgSubThres = 60.0
 
 chROIs = [
-{height=752,width=56,angle=0,chHeight=628.0,y=128,x=426},
-{height=56,width=456,angle=90,chHeight=66.0,y=100,x=0},
-{height=56,width=433,angle=-90,chHeight=68.0,y=100,x=455},
+{height=365,width=50,angle=0,chHeight=628.0,y=115,x=300},
+{height=50,width=325,angle=90,chHeight=66.0,y=90,x=0},
+{height=50,width=316,angle=-90,chHeight=68.0,y=90,x=324},
 ]
-

@@ -93,22 +93,24 @@ void ImProcWindow::renderImProc() {
     improcVisible_ = !improcVisible_;
   if (improcVisible_ && ImGui::Begin("Channels", &improcVisible_)) {
     y = imProc_->getY();
-    for (int i = 0; i < no_; ++i) {
-      if (i != 0)
+    if (!y.empty()) {
+      for (int i = 0; i < no_; ++i) {
+        if (i != 0)
+          ImGui::SameLine();
+        if (imProc_->started()) {
+          startedImProc_ = true;
+          procGUIFrames[i] = imProc_->getProcFrame(i);
+        } else
+          startedImProc_ = false;
+        ImGui::Image((ImTextureID)procGUIFrames[i].texture,
+                     ImVec2(procGUIFrames[i].width, procGUIFrames[i].height));
+        drawFgLocs(i, ImGui::GetItemRectMin(), -y[i], -y[i + no_]);
+        // print y1 and y2
         ImGui::SameLine();
-      if (imProc_->started()) {
-        startedImProc_ = true;
-        procGUIFrames[i] = imProc_->getProcFrame(i);
-      } else
-        startedImProc_ = false;
-      ImGui::Image((ImTextureID)procGUIFrames[i].texture,
-                   ImVec2(procGUIFrames[i].width, procGUIFrames[i].height));
-      drawFgLocs(i, ImGui::GetItemRectMin(), -y[i], -y[i + no_]);
-      // print y1 and y2
-      ImGui::SameLine();
-      ImGui::Text("y1: %f", y[i]);
-      ImGui::SameLine();
-      ImGui::Text("y2: %f", y[i + no_]);
+        ImGui::Text("y1: %f", y[i]);
+        ImGui::SameLine();
+        ImGui::Text("y2: %f", y[i + no_]);
+      }
     }
     imProcToggle_->render();
     ImGui::End();

@@ -7,7 +7,6 @@ Supervisor::Supervisor(ImProc *imProc, Pump *pump)
       sup(new SupervisoryController()), supIn({}), supOut({}),
       evQueue_(new QueueFPS<event_bus>(dataPath + "eventQueue.txt")),
       ctrlDataQueuePtr(new QueueFPS<int>(dataPath + "ctrlDataQueue.txt")) {
-  info("Initializing Supervisor...");
   sup->initialize();
   rtM = sup->getRTM();
   info("Initializing Supervisor...");
@@ -16,6 +15,8 @@ Supervisor::Supervisor(ImProc *imProc, Pump *pump)
 }
 
 Supervisor::~Supervisor() {
+  info("Terminating Supervisor...");
+  stopThread();
   delete evQueue_;
   delete sup;
   delete ctrlDataQueuePtr;

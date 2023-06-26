@@ -5,8 +5,9 @@ ImProc::ImProc(ImCap *imCap)
     : conf(Config::conf), confPath(toml::get<std::string>(conf["improc"]["confPath"])),
       dataPath(toml::get<std::string>(conf["postproc"]["procDataPath"])), imCap(imCap),
       procData(new QueueFPS<std::vector<double>>(dataPath + "procDataQueue.txt")) {
-  for (int ch = 0; ch < impConf.numChs_; ++ch)
-    procData->out << "time (ms), fgLoc.y (px)\n";
+  info("Initializing ImProc...");
+  // for (int ch = 0; ch < impConf.numChs_; ++ch)
+  //   procData->out << "time (ms), fgLoc.y (px)\n";
 
   // save images with proper format PNG, CV_16UC1
   compParams.push_back(cv::IMWRITE_PNG_COMPRESSION);
@@ -14,6 +15,7 @@ ImProc::ImProc(ImCap *imCap)
 }
 
 ImProc::~ImProc() {
+  info("Terminating ImProc...");
   stopThread();
   delete procData;
 }
@@ -161,9 +163,9 @@ void ImProc::stopThread() {
 
 void ImProc::start() {
   while (started()) {
-    std::lock_guard<std::mutex> guard(imProcMtx);
     preFrame = imCap->getFrame();
     try {
+      std::lock_guard<std::mutex> guard(imProcMtx);
       // Timer t("ImProc");
 
       // update foreground mask based on background threshold,

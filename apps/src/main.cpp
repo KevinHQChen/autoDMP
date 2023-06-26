@@ -3,11 +3,9 @@
 namespace py = pybind11;
 using namespace py::literals;
 
-// NOLINTNEXTLINE(bugprone-exception-escape)
 int main(int, const char **) {
   // initialize logging
-  // auto console_sink = std::make_shared<ImGuiConsoleSink>();
-  // spdlog::default_logger()->sinks().push_back(console_sink);
+  ImGuiConsole console;
 
   // initialize python interpreter
   py::scoped_interpreter python;
@@ -21,9 +19,7 @@ int main(int, const char **) {
   auto sv = new Supervisor(imProc, pump);
 
   // start gui
-  info("Config type: {}", type_name<decltype(Config::guiConf)>());
-  info("Parsed config: {}", toml::find(Config::conf, "gui"));
-  GUI gui(imCap, imProc, pump, sv);
+  GUI gui(imCap, imProc, pump, sv, console);
   gui.startThread();
 
   delete sv;

@@ -1,6 +1,8 @@
 #include "pump/pump.hpp"
 
 Pump::Pump() {
+  info("Initializing pump...");
+
   if (simModeActive)
     return;
 
@@ -34,7 +36,8 @@ Pump::Pump() {
       // Get pressure limits
       unsigned int idx = channelInfo[ch].index;
       Fgt_get_pressureRange(idx, &minPressure, &maxPressure);
-      info("Channel {} max pressure: {} mbar, min pressure: {} mbar", idx, maxPressure, minPressure);
+      info("Channel {} max pressure: {} mbar, min pressure: {} mbar", idx, maxPressure,
+           minPressure);
 
       // Calibrate pressure channels (set pressure commands will not be accepted during this time)
       // if (ch == 0) {
@@ -108,6 +111,8 @@ Pump::Pump() {
 }
 
 Pump::~Pump() {
+  info("Terminating pump...");
+
   if (simModeActive)
     return;
 

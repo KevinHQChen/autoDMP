@@ -22,9 +22,12 @@ void GUI::imguiStyle() {
   style.ScaleAllSizes(guiConf.scale);
 }
 
-GUI::GUI(ImCap *imCap, ImProc *imProc, Pump *pump, Supervisor *sv)
+GUI::GUI(ImCap *imCap, ImProc *imProc, Pump *pump, Supervisor *sv, ImGuiConsole &console)
     : conf(Config::conf), guiConf(Config::guiConf), imCap_(imCap), imProc_(imProc), pump_(pump),
-      sv_(sv) {
+      sv_(sv), console_(console) {
+  info("Config type: {}", type_name<decltype(Config::guiConf)>());
+  info("Parsed config: {}", toml::find(Config::conf, "gui"));
+
   pumpWindow_ = std::make_shared<gui::PumpWindow>(pump);
   imProcWindow_ = std::make_shared<gui::ImProcWindow>(imCap, imProc);
   ctrlWindow_ = std::make_shared<gui::CtrlWindow>(sv);
@@ -104,6 +107,7 @@ void GUI::render() {
   pumpWindow_->render();
   ctrlWindow_->render();
   plotWindow_->render();
+  console_.render();
   if (guiConf.showDebug) {
     ImGui::ShowDemoWindow(&guiConf.showDebug);
     ImPlot::ShowDemoWindow(&guiConf.showDebug);
