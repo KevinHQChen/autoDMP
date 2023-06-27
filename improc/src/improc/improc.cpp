@@ -45,7 +45,8 @@ void findChCombs(int offset, int j, int m, std::vector<int> &combination,
   }
 }
 
-std::vector<std::vector<double>> findOtherClstrs(const std::vector<std::vector<double>> &clstrs) {
+std::vector<std::vector<double>>
+findInferredClstrs(const std::vector<std::vector<double>> &clstrs) {
   int n = clstrs.size();
   std::vector<std::vector<double>> newClstrs(n);
 
@@ -102,7 +103,7 @@ std::vector<std::vector<double>> findOtherClstrs(const std::vector<std::vector<d
       }
     }
 
-    newClstrs[i].insert(newClstrs[i].end(), clstrs[i].begin(), clstrs[i].end());
+    // newClstrs[i].insert(newClstrs[i].end(), clstrs[i].begin(), clstrs[i].end());
   }
 
   return newClstrs;
@@ -130,7 +131,7 @@ void ImProc::startThread() {
         cv::createBackgroundSubtractorMOG2(impConf.bgSubHistory_, impConf.bgSubThres_, false);
     for (int ch = 0; ch < impConf.numChs_; ch++) {
       procFrameArr.push_back(cv::Mat());
-      fgClstrs.push_back(std::vector<double>());
+      directFgClstrs.push_back(std::vector<double>());
       y1.push_back(0);
       y2.push_back(0);
       yPrev1.push_back(0);
@@ -152,7 +153,7 @@ void ImProc::stopThread() {
     startedImProc = false;
     std::lock_guard<std::mutex> guard(imProcMtx); // wait for thread to finish
     procFrameArr.clear();
-    fgClstrs.clear();
+    directFgClstrs.clear();
     y1.clear();
     y2.clear();
     yPrev1.clear();
@@ -183,30 +184,53 @@ void ImProc::start() {
         cv::findNonZero(procFrameArr[ch].col(procFrameArr[ch].cols / 2), fgLocs);
         // print fgLocs
         // for (int i = 0; i < fgLocs.size(); ++i)
-        //   lg->info("ch: {}, i: {}, fgLocs: {}", ch, i, fgLocs[i]);
+        //   info("ch: {}, i: {}, fgLocs: {}", ch, i, fgLocs[i]);
 
-        findClusters(fgLocs, fgClstrs[ch]);
+        findClusters(fgLocs, directFgClstrs[ch]);
 
         // coordinate transformation
-        for (auto &fgChClstrs : fgClstrs)
-          for (auto &clstrLoc : fgChClstrs)
-            clstrLoc = -(clstrLoc - impConf.chWidth_ / 2.0);
+        for (auto &clstrLoc : directFgClstrs[ch])
+          clstrLoc = -(clstrLoc - impConf.chWidth_ / 2.0);
         // print each cluster
-        // for (int i = 0; i < fgClstrs[ch].size(); ++i)
-        //   lg->info("ch: {}, i: {}, fgClstrs: {}", ch, i, fgClstrs[ch][i]);
+        for (int i = 0; i < directFgClstrs[ch].size(); ++i)
+          info("ch: {}, i: {}, fgClstrs: {}", ch, i, directFgClstrs[ch][i]);
       }
 
-      fgClstrsFull = findOtherClstrs(fgClstrs);
+      inferredFgClstrs = findInferredClstrs(directFgClstrs);
       // print each cluster
+      info("directFgClstrs size: {}", directFgClstrs.size());
+      for (int ch = 0; ch < impConf.numChs_; ++ch) {
+        // print size of each cluster
+        info("ch: {}, directFgClstrs size: {}", ch, directFgClstrs[ch].size());
+        for (int i = 0; i < directFgClstrs[ch].size(); ++i)
+          info("ch: {}, i: {}, directFgClstrs: {}", ch, i, directFgClstrs[ch][i]);
+      }
+
       // for (int ch = 0; ch < impConf.numChs_; ++ch)
-      //   for (int i = 0; i < fgClstrsFull[ch].size(); ++i)
-      //     lg->info("ch: {}, i: {}, fgClstrsFull: {}", ch, i, fgClstrsFull[ch][i]);
+      //   for (int i = 0; i < directFgClstrs[ch].size(); ++i)
+      //     info("ch: {}, i: {}, inferredFgClstrs: {}", ch, i, inferredFgClstrs[ch][i]);
 
       for (int ch = 0; ch < impConf.numChs_; ++ch) {
-        y1[ch] = minDist(fgClstrsFull[ch], yPrev1[ch]);
-        y2[ch] = minDist(fgClstrsFull[ch], yPrev2[ch]);
-        // y1[ch] = (y1[ch] != yPrev1[ch]) ? y1[ch] + impConf.chWidth_ / 2.0 : y1[ch];
-        // y2[ch] = (y2[ch] != yPrev2[ch]) ? y2[ch] + impConf.chWidth_ / 2.0 : y2[ch];
+        double y1Direct = minDist(directFgClstrs[ch], yPrev1[ch]);
+        double y1Inferred = minDist(inferredFgClstrs[ch], yPrev1[ch]);
+        double y2Direct = minDist(directFgClstrs[ch], yPrev2[ch]);
+        double y2Inferred = minDist(inferredFgClstrs[ch], yPrev2[ch]);
+
+        info("ch: {}, y1Direct: {}, y1Inferred: {}, y2Direct: {}, y2Inferred: {}", ch, y1Direct,
+             y1Inferred, y2Direct, y2Inferred);
+
+        if ((!directFgClstrs[ch].empty()) && (yPrev1[ch] < 0)) // direct
+          y1[ch] = y1Direct;
+        else // inferred
+          y1[ch] = ((!directFgClstrs[ch].empty()) && (y1Direct < 0)) ? y1Direct : y1Inferred;
+        // y1[ch] = (y1Direct < 0 && std::abs(y1Inferred - y1Direct) <= 5) ? y1Direct : y1Inferred;
+
+        if ((!directFgClstrs[ch].empty()) && (yPrev2[ch] < 0)) // direct
+          y2[ch] = y2Direct;
+        else // inferred
+          y2[ch] = ((!directFgClstrs[ch].empty()) && (y2Direct < 0)) ? y2Direct : y2Inferred;
+        // y2[ch] = (y2Direct < 0 && std::abs(y2Inferred - y2Direct) <= 5) ? y2Direct : y2Inferred;
+
         yPrev1[ch] = y1[ch];
         yPrev2[ch] = y2[ch];
       }
@@ -280,17 +304,15 @@ void ImProc::segAndOrientCh(cv::Mat &srcImg, cv::Mat &tmpImg, cv::Mat &destImg, 
 
 void ImProc::findClusters(const std::vector<cv::Point> &fgLocs, std::vector<double> &clusters) {
   clusters.clear();
-  if (fgLocs.empty()) {
+  if (fgLocs.empty())
     return;
-  }
 
   int clusterStart = fgLocs[0].y;
   int clusterEnd = fgLocs[0].y;
   for (size_t i = 1; i < fgLocs.size(); ++i) {
-    if (fgLocs[i].y == clusterEnd + 1) {
-      // This point is part of the current cluster.
+    if (fgLocs[i].y == clusterEnd + 1) // This point is part of the current cluster.
       clusterEnd = fgLocs[i].y;
-    } else {
+    else {
       // This point starts a new cluster. Compute the center of the current cluster.
       double clusterCenter = (clusterStart + clusterEnd) / 2.0;
       clusters.push_back(clusterCenter);

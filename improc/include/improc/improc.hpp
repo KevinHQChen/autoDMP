@@ -125,7 +125,7 @@ private:
   cv::Ptr<cv::BackgroundSubtractor> pBackSub;
   cv::Mat preFrame, fgMask, tempFgMask, tempChFgMask;
   std::vector<cv::Point> fgLocs;
-  std::vector<std::vector<double>> fgClstrs, fgClstrsFull;
+  std::vector<std::vector<double>> directFgClstrs, inferredFgClstrs;
 
   std::vector<cv::Mat> procFrameArr;
   std::vector<double> y, y1, y2, yPrev1, yPrev2;

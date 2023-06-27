@@ -108,9 +108,9 @@ void ImProcWindow::renderImProc() {
                    -y[i + no_] + imProc_->impConf.getChWidth() / 2.0);
         // print y1 and y2
         ImGui::SameLine();
-        ImGui::Text("y1: %f", y[i]);
+        ImGui::Text("y1: %.1f", y[i]);
         ImGui::SameLine();
-        ImGui::Text("y2: %f", y[i + no_]);
+        ImGui::Text("y2: %.1f", y[i + no_]);
       }
     }
     imProcToggle_->render();
