@@ -46,67 +46,60 @@ void findChCombs(int offset, int j, int m, std::vector<int> &combination,
 }
 
 std::vector<std::vector<double>>
-findInferredClstrs(const std::vector<std::vector<double>> &clstrs) {
-  int n = clstrs.size();
+findInferredClstrs(const std::vector<std::vector<double>> &directClstrs) {
+  int n = directClstrs.size();
   std::vector<std::vector<double>> newClstrs(n);
 
-  for (int i = 0; i < n; ++i) {
-    // std::cout << "##For clstrs " << i << ":\n";
-    // store all non-empty elements of `newClstrs` except `newClstrs[i]` in `otherClstrs`
-    std::vector<std::vector<double>> otherClstrs(clstrs);
-    otherClstrs.erase(otherClstrs.begin() + i);
+  for (int ch = 0; ch < n; ++ch) {
+    std::cout << "##For channel " << ch << ":\n";
+    // make a copy of directClstrs_,
+    // remove i-th channel (we only use other channels to infer clstr locations in current channel)
+    // remove empty channels (i.e. channels w/o direct clstrs),
+    // remove +ve clstrs in each channel (we won't use them for inference),
+    std::vector<std::vector<double>> otherClstrs(directClstrs);
+    otherClstrs.erase(otherClstrs.begin() + ch);
+    for (auto &ch : otherClstrs)
+      ch.erase(std::remove_if(ch.begin(), ch.end(), [](double x) { return x > 0; }), ch.end());
     otherClstrs.erase(std::remove_if(otherClstrs.begin(), otherClstrs.end(),
                                      [](const std::vector<double> &v) { return v.empty(); }),
                       otherClstrs.end());
+
     int m = otherClstrs.size();
-    // std::cout << m << " otherClstrs selected\n";
+    std::cout << m
+              << " other channels (otherClstrs) with direct measurements selected for inference\n";
 
-    for (int j = 1; j < m + 1; ++j) {
-      // std::cout << j << " selected channels\n";
-      // find all distinct combinations of j indices from all indices of `otherClstrs`
-      std::vector<std::vector<int>> clstrIndices;
-      std::vector<int> clstrIdx;
-      findChCombs(0, j, m, clstrIdx, clstrIndices);
-      int l = clstrIndices.size();
-      // std::cout << l << " set combinations found\n";
-      // for (int i = 0; i < l; ++i) {
-      //   std::cout << "clstrIndices[" << i << "] = {";
-      //   for (int j = 0; j < clstrIndices[i].size(); ++j) {
-      //     std::cout << clstrIndices[i][j];
-      //     if (j != clstrIndices[i].size() - 1)
-      //       std::cout << ", ";
-      //   }
-      //   std::cout << "}\n";
-      // }
-
-      for (int k = 0; k < l; ++k) {
-        // std::cout << "combination " << k << ", ";
-        // given the k-th combination of j indices, store the elements of `otherClstrs` at the
-        // corresponding indices in `selClstrs`
-        std::vector<std::vector<double>> selClstrs;
-        for (int x = 0; x < j; ++x) {
-          // std::cout << "selClstrs idx " << clstrIndices[k][x];
-          selClstrs.push_back(otherClstrs[clstrIndices[k][x]]);
-          // for (int i = 0; i < otherClstrs[clstrIndices[k][x]].size(); ++i)
-          //   std::cout << ", val " << otherClstrs[clstrIndices[k][x]][i];
-          // std::cout << "\n";
-        }
-
-        // find all distinct combinations of j elements from `selClstrs`
-        std::vector<int> indices(j, 0);
-        findMeasCombs(selClstrs, indices, 0, [&](const std::vector<int> &indices) {
-          double sum = 0;
-          for (int j_ = 0; j_ < j; ++j_)
-            sum += selClstrs[j_][indices[j_]];
-          newClstrs[i].push_back(-sum / (n - 1));
-        });
-      }
-    }
+    // find all ways to choose an index from each of the m vectors in `otherClstrs`
+    std::vector<int> indices(m, 0);
+    findMeasCombs(otherClstrs, indices, 0, [&](const std::vector<int> &indices) {
+      double sum = 0;
+      for (int j = 0; j < m; ++j)
+        sum += otherClstrs[j][indices[j]];
+      newClstrs[ch].push_back(-sum / (n - 1));
+    });
 
     // newClstrs[i].insert(newClstrs[i].end(), clstrs[i].begin(), clstrs[i].end());
   }
 
   return newClstrs;
+}
+
+void skeletonize(cv::Mat &img, cv::Mat element) {
+  // skeletonize
+  if (cv::countNonZero(img) == img.total())
+    img.setTo(cv::Scalar(0));
+  cv::Mat skel(img.size(), CV_8UC1, cv::Scalar(0));
+  cv::Mat temp;
+  cv::Mat eroded;
+  bool done;
+  do {
+    cv::erode(img, eroded, element);
+    cv::dilate(eroded, temp, element); // temp = open(img)
+    cv::subtract(img, temp, temp);
+    cv::bitwise_or(skel, temp, skel);
+    eroded.copyTo(img);
+    done = (cv::countNonZero(img) == 0);
+  } while (!done);
+  img = skel;
 }
 
 void ImProc::loadConfig() {
@@ -129,6 +122,9 @@ void ImProc::startThread() {
     startedImProc = true;
     pBackSub =
         cv::createBackgroundSubtractorMOG2(impConf.bgSubHistory_, impConf.bgSubThres_, false);
+    rectElement = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
+    crossElement = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
+
     for (int ch = 0; ch < impConf.numChs_; ch++) {
       procFrameArr.push_back(cv::Mat());
       directFgClstrs.push_back(std::vector<double>());
@@ -136,6 +132,8 @@ void ImProc::startThread() {
       y2.push_back(0);
       yPrev1.push_back(0);
       yPrev2.push_back(0);
+      y1True.push_back(0);
+      y2True.push_back(0);
       // TODO add support for non-90-degree channels
       if (ch == 0)
         yMax.push_back(impConf.getChROIs()[ch].height - impConf.getChWidth());
@@ -158,6 +156,8 @@ void ImProc::stopThread() {
     y2.clear();
     yPrev1.clear();
     yPrev2.clear();
+    y1True.clear();
+    y2True.clear();
     yMax.clear();
   }
 }
@@ -173,9 +173,11 @@ void ImProc::start() {
       // (optionally update background model at preset learning rate),
       // then apply dilation/erosion to remove noise
       pBackSub->apply(preFrame, fgMask, 0);
-      cv::dilate(fgMask, tempFgMask, cv::Mat(), cv::Point(-1, -1), 2);
-      cv::erode(tempFgMask, tempFgMask, cv::Mat(), cv::Point(-1, -1), 6);
-      cv::dilate(tempFgMask, tempFgMask, cv::Mat(), cv::Point(-1, -1), 2);
+      cv::dilate(fgMask, tempFgMask, rectElement, cv::Point(-1, -1), 2);
+      cv::erode(tempFgMask, tempFgMask, rectElement, cv::Point(-1, -1), 4);
+      cv::dilate(tempFgMask, tempFgMask, rectElement, cv::Point(-1, -1), 2);
+      skeletonize(tempFgMask, crossElement);
+      cv::dilate(tempFgMask, tempFgMask, rectElement);
 
       for (int ch = 0; ch < impConf.numChs_; ++ch) {
         segAndOrientCh(tempFgMask, tempChFgMask, procFrameArr[ch], impConf.chROIs_[ch],
@@ -191,19 +193,16 @@ void ImProc::start() {
         // coordinate transformation
         for (auto &clstrLoc : directFgClstrs[ch])
           clstrLoc = -(clstrLoc - impConf.chWidth_ / 2.0);
-        // print each cluster
-        for (int i = 0; i < directFgClstrs[ch].size(); ++i)
-          info("ch: {}, i: {}, fgClstrs: {}", ch, i, directFgClstrs[ch][i]);
       }
 
       inferredFgClstrs = findInferredClstrs(directFgClstrs);
       // print each cluster
-      info("directFgClstrs size: {}", directFgClstrs.size());
+      // info("directFgClstrs size: {}", directFgClstrs.size());
       for (int ch = 0; ch < impConf.numChs_; ++ch) {
         // print size of each cluster
-        info("ch: {}, directFgClstrs size: {}", ch, directFgClstrs[ch].size());
+        // info("ch: {}, directFgClstrs size: {}", ch, directFgClstrs[ch].size());
         for (int i = 0; i < directFgClstrs[ch].size(); ++i)
-          info("ch: {}, i: {}, directFgClstrs: {}", ch, i, directFgClstrs[ch][i]);
+          lg->info("ch: {}, i: {}, directFgClstrs: {}", ch, i, directFgClstrs[ch][i]);
       }
 
       // for (int ch = 0; ch < impConf.numChs_; ++ch)
@@ -216,20 +215,24 @@ void ImProc::start() {
         double y2Direct = minDist(directFgClstrs[ch], yPrev2[ch]);
         double y2Inferred = minDist(inferredFgClstrs[ch], yPrev2[ch]);
 
-        info("ch: {}, y1Direct: {}, y1Inferred: {}, y2Direct: {}, y2Inferred: {}", ch, y1Direct,
-             y1Inferred, y2Direct, y2Inferred);
+        lg->info("ch: {}, y1Direct: {}, y1Inferred: {}, y2Direct: {}, y2Inferred: {}", ch, y1Direct,
+                 y1Inferred, y2Direct, y2Inferred);
 
-        if ((!directFgClstrs[ch].empty()) && (yPrev1[ch] < 0)) // direct
+        // zero-crossing detection
+        if ((!directFgClstrs[ch].empty()) && (yPrev1[ch] < 0)) { // direct
+          y1True[ch] = true;
           y1[ch] = y1Direct;
-        else // inferred
+        } else { // inferred
+          y1True[ch] = false;
           y1[ch] = ((!directFgClstrs[ch].empty()) && (y1Direct < 0)) ? y1Direct : y1Inferred;
-        // y1[ch] = (y1Direct < 0 && std::abs(y1Inferred - y1Direct) <= 5) ? y1Direct : y1Inferred;
-
-        if ((!directFgClstrs[ch].empty()) && (yPrev2[ch] < 0)) // direct
+        }
+        if ((!directFgClstrs[ch].empty()) && (yPrev2[ch] < 0)) { // direct
+          y2True[ch] = true;
           y2[ch] = y2Direct;
-        else // inferred
+        } else { // inferred
+          y2True[ch] = false;
           y2[ch] = ((!directFgClstrs[ch].empty()) && (y2Direct < 0)) ? y2Direct : y2Inferred;
-        // y2[ch] = (y2Direct < 0 && std::abs(y2Inferred - y2Direct) <= 5) ? y2Direct : y2Inferred;
+        }
 
         yPrev1[ch] = y1[ch];
         yPrev2[ch] = y2[ch];

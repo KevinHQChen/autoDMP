@@ -126,9 +126,11 @@ private:
   cv::Mat preFrame, fgMask, tempFgMask, tempChFgMask;
   std::vector<cv::Point> fgLocs;
   std::vector<std::vector<double>> directFgClstrs, inferredFgClstrs;
+  cv::Mat rectElement, crossElement;
 
   std::vector<cv::Mat> procFrameArr;
   std::vector<double> y, y1, y2, yPrev1, yPrev2;
+  std::vector<bool> y1True, y2True;
   double r[2 * MAX_NO];
 
   void start(); // Called within imProcThread context
