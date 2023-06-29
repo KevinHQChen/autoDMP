@@ -110,6 +110,9 @@ public:
 
   void clearData();
 
+  std::vector<bool> directMeasAvail, yState1, yState2;
+  bool d2iTxOccurred1, d2iTxOccurred2;
+
 private:
   std::shared_ptr<logger> lg;
   ordered_value conf;
@@ -117,20 +120,22 @@ private:
   std::vector<int> compParams;
   ImCap *imCap;
 
-  std::mutex imProcMtx, yMtx;
+  std::mutex yMtx;
   std::atomic<bool> startedImProc{false};
   std::thread procThread;
   SharedBuffer<std::vector<cv::Mat>> procFrameBuf;
 
   cv::Ptr<cv::BackgroundSubtractor> pBackSub;
-  cv::Mat preFrame, fgMask, tempFgMask, tempChFgMask;
+  cv::Mat rectElement, preFrame, fgMask, tempFgMask, tempChFgMask;
   std::vector<cv::Point> fgLocs;
-  std::vector<std::vector<double>> directFgClstrs, inferredFgClstrs;
-  cv::Mat rectElement, crossElement;
-
   std::vector<cv::Mat> procFrameArr;
+  std::vector<std::vector<double>> directFgClstrs, inferredFgClstrs;
+  // state is true for direct, false for inferred
+  // std::vector<bool> directMeasAvail, yState1, yState2;
+  std::vector<double> yDirect1, yDirect2, yInferred1, yInferred2;
   std::vector<double> y, y1, y2, yPrev1, yPrev2;
-  std::vector<bool> y1True, y2True;
+  int txCooldown1, txCooldown2, i2dOccurrences1, i2dOccurrences2;
+  // bool txOccurred1, txOccurred2;
   double r[2 * MAX_NO];
 
   void start(); // Called within imProcThread context

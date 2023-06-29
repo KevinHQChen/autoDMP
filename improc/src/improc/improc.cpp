@@ -102,6 +102,51 @@ void skeletonize(cv::Mat &img, cv::Mat element) {
   img = skel;
 }
 
+void updateMeas(std::vector<double> &y, std::vector<double> &yPrev,
+                const std::vector<bool> &directMeasAvail, const std::vector<double> &yDirect,
+                const std::vector<double> &yInferred, std::vector<bool> &state, int &txCountDown,
+                int &i2dOccurrences, bool &d2iTxOccurred) {
+  yPrev = y;
+  size_t d2iTxIdx = y.size(); // Initialize with an invalid index
+  int maxInitI2D = 1;         // num of channels with direct measurements initially
+
+  for (size_t ch = 0; ch < y.size(); ++ch) {
+    if (state[ch]) { // Direct state
+      y[ch] = std::min(yDirect[ch], 0.0);
+      if (yDirect[ch] > 0 && txCountDown == 0) {
+        // Transition from direct to inferred
+        state[ch] = false;
+        d2iTxOccurred = true;
+        d2iTxIdx = ch;
+        txCountDown = 20;
+      }
+    } else { // Inferred state
+      y[ch] = yInferred[ch];
+      if (directMeasAvail[ch] && yDirect[ch] < 0 && i2dOccurrences < maxInitI2D) {
+        // Transition from inferred to direct
+        state[ch] = true;
+        i2dOccurrences++;
+      }
+    }
+  }
+
+  // If a direct->inferred transition occurred,
+  // TODO all inferred states with yPrev and yDirect close to 0 become direct
+  // (except the state that triggered the transition),
+  // TODO all direct states close to 0 become inferred
+  if (d2iTxOccurred) {
+    for (size_t ch = 0; ch < y.size(); ++ch)
+      if (!state[ch] && ch != d2iTxIdx)
+        state[ch] = true;
+    d2iTxOccurred = false;
+    d2iTxIdx = y.size();
+  }
+
+  // Decrease transition countdown
+  if (txCountDown > 0)
+    --txCountDown;
+}
+
 void ImProc::loadConfig() {
   // load bboxes from file
   ordered_value v = toml::parse<toml::discard_comments, tsl::ordered_map>(confPath + "config.toml");
@@ -123,23 +168,28 @@ void ImProc::startThread() {
     pBackSub =
         cv::createBackgroundSubtractorMOG2(impConf.bgSubHistory_, impConf.bgSubThres_, false);
     rectElement = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
-    crossElement = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
 
-    for (int ch = 0; ch < impConf.numChs_; ch++) {
-      procFrameArr.push_back(cv::Mat());
-      directFgClstrs.push_back(std::vector<double>());
-      y1.push_back(0);
-      y2.push_back(0);
-      yPrev1.push_back(0);
-      yPrev2.push_back(0);
-      y1True.push_back(0);
-      y2True.push_back(0);
-      // TODO add support for non-90-degree channels
-      if (ch == 0)
-        yMax.push_back(impConf.getChROIs()[ch].height - impConf.getChWidth());
-      else
-        yMax.push_back(impConf.getChROIs()[ch].width - impConf.getChWidth());
-    }
+    procFrameArr.assign(impConf.numChs_, cv::Mat());
+    directFgClstrs.assign(impConf.numChs_, std::vector<double>());
+    directMeasAvail.assign(impConf.numChs_, false);
+    yState1.assign(impConf.numChs_, false);
+    yState2.assign(impConf.numChs_, false);
+    yDirect1.assign(impConf.numChs_, 0);
+    yDirect2.assign(impConf.numChs_, 0);
+    yInferred1.assign(impConf.numChs_, 0);
+    yInferred2.assign(impConf.numChs_, 0);
+    y1.assign(impConf.numChs_, 0);
+    y2.assign(impConf.numChs_, 0);
+    yPrev1.assign(impConf.numChs_, 0);
+    yPrev2.assign(impConf.numChs_, 0);
+    txCooldown1 = 0, txCooldown2 = 0, i2dOccurrences1 = 0, i2dOccurrences2 = 0;
+    d2iTxOccurred1 = false, d2iTxOccurred2 = false;
+
+    // TODO handle yMax initialization for non-90-degree channels
+    yMax.clear();
+    for (int ch = 0; ch < impConf.numChs_; ch++)
+      (ch == 0) ? yMax.push_back(impConf.getChROIs()[ch].height - impConf.getChWidth())
+                : yMax.push_back(impConf.getChROIs()[ch].width - impConf.getChWidth());
     procThread = std::thread(&ImProc::start, this);
     procThread.detach();
   }
@@ -149,16 +199,6 @@ void ImProc::stopThread() {
   if (started()) {
     lg->info("Stopping image processing...");
     startedImProc = false;
-    std::lock_guard<std::mutex> guard(imProcMtx); // wait for thread to finish
-    procFrameArr.clear();
-    directFgClstrs.clear();
-    y1.clear();
-    y2.clear();
-    yPrev1.clear();
-    yPrev2.clear();
-    y1True.clear();
-    y2True.clear();
-    yMax.clear();
   }
 }
 
@@ -166,7 +206,6 @@ void ImProc::start() {
   while (started()) {
     preFrame = imCap->getFrame();
     try {
-      std::lock_guard<std::mutex> guard(imProcMtx);
       // Timer t("ImProc");
 
       // update foreground mask based on background threshold,
@@ -176,7 +215,7 @@ void ImProc::start() {
       cv::dilate(fgMask, tempFgMask, rectElement, cv::Point(-1, -1), 2);
       cv::erode(tempFgMask, tempFgMask, rectElement, cv::Point(-1, -1), 4);
       cv::dilate(tempFgMask, tempFgMask, rectElement, cv::Point(-1, -1), 2);
-      skeletonize(tempFgMask, crossElement);
+      skeletonize(tempFgMask, rectElement);
       cv::dilate(tempFgMask, tempFgMask, rectElement);
 
       for (int ch = 0; ch < impConf.numChs_; ++ch) {
@@ -210,33 +249,46 @@ void ImProc::start() {
       //     info("ch: {}, i: {}, inferredFgClstrs: {}", ch, i, inferredFgClstrs[ch][i]);
 
       for (int ch = 0; ch < impConf.numChs_; ++ch) {
-        double y1Direct = minDist(directFgClstrs[ch], yPrev1[ch]);
-        double y1Inferred = minDist(inferredFgClstrs[ch], yPrev1[ch]);
-        double y2Direct = minDist(directFgClstrs[ch], yPrev2[ch]);
-        double y2Inferred = minDist(inferredFgClstrs[ch], yPrev2[ch]);
-
-        lg->info("ch: {}, y1Direct: {}, y1Inferred: {}, y2Direct: {}, y2Inferred: {}", ch, y1Direct,
-                 y1Inferred, y2Direct, y2Inferred);
-
-        // zero-crossing detection
-        if ((!directFgClstrs[ch].empty()) && (yPrev1[ch] < 0)) { // direct
-          y1True[ch] = true;
-          y1[ch] = y1Direct;
-        } else { // inferred
-          y1True[ch] = false;
-          y1[ch] = ((!directFgClstrs[ch].empty()) && (y1Direct < 0)) ? y1Direct : y1Inferred;
-        }
-        if ((!directFgClstrs[ch].empty()) && (yPrev2[ch] < 0)) { // direct
-          y2True[ch] = true;
-          y2[ch] = y2Direct;
-        } else { // inferred
-          y2True[ch] = false;
-          y2[ch] = ((!directFgClstrs[ch].empty()) && (y2Direct < 0)) ? y2Direct : y2Inferred;
-        }
-
-        yPrev1[ch] = y1[ch];
-        yPrev2[ch] = y2[ch];
+        directMeasAvail[ch] = !directFgClstrs[ch].empty();
+        yDirect1[ch] = minDist(directFgClstrs[ch], yPrev1[ch]);
+        yInferred1[ch] = minDist(inferredFgClstrs[ch], yPrev1[ch]);
+        yDirect2[ch] = minDist(directFgClstrs[ch], yPrev2[ch]);
+        yInferred2[ch] = minDist(inferredFgClstrs[ch], yPrev2[ch]);
       }
+      updateMeas(y1, yPrev1, directMeasAvail, yDirect1, yInferred1, yState1, txCooldown1,
+                 i2dOccurrences1, d2iTxOccurred1);
+      updateMeas(y2, yPrev2, directMeasAvail, yDirect2, yInferred2, yState2, txCooldown2,
+                 i2dOccurrences2, d2iTxOccurred2);
+
+      // for (int ch = 0; ch < impConf.numChs_; ++ch) {
+      //   double y1Direct = minDist(directFgClstrs[ch], yPrev1[ch]);
+      //   double y1Inferred = minDist(inferredFgClstrs[ch], yPrev1[ch]);
+      //   double y2Direct = minDist(directFgClstrs[ch], yPrev2[ch]);
+      //   double y2Inferred = minDist(inferredFgClstrs[ch], yPrev2[ch]);
+
+      //   lg->info("ch: {}, y1Direct: {}, y1Inferred: {}, y2Direct: {}, y2Inferred: {}", ch,
+      //   y1Direct,
+      //            y1Inferred, y2Direct, y2Inferred);
+
+      //   // zero-crossing detection
+      //   if ((!directFgClstrs[ch].empty()) && (yPrev1[ch] < 0)) { // direct
+      //     yState1[ch] = true;
+      //     y1[ch] = y1Direct;
+      //   } else { // inferred
+      //     yState1[ch] = false;
+      //     y1[ch] = ((!directFgClstrs[ch].empty()) && (y1Direct < 0)) ? y1Direct : y1Inferred;
+      //   }
+      //   if ((!directFgClstrs[ch].empty()) && (yPrev2[ch] < 0)) { // direct
+      //     yState2[ch] = true;
+      //     y2[ch] = y2Direct;
+      //   } else { // inferred
+      //     yState2[ch] = false;
+      //     y2[ch] = ((!directFgClstrs[ch].empty()) && (y2Direct < 0)) ? y2Direct : y2Inferred;
+      //   }
+
+      //   yPrev1[ch] = y1[ch];
+      //   yPrev2[ch] = y2[ch];
+      // }
 
       /*
       ** - each channel can be in 2 states: direct or inferred

@@ -110,9 +110,11 @@ void ImProcWindow::renderImProc() {
         ImGui::SameLine();
         ImGui::Text("y1: %.1f", y[i]);
         ImGui::SameLine();
-        ImGui::Text("y2: %.1f", y[i + no_]);
+        ImGui::Text("state: %d", (int) imProc_->yState1[i]);
+        // ImGui::Text("y2: %.1f", y[i + no_]);
       }
     }
+    ImGui::Text("state: %d", (int) imProc_->d2iTxOccurred1);
     imProcToggle_->render();
     ImGui::End();
   }
