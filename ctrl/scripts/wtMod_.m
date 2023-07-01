@@ -1,11 +1,10 @@
-function [ywt, ywtT, uwt, uwtT] = wtMod_(ytotal, yDest, ywtT, uwtT, dt, no, ni)
+function [ywt, ywtT, uwt, uwtT] = wtMod_(ytotal, yDest, ywtT, uwtT, dt, no, ni, k_2)
 %#codegen
 ywt = zeros(1,2*no);
 uwt = zeros(1,ni);
 
-% time-scaled sigmoid (around 0->1 in 0->k_2 seconds)
+% time-scaled sigmoid (around 0->1 in 0->k_2 seconds, k_2 being a time scale factor)
 r = 0.2; % 10% to 90% rise time
-k_2 = 5; % time scale factor
 dwt = dt/k_2;
 k_1 = 2.197/(r*k_2);
 x0 = 0.5*k_2; % midpoint

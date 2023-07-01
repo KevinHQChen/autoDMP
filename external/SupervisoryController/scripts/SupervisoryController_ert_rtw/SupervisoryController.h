@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2120
+// Model version                  : 1.2201
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Thu Jun 22 11:50:02 2023
+// C/C++ source code generated on : Sat Jul  1 18:43:27 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -220,6 +220,11 @@ class SupervisoryController final
     real_T MemoryP_DSTATE[324];        // '<S39>/MemoryP'
     real_T DiscreteFilter1_states[177];// '<S2>/Discrete Filter1'
     real_T traj[14400];                // '<Root>/SupervisoryController'
+    real_T P0_1[144];                  // '<Root>/SupervisoryController'
+    real_T P0_2[144];                  // '<Root>/SupervisoryController'
+    real_T theta0_1[12];               // '<Root>/SupervisoryController'
+    real_T theta0_2[12];               // '<Root>/SupervisoryController'
+    real_T thetaSgn[24];               // '<Root>/SupervisoryController'
     real_T NextOutput[3];              // '<S2>/excitation'
     real_T Bu[1134];
     real_T dv[5166];
@@ -249,6 +254,7 @@ class SupervisoryController final
     uint16_T trajSize;                 // '<Root>/SupervisoryController'
     uint8_T is_EventHandler;           // '<Root>/SupervisoryController'
     uint8_T is_active_c6_SupervisoryControl;// '<Root>/SupervisoryController'
+    boolean_T enAdapt_[6];             // '<Root>/SupervisoryController'
     boolean_T Memory_PreviousInput[246];// '<S9>/Memory'
     boolean_T evDone;                  // '<Root>/SupervisoryController'
     boolean_T icLoad;                  // '<S39>/MemoryX'
@@ -259,9 +265,9 @@ class SupervisoryController final
   // Zero-crossing (trigger) state
   struct PrevZCX {
     ZCSigState SupervisoryController_Trig_ZCE;// '<Root>/SupervisoryController'
+    ZCE_paramEst1 paramEst2;           // '<S1>/paramEst2'
     ZCSigState MemoryX_Reset_ZCE;      // '<S39>/MemoryX'
     ZCSigState MemoryP_Reset_ZCE;      // '<S39>/MemoryP'
-    ZCE_paramEst1 paramEst2;           // '<S1>/paramEst2'
     ZCE_paramEst1 paramEst1_o;         // '<S1>/paramEst1'
   };
 
@@ -271,13 +277,13 @@ class SupervisoryController final
     real_T ymax[6];                    // '<Root>/ymax'
     real_T y0[6];                      // '<Root>/y0'
     real_T u0[3];                      // '<Root>/u0'
+    boolean_T yo[6];                   // '<Root>/zeroCross'
     boolean_T enAdapt[6];              // '<Root>/enAdapt'
     real_T excitation;                 // '<Root>/excitation'
     real_T dPmod_;                     // '<Root>/dPmod_'
     real_T p_;                         // '<Root>/p_'
     real_T lambda;                     // '<Root>/lambda'
-    real_T theta0[24];                 // '<Root>/theta0'
-    real_T P_0[576];                   // '<Root>/P_0'
+    real_T k_2;                        // '<Root>/k_2'
     event_bus nextEv;                  // '<Root>/nextEv'
     real_T measAvail;                  // '<Root>/measAvail'
   };
@@ -288,10 +294,10 @@ class SupervisoryController final
     real_T ywt[6];                     // '<Root>/ywt'
     real_T yhat[6];                    // '<Root>/yhat'
     real_T currTraj[6];                // '<Root>/currTraj'
+    event_bus currEv;                  // '<Root>/currEv'
     real_T theta[24];                  // '<Root>/theta'
     real_T prmErr[6];                  // '<Root>/prmErr'
-    real_T P_j[576];                   // '<Root>/P'
-    event_bus currEv;                  // '<Root>/currEv'
+    real_T P_k[576];                   // '<Root>/P'
     boolean_T requestEvent;            // '<Root>/requestEvent'
   };
 
@@ -565,10 +571,11 @@ class SupervisoryController final
     rty_err[3], DW_paramEst1 *localDW, P_paramEst1 *localP);
   void paramEst1(const real_T rtu_y[3], const real_T rtu_y0[3], const real_T
                  rtu_u[3], const real_T rtu_u0[3], const boolean_T rtu_EN[3],
-                 const real_T rtu_theta0[12], boolean_T rtu_rstTheta, const
-                 real_T rtu_P0[144], boolean_T rtu_rstP, real_T rtu_p_, real_T
-                 rtu_lambda, real_T rty_theta[12], real_T rty_P[144], real_T
-                 rty_err[3], DW_paramEst1 *localDW, ZCE_paramEst1 *localZCE);
+                 const real_T rtu_theta0[12], const real_T rtu_thetaSgn[12],
+                 boolean_T rtu_rstTheta, const real_T rtu_P0[144], boolean_T
+                 rtu_rstP, real_T rtu_p_, real_T rtu_lambda, real_T rty_theta[12],
+                 real_T rty_P[144], real_T rty_err[3], DW_paramEst1 *localDW,
+                 ZCE_paramEst1 *localZCE);
   void binary_expand_op(real_T in1[36], int32_T in2, int32_T in3, int32_T in4,
                         const real_T in5[12], int32_T in6, int32_T in7, const
                         real_T in8[12]);
@@ -582,6 +589,7 @@ class SupervisoryController final
   void trajGen(const event_bus *event, const real_T y_[6], real_T trajectory
                [14400], uint16_T *trajectorySize);
   void handleEvent(real_T *holdT, boolean_T *eventDone, uint16_T *waypt_) const;
+  boolean_T any(const real_T x[3]);
   void binary_expand_op_n(real_T in1[24], int32_T in2, const real_T in3[24],
     int32_T in4, int32_T in5, const real_T in6[24], int32_T in7, int32_T in8);
   int32_T xpotrf(real_T b_A[16]);

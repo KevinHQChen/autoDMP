@@ -12,10 +12,10 @@ dP(1:np*no, 1:np*no) = L*phi'*P;
 % parameter projection
 for i = 1:np*no
     if mod(i-1, np) == 0 % a_i requires lower and upper bounds
-        if ~( (theta(i) + dtheta(i) > p_) | ... % lower bound
-              ( (theta(i) + dtheta(i) == p_) & (dtheta(i) >= 0) ) ) ...
-         & ~( (theta(i) + dtheta(i) < p_+0.5) | ... % upper bound
-              ( (theta(i) + dtheta(i) == p_+0.5) & (dtheta(i) <= 0) ) )
+        if ~( (theta(i) + dtheta(i) > p_) || ... % lower bound
+              ( (theta(i) + dtheta(i) == p_) && (dtheta(i) >= 0) ) ) ...
+         && ~( (theta(i) + dtheta(i) < p_+0.5) || ... % upper bound
+              ( (theta(i) + dtheta(i) == p_+0.5) && (dtheta(i) <= 0) ) )
             dtheta(i) = 0;
             dP(i,i) = 0;
             dP(i,i) = 0;
