@@ -76,8 +76,6 @@ findInferredClstrs(const std::vector<std::vector<double>> &directClstrs) {
         sum += otherClstrs[j][indices[j]];
       newClstrs[ch].push_back(-sum / (n - 1));
     });
-
-    // newClstrs[i].insert(newClstrs[i].end(), clstrs[i].begin(), clstrs[i].end());
   }
 
   return newClstrs;
@@ -109,6 +107,7 @@ void updateMeas(std::vector<double> &y, std::vector<double> &yPrev,
   yPrev = y;
   size_t d2iTxIdx = y.size(); // Initialize with an invalid index
   int maxInitI2D = 1;         // num of channels with direct measurements initially
+  int epsilon = 56 / 2;       // half of channel width
 
   for (size_t ch = 0; ch < y.size(); ++ch) {
     if (state[ch]) { // Direct state
@@ -131,13 +130,18 @@ void updateMeas(std::vector<double> &y, std::vector<double> &yPrev,
   }
 
   // If a direct->inferred transition occurred,
-  // TODO all inferred states with yPrev and yDirect close to 0 become direct
-  // (except the state that triggered the transition),
-  // TODO all direct states close to 0 become inferred
   if (d2iTxOccurred) {
-    for (size_t ch = 0; ch < y.size(); ++ch)
-      if (!state[ch] && ch != d2iTxIdx)
+    for (size_t ch = 0; ch < y.size(); ++ch) {
+      // all inferred states with yPrev and yDirect close to 0 become direct
+      // (except the state that triggered the transition),
+      if (!state[ch] && std::abs(yPrev[ch]) < epsilon && std::abs(yDirect[ch]) < epsilon &&
+          ch != d2iTxIdx)
         state[ch] = true;
+      // all direct states close to 0 become inferred.
+      if (state[ch] && std::abs(yDirect[ch]) < epsilon)
+        state[ch] = false;
+    }
+
     d2iTxOccurred = false;
     d2iTxIdx = y.size();
   }
