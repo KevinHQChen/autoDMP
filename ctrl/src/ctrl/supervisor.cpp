@@ -31,20 +31,26 @@ void Supervisor::startThread() {
     no = imProc->impConf.getNumChs();
     lg->info("Supervisor found {} channels.", no);
 
-    // initialize SupervisoryController (y_range, y_max, y_o, u_o, yhat)
-    supIn.excitation = 5;
+    // initialize adaptive control constants
+    supIn.excitation = 4;
+    supIn.dPmod_ = 0.0001;
+    supIn.p_ = 0.0001;
+    supIn.lambda = 0.9975;
+    supIn.k_2 = 5;
+    // initialize input/output constants
     for (int ch = 0; ch < no; ++ch) {
-      // primary
+      // primary output
       supIn.ymax[ch] = imProc->yMax[ch];
       supIn.y0[ch] = 0;
       supOut.yhat[ch] = 0;
-      // secondary
+      // secondary output
       supIn.ymax[no + ch] = imProc->yMax[ch];
       supIn.y0[no + ch] = 0;
       supOut.yhat[no + ch] = 0;
-
+      // input
       supIn.u0[ch] = pump->outputs[ch];
     }
+    // initialize SupervisoryController
     sup->initialize();
 
     if (!simModeActive && pump->getPumpType() == "BARTELS")
@@ -71,7 +77,7 @@ void Supervisor::start() {
   while (startedCtrl) {
     std::lock_guard<std::mutex> guard(ctrlMtx);
     if (!imProc->procData->empty()) {
-      // Timer t("ImProc");
+      // Timer t("Ctrl");
       if (supOut.requestEvent && !evQueue_->empty()) {
         supIn.nextEv = evQueue_->get();
         setCurrEv(supIn.nextEv);

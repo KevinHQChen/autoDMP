@@ -203,11 +203,13 @@ void ImProc::stopThread() {
   if (started()) {
     lg->info("Stopping image processing...");
     startedImProc = false;
+    std::lock_guard<std::mutex> guard(imProcMtx); // wait for thread to finish
   }
 }
 
 void ImProc::start() {
   while (started()) {
+    std::lock_guard<std::mutex> guard(imProcMtx);
     preFrame = imCap->getFrame();
     try {
       // Timer t("ImProc");
@@ -264,45 +266,6 @@ void ImProc::start() {
       updateMeas(y2, yPrev2, directMeasAvail, yDirect2, yInferred2, yState2, txCooldown2,
                  i2dOccurrences2, d2iTxOccurred2);
 
-      // for (int ch = 0; ch < impConf.numChs_; ++ch) {
-      //   double y1Direct = minDist(directFgClstrs[ch], yPrev1[ch]);
-      //   double y1Inferred = minDist(inferredFgClstrs[ch], yPrev1[ch]);
-      //   double y2Direct = minDist(directFgClstrs[ch], yPrev2[ch]);
-      //   double y2Inferred = minDist(inferredFgClstrs[ch], yPrev2[ch]);
-
-      //   lg->info("ch: {}, y1Direct: {}, y1Inferred: {}, y2Direct: {}, y2Inferred: {}", ch,
-      //   y1Direct,
-      //            y1Inferred, y2Direct, y2Inferred);
-
-      //   // zero-crossing detection
-      //   if ((!directFgClstrs[ch].empty()) && (yPrev1[ch] < 0)) { // direct
-      //     yState1[ch] = true;
-      //     y1[ch] = y1Direct;
-      //   } else { // inferred
-      //     yState1[ch] = false;
-      //     y1[ch] = ((!directFgClstrs[ch].empty()) && (y1Direct < 0)) ? y1Direct : y1Inferred;
-      //   }
-      //   if ((!directFgClstrs[ch].empty()) && (yPrev2[ch] < 0)) { // direct
-      //     yState2[ch] = true;
-      //     y2[ch] = y2Direct;
-      //   } else { // inferred
-      //     yState2[ch] = false;
-      //     y2[ch] = ((!directFgClstrs[ch].empty()) && (y2Direct < 0)) ? y2Direct : y2Inferred;
-      //   }
-
-      //   yPrev1[ch] = y1[ch];
-      //   yPrev2[ch] = y2[ch];
-      // }
-
-      /*
-      ** - each channel can be in 2 states: direct or inferred
-      ** - these states correspond to the 2 types of measurements
-      ** - direct measurements are always -ve, inferred are always +ve
-      ** - when a direct measurement crosses from -ve to +ve,
-      **     it becomes an inferred measurement and we discard any future direct measurements
-      ** - when an inferred measurement crosses from +ve to -ve,
-      **     it becomes a direct measurement and we discard any future inferred measurements
-      */
       rstOnZeroCross();
 
       {

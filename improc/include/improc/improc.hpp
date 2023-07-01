@@ -120,7 +120,7 @@ private:
   std::vector<int> compParams;
   ImCap *imCap;
 
-  std::mutex yMtx;
+  std::mutex imProcMtx, yMtx;
   std::atomic<bool> startedImProc{false};
   std::thread procThread;
   SharedBuffer<std::vector<cv::Mat>> procFrameBuf;
