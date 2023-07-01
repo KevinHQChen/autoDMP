@@ -2,17 +2,17 @@ function [traj, numWaypts] = trajGen_(event, y, ymax, dt, no)
 %#codegen
 traj = zeros(2*no, 2400);
 yDest = zeros(2*no, 1);
-chs = find(event.r); % directly measured channels
-invChs = setdiff(1:2*no, chs); % indirectly measured channels
+directChs = find(event.r); % direct channels
+inferredChs = setdiff(1:2*no, directChs); % inferred channels
 
 numWaypts = cast(event.moveT/dt, "uint16");
 assert(numWaypts < 1200);
 
-for i=1:length(chs) % directly measured channels
-    yDest(chs(i)) = ymax(chs(i)).*event.r(chs(i));
+for i=1:length(directChs)
+    yDest(directChs(i)) = ymax(directChs(i)).*event.r(directChs(i));
 end
-for i=1:length(invChs) % indirectly measured channels (by applying KCL/conservation of charge)
-    yDest(invChs(i)) = -sum(yDest(chs)) / length(invChs);
+for i=1:length(inferredChs) % apply KCL/conservation of charge at junction
+    yDest(inferredChs(i)) = -sum(yDest(directChs)) / length(inferredChs);
 end
 
 for i=1:size(y,1)

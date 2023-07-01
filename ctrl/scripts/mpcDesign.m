@@ -129,26 +129,26 @@ evalin('base', ['clear ' busInfo.busName]);
 %% define event sequence
 Ld = 0.25; % droplet length (% of channel length)
 Wch = 0.02; % channel width (% of channel length)
-Dneck = 0.025; % required displacement into each unmeasured channel for droplet split/gen (% of channel length)
+Dneck = Wch; % required displacement into each unmeasured channel for droplet split/gen (% of channel length)
 Tpre = 0.01; % default hold time before move
 tsl_ = 2; % learning timescale
 ts_ = 2; % validation timescale
-epsil = 0.001;
+Dplug = Wch/2;
 
 eventQueue = [...
     % 1. pre-gen: get in position for droplet generation
     struct('r', [0; -Wch/2;  -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', tsl_*5, 'postT', tsl_*5);
     % 2. gen: perform droplet generation
-    struct('r', [0; Dneck*2; -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', tsl_*2, 'postT', 0);
+    struct('r', [0; Dneck; -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', tsl_*2, 'postT', 0);
     % 3. post-gen: move droplet out of the way for next droplet
     struct('r', [0; 0;       0;  -Wch/2; 0; Ld/2-1], 'preT', 0, 'moveT', tsl_*5, 'postT', tsl_*5);
     % post-gen cont.: get in position for next droplet generation
-    struct('r', [0; 0;       0;  epsil; 0; Ld/2-1],  'preT', Tpre, 'moveT', tsl_*2, 'postT', 0);
+    struct('r', [0; 0;       0;  Dplug; 0; Ld/2-1],  'preT', Tpre, 'moveT', tsl_*2, 'postT', 0);
 
     struct('r', [0; -Wch/2;  -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*5, 'postT', ts_*5);
-    struct('r', [0; Dneck*2; -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
+    struct('r', [0; Dneck; -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
     struct('r', [0; 0;       0;  -Wch/2; 0; Ld/2-1], 'preT', 0, 'moveT', ts_*5, 'postT', ts_*5);
-    struct('r', [0; 0;       0;  epsil; 0; Ld/2-1],  'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
+    struct('r', [0; 0;       0;  Dplug; 0; Ld/2-1],  'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
              ];
 
 %% trajectory parameters
