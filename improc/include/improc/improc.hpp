@@ -111,7 +111,8 @@ public:
   void clearData();
 
   std::vector<bool> directMeasAvail, yState1, yState2;
-  bool d2iTxOccurred1, d2iTxOccurred2;
+  bool zeroCross1, zeroCross2;
+  std::vector<unsigned char> zeroCross;
 
 private:
   std::shared_ptr<logger> lg;
@@ -146,6 +147,5 @@ private:
                       int &chWidth);
   void findClusters(const std::vector<cv::Point> &fgLocs, std::vector<double> &clusters);
   bool anyNonZeroR(std::size_t start, std::size_t end);
-  bool anyZeroCross(const std::vector<double> &vec1, const std::vector<double> &vec2);
   void rstOnZeroCross();
 };

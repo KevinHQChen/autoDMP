@@ -32,7 +32,7 @@ void Supervisor::startThread() {
     lg->info("Supervisor found {} channels.", no);
 
     // initialize adaptive control constants
-    supIn.excitation = 4;
+    supIn.excitation = 10; // 4
     supIn.dPmod_ = 0.0001;
     supIn.p_ = 0.0001;
     supIn.lambda = 0.9975;
@@ -49,6 +49,9 @@ void Supervisor::startThread() {
       supOut.yhat[no + ch] = 0;
       // input
       supIn.u0[ch] = pump->outputs[ch];
+      // zero-cross flag
+      supIn.yo[ch] = false;
+      supIn.yo[no + ch] = false;
     }
     // initialize SupervisoryController
     sup->initialize();
@@ -85,13 +88,14 @@ void Supervisor::start() {
       } else
         supIn.nextEv = nullEv;
 
-      prevCtrlTime = steady_clock::now();
       y = imProc->procData->get();
-      for (int ch = 0; ch < 2 * no; ++ch)
+      for (int ch = 0; ch < 2 * no; ++ch) {
         supIn.y[ch] = y[ch];
+        supIn.yo[ch] = imProc->zeroCross[ch];
+      }
+
       supIn.measAvail = !supIn.measAvail;
 
-      // lg->info("Time: {}", duration_cast<milliseconds>(prevCtrlTime - initTime).count());
       sup->rtU = supIn;
       sup->step();
       supOut = sup->rtY;

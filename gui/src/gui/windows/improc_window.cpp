@@ -104,17 +104,16 @@ void ImProcWindow::renderImProc() {
           startedImProc_ = false;
         ImGui::Image((ImTextureID)procGUIFrames[i].texture,
                      ImVec2(procGUIFrames[i].width, procGUIFrames[i].height));
-        drawFgLocs(i, ImGui::GetItemRectMin(), -y[i] + imProc_->impConf.getChWidth() / 2.0,
-                   -y[i + no_] + imProc_->impConf.getChWidth() / 2.0);
+        drawFgLocs(i, ImGui::GetItemRectMin(), -y[i] + imProc_->impConf.getChWidth() / 2,
+                   -y[i + no_] + imProc_->impConf.getChWidth() / 2);
         // print y1 and y2
         ImGui::SameLine();
         ImGui::Text("y1: %.1f", y[i]);
         ImGui::SameLine();
-        ImGui::Text("state: %d", (int) imProc_->yState1[i]);
+        ImGui::Text("state: %d", (int)imProc_->yState1[i]);
         // ImGui::Text("y2: %.1f", y[i + no_]);
       }
     }
-    ImGui::Text("state: %d", (int) imProc_->d2iTxOccurred1);
     imProcToggle_->render();
     ImGui::End();
   }

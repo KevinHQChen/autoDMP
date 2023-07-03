@@ -55,12 +55,10 @@ private:
   bool simModeActive;
 
   std::vector<double> y;
+  std::vector<unsigned char> yo;
 
   event_bus currEv_;
   std::mutex ctrlMtx, currEvMtx;
-
-  time_point<steady_clock> initTime{steady_clock::now()};
-  time_point<steady_clock> prevCtrlTime = initTime;
 
   // Called within thread context
   void start();

@@ -11,6 +11,9 @@ namespace gui {
 
 class CtrlWindow : public Window {
   Supervisor *sv_;
+  ImProc *imProc_;
+
+  int no;
 
   // displaying/modifying events, states
   ImGuiTableFlags tableFlags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH |
@@ -46,7 +49,7 @@ class CtrlWindow : public Window {
 public:
   bool ctrlSetupVisible_{false}, ctrlVisible_{false};
 
-  CtrlWindow(Supervisor *sv);
+  CtrlWindow(Supervisor *sv, ImProc *imProc);
   ~CtrlWindow();
   void render() override;
 };

@@ -101,7 +101,7 @@ inline void displayArray3d(const char *arrName, double arr[3], const char *helpT
 }
 
 inline void displayArrayNd(const char *arrName, const std::vector<double> &arr,
-                           const char *helpText = "") {
+                           const char *txtFmt = "%.1f", const char *helpText = "") {
   ImGui::TableNextRow();
   ImGui::TableSetColumnIndex(0);
   ImGui::Text("%s", arrName);
@@ -109,7 +109,7 @@ inline void displayArrayNd(const char *arrName, const std::vector<double> &arr,
   HelpMarker(helpText);
   for (size_t i = 0; i < arr.size(); ++i) {
     ImGui::TableSetColumnIndex(i + 1);
-    ImGui::Text("%f", arr[i]);
+    ImGui::Text(txtFmt, arr[i]);
   }
 }
 
