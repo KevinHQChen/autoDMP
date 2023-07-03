@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2201
+// Model version                  : 1.2202
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Sat Jul  1 18:43:27 2023
+// C/C++ source code generated on : Sun Jul  2 22:08:16 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -126,7 +126,7 @@ SupervisoryController::P SupervisoryController::rtP{
   // Variable: uwt0
   //  Referenced by: '<S2>/Delay1'
 
-  { 0.0, 0.0, 0.0 },
+  { 1.0, 1.0, 1.0 },
 
   // Variable: ywt0
   //  Referenced by: '<S2>/Delay'

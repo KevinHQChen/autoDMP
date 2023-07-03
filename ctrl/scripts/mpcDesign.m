@@ -159,6 +159,16 @@ eventQueue = [...
     struct('r', [0; Dneck; -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
     struct('r', [0; 0;       0;  -Wch/2; 0; Ld/2-1], 'preT', 0, 'moveT', ts_*5, 'postT', ts_*5);
     struct('r', [0; 0;       0;  Dplug; 0; Ld/2-1],  'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
+
+    struct('r', [0; -Wch/2;  -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*5, 'postT', ts_*5);
+    struct('r', [0; Dneck; -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
+    struct('r', [0; 0;       0;  -Wch/2; 0; Ld/2-1], 'preT', 0, 'moveT', ts_*5, 'postT', ts_*5);
+    struct('r', [0; 0;       0;  Dplug; 0; Ld/2-1],  'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
+
+    struct('r', [0; -Wch/2;  -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*5, 'postT', ts_*5);
+    struct('r', [0; Dneck; -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
+    struct('r', [0; 0;       0;  -Wch/2; 0; Ld/2-1], 'preT', 0, 'moveT', ts_*5, 'postT', ts_*5);
+    struct('r', [0; 0;       0;  Dplug; 0; Ld/2-1],  'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
              ];
 
 %% trajectory parameters

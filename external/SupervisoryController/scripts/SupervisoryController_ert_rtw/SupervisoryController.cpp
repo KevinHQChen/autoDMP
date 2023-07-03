@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2201
+// Model version                  : 1.2202
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Sat Jul  1 18:43:27 2023
+// C/C++ source code generated on : Sun Jul  2 22:08:16 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -4567,9 +4567,9 @@ void SupervisoryController::step()
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5, 0.5, -0.5, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, -0.5, -0.5, 0.5 };
 
-  static const real_T h[16]{ 0.034121465297356074, 0.0, 0.0, 0.0, 0.0,
-    0.034121465297356074, 0.0, 0.0, 0.0, 0.0, 0.034121465297356074, 0.0, 0.0,
-    0.0, 0.0, 100000.0 };
+  static const real_T h[16]{ 0.40045977729735593, 0.0, 0.0, 0.0, 0.0,
+    0.40045977729735593, 0.0, 0.0, 0.0, 0.0, 0.40045977729735593, 0.0, 0.0, 0.0,
+    0.0, 100000.0 };
 
   static const int32_T b_Mrows[246]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
     14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
@@ -5067,7 +5067,7 @@ void SupervisoryController::step()
       // MATLAB Function 'SupervisoryController/ampc/MATLAB Function': '<S6>:1'
       // '<S6>:1:2' [ywt, ywtT, uwt, uwtT] = wtMod_(y, yDest, ywtT, uwtT, dt, no, ni, k_2); 
       // 'wtMod_:3' ywt = zeros(1,2*no);
-      // 'wtMod_:4' uwt = zeros(1,ni);
+      // 'wtMod_:4' uwt = dt*ones(1,ni);
       //  time-scaled sigmoid (around 0->1 in 0->k_2 seconds, k_2 being a time scale factor) 
       // 'wtMod_:7' r = 0.2;
       //  10% to 90% rise time
@@ -5152,9 +5152,10 @@ void SupervisoryController::step()
       //   MATLAB Function: '<S2>/MATLAB Function'
       //   Sum: '<S2>/Sum'
 
-      rtb_Sum_a[0] = rtP.beta * 0.0;
-      rtb_Sum_a[1] = rtP.beta * 0.0;
-      rtb_Sum_a[2] = rtP.beta * 0.0;
+      dwt = rtP.beta * rtP.dt;
+      rtb_Sum_a[0] = dwt;
+      rtb_Sum_a[1] = dwt;
+      rtb_Sum_a[2] = dwt;
 
       // MATLAB Function 'SupervisoryController/ampc/MATLAB Function2': '<S7>:1' 
       // '<S7>:1:2' [A, B] = theta2ss_(theta, sign, y0, no, np);
