@@ -111,8 +111,11 @@ public:
   void clearData();
 
   std::vector<bool> directMeasAvail, yState1, yState2;
-  bool zeroCross1, zeroCross2;
+  bool zeroCross1, zeroCross2, y1Controlled, y2Controlled;
   std::vector<unsigned char> zeroCross;
+
+  std::vector<double> yDirect1, yDirect2, yInferred1, yInferred2;
+  std::vector<double> y, y1, y2, yPrev1, yPrev2;
 
 private:
   std::shared_ptr<logger> lg;
@@ -133,8 +136,8 @@ private:
   std::vector<std::vector<double>> directFgClstrs, inferredFgClstrs;
   // state is true for direct, false for inferred
   // std::vector<bool> directMeasAvail, yState1, yState2;
-  std::vector<double> yDirect1, yDirect2, yInferred1, yInferred2;
-  std::vector<double> y, y1, y2, yPrev1, yPrev2;
+  // std::vector<double> yDirect1, yDirect2, yInferred1, yInferred2;
+  // std::vector<double> y, y1, y2, yPrev1, yPrev2;
   int txCooldown1, txCooldown2, i2dOccurrences1, i2dOccurrences2;
   // bool txOccurred1, txOccurred2;
   double r[2 * MAX_NO];
@@ -147,5 +150,6 @@ private:
                       int &chWidth);
   void findClusters(const std::vector<cv::Point> &fgLocs, std::vector<double> &clusters);
   bool anyNonZeroR(std::size_t start, std::size_t end);
-  void rstOnZeroCross();
+
+  void updateMeas();
 };

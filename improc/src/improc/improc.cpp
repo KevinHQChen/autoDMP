@@ -51,7 +51,7 @@ findInferredClstrs(const std::vector<std::vector<double>> &directClstrs) {
   std::vector<std::vector<double>> newClstrs(n);
 
   for (int ch = 0; ch < n; ++ch) {
-    std::cout << "##For channel " << ch << ":\n";
+    // std::cout << "##For channel " << ch << ":\n";
     // make a copy of directClstrs_,
     // remove i-th channel (we only use other channels to infer clstr locations in current channel)
     // remove empty channels (i.e. channels w/o direct clstrs),
@@ -101,14 +101,13 @@ void skeletonize(cv::Mat &img, cv::Mat element) {
   img = skel;
 }
 
-bool updateMeas(std::vector<double> &y, std::vector<double> &yPrev,
-                const std::vector<bool> &directMeasAvail, const std::vector<double> &yDirect,
-                const std::vector<double> &yInferred, std::vector<bool> &state, int &txCountDown,
-                int &i2dOccurrences) {
+bool updateState(std::vector<double> &y, std::vector<double> &yPrev,
+                 const std::vector<bool> &directMeasAvail, const std::vector<double> &yDirect,
+                 const std::vector<double> &yInferred, std::vector<bool> &state, int &txCooldown,
+                 int &i2dOccurrences, size_t &d2iTxIdx) {
   yPrev = y;
-  size_t d2iTxIdx = y.size(); // Initialize with an invalid index
+  int maxInitI2D = 1; // num of channels with direct measurements initially
   bool d2iTxOccurred = false;
-  int maxInitI2D = 1;   // num of channels with direct measurements initially
   int epsilon = 56 / 2; // half of channel width
 
   for (size_t ch = 0; ch < y.size(); ++ch) {
@@ -118,13 +117,12 @@ bool updateMeas(std::vector<double> &y, std::vector<double> &yPrev,
       else
         y[ch] = yDirect[ch];
 
-      // y[ch] = std::min(yDirect[ch], 0.0);
-      if ((y[ch] > 0) && (txCountDown == 0)) {
+      if ((y[ch] > 0) && (txCooldown == 0)) {
         // Transition from direct to inferred
         state[ch] = false;
         d2iTxOccurred = true;
         d2iTxIdx = ch;
-        txCountDown = 20;
+        txCooldown = 20;
       }
     } else { // Inferred state
       y[ch] = yInferred[ch];
@@ -135,6 +133,19 @@ bool updateMeas(std::vector<double> &y, std::vector<double> &yPrev,
       }
     }
   }
+
+  // Decrease transition countdown
+  if (txCooldown > 0)
+    --txCooldown;
+
+  return d2iTxOccurred;
+}
+
+void updateInferredStatesOnZeroCross(std::vector<double> &y, std::vector<double> &yPrev,
+                                     const std::vector<double> &yDirect,
+                                     const std::vector<double> &yInferred, std::vector<bool> &state,
+                                     const bool &d2iTxOccurred, size_t &d2iTxIdx) {
+  int epsilon = 56 / 2; // half of channel width
 
   // If a direct->inferred transition occurred,
   if (d2iTxOccurred) {
@@ -150,12 +161,44 @@ bool updateMeas(std::vector<double> &y, std::vector<double> &yPrev,
     }
     d2iTxIdx = y.size();
   }
+}
 
-  // Decrease transition countdown
-  if (txCountDown > 0)
-    --txCountDown;
+void ImProc::updateMeas() {
+  size_t d2iTxIdx1 = y.size(); // Initialize with an invalid index
+  size_t d2iTxIdx2 = y.size(); // Initialize with an invalid index
+  bool d2iTxOccurred1 = updateState(y1, yPrev1, directMeasAvail, yDirect1, yInferred1, yState1,
+                                    txCooldown1, i2dOccurrences1, d2iTxIdx1);
+  bool d2iTxOccurred2 = updateState(y2, yPrev2, directMeasAvail, yDirect2, yInferred2, yState2,
+                                    txCooldown2, i2dOccurrences2, d2iTxIdx2);
 
-  return d2iTxOccurred;
+  // if any direct->inferred transition occurred, reset the uncontrolled y
+  y1Controlled = anyNonZeroR(0, impConf.numChs_);
+  y2Controlled = anyNonZeroR(impConf.numChs_, 2 * impConf.numChs_);
+  if (d2iTxOccurred1 || d2iTxOccurred2) {
+    // if secondary measurements are controlled, reset primary measurements
+    if (y2Controlled) {
+      y1.assign(y1.size(), 0);
+      yPrev1.assign(yPrev1.size(), 0);
+    }
+    // if primary measurements are controlled, reset secondary measurements
+    if (y1Controlled) {
+      y2.assign(y2.size(), 0);
+      yPrev2.assign(yPrev2.size(), 0);
+    }
+  }
+  updateInferredStatesOnZeroCross(y1, yPrev1, yDirect1, yInferred1, yState1,
+                                  d2iTxOccurred1 || d2iTxOccurred2, d2iTxIdx1);
+  updateInferredStatesOnZeroCross(y2, yPrev2, yDirect2, yInferred2, yState2,
+                                  d2iTxOccurred1 || d2iTxOccurred2, d2iTxIdx2);
+  for (int ch = 0; ch < impConf.numChs_; ++ch) {
+    zeroCross[ch] = d2iTxOccurred1 ? true : false;
+    zeroCross[impConf.numChs_ + ch] = d2iTxOccurred2 ? true : false;
+
+    lg->info("ch (after): {}, yState1: {}, yState2: {}", ch, yState1[ch], yState2[ch]);
+  }
+  lg->info("d2iTxOccurred1: {}, d2iTxOccurred2: {}, d2iTxIdx1: {}, "
+           "d2iTxIdx2: {}",
+           d2iTxOccurred1, d2iTxOccurred2, d2iTxIdx1, d2iTxIdx2);
 }
 
 void ImProc::loadConfig() {
@@ -226,7 +269,7 @@ void ImProc::start() {
       // then apply dilation/erosion to remove noise
       pBackSub->apply(preFrame, fgMask, 0);
       cv::dilate(fgMask, tempFgMask, rectElement, cv::Point(-1, -1), 2);
-      cv::erode(tempFgMask, tempFgMask, rectElement, cv::Point(-1, -1), 4);
+      cv::erode(tempFgMask, tempFgMask, rectElement, cv::Point(-1, -1), 6);
       cv::dilate(tempFgMask, tempFgMask, rectElement, cv::Point(-1, -1), 2);
       skeletonize(tempFgMask, rectElement);
       cv::dilate(tempFgMask, tempFgMask, rectElement);
@@ -270,15 +313,12 @@ void ImProc::start() {
         yInferred1[ch] = minDist(inferredFgClstrs[ch], yPrev1[ch]);
         yDirect2[ch] = minDist(directFgClstrs[ch], yPrev2[ch]);
         yInferred2[ch] = minDist(inferredFgClstrs[ch], yPrev2[ch]);
+        lg->info("ch: {}, yDirect1: {}, yInferred1: {}, yDirect2: {}, yInferred2: {}, yState1: {}, "
+                 "yState2: {}",
+                 ch, yDirect1[ch], yInferred1[ch], yDirect2[ch], yInferred2[ch], yState1[ch],
+                 yState2[ch]);
       }
-      zeroCross1 = updateMeas(y1, yPrev1, directMeasAvail, yDirect1, yInferred1, yState1,
-                              txCooldown1, i2dOccurrences1);
-      zeroCross2 = updateMeas(y2, yPrev2, directMeasAvail, yDirect2, yInferred2, yState2,
-                              txCooldown2, i2dOccurrences2);
-      for (int ch = 0; ch < impConf.numChs_; ++ch) {
-        zeroCross[ch] = zeroCross1 ? true : false;
-        zeroCross[impConf.numChs_ + ch] = zeroCross2 ? true : false;
-      }
+      updateMeas();
 
       // if (zeroCross1)
       //   lg->info("Zero crossing occurred in y1");
@@ -288,8 +328,6 @@ void ImProc::start() {
       //   lg->info("yState1: {}", yState1[ch]);
       //   lg->info("yState2: {}", yState2[ch]);
       // }
-
-      rstOnZeroCross();
 
       {
         std::lock_guard<std::mutex> lock(yMtx);
@@ -375,18 +413,9 @@ void ImProc::findClusters(const std::vector<cv::Point> &fgLocs, std::vector<doub
 
 bool ImProc::anyNonZeroR(std::size_t start, std::size_t end) {
   for (std::size_t i = start; i < end; ++i)
-    if (r[i] == 0)
-      return false;
-  return true;
-}
-
-void ImProc::rstOnZeroCross() {
-  // if y1 is being controlled and any y2 crosses zero, reset y2
-  if (anyNonZeroR(0, impConf.numChs_) && zeroCross2)
-    std::fill(y2.begin(), y2.end(), 0);
-  // if y2 is being controlled and any y1 crosses zero, reset y1
-  if (anyNonZeroR(impConf.numChs_, 2 * impConf.numChs_) && zeroCross1)
-    std::fill(y1.begin(), y1.end(), 0);
+    if (r[i] != 0)
+      return true;
+  return false;
 }
 
 void ImProc::setR(double currTraj[2 * MAX_NO]) {

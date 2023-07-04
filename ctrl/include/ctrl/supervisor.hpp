@@ -29,7 +29,7 @@ public:
   bool started();
 
   QueueFPS<event_bus> *evQueue_;
-  void addEvent(event_bus e) { evQueue_->push_back(e); }
+  void addEvent(event_bus e) { evQueue_->push(e); }
   void setCurrEv(event_bus e) {
     std::lock_guard<std::mutex> lock(currEvMtx);
     currEv_ = e;

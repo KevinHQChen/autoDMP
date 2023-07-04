@@ -33,9 +33,9 @@ struct ScrollingBuffer {
 
 inline void plotVectorNN(std::string plotName, const char *xAx, const char *yAx, double yMin,
                          double yMax, std::vector<std::string> dataNames,
-                         const std::vector<std::vector<ScrollingBuffer *>> &vecs, float guiTime,
-                         float history) {
-  if (ImPlot::BeginPlot(plotName.c_str(), ImVec2(-1, 300))) {
+                         const std::vector<std::vector<ScrollingBuffer *>> &vecs, int plotHeight,
+                         float guiTime, float history) {
+  if (ImPlot::BeginPlot(plotName.c_str(), ImVec2(-1, plotHeight))) {
     ImPlot::SetupAxes(xAx, yAx); //, implotFlags, implotFlags);
     ImPlot::SetupAxisLimits(ImAxis_X1, guiTime - history, guiTime, ImGuiCond_Always);
     ImPlot::SetupAxisLimits(ImAxis_Y1, yMin, yMax);
@@ -53,8 +53,9 @@ inline void plotVectorNN(std::string plotName, const char *xAx, const char *yAx,
 
 inline void plotVectorN(std::string plotName, const char *xAx, const char *yAx, double yMin,
                         double yMax, std::string dataName,
-                        const std::vector<ScrollingBuffer *> &vecs, float guiTime, float history) {
-  if (ImPlot::BeginPlot(plotName.c_str(), ImVec2(-1, 300))) {
+                        const std::vector<ScrollingBuffer *> &vecs, int plotHeight, float guiTime,
+                        float history) {
+  if (ImPlot::BeginPlot(plotName.c_str(), ImVec2(-1, plotHeight))) {
     int idx = 0;
     ImPlot::SetupAxes(xAx, yAx); //, implotFlags, implotFlags);
     ImPlot::SetupAxisLimits(ImAxis_X1, guiTime - history, guiTime, ImGuiCond_Always);
@@ -102,6 +103,19 @@ inline void displayArray3d(const char *arrName, double arr[3], const char *helpT
 
 inline void displayArrayNd(const char *arrName, const std::vector<double> &arr,
                            const char *txtFmt = "%.1f", const char *helpText = "") {
+  ImGui::TableNextRow();
+  ImGui::TableSetColumnIndex(0);
+  ImGui::Text("%s", arrName);
+  ImGui::SameLine();
+  HelpMarker(helpText);
+  for (size_t i = 0; i < arr.size(); ++i) {
+    ImGui::TableSetColumnIndex(i + 1);
+    ImGui::Text(txtFmt, arr[i]);
+  }
+}
+
+inline void displayArrayNb(const char *arrName, const std::vector<bool> &arr,
+                           const char *txtFmt = "%d", const char *helpText = "") {
   ImGui::TableNextRow();
   ImGui::TableSetColumnIndex(0);
   ImGui::Text("%s", arrName);

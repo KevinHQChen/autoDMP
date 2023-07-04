@@ -14,12 +14,14 @@ class CtrlWindow : public Window {
   ImProc *imProc_;
 
   int no;
+  std::vector<double> rPixels;
+  std::vector<int> yMax;
 
   // displaying/modifying events, states
   ImGuiTableFlags tableFlags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH |
                                ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg |
                                ImGuiTableFlags_NoBordersInBody;
-  const char *dragFmt = "%.01f", *txtFmt = "%.1f";
+  const char *dragFmt = "%.01f", *txtFmt = "%.1f", *intFmt = "%d";
 
   event_bus currEv_, newEv_;
   int srcState, destState, moveTime, holdTime;
@@ -45,6 +47,8 @@ class CtrlWindow : public Window {
   void renderEventQueueContents();
   void renderSupervisorStatus();
   void renderControllerTuningDialog();
+
+  void loadEventsFromFile(const std::string &filename);
 
 public:
   bool ctrlSetupVisible_{false}, ctrlVisible_{false};

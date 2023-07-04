@@ -15,15 +15,17 @@ class PlotWindow : public Window {
 
   float guiTime{0.0f}, history{30.0f};
   bool pausePlot{false};
+  int plotHeight{200};
+
+  int openAction = -1;
 
   std::vector<double> y_;
-  std::vector<ScrollingBuffer *> u, uref, y, yhat, yref, ywt, theta;
+  std::vector<ScrollingBuffer *> u, uref, y, yhat, yref, ywt, theta, currTraj;
 
   void initDataVecs();
   void destroyDataVecs();
 
 public:
-
   PlotWindow(ImProc *imProc, Supervisor *sv);
   ~PlotWindow();
   void render() override;

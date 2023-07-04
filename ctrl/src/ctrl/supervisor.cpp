@@ -32,7 +32,7 @@ void Supervisor::startThread() {
     lg->info("Supervisor found {} channels.", no);
 
     // initialize adaptive control constants
-    supIn.excitation = 10; // 4
+    supIn.excitation = 0;
     supIn.dPmod_ = 0.0001;
     supIn.p_ = 0.0001;
     supIn.lambda = 0.9975;

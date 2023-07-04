@@ -2,6 +2,42 @@
 
 namespace gui {
 
+void CtrlWindow::loadEventsFromFile(const std::string &filename) {
+  std::ifstream file(filename);
+  std::string line;
+
+  while (std::getline(file, line)) {
+    std::stringstream ss(line);
+    std::string token;
+    event_bus ev;
+    int i = 0;
+
+    // Get the size of the r array
+    int r_size = sizeof(ev.r) / sizeof(ev.r[0]);
+
+    while (std::getline(ss, token, ',')) {
+      double value = std::stod(token);
+      if (i < r_size)
+        ev.r[i] = value;
+      else if (i == r_size)
+        ev.preT = value;
+      else if (i == r_size + 1)
+        ev.moveT = value;
+      else if (i == r_size + 2)
+        ev.postT = value;
+      i++;
+    }
+
+    // scale r
+    for (int ch = 0; ch < 2 * no; ++ch) {
+      ev.r[ch] = ev.r[ch] / yMax[ch % no];
+      std::clamp(ev.r[ch], -1.0, 1.0);
+    }
+
+    sv_->addEvent(ev);
+  }
+}
+
 CtrlWindow::CtrlWindow(Supervisor *sv, ImProc *imProc) : sv_(sv), imProc_(imProc) {
   currEv_ = sv_->nullEv;
   newEv_ = sv_->nullEv;
@@ -14,6 +50,11 @@ void CtrlWindow::render() {
     ctrlSetupVisible_ = !ctrlSetupVisible_;
   if (ctrlSetupVisible_ && ImGui::Begin("Ctrl Setup", &ctrlSetupVisible_)) {
     no = imProc_->impConf.getNumChs();
+    if (yMax.empty())
+      yMax = imProc_->yMax;
+
+    if (rPixels.empty())
+      rPixels.assign(2 * no, 0.0);
 
     // disable tree node indentation
     ImGui::PushStyleVar(ImGuiStyleVar_IndentSpacing, 0.0f);
@@ -35,7 +76,8 @@ void CtrlWindow::render() {
 
     ImGui::PopStyleVar();
     ImGui::End();
-  }
+  } else
+    yMax.clear();
 
   if (ctrlVisible_)
     sv_->startThread();
@@ -44,52 +86,16 @@ void CtrlWindow::render() {
 }
 
 void CtrlWindow::renderAddEventDialog() {
-  int numCols = 2;
-  double rMax = 1.0, rMid = 0.0, rMin = -1.0, moveTMax = 20.0, moveTMin = 0.0;
-
   if (openAction != -1)
     ImGui::SetNextItemOpen(openAction != 0);
-  if (ImGui::TreeNode("Add Event")) {
-    if (ImGui::BeginTable("eventTable", numCols, tableFlags)) {
-      ImGui::TableSetupColumn("Property");
-      ImGui::TableSetupColumn("Value");
-      ImGui::TableHeadersRow();
+  if (ImGui::TreeNode("Add Events From File")) {
+    static std::array<char, 128> filenameBuffer = {};
+    ImGui::InputText("Filename", filenameBuffer.data(), filenameBuffer.size());
 
-      ImGui::TableNextRow();
-      ImGui::TableSetColumnIndex(0);
-      ImGui::Text("%s", "r [%]");
-      ImGui::TableSetColumnIndex(1);
-      ImGui::PushItemWidth(-FLT_MIN); // Right-aligned (Setup ItemWidth once (more efficient))
-      ImGui::DragScalarN("##r1", ImGuiDataType_Double, &newEv_.r, no, 0.1f, &rMin, &rMax, dragFmt);
-      ImGui::DragScalarN("##r2", ImGuiDataType_Double, &newEv_.r + no, no, 0.1f, &rMin, &rMax,
-                         dragFmt);
-
-      ImGui::TableNextRow();
-      ImGui::TableSetColumnIndex(0);
-      ImGui::Text("%s", "preT [s]");
-      ImGui::TableSetColumnIndex(1);
-      ImGui::DragScalar("##preT", ImGuiDataType_Double, &newEv_.preT, 0.1f, &moveTMin, &moveTMax,
-                        dragFmt);
-
-      ImGui::TableNextRow();
-      ImGui::TableSetColumnIndex(0);
-      ImGui::Text("%s", "moveT [s]");
-      ImGui::TableSetColumnIndex(1);
-      ImGui::DragScalar("##moveT", ImGuiDataType_Double, &newEv_.moveT, 0.1f, &moveTMin, &moveTMax,
-                        dragFmt);
-
-      ImGui::TableNextRow();
-      ImGui::TableSetColumnIndex(0);
-      ImGui::Text("%s", "postT [s]");
-      ImGui::TableSetColumnIndex(1);
-      ImGui::DragScalar("##postT", ImGuiDataType_Double, &newEv_.postT, 0.1f, &moveTMin, &moveTMax,
-                        dragFmt);
-
-      ImGui::EndTable();
+    if (ImGui::Button("Add Events")) {
+      std::string filename(filenameBuffer.data());
+      loadEventsFromFile(filename);
     }
-
-    if (ImGui::Button("Add Event"))
-      sv_->addEvent(newEv_);
     ImGui::TreePop();
   }
   ImGui::Separator();
@@ -136,7 +142,8 @@ void CtrlWindow::renderEventQueueContents() {
   if (ImGui::TreeNode("Event Queue")) {
     if (ImGui::BeginTable("eventQueueTable", numCols, tableFlags)) {
       ImGui::TableSetupColumn("r [%]");
-      ImGui::TableSetupColumn("preT [s]");
+      ImGui::TableSetupColumn("r [px]");
+      // ImGui::TableSetupColumn("preT [s]");
       ImGui::TableSetupColumn("moveT [s]");
       ImGui::TableSetupColumn("postT [s]");
       ImGui::TableHeadersRow();
@@ -144,13 +151,19 @@ void CtrlWindow::renderEventQueueContents() {
       for (auto &event : *(sv_->evQueue_)) {
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
-        for (int i = 0; i < 2 * no; ++i) {
-          if (i != 0)
+        for (int ch = 0; ch < 2 * no; ++ch) {
+          if (ch % no != 0)
             ImGui::SameLine();
-          ImGui::Text(txtFmt, event.r[i]);
+          ImGui::Text(txtFmt, event.r[ch]);
         }
         ImGui::TableSetColumnIndex(1);
-        ImGui::Text(txtFmt, event.preT);
+        for (int ch = 0; ch < 2 * no; ++ch) {
+          if (ch % no != 0)
+            ImGui::SameLine();
+          ImGui::Text(txtFmt, event.r[ch] * yMax[ch % no]);
+        }
+        // ImGui::TableSetColumnIndex(2);
+        // ImGui::Text(txtFmt, event.preT);
         ImGui::TableSetColumnIndex(2);
         ImGui::Text(txtFmt, event.moveT);
         ImGui::TableSetColumnIndex(3);
@@ -172,7 +185,8 @@ void CtrlWindow::renderSupervisorStatus() {
       ImGui::Text("Current Event");
       if (ImGui::BeginTable("currEventTable", numCols, tableFlags)) {
         ImGui::TableSetupColumn("r [%]");
-        ImGui::TableSetupColumn("preT [s]");
+        ImGui::TableSetupColumn("r [px]");
+        // ImGui::TableSetupColumn("preT [s]");
         ImGui::TableSetupColumn("moveT [s]");
         ImGui::TableSetupColumn("postT [s]");
         ImGui::TableHeadersRow();
@@ -180,13 +194,19 @@ void CtrlWindow::renderSupervisorStatus() {
         currEv_ = sv_->getCurrEv();
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
-        for (int i = 0; i < 2 * no; ++i) {
-          if (i != 0)
+        for (int ch = 0; ch < 2 * no; ++ch) {
+          if (ch % no != 0)
             ImGui::SameLine();
-          ImGui::Text(txtFmt, currEv_.r[i]);
+          ImGui::Text(txtFmt, currEv_.r[ch]);
         }
         ImGui::TableSetColumnIndex(1);
-        ImGui::Text(txtFmt, currEv_.preT);
+        for (int ch = 0; ch < 2 * no; ++ch) {
+          if (ch % no != 0)
+            ImGui::SameLine();
+          ImGui::Text(txtFmt, currEv_.r[ch] * yMax[ch % no]);
+        }
+        // ImGui::TableSetColumnIndex(2);
+        // ImGui::Text(txtFmt, currEv_.preT);
         ImGui::TableSetColumnIndex(2);
         ImGui::Text(txtFmt, currEv_.moveT);
         ImGui::TableSetColumnIndex(3);
@@ -197,11 +217,11 @@ void CtrlWindow::renderSupervisorStatus() {
     }
 
     {
-      int numCols = 2 * no + 1;
+      int numCols = no + 1;
       ImGui::Text("Current State");
       if (ImGui::BeginTable("currStateTable", numCols, tableFlags)) {
         ImGui::TableSetupColumn("Vector");
-        for (int i = 0; i < 2 * no; ++i) {
+        for (int i = 0; i < no; ++i) {
           std::string label = "Chan " + std::to_string(i);
           ImGui::TableSetupColumn(label.c_str());
         }
@@ -210,31 +230,31 @@ void CtrlWindow::renderSupervisorStatus() {
 
         displayArrayNd("y1", std::vector<double>(sv_->supIn.y, sv_->supIn.y + no));
         displayArrayNd("y2", std::vector<double>(sv_->supIn.y + no, sv_->supIn.y + 2 * no));
+        displayArrayNd("yPrev1", imProc_->yPrev1);
+        displayArrayNd("yPrev2", imProc_->yPrev2);
         displayArrayNd("yhat1", std::vector<double>(sv_->supOut.yhat, sv_->supOut.yhat + no));
         displayArrayNd("yhat2",
                        std::vector<double>(sv_->supOut.yhat + no, sv_->supOut.yhat + 2 * no));
-        displayArrayNd("y0_1", std::vector<double>(sv_->supIn.y0, sv_->supIn.y0 + no));
-        displayArrayNd("y0_2", std::vector<double>(sv_->supIn.y0 + no, sv_->supIn.y0 + 2 * no));
+        // displayArrayNd("y0_1", std::vector<double>(sv_->supIn.y0, sv_->supIn.y0 + no));
+        // displayArrayNd("y0_2", std::vector<double>(sv_->supIn.y0 + no, sv_->supIn.y0 + 2 * no));
         displayArrayNd("y_max1", std::vector<double>(sv_->supIn.ymax, sv_->supIn.ymax + no));
-        displayArrayNd("y_max2",
-                       std::vector<double>(sv_->supIn.ymax + no, sv_->supIn.ymax + 2 * no));
-        displayArrayNd("r1", std::vector<double>(sv_->supOut.currTraj, sv_->supOut.currTraj + no));
-        displayArrayNd(
-            "r2", std::vector<double>(sv_->supOut.currTraj + no, sv_->supOut.currTraj + 2 * no));
+        // displayArrayNd("y_max2",
+        //                std::vector<double>(sv_->supIn.ymax + no, sv_->supIn.ymax + 2 * no));
+        displayArrayNd("yDirect1", imProc_->yDirect1);
+        displayArrayNd("yDirect2", imProc_->yDirect2);
+        displayArrayNd("yInferred1", imProc_->yInferred1);
+        displayArrayNd("yInferred2", imProc_->yInferred2);
+        displayArrayNb("y1State", imProc_->yState1);
+        displayArrayNb("y2State", imProc_->yState2);
+        displayArrayNd("zeroCross1", std::vector<double>(sv_->supIn.yo, sv_->supIn.yo + no));
+        displayArrayNd("zeroCross2",
+                       std::vector<double>(sv_->supIn.yo + no, sv_->supIn.yo + 2 * no));
+        displayArrayNd("currTraj1",
+                       std::vector<double>(sv_->supOut.currTraj, sv_->supOut.currTraj + no));
+        displayArrayNd("currTraj2", std::vector<double>(sv_->supOut.currTraj + no,
+                                                        sv_->supOut.currTraj + 2 * no));
         displayArrayNd("u", std::vector<double>(sv_->supOut.u, sv_->supOut.u + no));
-        displayArrayNd("u0", std::vector<double>(sv_->supIn.u0, sv_->supIn.u0 + no));
-        // displayArray3d("y1", sv_->supIn.y);
-        // displayArray3d("y2", sv_->supIn.y + NUM_CHANS);
-        // displayArray3d("yhat1", sv_->supOut.yhat);
-        // displayArray3d("yhat2", sv_->supOut.yhat + NUM_CHANS);
-        // displayArray3d("y0_1", sv_->supIn.y0);
-        // displayArray3d("y0_2", sv_->supIn.y0 + NUM_CHANS);
-        // displayArray3d("y_max1", sv_->supIn.ymax);
-        // displayArray3d("y_max2", sv_->supIn.ymax + NUM_CHANS);
-        // displayArray3d("r1", sv_->supOut.currTraj);
-        // displayArray3d("r2", sv_->supOut.currTraj + NUM_CHANS);
-        // displayArray3d("u", sv_->supOut.u);
-        // displayArray3d("u0", sv_->supIn.u0);
+        // displayArrayNd("u0", std::vector<double>(sv_->supIn.u0, sv_->supIn.u0 + no));
         ImGui::EndTable();
       }
     }
