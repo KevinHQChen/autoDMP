@@ -101,109 +101,137 @@ void skeletonize(cv::Mat &img, cv::Mat element) {
   img = skel;
 }
 
-bool updateState(std::vector<double> &y, std::vector<double> &yPrev,
-                 const std::vector<bool> &directMeasAvail, const std::vector<double> &yDirect,
-                 const std::vector<double> &yInferred, std::vector<bool> &state, int &txCooldown,
-                 int &i2dOccurrences, size_t &d2iTxIdx) {
-  int maxInitI2D = 1; // num of channels with direct measurements initially
-  bool d2iTxOccurred = false;
-  int epsilon = 56 / 2; // half of channel width
+bool ImProc::initStates() {
+  if (doneInit)
+    return true;
 
-  for (size_t ch = 0; ch < y.size(); ++ch) {
-    if (state[ch]) { // Direct state
-      y[ch] = ((yDirect[ch] > 0) && (yPrev[ch] < 0) && (yDirect[ch] - yPrev[ch] > epsilon))
-                  ? yPrev[ch]
-                  : yDirect[ch];
-      if ((y[ch] > 0) && (txCooldown == 0)) {
-        // Transition from direct to inferred
-        state[ch] = false;
-        d2iTxOccurred = true;
-        d2iTxIdx = ch;
-        txCooldown = 20;
-      }
-    } else { // Inferred state
-      y[ch] = yInferred[ch];
-      if (directMeasAvail[ch] && (yDirect[ch] < 0) && (i2dOccurrences < maxInitI2D)) {
-        // Transition from inferred to direct
-        state[ch] = true;
-        i2dOccurrences++;
-      }
+  int maxInitialDirectChs = no - 2;
+
+  for (size_t ch = 0; ch < no; ++ch) {
+    if (directMeasAvail[ch] && (yDirect1[ch] < 0) && (numInitDirectChs < maxInitialDirectChs)) {
+      // Transition from inferred to direct
+      yState1[ch] = true;
+      yState2[ch] = true;
+      numInitDirectChs++;
     }
   }
 
-  // Decrease transition countdown
+  if (numInitDirectChs == maxInitialDirectChs) {
+    doneInit = true;
+    return true;
+  }
+
+  return false;
+}
+
+/*
+ * update measurement given current state
+ *   - direct = yDirect (or yPrev if yDirect is too far away)
+ *   - inferred = yInferred
+ */
+void updateMeasCh(std::vector<double> &y, std::vector<double> &yPrev,
+                  const std::vector<double> &yDirect, const std::vector<double> &yInferred,
+                  std::vector<bool> &state) {
+  int epsilon = 56 / 2; // half of channel width
+
+  for (size_t ch = 0; ch < y.size(); ++ch) {
+    if (state[ch]) // Direct state
+      y[ch] = ((yDirect[ch] > 0) && (yPrev[ch] < 0) && (yDirect[ch] - yPrev[ch] > epsilon))
+                  ? yPrev[ch]
+                  : yDirect[ch];
+    else // Inferred state
+      y[ch] = yInferred[ch];
+  }
+}
+
+void ImProc::updateMeasAndStateOnZeroCross() {
+  int epsil = 56 / 2; // half of channel width
+  bool d2iTxRequested = false;
+  size_t d2iCh = no;
+  std::vector<bool> yStatePrev1(yState1);
+  std::vector<bool> yStatePrev2(yState2);
+
+  for (int ch = 0; ch < no; ++ch) {
+    if (((yState1[ch] && y1[ch] >= 0) || (yState2[ch] && y2[ch] >= 0)) && (txCooldown == 0)) {
+      d2iTxRequested = true;
+      d2iCh = ch;
+      txCooldown = 20;
+    }
+  }
   if (txCooldown > 0)
     --txCooldown;
 
-  return d2iTxOccurred;
-}
-
-void updateInferredStatesOnZeroCross(std::vector<double> &y, std::vector<double> &yPrev,
-                                     const std::vector<double> &yDirect,
-                                     const std::vector<double> &yInferred, std::vector<bool> &state,
-                                     const bool &d2iTxOccurred, size_t &d2iTxIdx) {
-  int epsilon = 56 / 2; // half of channel width
-
-  // If a direct->inferred transition occurred,
-  if (d2iTxOccurred) {
-    for (size_t ch = 0; ch < y.size(); ++ch) {
-      // all inferred states with yPrev and yDirect close to 0 become direct
-      // (except the state that triggered the transition),
-      if (!state[ch] && (std::abs(yPrev[ch]) < epsilon) && (std::abs(yDirect[ch]) < epsilon) &&
-          (ch != d2iTxIdx))
-        state[ch] = true;
-      // all direct states close to 0 become inferred.
-      else if (state[ch] && std::abs(yDirect[ch]) < epsilon)
-        state[ch] = false;
+  // {
+  // std::lock_guard<std::mutex> lock(zeroCrossMtx);
+  zeroCross.assign(2 * no, false);
+  bool y1Controlled = anyNonZeroR(0, no);
+  bool y2Controlled = anyNonZeroR(no, 2 * no);
+  if (d2iTxRequested && y1Controlled) {
+    for (int ch = 0; ch < no; ++ch) {
+      yState2[ch] = (ch == d2iCh) ? false : true;
+      yDirect2[ch] = minDist(directFgClstrs[ch], 0);
+      yInferred2[ch] = minDist(inferredFgClstrs[ch], 0);
+      yPrev2[ch] = yInferred2[ch];
+      zeroCross[no + ch] = true;
     }
-    d2iTxIdx = y.size();
+    updateMeasCh(y2, yPrev2, yDirect2, yInferred2, yState2);
+  }
+  if (d2iTxRequested && y2Controlled) {
+    for (int ch = 0; ch < no; ++ch) {
+      yState1[ch] = (ch == d2iCh) ? false : true;
+      yDirect1[ch] = minDist(directFgClstrs[ch], 0);
+      yInferred1[ch] = minDist(inferredFgClstrs[ch], 0);
+      yPrev1[ch] = yInferred1[ch];
+      zeroCross[ch] = true;
+    }
+    updateMeasCh(y1, yPrev1, yDirect1, yInferred1, yState1);
+  }
+  // }
+
+  if (d2iTxRequested && !y2Controlled) {
+    for (size_t ch = 0; ch < no; ++ch) {
+      if (yState1[ch] && (y1[ch] >= 0 || std::abs(y1[ch]) < epsil))
+        yState1[ch] = false;
+      else if (!yState1[ch] && (std::abs(y1[ch]) < epsil) && (std::abs(yDirect1[ch]) < epsil))
+        yState1[ch] = true;
+    }
+  }
+  if (d2iTxRequested && !y1Controlled) {
+    for (size_t ch = 0; ch < no; ++ch) {
+      if (yState2[ch] && (y2[ch] >= 0 || std::abs(y2[ch]) < epsil))
+        yState2[ch] = false;
+      else if (!yState2[ch] && (std::abs(y2[ch]) < epsil) && (std::abs(yDirect2[ch]) < epsil))
+        yState2[ch] = true;
+    }
   }
 }
 
 void ImProc::updateMeas() {
+  /*
+   * get closest direct & inferred clstr (yDirect and yInferred)
+   * to previous measurements,
+   * if any of them don't exist, just use the previous measurement
+   */
   yPrev1 = y1;
   yPrev2 = y2;
-  for (int ch = 0; ch < impConf.numChs_; ++ch) {
+  for (int ch = 0; ch < no; ++ch) {
     directMeasAvail[ch] = !directFgClstrs[ch].empty();
     yDirect1[ch] = minDist(directFgClstrs[ch], yPrev1[ch]);
     yInferred1[ch] = minDist(inferredFgClstrs[ch], yPrev1[ch]);
     yDirect2[ch] = minDist(directFgClstrs[ch], yPrev2[ch]);
     yInferred2[ch] = minDist(inferredFgClstrs[ch], yPrev2[ch]);
-    // lg->info("ch: {}, yDirect1: {}, yInferred1: {}, yDirect2: {}, yInferred2: {}, yState1: {}, "
+    // lg->info("ch: {}, yDirect1: {}, yInferred1: {}, yDirect2: {}, yInferred2: {}, yState1:
+    // {},
+    // "
     //          "yState2: {}",
     //          ch, yDirect1[ch], yInferred1[ch], yDirect2[ch], yInferred2[ch], yState1[ch],
     //          yState2[ch]);
   }
 
-  size_t d2iTxIdx1 = y.size(); // Initialize with an invalid index
-  size_t d2iTxIdx2 = y.size(); // Initialize with an invalid index
-  bool d2iTxOccurred1 = updateState(y1, yPrev1, directMeasAvail, yDirect1, yInferred1, yState1,
-                                    txCooldown1, i2dOccurrences1, d2iTxIdx1);
-  bool d2iTxOccurred2 = updateState(y2, yPrev2, directMeasAvail, yDirect2, yInferred2, yState2,
-                                    txCooldown2, i2dOccurrences2, d2iTxIdx2);
-
-  // if any direct->inferred transition occurred, reset the uncontrolled y
-  y1Controlled = anyNonZeroR(0, impConf.numChs_);
-  y2Controlled = anyNonZeroR(impConf.numChs_, 2 * impConf.numChs_);
-  if (d2iTxOccurred1 || d2iTxOccurred2) {
-    if (y2Controlled)
-      y1.assign(y1.size(), 0);
-    if (y1Controlled)
-      y2.assign(y2.size(), 0);
-  }
-  updateInferredStatesOnZeroCross(y1, yPrev1, yDirect1, yInferred1, yState1,
-                                  d2iTxOccurred1 || d2iTxOccurred2, d2iTxIdx1);
-  updateInferredStatesOnZeroCross(y2, yPrev2, yDirect2, yInferred2, yState2,
-                                  d2iTxOccurred1 || d2iTxOccurred2, d2iTxIdx2);
-  for (int ch = 0; ch < impConf.numChs_; ++ch) {
-    zeroCross[ch] = d2iTxOccurred1 ? true : false;
-    zeroCross[impConf.numChs_ + ch] = d2iTxOccurred2 ? true : false;
-
-    lg->info("ch (after): {}, yState1: {}, yState2: {}", ch, yState1[ch], yState2[ch]);
-  }
-  lg->info("d2iTxOccurred1: {}, d2iTxOccurred2: {}, d2iTxIdx1: {}, "
-           "d2iTxIdx2: {}",
-           d2iTxOccurred1, d2iTxOccurred2, d2iTxIdx1, d2iTxIdx2);
+  initStates();
+  updateMeasCh(y1, yPrev1, yDirect1, yInferred1, yState1);
+  updateMeasCh(y2, yPrev2, yDirect2, yInferred2, yState2);
+  updateMeasAndStateOnZeroCross();
 }
 
 void ImProc::loadConfig() {
@@ -224,31 +252,34 @@ void ImProc::startThread() {
   if (!started()) {
     lg->info("Starting image processing...");
     startedImProc = true;
+    no = impConf.numChs_;
     pBackSub =
         cv::createBackgroundSubtractorMOG2(impConf.bgSubHistory_, impConf.bgSubThres_, false);
     rectElement = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
 
-    procFrameArr.assign(impConf.numChs_, cv::Mat());
-    directFgClstrs.assign(impConf.numChs_, std::vector<double>());
-    directMeasAvail.assign(impConf.numChs_, false);
-    yState1.assign(impConf.numChs_, false);
-    yState2.assign(impConf.numChs_, false);
-    yDirect1.assign(impConf.numChs_, 0);
-    yDirect2.assign(impConf.numChs_, 0);
-    yInferred1.assign(impConf.numChs_, 0);
-    yInferred2.assign(impConf.numChs_, 0);
-    y1.assign(impConf.numChs_, 0);
-    y2.assign(impConf.numChs_, 0);
-    yPrev1.assign(impConf.numChs_, 0);
-    yPrev2.assign(impConf.numChs_, 0);
-    txCooldown1 = 0, txCooldown2 = 0, i2dOccurrences1 = 0, i2dOccurrences2 = 0;
-    zeroCross.assign(2 * impConf.numChs_, false);
-
+    procFrameArr.assign(no, cv::Mat());
+    directFgClstrs.assign(no, std::vector<double>());
+    y1.assign(no, 0);
+    y2.assign(no, 0);
+    yPrev1.assign(no, 0);
+    yPrev2.assign(no, 0);
+    yState1.assign(no, false);
+    yState2.assign(no, false);
+    yDirect1.assign(no, 0);
+    yDirect2.assign(no, 0);
+    yInferred1.assign(no, 0);
+    yInferred2.assign(no, 0);
+    directMeasAvail.assign(no, false);
     // TODO handle yMax initialization for non-90-degree channels
     yMax.clear();
-    for (int ch = 0; ch < impConf.numChs_; ch++)
+    for (int ch = 0; ch < no; ch++)
       (ch == 0) ? yMax.push_back(impConf.getChROIs()[ch].height - impConf.getChWidth())
                 : yMax.push_back(impConf.getChROIs()[ch].width - impConf.getChWidth());
+
+    zeroCross.assign(2 * no, false);
+    txCooldown = 0, numInitDirectChs = 0;
+    doneInit = false;
+
     procThread = std::thread(&ImProc::start, this);
     procThread.detach();
   }
@@ -413,13 +444,18 @@ bool ImProc::anyNonZeroR(std::size_t start, std::size_t end) {
 }
 
 void ImProc::setR(double currTraj[2 * MAX_NO]) {
-  for (int i = 0; i < 2 * impConf.numChs_; ++i)
+  for (int i = 0; i < 2 * no; ++i)
     r[i] = currTraj[i];
 }
 
 std::vector<double> ImProc::getY() {
   std::lock_guard<std::mutex> lock(yMtx);
   return y;
+}
+
+unsigned char ImProc::getZeroCross(int ch) {
+  std::lock_guard<std::mutex> lock(zeroCrossMtx);
+  return zeroCross[ch];
 }
 
 cv::Mat ImProc::getProcFrame(int idx) { return procFrameBuf.get()[idx]; }

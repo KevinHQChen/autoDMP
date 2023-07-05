@@ -105,13 +105,13 @@ public:
   void setR(double r[2 * MAX_NO]);
 
   std::vector<double> getY();
+  unsigned char getZeroCross(int ch);
 
   cv::Mat getProcFrame(int idx);
 
   void clearData();
 
   std::vector<bool> directMeasAvail, yState1, yState2;
-  bool zeroCross1, zeroCross2, y1Controlled, y2Controlled;
   std::vector<unsigned char> zeroCross;
 
   std::vector<double> yDirect1, yDirect2, yInferred1, yInferred2;
@@ -124,7 +124,8 @@ private:
   std::vector<int> compParams;
   ImCap *imCap;
 
-  std::mutex imProcMtx, yMtx;
+  int no;
+  std::mutex imProcMtx, yMtx, zeroCrossMtx;
   std::atomic<bool> startedImProc{false};
   std::thread procThread;
   SharedBuffer<std::vector<cv::Mat>> procFrameBuf;
@@ -138,7 +139,8 @@ private:
   // std::vector<bool> directMeasAvail, yState1, yState2;
   // std::vector<double> yDirect1, yDirect2, yInferred1, yInferred2;
   // std::vector<double> y, y1, y2, yPrev1, yPrev2;
-  int txCooldown1, txCooldown2, i2dOccurrences1, i2dOccurrences2;
+  int txCooldown, numInitDirectChs;
+  bool doneInit;
   // bool txOccurred1, txOccurred2;
   double r[2 * MAX_NO];
 
@@ -152,4 +154,24 @@ private:
   bool anyNonZeroR(std::size_t start, std::size_t end);
 
   void updateMeas();
+
+  /*
+   * initialize state of each channel
+   *   - each channel is initialized to 0 in inferred (0) state
+   *   - given n channels,
+   *     initialization is complete after n-2 channels transition to direct (1) state
+   */
+  bool initStates();
+
+  /*
+   * check for direct->inferred (i.e. -ve to +ve) zero crossings from current measurement
+   *   - if a zero crossing occurred in either y1 or y2, and y1/y2 is currently controlled,
+   *     - set y2/y1 (i.e. the uncontrolled measurement set) to inferred state,
+   *     - update yDirect and yInferred for y2/y1 (whichever is uncontrolled),
+   *       and set y2/y1 to the updated yInferred
+   *   - update each channel state
+         - direct->inferred: if y[ch] > 0 and hysteresis countdown expires
+         - inferred->direct: if any d2i occurred in y1/y2
+   */
+  void updateMeasAndStateOnZeroCross();
 };

@@ -143,7 +143,7 @@ void PlotWindow::initDataVecs() {
       for (int ch = 0; ch < 2 * sv_->no; ++ch)
         yhat.push_back(new ScrollingBuffer());
     if (u.empty())
-      for (int ch = 0; ch < 2 * sv_->no; ++ch)
+      for (int ch = 0; ch < sv_->no; ++ch)
         u.push_back(new ScrollingBuffer());
     if (ywt.empty())
       for (int ch = 0; ch < 2 * sv_->no; ++ch)

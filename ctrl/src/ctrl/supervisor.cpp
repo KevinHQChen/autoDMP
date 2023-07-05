@@ -36,7 +36,7 @@ void Supervisor::startThread() {
     supIn.dPmod_ = 0.0001;
     supIn.p_ = 0.0001;
     supIn.lambda = 0.9975;
-    supIn.k_2 = 5;
+    supIn.k_2 = 2;
     // initialize input/output constants
     for (int ch = 0; ch < no; ++ch) {
       // primary output
