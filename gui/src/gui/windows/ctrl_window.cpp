@@ -230,11 +230,13 @@ void CtrlWindow::renderSupervisorStatus() {
 
         displayArrayNd("y1", std::vector<double>(sv_->supIn.y, sv_->supIn.y + no));
         displayArrayNd("y2", std::vector<double>(sv_->supIn.y + no, sv_->supIn.y + 2 * no));
-        displayArrayNd("yPrev1", imProc_->yPrev1);
-        displayArrayNd("yPrev2", imProc_->yPrev2);
+        // displayArrayNd("yPrev1", imProc_->yPrev1);
+        // displayArrayNd("yPrev2", imProc_->yPrev2);
         displayArrayNd("yhat1", std::vector<double>(sv_->supOut.yhat, sv_->supOut.yhat + no));
         displayArrayNd("yhat2",
                        std::vector<double>(sv_->supOut.yhat + no, sv_->supOut.yhat + 2 * no));
+        displayArrayNd("ywt1", std::vector<double>(sv_->supOut.ywt, sv_->supOut.ywt + no));
+        displayArrayNd("ywt2", std::vector<double>(sv_->supOut.ywt + no, sv_->supOut.ywt + 2 * no));
         // displayArrayNd("y0_1", std::vector<double>(sv_->supIn.y0, sv_->supIn.y0 + no));
         // displayArrayNd("y0_2", std::vector<double>(sv_->supIn.y0 + no, sv_->supIn.y0 + 2 * no));
         displayArrayNd("y_max1", std::vector<double>(sv_->supIn.ymax, sv_->supIn.ymax + no));

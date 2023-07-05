@@ -21,9 +21,10 @@ void PlotWindow::render() {
         }
       }
       if (sv_->started()) {
+        for (int i = 0; i < sv_->no; ++i)
+          u[i]->AddPoint(guiTime, sv_->supOut.u[i]);
         for (int i = 0; i < 2 * sv_->no; ++i) {
           yhat[i]->AddPoint(guiTime, sv_->supOut.yhat[i]);
-          u[i]->AddPoint(guiTime, sv_->supOut.u[i]);
           ywt[i]->AddPoint(guiTime, sv_->supOut.ywt[i]);
           currTraj[i]->AddPoint(guiTime, sv_->supOut.currTraj[i]);
         }

@@ -105,18 +105,15 @@ bool updateState(std::vector<double> &y, std::vector<double> &yPrev,
                  const std::vector<bool> &directMeasAvail, const std::vector<double> &yDirect,
                  const std::vector<double> &yInferred, std::vector<bool> &state, int &txCooldown,
                  int &i2dOccurrences, size_t &d2iTxIdx) {
-  yPrev = y;
   int maxInitI2D = 1; // num of channels with direct measurements initially
   bool d2iTxOccurred = false;
   int epsilon = 56 / 2; // half of channel width
 
   for (size_t ch = 0; ch < y.size(); ++ch) {
     if (state[ch]) { // Direct state
-      if ((yDirect[ch] > 0) && (yPrev[ch] < 0) && (std::abs(yDirect[ch] - yPrev[ch]) > epsilon))
-        y[ch] = yPrev[ch];
-      else
-        y[ch] = yDirect[ch];
-
+      y[ch] = ((yDirect[ch] > 0) && (yPrev[ch] < 0) && (yDirect[ch] - yPrev[ch] > epsilon))
+                  ? yPrev[ch]
+                  : yDirect[ch];
       if ((y[ch] > 0) && (txCooldown == 0)) {
         // Transition from direct to inferred
         state[ch] = false;
@@ -164,6 +161,20 @@ void updateInferredStatesOnZeroCross(std::vector<double> &y, std::vector<double>
 }
 
 void ImProc::updateMeas() {
+  yPrev1 = y1;
+  yPrev2 = y2;
+  for (int ch = 0; ch < impConf.numChs_; ++ch) {
+    directMeasAvail[ch] = !directFgClstrs[ch].empty();
+    yDirect1[ch] = minDist(directFgClstrs[ch], yPrev1[ch]);
+    yInferred1[ch] = minDist(inferredFgClstrs[ch], yPrev1[ch]);
+    yDirect2[ch] = minDist(directFgClstrs[ch], yPrev2[ch]);
+    yInferred2[ch] = minDist(inferredFgClstrs[ch], yPrev2[ch]);
+    // lg->info("ch: {}, yDirect1: {}, yInferred1: {}, yDirect2: {}, yInferred2: {}, yState1: {}, "
+    //          "yState2: {}",
+    //          ch, yDirect1[ch], yInferred1[ch], yDirect2[ch], yInferred2[ch], yState1[ch],
+    //          yState2[ch]);
+  }
+
   size_t d2iTxIdx1 = y.size(); // Initialize with an invalid index
   size_t d2iTxIdx2 = y.size(); // Initialize with an invalid index
   bool d2iTxOccurred1 = updateState(y1, yPrev1, directMeasAvail, yDirect1, yInferred1, yState1,
@@ -175,16 +186,10 @@ void ImProc::updateMeas() {
   y1Controlled = anyNonZeroR(0, impConf.numChs_);
   y2Controlled = anyNonZeroR(impConf.numChs_, 2 * impConf.numChs_);
   if (d2iTxOccurred1 || d2iTxOccurred2) {
-    // if secondary measurements are controlled, reset primary measurements
-    if (y2Controlled) {
+    if (y2Controlled)
       y1.assign(y1.size(), 0);
-      yPrev1.assign(yPrev1.size(), 0);
-    }
-    // if primary measurements are controlled, reset secondary measurements
-    if (y1Controlled) {
+    if (y1Controlled)
       y2.assign(y2.size(), 0);
-      yPrev2.assign(yPrev2.size(), 0);
-    }
   }
   updateInferredStatesOnZeroCross(y1, yPrev1, yDirect1, yInferred1, yState1,
                                   d2iTxOccurred1 || d2iTxOccurred2, d2iTxIdx1);
@@ -307,17 +312,6 @@ void ImProc::start() {
       //   for (int i = 0; i < directFgClstrs[ch].size(); ++i)
       //     info("ch: {}, i: {}, inferredFgClstrs: {}", ch, i, inferredFgClstrs[ch][i]);
 
-      for (int ch = 0; ch < impConf.numChs_; ++ch) {
-        directMeasAvail[ch] = !directFgClstrs[ch].empty();
-        yDirect1[ch] = minDist(directFgClstrs[ch], yPrev1[ch]);
-        yInferred1[ch] = minDist(inferredFgClstrs[ch], yPrev1[ch]);
-        yDirect2[ch] = minDist(directFgClstrs[ch], yPrev2[ch]);
-        yInferred2[ch] = minDist(inferredFgClstrs[ch], yPrev2[ch]);
-        lg->info("ch: {}, yDirect1: {}, yInferred1: {}, yDirect2: {}, yInferred2: {}, yState1: {}, "
-                 "yState2: {}",
-                 ch, yDirect1[ch], yInferred1[ch], yDirect2[ch], yInferred2[ch], yState1[ch],
-                 yState2[ch]);
-      }
       updateMeas();
 
       // if (zeroCross1)
