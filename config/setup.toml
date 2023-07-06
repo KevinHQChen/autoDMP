@@ -55,12 +55,12 @@ AOIBinning                  = "2x2"             # binning, intensity vs resoluti
 [andor.int]
 # AOIHBin                     = 2                 # horizontal binning
 # AOIWidth                    = 888 # 1776/2      # units in superpixels (540 superpixels * 2 pixels/superpixel)
-AOIWidth                    = 1776              # 1776 for PDMS T-junction
+AOIWidth                    = 2560              # 1776 for PDMS T-junction
 AOILeft                     = 1                 # units in sensor pixels
 # AOIVBin                     = 2                 # vertical binning
-AOIHeight                   = 1760              # units in superpixels
+AOIHeight                   = 1436              # units in superpixels
 AOITop                      = 1                 # units in sensor pixels
-AOIStride                   = 1776 # 1776/2*2   # row size (AOIWidth) in bytes (1080 pixels * 2 bytes/pixel)
+AOIStride                   = 2560 # 1776/2*2   # row size (AOIWidth) in bytes (1080 pixels * 2 bytes/pixel)
 # AOI (area of interest) settings end
 FrameCount                  = 1         # number of images to acquire in each sequence
 Accumulatecount             = 1         # number of images to sum as one

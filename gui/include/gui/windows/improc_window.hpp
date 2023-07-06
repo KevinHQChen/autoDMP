@@ -16,7 +16,8 @@ public:
   ImProcWindow(ImCap *imCap, ImProc *imProc);
   ~ImProcWindow();
 
-  bool improcSetupVisible_{false}, improcVisible_{false}, startedImCap_{false}, startedImProc_{false};
+  bool improcSetupVisible_{false}, improcVisible_{false}, startedImCap_{false},
+      startedImProc_{false};
 
   void render() override;
 
@@ -35,7 +36,8 @@ private:
   // std::array<std::unique_ptr<IMMImage>, numChans_> chImages_;
   std::unique_ptr<Toggle> imCapToggle_, imProcSetupToggle_, imProcToggle_;
 
-  GUIFrame rawFrame, preFrame;
+  GUIFrame rawFrame;
+  double scale{0.64}, scaleMin{0.1}, scaleMax{1.0};
   std::vector<GUIFrame> procGUIFrames;
   std::vector<double> y;
 
@@ -55,28 +57,30 @@ private:
     return clamped;
   }
 
-  void draw(ImVec2 imgOrigin) {
+  void draw(ImVec2 imgOrigin, double scale) {
     drawList = ImGui::GetWindowDrawList();
     // draw current junction position
-    drawList->AddCircleFilled(ImVec2(junction.x + imgOrigin.x, junction.y + imgOrigin.y), 5.0f,
-                              IM_COL32(0, 255, 0, 255));
+    drawList->AddCircleFilled(
+        ImVec2(imgOrigin.x + junction.x * scale, imgOrigin.y + junction.y * scale), 5.0f,
+        IM_COL32(0, 255, 0, 255));
     // draw current chBBoxes and associated channel vectors
     for (const auto &chBBox : chBBoxes) {
       // draw current chBBoxes
-      drawList->AddRect(
-          ImVec2(chBBox.x + imgOrigin.x, chBBox.y + imgOrigin.y),
-          ImVec2(chBBox.x + chBBox.width + imgOrigin.x, chBBox.y + chBBox.height + imgOrigin.y),
-          IM_COL32(0, 255, 0, 255));
+      drawList->AddRect(ImVec2(imgOrigin.x + chBBox.x * scale, imgOrigin.y + chBBox.y * scale),
+                        ImVec2(imgOrigin.x + (chBBox.x + chBBox.width) * scale,
+                               imgOrigin.y + (chBBox.y + chBBox.height) * scale),
+                        IM_COL32(0, 255, 0, 255));
       // draw associated channel vectors
-      center = ImVec2(chBBox.x + chBBox.width / 2.0f + imgOrigin.x,
-                      chBBox.y + chBBox.height / 2.0f + imgOrigin.y);
-      float length = std::min(chBBox.width, chBBox.height) / 2.0f;
+      center = ImVec2(imgOrigin.x + (chBBox.x + chBBox.width / 2.0f) * scale,
+                      imgOrigin.y + (chBBox.y + chBBox.height / 2.0f) * scale);
+      float length = std::min(chBBox.width, chBBox.height) / 2.0f * scale;
       float radianAngle = (chBBox.angle * M_PI) / 180.0f;
       endPos = ImVec2(center.x - length * sin(radianAngle), center.y - length * cos(radianAngle));
       drawList->AddLine(center, endPos, IM_COL32(255, 255, 255, 255), 1.0f);
       drawList->AddCircleFilled(endPos, 3.0f, IM_COL32(255, 0, 0, 255));
     }
 
+    // TODO make these 2 functions scale with the image (this is pretty annoying to do)
     drawNextChBBox(imgOrigin);
     drawNextJunc(imgOrigin);
   }

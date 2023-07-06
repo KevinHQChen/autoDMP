@@ -151,6 +151,8 @@ void ImProc::updateMeasAndStateOnZeroCross() {
   std::vector<bool> yStatePrev1(yState1);
   std::vector<bool> yStatePrev2(yState2);
 
+  // TODO HANDLE multiple d2i requests occurring simultaneously (currently this causes inferred
+  // measurements to jump to an extremely high value)
   for (int ch = 0; ch < no; ++ch) {
     if (((yState1[ch] && y1[ch] >= 0) || (yState2[ch] && y2[ch] >= 0)) && (txCooldown == 0)) {
       d2iTxRequested = true;
@@ -168,7 +170,7 @@ void ImProc::updateMeasAndStateOnZeroCross() {
   bool y2Controlled = anyNonZeroR(no, 2 * no);
   if (d2iTxRequested && y1Controlled) {
     for (int ch = 0; ch < no; ++ch) {
-      yState2[ch] = (ch == d2iCh) ? false : true;
+      yState2[ch] = (ch != d2iCh) ? true : false;
       yDirect2[ch] = minDist(directFgClstrs[ch], 0);
       yInferred2[ch] = minDist(inferredFgClstrs[ch], 0);
       yPrev2[ch] = yInferred2[ch];
@@ -178,7 +180,7 @@ void ImProc::updateMeasAndStateOnZeroCross() {
   }
   if (d2iTxRequested && y2Controlled) {
     for (int ch = 0; ch < no; ++ch) {
-      yState1[ch] = (ch == d2iCh) ? false : true;
+      yState1[ch] = (ch != d2iCh) ? true : false;
       yDirect1[ch] = minDist(directFgClstrs[ch], 0);
       yInferred1[ch] = minDist(inferredFgClstrs[ch], 0);
       yPrev1[ch] = yInferred1[ch];
@@ -220,12 +222,10 @@ void ImProc::updateMeas() {
     yInferred1[ch] = minDist(inferredFgClstrs[ch], yPrev1[ch]);
     yDirect2[ch] = minDist(directFgClstrs[ch], yPrev2[ch]);
     yInferred2[ch] = minDist(inferredFgClstrs[ch], yPrev2[ch]);
-    // lg->info("ch: {}, yDirect1: {}, yInferred1: {}, yDirect2: {}, yInferred2: {}, yState1:
-    // {},
-    // "
-    //          "yState2: {}",
-    //          ch, yDirect1[ch], yInferred1[ch], yDirect2[ch], yInferred2[ch], yState1[ch],
-    //          yState2[ch]);
+    lg->info("ch: {}, yDirect1: {}, yInferred1: {}, yDirect2: {}, yInferred2: {}, yState1: {}, "
+             "yState2 : {} ",
+             ch, yDirect1[ch], yInferred1[ch], yDirect2[ch], yInferred2[ch], yState1[ch],
+             yState2[ch]);
   }
 
   initStates();
@@ -339,9 +339,9 @@ void ImProc::start() {
       //     lg->info("ch: {}, i: {}, directFgClstrs: {}", ch, i, directFgClstrs[ch][i]);
       // }
 
-      // for (int ch = 0; ch < impConf.numChs_; ++ch)
-      //   for (int i = 0; i < directFgClstrs[ch].size(); ++i)
-      //     info("ch: {}, i: {}, inferredFgClstrs: {}", ch, i, inferredFgClstrs[ch][i]);
+      for (int ch = 0; ch < impConf.numChs_; ++ch)
+        for (int i = 0; i < inferredFgClstrs[ch].size(); ++i)
+          lg->info("ch: {}, i: {}, inferredFgClstrs: {}", ch, i, inferredFgClstrs[ch][i]);
 
       updateMeas();
 

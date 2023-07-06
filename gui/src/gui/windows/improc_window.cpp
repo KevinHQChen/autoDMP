@@ -41,8 +41,10 @@ void ImProcWindow::renderImCap() {
       rawFrame = imCap_->getFrame();
     } else
       startedImCap_ = false;
-    ImGui::Image((ImTextureID)rawFrame.texture, ImVec2(rawFrame.width, rawFrame.height));
+    ImGui::Image((ImTextureID)rawFrame.texture,
+                 ImVec2(rawFrame.width * scale, rawFrame.height * scale));
     ImVec2 imgOrigin = ImGui::GetItemRectMin();
+    ImGui::SliderScalar("Scale", ImGuiDataType_Double, &scale, &scaleMin, &scaleMax, "%.2f");
 
     // improc setup
     imCapToggle_->render();
@@ -53,7 +55,7 @@ void ImProcWindow::renderImCap() {
       ImGui::SameLine();
       if (ImGui::Button("Select Channel"))
         drawChs = true;
-      draw(imgOrigin);
+      draw(imgOrigin, scale);
       renderImProcConfigTable();
 
       if (ImGui::Button("Update ImProc Config")) {
