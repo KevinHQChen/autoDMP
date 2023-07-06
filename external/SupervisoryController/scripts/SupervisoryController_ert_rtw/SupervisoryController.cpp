@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2214
+// Model version                  : 1.2224
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Thu Jul  6 12:43:17 2023
+// C/C++ source code generated on : Thu Jul  6 16:16:39 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -4924,7 +4924,7 @@ void SupervisoryController::step()
           // '<S1>:59:5' theta0_2 = theta(1:np*no);
           for (b_k = 0; b_k < 12; b_k++) {
             for (k = 0; k < 12; k++) {
-              rtDW.P0_2[k + 12 * b_k] = rtY.P_m[((P0_2_tmp[b_k] - 1) * 24 +
+              rtDW.P0_2[k + 12 * b_k] = rtY.P_j[((P0_2_tmp[b_k] - 1) * 24 +
                 P0_2_tmp[k]) - 1];
             }
 
@@ -4985,7 +4985,7 @@ void SupervisoryController::step()
           // '<S1>:59:11' theta0_1 = theta(np*no+1:2*np*no);
           for (b_k = 0; b_k < 12; b_k++) {
             for (k = 0; k < 12; k++) {
-              rtDW.P0_1[k + 12 * b_k] = rtY.P_m[((P0_2_tmp[b_k] - 1) * 24 +
+              rtDW.P0_1[k + 12 * b_k] = rtY.P_j[((P0_2_tmp[b_k] - 1) * 24 +
                 P0_2_tmp[k]) - 1];
             }
 
@@ -5038,7 +5038,7 @@ void SupervisoryController::step()
         // Outport: '<Root>/P' incorporates:
         //   Product: '<S87>/Product1'
 
-        (void)std::memcpy(&rtY.P_m[b_k], &Product1_j[i_1], 12U * sizeof(real_T));
+        (void)std::memcpy(&rtY.P_j[b_k], &Product1_j[i_1], 12U * sizeof(real_T));
 
         // Outport: '<Root>/theta'
         rtY.theta[i] = Sum_h[i];
@@ -5079,7 +5079,7 @@ void SupervisoryController::step()
         // Outport: '<Root>/P' incorporates:
         //   Product: '<S91>/Product1'
 
-        (void)std::memcpy(&rtY.P_m[b_k + 300], &Product1_j[i_1], 12U * sizeof
+        (void)std::memcpy(&rtY.P_j[b_k + 300], &Product1_j[i_1], 12U * sizeof
                           (real_T));
 
         // Outport: '<Root>/theta'
@@ -5100,7 +5100,7 @@ void SupervisoryController::step()
       //   Inport: '<Root>/k_2'
 
       // '<S1>:59:25' [u, ywt, yhat, currTraj] = ...
-      // '<S1>:59:26'     ampc(traj(:,waypt), currEv.r, y, ymax, y0, u0, umax, excitation, theta, thetaSgn, k_2); 
+      // '<S1>:59:26'     ampc(traj(:,waypt), currEv.r, y, ymax, y0, u0, umax, uwt, excitation, theta, thetaSgn, k_2); 
       // Simulink Function 'ampc': '<S1>:461'
       // MATLAB Function 'SupervisoryController/ampc/MATLAB Function': '<S6>:1'
       // '<S6>:1:2' [ywt, ywtT, uwt, uwtT] = wtMod_(y, yDest, ywtT, uwtT, dt, no, ni, k_2); 
@@ -5187,13 +5187,12 @@ void SupervisoryController::step()
       }
 
       // Gain: '<S2>/Gain1' incorporates:
-      //   MATLAB Function: '<S2>/MATLAB Function'
+      //   Inport: '<Root>/uwt'
       //   Sum: '<S2>/Sum'
 
-      dwt = rtP.beta * rtP.dt;
-      rtb_Sum_a[0] = dwt;
-      rtb_Sum_a[1] = dwt;
-      rtb_Sum_a[2] = dwt;
+      rtb_Sum_a[0] = rtP.beta * rtU.uwt[0];
+      rtb_Sum_a[1] = rtP.beta * rtU.uwt[1];
+      rtb_Sum_a[2] = rtP.beta * rtU.uwt[2];
 
       // MATLAB Function 'SupervisoryController/ampc/MATLAB Function2': '<S7>:1' 
       // '<S7>:1:2' [A, B] = theta2ss_(theta, sign, y0, no, np);
@@ -6717,7 +6716,7 @@ void SupervisoryController::initialize()
 
     for (i = 0; i < 576; i++) {
       // SystemInitialize for Outport: '<Root>/P'
-      rtY.P_m[i] = static_cast<real_T>(tmp_3[i]);
+      rtY.P_j[i] = static_cast<real_T>(tmp_3[i]);
     }
 
     rtDW.waypt = 1U;
