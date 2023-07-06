@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2202
+// Model version                  : 1.2213
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Sun Jul  2 22:08:16 2023
+// C/C++ source code generated on : Thu Jul  6 12:01:08 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -1523,6 +1523,107 @@ real_T SupervisoryController::minimum(const real_T x[4])
 }
 
 // Function for MATLAB Function: '<S37>/FixedHorizonOptimizer'
+void SupervisoryController::mpc_checkhessian(real_T b_H[16], real_T L[16],
+  real_T *BadH)
+{
+  real_T varargin_1[4];
+  int32_T Tries;
+  int8_T b[16];
+  boolean_T guard1{ false };
+
+  *BadH = 0.0;
+  (void)std::memcpy(&L[0], &b_H[0], sizeof(real_T) << 4UL);
+  Tries = xpotrf(L);
+  guard1 = false;
+  if (Tries == 0) {
+    varargin_1[0] = L[0];
+    varargin_1[1] = L[5];
+    varargin_1[2] = L[10];
+    varargin_1[3] = L[15];
+    if (minimum(varargin_1) > 1.4901161193847656E-7) {
+    } else {
+      guard1 = true;
+    }
+  } else {
+    guard1 = true;
+  }
+
+  if (guard1) {
+    real_T normH;
+    boolean_T exitg2;
+    normH = 0.0;
+    Tries = 0;
+    exitg2 = false;
+    while (((exitg2 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U)) ==
+            false) && (Tries < 4)) {
+      real_T s;
+      s = ((std::abs(b_H[Tries + 4]) + std::abs(b_H[Tries])) + std::abs
+           (b_H[Tries + 8])) + std::abs(b_H[Tries + 12]);
+      if (std::isnan(s)) {
+        normH = (rtNaN);
+        exitg2 = true;
+      } else {
+        if (s > normH) {
+          normH = s;
+        }
+
+        Tries++;
+      }
+    }
+
+    if (normH >= 1.0E+10) {
+      *BadH = 2.0;
+    } else {
+      boolean_T exitg1;
+      Tries = 0;
+      exitg1 = false;
+      while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U)) ==
+              false) && (Tries <= 4)) {
+        int32_T j;
+        boolean_T guard2{ false };
+
+        normH = rt_powd_snf(10.0, static_cast<real_T>(Tries)) *
+          1.4901161193847656E-7;
+        for (j = 0; j < 16; j++) {
+          b[j] = 0;
+        }
+
+        b[0] = 1;
+        b[5] = 1;
+        b[10] = 1;
+        b[15] = 1;
+        for (j = 0; j < 16; j++) {
+          b_H[j] += normH * static_cast<real_T>(b[j]);
+          L[j] = b_H[j];
+        }
+
+        j = xpotrf(L);
+        guard2 = false;
+        if (j == 0) {
+          varargin_1[0] = L[0];
+          varargin_1[1] = L[5];
+          varargin_1[2] = L[10];
+          varargin_1[3] = L[15];
+          if (minimum(varargin_1) > 1.4901161193847656E-7) {
+            *BadH = 1.0;
+            exitg1 = true;
+          } else {
+            guard2 = true;
+          }
+        } else {
+          guard2 = true;
+        }
+
+        if (guard2) {
+          *BadH = 3.0;
+          Tries++;
+        }
+      }
+    }
+  }
+}
+
+// Function for MATLAB Function: '<S37>/FixedHorizonOptimizer'
 void SupervisoryController::trisolve(const real_T b_A[16], real_T b_B[16])
 {
   for (int32_T j{0}; j < 4; j++) {
@@ -2551,15 +2652,16 @@ void SupervisoryController::qpkwik(const real_T b_Linv[16], const real_T b_Hinv
 
 // Function for MATLAB Function: '<S37>/FixedHorizonOptimizer'
 void SupervisoryController::mpcblock_optimizer(const real_T rseq[120], const
-  real_T vseq[21], const real_T ymin[6], const real_T ymax[6], const real_T x[18],
-  const real_T old_u[3], const boolean_T iA[246], const real_T b_Mlim[246],
-  real_T b_Mx[4428], real_T b_Mu1[738], real_T b_Mv[5166], const real_T
-  b_utarget[60], const real_T b_uoff[3], const real_T b_yoff[6], real_T b_H[16],
-  real_T b_Ac[984], const real_T ywt[6], const real_T uwt[3], const real_T
-  b_Wdu[3], const real_T b_Jm[180], const real_T b_I1[180], const real_T b_A[324],
-  const real_T Bu[1134], const real_T Bv[378], const real_T b_C[108], const
-  real_T Dv[126], const int32_T b_Mrows[246], const real_T b_RYscale[6], real_T
-  u[3], real_T useq[63], real_T *status, boolean_T iAout[246])
+  real_T vseq[21], const real_T umax[3], const real_T ymin[6], const real_T
+  ymax[6], const real_T x[18], const real_T old_u[3], const boolean_T iA[246],
+  const real_T b_Mlim[246], real_T b_Mx[4428], real_T b_Mu1[738], real_T b_Mv
+  [5166], const real_T b_utarget[60], const real_T b_uoff[3], const real_T
+  b_yoff[6], real_T b_H[16], real_T b_Ac[984], const real_T ywt[6], const real_T
+  uwt[3], const real_T b_Wdu[3], const real_T b_Jm[180], const real_T b_I1[180],
+  const real_T b_A[324], const real_T Bu[1134], const real_T Bv[378], const
+  real_T b_C[108], const real_T Dv[126], const int32_T b_Mrows[246], const
+  real_T b_RYscale[6], const real_T b_RMVscale[3], real_T u[3], real_T useq[63],
+  real_T *status, boolean_T iAout[246])
 {
   static const int8_T c_A[400]{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
@@ -2593,55 +2695,54 @@ void SupervisoryController::mpcblock_optimizer(const real_T rseq[120], const
   real_T b_Kv[63];
   real_T b_Kx[54];
   real_T Sum[18];
-  real_T L[16];
+  real_T b_Linv[16];
+  real_T c_Linv[16];
   real_T b_B[9];
   real_T b_I1_0[9];
   real_T b_Jm_0[9];
   real_T rows[6];
   real_T ymin_incr[6];
-  real_T varargin_1[4];
+  real_T f[4];
   real_T zopt[4];
   real_T b_Wu[3];
-  real_T normH;
-  real_T s;
+  real_T Sum_1;
   int32_T CA_tmp;
   int32_T Sum_tmp;
-  int32_T Tries;
   int32_T a_tmp;
   int32_T i;
   int32_T i1;
+  int32_T j2;
   int32_T kidx;
   int16_T ixw;
   int8_T a[3600];
-  int8_T b[16];
+  int8_T c_B[16];
   int8_T b_Su1_tmp[6];
   boolean_T ymax_incr_flag[6];
   boolean_T ymin_incr_flag[6];
+  boolean_T umax_incr_flag[3];
   boolean_T exitg1;
-  boolean_T guard1{ false };
-
   (void)std::memset(&useq[0], 0, 63U * sizeof(real_T));
   (void)std::memset(&iAout[0], 0, 246U * sizeof(boolean_T));
   for (i = 0; i < 6; i++) {
-    for (Tries = 0; Tries < 18; Tries++) {
-      CA_tmp = 6 * Tries + i;
+    for (j2 = 0; j2 < 18; j2++) {
+      CA_tmp = 6 * j2 + i;
       CA[CA_tmp] = 0.0;
       for (i1 = 0; i1 < 18; i1++) {
-        CA[CA_tmp] += b_C[6 * i1 + i] * b_A[18 * Tries + i1];
+        CA[CA_tmp] += b_C[6 * i1 + i] * b_A[18 * j2 + i1];
       }
     }
 
-    for (Tries = 0; Tries < 3; Tries++) {
-      Sum_tmp = 6 * Tries + i;
+    for (j2 = 0; j2 < 3; j2++) {
+      Sum_tmp = 6 * j2 + i;
       Sum[Sum_tmp] = 0.0;
       for (i1 = 0; i1 < 18; i1++) {
-        Sum[Sum_tmp] += b_C[6 * i1 + i] * Bu[18 * Tries + i1];
+        Sum[Sum_tmp] += b_C[6 * i1 + i] * Bu[18 * j2 + i1];
       }
     }
 
     rows[i] = 0.0;
-    for (Tries = 0; Tries < 18; Tries++) {
-      rows[i] += b_C[6 * Tries + i] * Bv[Tries];
+    for (j2 = 0; j2 < 18; j2++) {
+      rows[i] += b_C[6 * j2 + i] * Bv[j2];
     }
 
     rtDW.b_Hv[i] = rows[i];
@@ -2649,7 +2750,7 @@ void SupervisoryController::mpcblock_optimizer(const real_T rseq[120], const
   }
 
   i = 0;
-  for (Tries = 0; Tries < 19; Tries++) {
+  for (j2 = 0; j2 < 19; j2++) {
     for (i1 = 0; i1 < 6; i1++) {
       rtDW.b_Hv[(i1 + i) + 240] = 0.0;
     }
@@ -2658,14 +2759,14 @@ void SupervisoryController::mpcblock_optimizer(const real_T rseq[120], const
   }
 
   i = 0;
-  for (Tries = 0; Tries < 21; Tries++) {
+  for (j2 = 0; j2 < 21; j2++) {
     (void)std::memset(&rtDW.b_Hv[i + 6], 0, 114U * sizeof(real_T));
     i += 120;
   }
 
   for (i = 0; i < 18; i++) {
-    for (Tries = 0; Tries < 6; Tries++) {
-      rtDW.b_Sx[Tries + 120 * i] = CA[6 * i + Tries];
+    for (j2 = 0; j2 < 6; j2++) {
+      rtDW.b_Sx[j2 + 120 * i] = CA[6 * i + j2];
     }
 
     (void)std::memset(&rtDW.b_Sx[i * 120 + 6], 0, 114U * sizeof(real_T));
@@ -2690,7 +2791,7 @@ void SupervisoryController::mpcblock_optimizer(const real_T rseq[120], const
   }
 
   i = 0;
-  for (Tries = 0; Tries < 57; Tries++) {
+  for (j2 = 0; j2 < 57; j2++) {
     for (i1 = 0; i1 < 6; i1++) {
       rtDW.Su[(i1 + i) + 360] = 0.0;
     }
@@ -2699,7 +2800,7 @@ void SupervisoryController::mpcblock_optimizer(const real_T rseq[120], const
   }
 
   i = 0;
-  for (Tries = 0; Tries < 60; Tries++) {
+  for (j2 = 0; j2 < 60; j2++) {
     (void)std::memset(&rtDW.Su[i + 6], 0, 114U * sizeof(real_T));
     i += 120;
   }
@@ -2708,19 +2809,19 @@ void SupervisoryController::mpcblock_optimizer(const real_T rseq[120], const
     CA_tmp = (kidx + 1) * 6;
     for (i = 0; i < 6; i++) {
       rows[i] = static_cast<real_T>(static_cast<int32_T>(CA_tmp + i)) + 1.0;
-      Tries = 0;
+      j2 = 0;
       i1 = 0;
       for (a_tmp = 0; a_tmp < 3; a_tmp++) {
-        normH = 0.0;
+        Sum_1 = 0.0;
         Sum_tmp = 0;
         for (int32_T i_0{0}; i_0 < 18; i_0++) {
-          normH += CA[Sum_tmp + i] * Bu[i_0 + i1];
+          Sum_1 += CA[Sum_tmp + i] * Bu[i_0 + i1];
           Sum_tmp += 6;
         }
 
-        Sum_tmp = Tries + i;
-        Sum[Sum_tmp] += normH;
-        Tries += 6;
+        Sum_tmp = j2 + i;
+        Sum[Sum_tmp] += Sum_1;
+        j2 += 6;
         i1 += 18;
       }
 
@@ -2728,58 +2829,58 @@ void SupervisoryController::mpcblock_optimizer(const real_T rseq[120], const
     }
 
     for (i = 0; i < 3; i++) {
-      for (Tries = 0; Tries < 6; Tries++) {
-        Sum_tmp = 6 * i + Tries;
-        normH = Sum[Sum_tmp];
-        b_Su1[(static_cast<int32_T>(b_Su1_tmp[Tries]) + 120 * i) - 1] = normH;
-        Sum_0[Sum_tmp] = normH;
+      for (j2 = 0; j2 < 6; j2++) {
+        Sum_tmp = 6 * i + j2;
+        Sum_1 = Sum[Sum_tmp];
+        b_Su1[(static_cast<int32_T>(b_Su1_tmp[j2]) + 120 * i) - 1] = Sum_1;
+        Sum_0[Sum_tmp] = Sum_1;
       }
     }
 
     for (i = 0; i < 57; i++) {
-      for (Tries = 0; Tries < 6; Tries++) {
-        Sum_0[Tries + 6 * (i + 3)] = rtDW.Su[(120 * i + static_cast<int32_T>
-          (b_Su1_tmp[Tries])) - 7];
+      for (j2 = 0; j2 < 6; j2++) {
+        Sum_0[j2 + 6 * (i + 3)] = rtDW.Su[(120 * i + static_cast<int32_T>
+          (b_Su1_tmp[j2])) - 7];
       }
     }
 
     for (i = 0; i < 60; i++) {
-      for (Tries = 0; Tries < 6; Tries++) {
-        rtDW.Su[(static_cast<int32_T>(rows[Tries]) + 120 * i) - 1] = Sum_0[6 * i
-          + Tries];
+      for (j2 = 0; j2 < 6; j2++) {
+        rtDW.Su[(static_cast<int32_T>(rows[j2]) + 120 * i) - 1] = Sum_0[6 * i +
+          j2];
       }
     }
 
     for (i = 0; i < 6; i++) {
       ymin_incr[i] = 0.0;
-      Tries = 0;
+      j2 = 0;
       for (i1 = 0; i1 < 18; i1++) {
-        ymin_incr[i] += CA[Tries + i] * Bv[i1];
-        Tries += 6;
+        ymin_incr[i] += CA[j2 + i] * Bv[i1];
+        j2 += 6;
       }
 
       CA_0[i] = ymin_incr[i];
     }
 
     for (i = 0; i < 20; i++) {
-      for (Tries = 0; Tries < 6; Tries++) {
-        CA_0[Tries + 6 * (i + 1)] = rtDW.b_Hv[(120 * i + static_cast<int32_T>
-          (rows[Tries])) - 7];
+      for (j2 = 0; j2 < 6; j2++) {
+        CA_0[j2 + 6 * (i + 1)] = rtDW.b_Hv[(120 * i + static_cast<int32_T>
+          (rows[j2])) - 7];
       }
     }
 
     for (i = 0; i < 21; i++) {
-      for (Tries = 0; Tries < 6; Tries++) {
-        rtDW.b_Hv[(static_cast<int32_T>(rows[Tries]) + 120 * i) - 1] = CA_0[6 *
-          i + Tries];
+      for (j2 = 0; j2 < 6; j2++) {
+        rtDW.b_Hv[(static_cast<int32_T>(rows[j2]) + 120 * i) - 1] = CA_0[6 * i +
+          j2];
       }
     }
 
     for (i = 0; i < 6; i++) {
-      Tries = 0;
+      j2 = 0;
       i1 = 0;
       for (a_tmp = 0; a_tmp < 18; a_tmp++) {
-        CA_tmp = Tries + i;
+        CA_tmp = j2 + i;
         CA_1[CA_tmp] = 0.0;
         Sum_tmp = 0;
         for (int32_T i_0{0}; i_0 < 18; i_0++) {
@@ -2787,35 +2888,35 @@ void SupervisoryController::mpcblock_optimizer(const real_T rseq[120], const
           Sum_tmp += 6;
         }
 
-        Tries += 6;
+        j2 += 6;
         i1 += 18;
       }
     }
 
     (void)std::memcpy(&CA[0], &CA_1[0], 108U * sizeof(real_T));
     for (i = 0; i < 18; i++) {
-      for (Tries = 0; Tries < 6; Tries++) {
-        rtDW.b_Sx[(static_cast<int32_T>(rows[Tries]) + 120 * i) - 1] = CA[6 * i
-          + Tries];
+      for (j2 = 0; j2 < 6; j2++) {
+        rtDW.b_Sx[(static_cast<int32_T>(rows[j2]) + 120 * i) - 1] = CA[6 * i +
+          j2];
       }
     }
   }
 
   i = 0;
-  Tries = 0;
+  j2 = 0;
   for (i1 = 0; i1 < 3; i1++) {
     for (a_tmp = 0; a_tmp < 120; a_tmp++) {
       kidx = a_tmp + i;
       Sum_0[kidx] = 0.0;
       Sum_tmp = 0;
       for (int32_T i_0{0}; i_0 < 60; i_0++) {
-        Sum_0[kidx] += rtDW.Su[Sum_tmp + a_tmp] * b_Jm[i_0 + Tries];
+        Sum_0[kidx] += rtDW.Su[Sum_tmp + a_tmp] * b_Jm[i_0 + j2];
         Sum_tmp += 120;
       }
     }
 
     i += 120;
-    Tries += 60;
+    j2 += 60;
   }
 
   if (b_Mrows[0] > 0) {
@@ -2824,42 +2925,42 @@ void SupervisoryController::mpcblock_optimizer(const real_T rseq[120], const
     while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U)) ==
             false) && (kidx < 246)) {
       if (b_Mrows[kidx] <= 120) {
-        Tries = b_Mrows[kidx];
-        b_Ac[kidx] = -Sum_0[Tries - 1];
-        b_Ac[kidx + 246] = -Sum_0[Tries + 119];
-        b_Ac[kidx + 492] = -Sum_0[Tries + 239];
-        Tries = b_Mrows[kidx];
+        j2 = b_Mrows[kidx];
+        b_Ac[kidx] = -Sum_0[j2 - 1];
+        b_Ac[kidx + 246] = -Sum_0[j2 + 119];
+        b_Ac[kidx + 492] = -Sum_0[j2 + 239];
+        j2 = b_Mrows[kidx];
         for (i = 0; i < 18; i++) {
-          b_Mx[kidx + 246 * i] = -rtDW.b_Sx[(120 * i + Tries) - 1];
+          b_Mx[kidx + 246 * i] = -rtDW.b_Sx[(120 * i + j2) - 1];
         }
 
-        Tries = b_Mrows[kidx];
-        b_Mu1[kidx] = -b_Su1[Tries - 1];
-        b_Mu1[kidx + 246] = -b_Su1[Tries + 119];
-        b_Mu1[kidx + 492] = -b_Su1[Tries + 239];
-        Tries = b_Mrows[kidx];
+        j2 = b_Mrows[kidx];
+        b_Mu1[kidx] = -b_Su1[j2 - 1];
+        b_Mu1[kidx + 246] = -b_Su1[j2 + 119];
+        b_Mu1[kidx + 492] = -b_Su1[j2 + 239];
+        j2 = b_Mrows[kidx];
         for (i = 0; i < 21; i++) {
-          b_Mv[kidx + 246 * i] = -rtDW.b_Hv[(120 * i + Tries) - 1];
+          b_Mv[kidx + 246 * i] = -rtDW.b_Hv[(120 * i + j2) - 1];
         }
 
         kidx++;
       } else if (b_Mrows[kidx] <= 240) {
-        Tries = b_Mrows[kidx];
-        b_Ac[kidx] = Sum_0[Tries - 121];
-        b_Ac[kidx + 246] = Sum_0[Tries - 1];
-        b_Ac[kidx + 492] = Sum_0[Tries + 119];
-        Tries = b_Mrows[kidx];
+        j2 = b_Mrows[kidx];
+        b_Ac[kidx] = Sum_0[j2 - 121];
+        b_Ac[kidx + 246] = Sum_0[j2 - 1];
+        b_Ac[kidx + 492] = Sum_0[j2 + 119];
+        j2 = b_Mrows[kidx];
         for (i = 0; i < 18; i++) {
-          b_Mx[kidx + 246 * i] = rtDW.b_Sx[(120 * i + Tries) - 121];
+          b_Mx[kidx + 246 * i] = rtDW.b_Sx[(120 * i + j2) - 121];
         }
 
-        Tries = b_Mrows[kidx];
-        b_Mu1[kidx] = b_Su1[Tries - 121];
-        b_Mu1[kidx + 246] = b_Su1[Tries - 1];
-        b_Mu1[kidx + 492] = b_Su1[Tries + 119];
-        Tries = b_Mrows[kidx];
+        j2 = b_Mrows[kidx];
+        b_Mu1[kidx] = b_Su1[j2 - 121];
+        b_Mu1[kidx + 246] = b_Su1[j2 - 1];
+        b_Mu1[kidx + 492] = b_Su1[j2 + 119];
+        j2 = b_Mrows[kidx];
         for (i = 0; i < 21; i++) {
-          b_Mv[kidx + 246 * i] = rtDW.b_Hv[(120 * i + Tries) - 121];
+          b_Mv[kidx + 246 * i] = rtDW.b_Hv[(120 * i + j2) - 121];
         }
 
         kidx++;
@@ -2870,11 +2971,11 @@ void SupervisoryController::mpcblock_optimizer(const real_T rseq[120], const
   }
 
   for (kidx = 0; kidx < 6; kidx++) {
-    normH = ywt[kidx];
-    if (normH < 0.0) {
+    Sum_1 = ywt[kidx];
+    if (Sum_1 < 0.0) {
       rows[kidx] = 0.0;
     } else {
-      rows[kidx] = normH * normH;
+      rows[kidx] = Sum_1 * Sum_1;
     }
   }
 
@@ -2901,15 +3002,15 @@ void SupervisoryController::mpcblock_optimizer(const real_T rseq[120], const
   b_B[4] = 1.0;
   b_B[8] = 1.0;
   kidx = -1;
-  for (Tries = 0; Tries < 20; Tries++) {
-    for (i = 0; i < 3; i++) {
+  for (i = 0; i < 20; i++) {
+    for (j2 = 0; j2 < 3; j2++) {
       for (i1 = 0; i1 < 20; i1++) {
-        a_tmp = static_cast<int32_T>(c_A[20 * Tries + i1]);
-        a[kidx + 1] = static_cast<int8_T>(static_cast<int32_T>(b_B[3 * i]) *
+        a_tmp = static_cast<int32_T>(c_A[20 * i + i1]);
+        a[kidx + 1] = static_cast<int8_T>(static_cast<int32_T>(b_B[3 * j2]) *
           a_tmp);
-        a[kidx + 2] = static_cast<int8_T>(static_cast<int32_T>(b_B[3 * i + 1]) *
+        a[kidx + 2] = static_cast<int8_T>(static_cast<int32_T>(b_B[3 * j2 + 1]) *
           a_tmp);
-        a[kidx + 3] = static_cast<int8_T>(static_cast<int32_T>(b_B[3 * i + 2]) *
+        a[kidx + 3] = static_cast<int8_T>(static_cast<int32_T>(b_B[3 * j2 + 2]) *
           a_tmp);
         kidx += 3;
       }
@@ -2917,7 +3018,7 @@ void SupervisoryController::mpcblock_optimizer(const real_T rseq[120], const
   }
 
   i = 0;
-  for (Tries = 0; Tries < 3; Tries++) {
+  for (j2 = 0; j2 < 3; j2++) {
     for (i1 = 0; i1 < 60; i1++) {
       kidx = i1 + i;
       I2Jm[kidx] = 0.0;
@@ -2933,10 +3034,10 @@ void SupervisoryController::mpcblock_optimizer(const real_T rseq[120], const
 
   ixw = 1;
   for (kidx = 0; kidx < 120; kidx++) {
-    normH = rows[ixw - 1];
-    WySuJm[kidx] = normH * Sum_0[kidx];
-    WySuJm[kidx + 120] = Sum_0[kidx + 120] * normH;
-    WySuJm[kidx + 240] = Sum_0[kidx + 240] * normH;
+    Sum_1 = rows[ixw - 1];
+    WySuJm[kidx] = Sum_1 * Sum_0[kidx];
+    WySuJm[kidx + 120] = Sum_0[kidx + 120] * Sum_1;
+    WySuJm[kidx + 240] = Sum_0[kidx + 240] * Sum_1;
     ixw = static_cast<int16_T>(ixw + 1);
     if (ixw > 6) {
       ixw = 1;
@@ -2945,10 +3046,10 @@ void SupervisoryController::mpcblock_optimizer(const real_T rseq[120], const
 
   ixw = 1;
   for (kidx = 0; kidx < 60; kidx++) {
-    normH = b_Wu[ixw - 1];
-    WuI2Jm[kidx] = normH * I2Jm[kidx];
-    WuI2Jm[kidx + 60] = I2Jm[kidx + 60] * normH;
-    WuI2Jm[kidx + 120] = I2Jm[kidx + 120] * normH;
+    Sum_1 = b_Wu[ixw - 1];
+    WuI2Jm[kidx] = Sum_1 * I2Jm[kidx];
+    WuI2Jm[kidx + 60] = I2Jm[kidx + 60] * Sum_1;
+    WuI2Jm[kidx + 120] = I2Jm[kidx + 120] * Sum_1;
     ixw = static_cast<int16_T>(ixw + 1);
     if (ixw > 3) {
       ixw = 1;
@@ -2957,10 +3058,10 @@ void SupervisoryController::mpcblock_optimizer(const real_T rseq[120], const
 
   ixw = 1;
   for (kidx = 0; kidx < 60; kidx++) {
-    normH = b_Wdu[ixw - 1];
-    WduJm[kidx] = normH * b_Jm[kidx];
-    WduJm[kidx + 60] = b_Jm[kidx + 60] * normH;
-    WduJm[kidx + 120] = b_Jm[kidx + 120] * normH;
+    Sum_1 = b_Wdu[ixw - 1];
+    WduJm[kidx] = Sum_1 * b_Jm[kidx];
+    WduJm[kidx + 60] = b_Jm[kidx + 60] * Sum_1;
+    WduJm[kidx + 120] = b_Jm[kidx + 120] * Sum_1;
     ixw = static_cast<int16_T>(ixw + 1);
     if (ixw > 3) {
       ixw = 1;
@@ -2968,37 +3069,37 @@ void SupervisoryController::mpcblock_optimizer(const real_T rseq[120], const
   }
 
   for (i = 0; i < 3; i++) {
-    for (Tries = 0; Tries < 3; Tries++) {
-      kidx = 3 * Tries + i;
+    for (j2 = 0; j2 < 3; j2++) {
+      kidx = 3 * j2 + i;
       b_B[kidx] = 0.0;
       for (i1 = 0; i1 < 120; i1++) {
-        b_B[kidx] += Sum_0[120 * i + i1] * WySuJm[120 * Tries + i1];
+        b_B[kidx] += Sum_0[120 * i + i1] * WySuJm[120 * j2 + i1];
       }
 
       b_Jm_0[kidx] = 0.0;
-      normH = 0.0;
+      Sum_1 = 0.0;
       for (i1 = 0; i1 < 60; i1++) {
         a_tmp = 60 * i + i1;
-        Sum_tmp = 60 * Tries + i1;
-        normH += I2Jm[a_tmp] * WuI2Jm[Sum_tmp];
+        Sum_tmp = 60 * j2 + i1;
+        Sum_1 += I2Jm[a_tmp] * WuI2Jm[Sum_tmp];
         b_Jm_0[kidx] += b_Jm[a_tmp] * WduJm[Sum_tmp];
       }
 
-      b_H[i + (Tries << 2UL)] = (b_B[kidx] + b_Jm_0[kidx]) + normH;
+      b_H[i + (j2 << 2UL)] = (b_B[kidx] + b_Jm_0[kidx]) + Sum_1;
     }
   }
 
   for (i = 0; i < 3; i++) {
-    for (Tries = 0; Tries < 3; Tries++) {
-      kidx = 3 * Tries + i;
+    for (j2 = 0; j2 < 3; j2++) {
+      kidx = 3 * j2 + i;
       b_Jm_0[kidx] = 0.0;
       for (i1 = 0; i1 < 120; i1++) {
-        b_Jm_0[kidx] += b_Su1[120 * i + i1] * WySuJm[120 * Tries + i1];
+        b_Jm_0[kidx] += b_Su1[120 * i + i1] * WySuJm[120 * j2 + i1];
       }
 
       b_I1_0[kidx] = 0.0;
       for (i1 = 0; i1 < 60; i1++) {
-        b_I1_0[kidx] += b_I1[60 * i + i1] * WuI2Jm[60 * Tries + i1];
+        b_I1_0[kidx] += b_I1[60 * i + i1] * WuI2Jm[60 * j2 + i1];
       }
     }
   }
@@ -3020,11 +3121,11 @@ void SupervisoryController::mpcblock_optimizer(const real_T rseq[120], const
   }
 
   i = 0;
-  for (Tries = 0; Tries < 18; Tries++) {
+  for (j2 = 0; j2 < 18; j2++) {
     i1 = 0;
     a_tmp = 0;
     for (Sum_tmp = 0; Sum_tmp < 3; Sum_tmp++) {
-      kidx = i1 + Tries;
+      kidx = i1 + j2;
       b_Kx[kidx] = 0.0;
       for (int32_T i_0{0}; i_0 < 120; i_0++) {
         b_Kx[kidx] += rtDW.b_Sx[i_0 + i] * WySuJm[i_0 + a_tmp];
@@ -3038,11 +3139,11 @@ void SupervisoryController::mpcblock_optimizer(const real_T rseq[120], const
   }
 
   i = 0;
-  for (Tries = 0; Tries < 21; Tries++) {
+  for (j2 = 0; j2 < 21; j2++) {
     i1 = 0;
     a_tmp = 0;
     for (Sum_tmp = 0; Sum_tmp < 3; Sum_tmp++) {
-      kidx = i1 + Tries;
+      kidx = i1 + j2;
       b_Kv[kidx] = 0.0;
       for (int32_T i_0{0}; i_0 < 120; i_0++) {
         b_Kv[kidx] += rtDW.b_Hv[i_0 + i] * WySuJm[i_0 + a_tmp];
@@ -3060,94 +3161,9 @@ void SupervisoryController::mpcblock_optimizer(const real_T rseq[120], const
     (void)_mm_storeu_pd(&WySuJm[i], _mm_mul_pd(tmp, _mm_set1_pd(-1.0)));
   }
 
-  kidx = 0;
-  (void)std::memcpy(&L[0], &b_H[0], sizeof(real_T) << 4UL);
-  Tries = xpotrf(L);
-  guard1 = false;
-  if (Tries == 0) {
-    varargin_1[0] = L[0];
-    varargin_1[1] = L[5];
-    varargin_1[2] = L[10];
-    varargin_1[3] = L[15];
-    if (minimum(varargin_1) > 1.4901161193847656E-7) {
-    } else {
-      guard1 = true;
-    }
-  } else {
-    guard1 = true;
-  }
-
-  if (guard1) {
-    boolean_T exitg2;
-    normH = 0.0;
-    Tries = 0;
-    exitg2 = false;
-    while (((exitg2 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U)) ==
-            false) && (Tries < 4)) {
-      s = ((std::abs(b_H[Tries + 4]) + std::abs(b_H[Tries])) + std::abs
-           (b_H[Tries + 8])) + std::abs(b_H[Tries + 12]);
-      if (std::isnan(s)) {
-        normH = (rtNaN);
-        exitg2 = true;
-      } else {
-        if (s > normH) {
-          normH = s;
-        }
-
-        Tries++;
-      }
-    }
-
-    if (normH >= 1.0E+10) {
-      kidx = 2;
-    } else {
-      Tries = 0;
-      exitg1 = false;
-      while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U)) ==
-              false) && (Tries <= 4)) {
-        boolean_T guard2{ false };
-
-        normH = rt_powd_snf(10.0, static_cast<real_T>(Tries)) *
-          1.4901161193847656E-7;
-        for (i = 0; i < 16; i++) {
-          b[i] = 0;
-        }
-
-        b[0] = 1;
-        b[5] = 1;
-        b[10] = 1;
-        b[15] = 1;
-        for (i = 0; i < 16; i++) {
-          b_H[i] += normH * static_cast<real_T>(b[i]);
-          L[i] = b_H[i];
-        }
-
-        kidx = xpotrf(L);
-        guard2 = false;
-        if (kidx == 0) {
-          varargin_1[0] = L[0];
-          varargin_1[1] = L[5];
-          varargin_1[2] = L[10];
-          varargin_1[3] = L[15];
-          if (minimum(varargin_1) > 1.4901161193847656E-7) {
-            kidx = 1;
-            exitg1 = true;
-          } else {
-            guard2 = true;
-          }
-        } else {
-          guard2 = true;
-        }
-
-        if (guard2) {
-          kidx = 3;
-          Tries++;
-        }
-      }
-    }
-  }
-
-  if (kidx > 1) {
+  (void)std::memcpy(&b_Linv[0], &b_H[0], sizeof(real_T) << 4UL);
+  mpc_checkhessian(b_Linv, c_Linv, &Sum_1);
+  if (Sum_1 > 1.0) {
     u[0] = old_u[0] + b_uoff[0];
     u[1] = old_u[1] + b_uoff[1];
     u[2] = old_u[2] + b_uoff[2];
@@ -3159,37 +3175,38 @@ void SupervisoryController::mpcblock_optimizer(const real_T rseq[120], const
 
     *status = -2.0;
   } else {
+    real_T WySuJm_0;
     for (i = 0; i < 16; i++) {
-      b[i] = 0;
+      c_B[i] = 0;
     }
 
-    b[0] = 1;
-    b[5] = 1;
-    b[10] = 1;
-    b[15] = 1;
+    c_B[0] = 1;
+    c_B[5] = 1;
+    c_B[10] = 1;
+    c_B[15] = 1;
     CA_tmp = 0;
     for (kidx = 0; kidx < 4; kidx++) {
-      b_H[CA_tmp] = static_cast<real_T>(b[CA_tmp]);
-      b_H[CA_tmp + 1] = static_cast<real_T>(b[CA_tmp + 1]);
-      b_H[CA_tmp + 2] = static_cast<real_T>(b[CA_tmp + 2]);
-      b_H[CA_tmp + 3] = static_cast<real_T>(b[CA_tmp + 3]);
+      b_Linv[CA_tmp] = static_cast<real_T>(c_B[CA_tmp]);
+      b_Linv[CA_tmp + 1] = static_cast<real_T>(c_B[CA_tmp + 1]);
+      b_Linv[CA_tmp + 2] = static_cast<real_T>(c_B[CA_tmp + 2]);
+      b_Linv[CA_tmp + 3] = static_cast<real_T>(c_B[CA_tmp + 3]);
       CA_tmp += 4;
     }
 
-    trisolve(L, b_H);
+    trisolve(c_Linv, b_Linv);
     for (i = 0; i < 246; i++) {
-      normH = 0.0;
-      for (Tries = 0; Tries < 18; Tries++) {
-        normH += b_Mx[246 * Tries + i] * x[Tries];
+      Sum_1 = 0.0;
+      for (j2 = 0; j2 < 18; j2++) {
+        Sum_1 += b_Mx[246 * j2 + i] * x[j2];
       }
 
-      s = 0.0;
-      for (Tries = 0; Tries < 21; Tries++) {
-        s += b_Mv[246 * Tries + i] * vseq[Tries];
+      WySuJm_0 = 0.0;
+      for (j2 = 0; j2 < 21; j2++) {
+        WySuJm_0 += b_Mv[246 * j2 + i] * vseq[j2];
       }
 
       Bc[i] = -((((b_Mu1[i + 246] * old_u[1] + b_Mu1[i] * old_u[0]) + b_Mu1[i +
-                  492] * old_u[2]) + (b_Mlim[i] + normH)) + s);
+                  492] * old_u[2]) + (b_Mlim[i] + Sum_1)) + WySuJm_0);
     }
 
     for (i = 0; i < 6; i++) {
@@ -3199,46 +3216,66 @@ void SupervisoryController::mpcblock_optimizer(const real_T rseq[120], const
       ymin_incr[i] = 0.0;
     }
 
+    umax_incr_flag[0] = false;
+    b_Wu[0] = 0.0;
+    umax_incr_flag[1] = false;
+    b_Wu[1] = 0.0;
+    umax_incr_flag[2] = false;
+    b_Wu[2] = 0.0;
     if (b_Mrows[0] > 0) {
       kidx = 0;
       exitg1 = false;
       while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U)) ==
               false) && (kidx < 246)) {
         if (b_Mrows[kidx] <= 120) {
-          boolean_T b_Del_Save_Flag0;
-          Tries = (b_Mrows[kidx] - div_nde_s32_floor(b_Mrows[kidx] - 1,
-                    static_cast<int32_T>(ny)) * static_cast<int32_T>(ny)) - 1;
-          b_Del_Save_Flag0 = ymax_incr_flag[Tries];
-          if (!ymax_incr_flag[Tries]) {
-            normH = -(b_RYscale[Tries] * ymax[Tries] - b_yoff[Tries]) -
-              (-b_Mlim[kidx]);
-            b_Del_Save_Flag0 = true;
+          boolean_T c_Del_Save_Flag0;
+          i = (b_Mrows[kidx] - div_nde_s32_floor(b_Mrows[kidx] - 1, static_cast<
+                int32_T>(ny)) * static_cast<int32_T>(ny)) - 1;
+          c_Del_Save_Flag0 = ymax_incr_flag[i];
+          if (!ymax_incr_flag[i]) {
+            Sum_1 = -(b_RYscale[i] * ymax[i] - b_yoff[i]) - (-b_Mlim[kidx]);
+            c_Del_Save_Flag0 = true;
           } else {
-            normH = rows[Tries];
+            Sum_1 = rows[i];
           }
 
-          rows[Tries] = normH;
-          ymax_incr_flag[Tries] = b_Del_Save_Flag0;
-          Bc[kidx] += normH;
+          rows[i] = Sum_1;
+          ymax_incr_flag[i] = c_Del_Save_Flag0;
+          Bc[kidx] += Sum_1;
           kidx++;
         } else if (b_Mrows[kidx] <= 240) {
-          boolean_T b_Del_Save_Flag0;
-          Tries = (b_Mrows[kidx] - div_nde_s32_floor(b_Mrows[kidx] - 121,
-                    static_cast<int32_T>(ny)) * static_cast<int32_T>(ny)) - 121;
-          b_Del_Save_Flag0 = ymin_incr_flag[Tries];
-          if (!ymin_incr_flag[Tries]) {
-            normH = (b_RYscale[Tries] * ymin[Tries] - b_yoff[Tries]) -
-              (-b_Mlim[kidx]);
-            b_Del_Save_Flag0 = true;
+          boolean_T c_Del_Save_Flag0;
+          i = (b_Mrows[kidx] - div_nde_s32_floor(b_Mrows[kidx] - 121,
+                static_cast<int32_T>(ny)) * static_cast<int32_T>(ny)) - 121;
+          c_Del_Save_Flag0 = ymin_incr_flag[i];
+          if (!ymin_incr_flag[i]) {
+            Sum_1 = (b_RYscale[i] * ymin[i] - b_yoff[i]) - (-b_Mlim[kidx]);
+            c_Del_Save_Flag0 = true;
           } else {
-            normH = ymin_incr[Tries];
+            Sum_1 = ymin_incr[i];
           }
 
-          ymin_incr[Tries] = normH;
-          ymin_incr_flag[Tries] = b_Del_Save_Flag0;
-          Bc[kidx] += normH;
+          ymin_incr[i] = Sum_1;
+          ymin_incr_flag[i] = c_Del_Save_Flag0;
+          Bc[kidx] += Sum_1;
           kidx++;
-        } else if ((b_Mrows[kidx] <= 300) || (b_Mrows[kidx] <= 360)) {
+        } else if (b_Mrows[kidx] <= 300) {
+          boolean_T c_Del_Save_Flag0;
+          i = (b_Mrows[kidx] - div_nde_s32_floor(b_Mrows[kidx] - 241,
+                static_cast<int32_T>(nu)) * static_cast<int32_T>(nu)) - 241;
+          c_Del_Save_Flag0 = umax_incr_flag[i];
+          if (!umax_incr_flag[i]) {
+            Sum_1 = -(b_RMVscale[i] * umax[i] - b_uoff[i]) - (-b_Mlim[kidx]);
+            c_Del_Save_Flag0 = true;
+          } else {
+            Sum_1 = b_Wu[i];
+          }
+
+          b_Wu[i] = Sum_1;
+          umax_incr_flag[i] = c_Del_Save_Flag0;
+          Bc[kidx] += Sum_1;
+          kidx++;
+        } else if (b_Mrows[kidx] <= 360) {
           kidx++;
         } else {
           exitg1 = true;
@@ -3246,21 +3283,21 @@ void SupervisoryController::mpcblock_optimizer(const real_T rseq[120], const
       }
     }
 
-    varargin_1[0] = 0.0;
-    varargin_1[1] = 0.0;
-    varargin_1[2] = 0.0;
-    varargin_1[3] = 0.0;
+    f[0] = 0.0;
+    f[1] = 0.0;
+    f[2] = 0.0;
+    f[3] = 0.0;
     for (kidx = 0; kidx < 3; kidx++) {
       real_T WuI2Jm_0;
       real_T b_Kv_0;
-      normH = 0.0;
+      Sum_1 = 0.0;
       for (i = 0; i < 18; i++) {
-        normH += b_Kx[18 * kidx + i] * x[i];
+        Sum_1 += b_Kx[18 * kidx + i] * x[i];
       }
 
-      s = 0.0;
+      WySuJm_0 = 0.0;
       for (i = 0; i < 120; i++) {
-        s += WySuJm[120 * kidx + i] * rseq[i];
+        WySuJm_0 += WySuJm[120 * kidx + i] * rseq[i];
       }
 
       b_Kv_0 = 0.0;
@@ -3273,29 +3310,29 @@ void SupervisoryController::mpcblock_optimizer(const real_T rseq[120], const
         WuI2Jm_0 += WuI2Jm[60 * kidx + i] * b_utarget[i];
       }
 
-      varargin_1[kidx] = ((((b_B[3 * kidx + 1] * old_u[1] + b_B[3 * kidx] *
-        old_u[0]) + b_B[3 * kidx + 2] * old_u[2]) + (normH + s)) + b_Kv_0) +
-        WuI2Jm_0;
+      f[kidx] = ((((b_B[3 * kidx + 1] * old_u[1] + b_B[3 * kidx] * old_u[0]) +
+                   b_B[3 * kidx + 2] * old_u[2]) + (Sum_1 + WySuJm_0)) + b_Kv_0)
+        + WuI2Jm_0;
     }
 
     (void)std::memcpy(&iAout[0], &iA[0], 246U * sizeof(boolean_T));
     i = 0;
-    for (Tries = 0; Tries < 4; Tries++) {
+    for (j2 = 0; j2 < 4; j2++) {
       i1 = 0;
       for (a_tmp = 0; a_tmp < 4; a_tmp++) {
-        kidx = i1 + Tries;
-        L[kidx] = 0.0;
-        L[kidx] += b_H[i] * b_H[i1];
-        L[kidx] += b_H[i + 1] * b_H[i1 + 1];
-        L[kidx] += b_H[i + 2] * b_H[i1 + 2];
-        L[kidx] += b_H[i + 3] * b_H[i1 + 3];
+        kidx = i1 + j2;
+        c_Linv[kidx] = 0.0;
+        c_Linv[kidx] += b_Linv[i] * b_Linv[i1];
+        c_Linv[kidx] += b_Linv[i + 1] * b_Linv[i1 + 1];
+        c_Linv[kidx] += b_Linv[i + 2] * b_Linv[i1 + 2];
+        c_Linv[kidx] += b_Linv[i + 3] * b_Linv[i1 + 3];
         i1 += 4;
       }
 
       i += 4;
     }
 
-    qpkwik(b_H, L, varargin_1, b_Ac, Bc, iAout, 1000, 1.0E-6, zopt, a__1, &kidx);
+    qpkwik(b_Linv, c_Linv, f, b_Ac, Bc, iAout, 1000, 1.0E-6, zopt, a__1, &kidx);
     if ((kidx < 0) || (kidx == 0)) {
       zopt[0] = 0.0;
       zopt[1] = 0.0;
@@ -4567,9 +4604,9 @@ void SupervisoryController::step()
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5, 0.5, -0.5, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, -0.5, -0.5, 0.5 };
 
-  static const real_T h[16]{ 0.40045977729735593, 0.0, 0.0, 0.0, 0.0,
-    0.40045977729735593, 0.0, 0.0, 0.0, 0.0, 0.40045977729735593, 0.0, 0.0, 0.0,
-    0.0, 100000.0 };
+  static const real_T h[16]{ 0.034121465297356074, 0.0, 0.0, 0.0, 0.0,
+    0.034121465297356074, 0.0, 0.0, 0.0, 0.0, 0.034121465297356074, 0.0, 0.0,
+    0.0, 0.0, 100000.0 };
 
   static const int32_T b_Mrows[246]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
     14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
@@ -4634,7 +4671,7 @@ void SupervisoryController::step()
   real_T rtb_A_n[36];
   real_T rtb_N_0[36];
   real_T rtb_R[36];
-  real_T tmp_4[36];
+  real_T tmp_5[36];
   real_T prms[24];
   real_T prms_0[24];
   real_T vseq[21];
@@ -4655,12 +4692,13 @@ void SupervisoryController::step()
   real_T rtb_excitation[3];
   real_T tmp_1[3];
   real_T tmp_2[3];
+  real_T tmp_4[3];
   real_T dwt;
   real_T *rtb_B_e_0;
   uint16_T waypt;
   int8_T b_I[324];
   int8_T P0_2_tmp[12];
-  boolean_T tmp_7[246];
+  boolean_T tmp_8[246];
   boolean_T rstP1;
   boolean_T rstP2;
   boolean_T rstTheta1;
@@ -4724,9 +4762,9 @@ void SupervisoryController::step()
       //  request new event
       // Entry 'ControlLaw': '<S1>:59'
     } else {
-      __m128d tmp_5;
       __m128d tmp_6;
-      __m128d tmp_8;
+      __m128d tmp_7;
+      __m128d tmp_9;
       real_T sigmoid_workspace_k_1;
       real_T sigmoid_workspace_x0;
       int32_T b_k;
@@ -4886,7 +4924,7 @@ void SupervisoryController::step()
           // '<S1>:59:5' theta0_2 = theta(1:np*no);
           for (b_k = 0; b_k < 12; b_k++) {
             for (k = 0; k < 12; k++) {
-              rtDW.P0_2[k + 12 * b_k] = rtY.P_k[((P0_2_tmp[b_k] - 1) * 24 +
+              rtDW.P0_2[k + 12 * b_k] = rtY.P_m[((P0_2_tmp[b_k] - 1) * 24 +
                 P0_2_tmp[k]) - 1];
             }
 
@@ -4947,7 +4985,7 @@ void SupervisoryController::step()
           // '<S1>:59:11' theta0_1 = theta(np*no+1:2*np*no);
           for (b_k = 0; b_k < 12; b_k++) {
             for (k = 0; k < 12; k++) {
-              rtDW.P0_1[k + 12 * b_k] = rtY.P_k[((P0_2_tmp[b_k] - 1) * 24 +
+              rtDW.P0_1[k + 12 * b_k] = rtY.P_m[((P0_2_tmp[b_k] - 1) * 24 +
                 P0_2_tmp[k]) - 1];
             }
 
@@ -5000,7 +5038,7 @@ void SupervisoryController::step()
         // Outport: '<Root>/P' incorporates:
         //   Product: '<S87>/Product1'
 
-        (void)std::memcpy(&rtY.P_k[b_k], &Product1_j[i_1], 12U * sizeof(real_T));
+        (void)std::memcpy(&rtY.P_m[b_k], &Product1_j[i_1], 12U * sizeof(real_T));
 
         // Outport: '<Root>/theta'
         rtY.theta[i] = Sum_h[i];
@@ -5041,7 +5079,7 @@ void SupervisoryController::step()
         // Outport: '<Root>/P' incorporates:
         //   Product: '<S91>/Product1'
 
-        (void)std::memcpy(&rtY.P_k[b_k + 300], &Product1_j[i_1], 12U * sizeof
+        (void)std::memcpy(&rtY.P_m[b_k + 300], &Product1_j[i_1], 12U * sizeof
                           (real_T));
 
         // Outport: '<Root>/theta'
@@ -5062,7 +5100,7 @@ void SupervisoryController::step()
       //   Inport: '<Root>/k_2'
 
       // '<S1>:59:25' [u, ywt, yhat, currTraj] = ...
-      // '<S1>:59:26'     ampc(traj(:,waypt), currEv.r, y, ymax, y0, u0, excitation, theta, thetaSgn, k_2); 
+      // '<S1>:59:26'     ampc(traj(:,waypt), currEv.r, y, ymax, y0, u0, umax, excitation, theta, thetaSgn, k_2); 
       // Simulink Function 'ampc': '<S1>:461'
       // MATLAB Function 'SupervisoryController/ampc/MATLAB Function': '<S6>:1'
       // '<S6>:1:2' [ywt, ywtT, uwt, uwtT] = wtMod_(y, yDest, ywtT, uwtT, dt, no, ni, k_2); 
@@ -5295,6 +5333,10 @@ void SupervisoryController::step()
       // '<S38>:1:35' umin = convertDataType(umin0,isDouble);
       //    umax:       run-time MV bound
       // '<S38>:1:37' umax = convertDataType(umax0,isDouble);
+      // '<S38>:1:317' if isDouble
+      //  convert an input signal to double precision when necessary
+      // '<S38>:1:319' if isa(u,'double')
+      // '<S38>:1:320' y = u;
       //    ymin:       run-time OV bound
       // '<S38>:1:39' ymin = convertDataType(ymin0,isDouble);
       // '<S38>:1:317' if isDouble
@@ -5609,20 +5651,20 @@ void SupervisoryController::step()
       // End of Outputs for SubSystem: '<S1>/ampc'
       for (k = 0; k <= 4; k += 2) {
         // Inport: '<Root>/ymax'
-        tmp_8 = _mm_loadu_pd(&rtU.ymax[k]);
+        tmp_9 = _mm_loadu_pd(&rtU.ymax[k]);
 
         // Outputs for Function Call SubSystem: '<S1>/ampc'
         // Gain: '<S2>/Gain2' incorporates:
         //   Inport: '<Root>/ymax'
 
         (void)_mm_storeu_pd(&tmp[k], _mm_mul_pd(_mm_set1_pd(rtP.Gain2_Gain),
-          tmp_8));
+          tmp_9));
 
         // Gain: '<S2>/Gain3' incorporates:
         //   Inport: '<Root>/ymax'
 
         (void)_mm_storeu_pd(&rtb_Product1_o[k], _mm_mul_pd(_mm_set1_pd
-          (rtP.Gain3_Gain), tmp_8));
+          (rtP.Gain3_Gain), tmp_9));
 
         // End of Outputs for SubSystem: '<S1>/ampc'
       }
@@ -5630,19 +5672,19 @@ void SupervisoryController::step()
       for (k = 0; k <= 16; k += 2) {
         // Outputs for Function Call SubSystem: '<S1>/ampc'
         // Delay: '<S39>/MemoryX'
-        tmp_8 = _mm_loadu_pd(&rtDW.MemoryX_DSTATE[k]);
+        tmp_9 = _mm_loadu_pd(&rtDW.MemoryX_DSTATE[k]);
 
         // Sum: '<S8>/Sum2' incorporates:
         //   Delay: '<S39>/MemoryX'
 
-        tmp_5 = _mm_loadu_pd(&rtb_Product1_b[k]);
+        tmp_6 = _mm_loadu_pd(&rtb_Product1_b[k]);
 
         // MATLAB Function: '<S37>/FixedHorizonOptimizer' incorporates:
         //   Delay: '<S39>/MemoryX'
 
-        tmp_6 = _mm_loadu_pd(&b_xoff[k]);
-        (void)_mm_storeu_pd(&tmp_0[k], _mm_sub_pd(_mm_add_pd(tmp_8, tmp_5),
-          tmp_6));
+        tmp_7 = _mm_loadu_pd(&b_xoff[k]);
+        (void)_mm_storeu_pd(&tmp_0[k], _mm_sub_pd(_mm_add_pd(tmp_9, tmp_6),
+          tmp_7));
 
         // End of Outputs for SubSystem: '<S1>/ampc'
       }
@@ -5663,8 +5705,12 @@ void SupervisoryController::step()
         tmp_3[k] = 1.0;
       }
 
+      tmp_4[0] = 1.0;
+      tmp_4[1] = 1.0;
+      tmp_4[2] = 1.0;
+
       // Memory: '<S9>/Memory'
-      (void)std::memcpy(&tmp_7[0], &rtDW.Memory_PreviousInput[0], 246U * sizeof
+      (void)std::memcpy(&tmp_8[0], &rtDW.Memory_PreviousInput[0], 246U * sizeof
                         (boolean_T));
 
       // MATLAB Function: '<S37>/FixedHorizonOptimizer'
@@ -5675,16 +5721,17 @@ void SupervisoryController::step()
 
       // Update for Memory: '<S9>/Memory' incorporates:
       //   Gain: '<S2>/Gain'
+      //   Inport: '<Root>/umax'
       //   MATLAB Function: '<S37>/FixedHorizonOptimizer'
       //   Math: '<S9>/Math Function'
       //   Math: '<S9>/Math Function1'
       //   Sum: '<S2>/Sum'
 
-      mpcblock_optimizer(rseq, vseq, tmp, rtb_Product1_o, tmp_0, tmp_1, tmp_7,
-                         b_Mlim, rtDW.f, rtDW.g, rtDW.dv, b_utarget,
+      mpcblock_optimizer(rseq, vseq, rtU.umax, tmp, rtb_Product1_o, tmp_0, tmp_1,
+                         tmp_8, b_Mlim, rtDW.f, rtDW.g, rtDW.dv, b_utarget,
                          DiscreteFilter1_tmp, Y, h_0, rtDW.k, rtb_ywt, rtb_Sum_a,
                          tmp_2, l, n, rtb_A, rtDW.Bu, Bv, rtb_C, Dv, b_Mrows,
-                         tmp_3, Sum2_c, rtb_useq, &dwt,
+                         tmp_3, tmp_4, Sum2_c, rtb_useq, &dwt,
                          rtDW.Memory_PreviousInput);
 
       // Delay: '<S39>/MemoryP' incorporates:
@@ -6017,7 +6064,7 @@ void SupervisoryController::step()
           //   Product: '<S59>/Product4'
 
           b_k = 6 * i_1 + k;
-          tmp_4[b_k] = 0.0;
+          tmp_5[b_k] = 0.0;
 
           // Product: '<S59>/Product4'
           rtb_N_0[b_k] = 0.0;
@@ -6028,7 +6075,7 @@ void SupervisoryController::step()
             //   Sum: '<S59>/Add'
 
             b_k_tmp = 18 * i_1 + i;
-            tmp_4[b_k] += rtP.H_Value[6 * i + k] * rtb_Add_i[b_k_tmp];
+            tmp_5[b_k] += rtP.H_Value[6 * i + k] * rtb_Add_i[b_k_tmp];
 
             // Product: '<S59>/Product4' incorporates:
             //   Math: '<S59>/Transpose'
@@ -6050,7 +6097,7 @@ void SupervisoryController::step()
 
           // Outputs for Atomic SubSystem: '<S39>/ScalarExpansionR'
           rtb_A_n[b_k_tmp] = (rtb_R[b_k + i_1] + rtb_R[b_k_tmp]) / 2.0 +
-            (tmp_4[b_k_tmp] + rtb_N_0[b_k_tmp]);
+            (tmp_5[b_k_tmp] + rtb_N_0[b_k_tmp]);
 
           // End of Outputs for SubSystem: '<S39>/ScalarExpansionR'
           b_k += 6;
@@ -6209,9 +6256,9 @@ void SupervisoryController::step()
         }
 
         for (k = 0; k <= 322; k += 2) {
-          tmp_8 = _mm_loadu_pd(&rtb_y_n_0[k]);
-          tmp_5 = _mm_loadu_pd(&rtb_Transpose2_0[k]);
-          (void)_mm_storeu_pd(&rtb_Z[k], _mm_add_pd(tmp_8, tmp_5));
+          tmp_9 = _mm_loadu_pd(&rtb_y_n_0[k]);
+          tmp_6 = _mm_loadu_pd(&rtb_Transpose2_0[k]);
+          (void)_mm_storeu_pd(&rtb_Z[k], _mm_add_pd(tmp_9, tmp_6));
         }
 
         mrdiv(rtb_Product2, rtb_A_n, rtb_Transpose2);
@@ -6253,9 +6300,9 @@ void SupervisoryController::step()
         }
 
         for (k = 0; k <= 322; k += 2) {
-          tmp_8 = _mm_loadu_pd(&rtb_y_n_0[k]);
-          tmp_5 = _mm_loadu_pd(&rtb_Transpose2_0[k]);
-          (void)_mm_storeu_pd(&rtb_y_n[k], _mm_sub_pd(tmp_8, tmp_5));
+          tmp_9 = _mm_loadu_pd(&rtb_y_n_0[k]);
+          tmp_6 = _mm_loadu_pd(&rtb_Transpose2_0[k]);
+          (void)_mm_storeu_pd(&rtb_y_n[k], _mm_sub_pd(tmp_9, tmp_6));
         }
       } else {
         (void)std::memset(&rtb_N[0], 0, 108U * sizeof(real_T));
@@ -6515,15 +6562,15 @@ void SupervisoryController::step()
       for (k = 0; k <= 16; k += 2) {
         // Outputs for Function Call SubSystem: '<S1>/ampc'
         // Sum: '<S58>/Add'
-        tmp_8 = _mm_loadu_pd(&rtb_B_e_0[k]);
-        tmp_5 = _mm_loadu_pd(&b_xoff[k]);
-        tmp_6 = _mm_loadu_pd(&rtDW.Product3[k]);
+        tmp_9 = _mm_loadu_pd(&rtb_B_e_0[k]);
+        tmp_6 = _mm_loadu_pd(&b_xoff[k]);
+        tmp_7 = _mm_loadu_pd(&rtDW.Product3[k]);
 
         // Update for Delay: '<S39>/MemoryX' incorporates:
         //   Sum: '<S58>/Add'
 
-        (void)_mm_storeu_pd(&rtDW.MemoryX_DSTATE[k], _mm_add_pd(_mm_add_pd(tmp_8,
-          tmp_5), tmp_6));
+        (void)_mm_storeu_pd(&rtDW.MemoryX_DSTATE[k], _mm_add_pd(_mm_add_pd(tmp_9,
+          tmp_6), tmp_7));
 
         // End of Outputs for SubSystem: '<S1>/ampc'
       }
@@ -6670,7 +6717,7 @@ void SupervisoryController::initialize()
 
     for (i = 0; i < 576; i++) {
       // SystemInitialize for Outport: '<Root>/P'
-      rtY.P_k[i] = static_cast<real_T>(tmp_3[i]);
+      rtY.P_m[i] = static_cast<real_T>(tmp_3[i]);
     }
 
     rtDW.waypt = 1U;

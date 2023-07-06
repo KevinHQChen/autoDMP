@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2202
+// Model version                  : 1.2213
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Sun Jul  2 22:08:16 2023
+// C/C++ source code generated on : Thu Jul  6 12:01:08 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -277,6 +277,7 @@ class SupervisoryController final
     real_T ymax[6];                    // '<Root>/ymax'
     real_T y0[6];                      // '<Root>/y0'
     real_T u0[3];                      // '<Root>/u0'
+    real_T umax[3];                    // '<Root>/umax'
     boolean_T yo[6];                   // '<Root>/zeroCross'
     boolean_T enAdapt[6];              // '<Root>/enAdapt'
     real_T excitation;                 // '<Root>/excitation'
@@ -297,7 +298,7 @@ class SupervisoryController final
     event_bus currEv;                  // '<Root>/currEv'
     real_T theta[24];                  // '<Root>/theta'
     real_T prmErr[6];                  // '<Root>/prmErr'
-    real_T P_k[576];                   // '<Root>/P'
+    real_T P_m[576];                   // '<Root>/P'
     boolean_T requestEvent;            // '<Root>/requestEvent'
   };
 
@@ -419,9 +420,6 @@ class SupervisoryController final
     real_T umin_zero_Value[3];         // Expression: zeros(3,1)
                                           //  Referenced by: '<S5>/umin_zero'
 
-    real_T umax_zero_Value[3];         // Expression: zeros(3,1)
-                                          //  Referenced by: '<S5>/umax_zero'
-
     real_T Gain2_Gain;                 // Expression: -2
                                           //  Referenced by: '<S2>/Gain2'
 
@@ -513,9 +511,9 @@ class SupervisoryController final
 
     struct {
       rtwCAPI_ModelMappingInfo mmi;
-      void* dataAddress[67];
-      int32_T* vardimsAddress[67];
-      RTWLoggingFcnPtr loggingPtrs[67];
+      void* dataAddress[66];
+      int32_T* vardimsAddress[66];
+      RTWLoggingFcnPtr loggingPtrs[66];
     } DataMapInfo;
   };
 
@@ -594,6 +592,7 @@ class SupervisoryController final
     int32_T in4, int32_T in5, const real_T in6[24], int32_T in7, int32_T in8);
   int32_T xpotrf(real_T b_A[16]);
   real_T minimum(const real_T x[4]);
+  void mpc_checkhessian(real_T b_H[16], real_T L[16], real_T *BadH);
   void trisolve(const real_T b_A[16], real_T b_B[16]);
   real_T norm(const real_T x[4]);
   real_T maximum(const real_T x[4]);
@@ -612,15 +611,16 @@ class SupervisoryController final
               int32_T maxiter, real_T FeasTol, real_T x[4], real_T lambda[246],
               int32_T *status);
   void mpcblock_optimizer(const real_T rseq[120], const real_T vseq[21], const
-    real_T ymin[6], const real_T ymax[6], const real_T x[18], const real_T
-    old_u[3], const boolean_T iA[246], const real_T b_Mlim[246], real_T b_Mx
-    [4428], real_T b_Mu1[738], real_T b_Mv[5166], const real_T b_utarget[60],
-    const real_T b_uoff[3], const real_T b_yoff[6], real_T b_H[16], real_T b_Ac
-    [984], const real_T ywt[6], const real_T uwt[3], const real_T b_Wdu[3],
-    const real_T b_Jm[180], const real_T b_I1[180], const real_T b_A[324], const
-    real_T Bu[1134], const real_T Bv[378], const real_T b_C[108], const real_T
-    Dv[126], const int32_T b_Mrows[246], const real_T b_RYscale[6], real_T u[3],
-    real_T useq[63], real_T *status, boolean_T iAout[246]);
+    real_T umax[3], const real_T ymin[6], const real_T ymax[6], const real_T x
+    [18], const real_T old_u[3], const boolean_T iA[246], const real_T b_Mlim
+    [246], real_T b_Mx[4428], real_T b_Mu1[738], real_T b_Mv[5166], const real_T
+    b_utarget[60], const real_T b_uoff[3], const real_T b_yoff[6], real_T b_H[16],
+    real_T b_Ac[984], const real_T ywt[6], const real_T uwt[3], const real_T
+    b_Wdu[3], const real_T b_Jm[180], const real_T b_I1[180], const real_T b_A
+    [324], const real_T Bu[1134], const real_T Bv[378], const real_T b_C[108],
+    const real_T Dv[126], const int32_T b_Mrows[246], const real_T b_RYscale[6],
+    const real_T b_RMVscale[3], real_T u[3], real_T useq[63], real_T *status,
+    boolean_T iAout[246]);
   void mrdiv(const real_T A[108], const real_T B_0[36], real_T Y[108]);
 
   // Real-Time Model
