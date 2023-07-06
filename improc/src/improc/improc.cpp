@@ -140,7 +140,7 @@ void updateMeasCh(std::vector<double> &y, std::vector<double> &yPrev,
                   ? yPrev[ch]
                   : yDirect[ch];
     else // Inferred state
-      y[ch] = yInferred[ch];
+      y[ch] = (yDirect[ch] - yPrev[ch] > epsilon) ? yPrev[ch] : yInferred[ch];
   }
 }
 
@@ -148,8 +148,6 @@ void ImProc::updateMeasAndStateOnZeroCross() {
   int epsil = 56 / 2; // half of channel width
   bool d2iTxRequested = false;
   size_t d2iCh = no;
-  std::vector<bool> yStatePrev1(yState1);
-  std::vector<bool> yStatePrev2(yState2);
 
   // TODO HANDLE multiple d2i requests occurring simultaneously (currently this causes inferred
   // measurements to jump to an extremely high value)
@@ -375,12 +373,12 @@ void ImProc::start() {
 
 bool ImProc::started() { return startedImProc; }
 
-double ImProc::minDist(std::vector<double> &vec, double value) {
+double ImProc::minDist(std::vector<double> &vec, double prevVal) {
   if (vec.empty())
-    return value;
+    return prevVal;
 
-  return *std::min_element(vec.begin(), vec.end(), [value](double a, double b) {
-    return std::abs(a - value) < std::abs(b - value);
+  return *std::min_element(vec.begin(), vec.end(), [prevVal](double a, double b) {
+    return std::abs(a - prevVal) < std::abs(b - prevVal);
   });
 }
 

@@ -37,6 +37,8 @@ void Supervisor::startThread() {
     supIn.p_ = 0.0001;
     supIn.lambda = 0.9975;
     supIn.k_2 = 2;
+    for (int ch = 0; ch < 2 * no; ++ch)
+      supIn.enAdapt[ch] = true;
     // initialize input/output constants
     for (int ch = 0; ch < no; ++ch) {
       // primary output
@@ -49,6 +51,8 @@ void Supervisor::startThread() {
       supOut.yhat[no + ch] = 0;
       // input
       supIn.u0[ch] = pump->outputs[ch];
+      supIn.umax[ch] = 100;
+      supIn.uwt[ch] = 0.025;
       // zero-cross flag
       supIn.yo[ch] = false;
       supIn.yo[no + ch] = false;

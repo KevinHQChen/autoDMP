@@ -276,26 +276,39 @@ void CtrlWindow::renderControllerTuningDialog() {
       if (ImGui::Button("Stop Controller"))
         ctrlVisible_ = false;
 
-    for (int ch = 0; ch < 2 * no; ++ch) {
-      if (!sv_->supIn.enAdapt[ch])
-        if (ImGui::Button(("Start Online Param Est Ch" + std::to_string(ch)).c_str()))
-          sv_->supIn.enAdapt[ch] = true;
-      if (sv_->supIn.enAdapt[ch])
-        if (ImGui::Button(("Stop Online Param Est Ch" + std::to_string(ch)).c_str()))
-          sv_->supIn.enAdapt[ch] = false;
-    }
+    // for (int ch = 0; ch < 2 * no; ++ch) {
+    //   if (!sv_->supIn.enAdapt[ch])
+    //     if (ImGui::Button(("Start Online Param Est Ch" + std::to_string(ch)).c_str()))
+    //       sv_->supIn.enAdapt[ch] = true;
+    //   if (sv_->supIn.enAdapt[ch])
+    //     if (ImGui::Button(("Stop Online Param Est Ch" + std::to_string(ch)).c_str()))
+    //       sv_->supIn.enAdapt[ch] = false;
+    // }
+
+    umax = sv_->supIn.umax[0];
+    ImGui::SliderScalar("uMax", ImGuiDataType_Double, &umax, &umaxMin, &umaxMax, "%.1f");
+    for (int ch = 0; ch < no; ++ch)
+      sv_->supIn.umax[ch] = umax;
 
     excitationAmp = sv_->supIn.excitation;
-    ImGui::SliderFloat("Excitation Amplitude", &excitationAmp, 0.0f, 10.0f);
+    ImGui::SliderScalar("Excitation Amplitude", ImGuiDataType_Double, &excitationAmp,
+                        &excitationAmpMin, &excitationAmpMax, "%.1f");
     sv_->supIn.excitation = excitationAmp;
 
     paramLowerBound = sv_->supIn.p_;
-    ImGui::SliderFloat("Param Lower Bound", &paramLowerBound, 0.0005f, 0.1f);
+    ImGui::SliderScalar("Param Lower Bound", ImGuiDataType_Double, &paramLowerBound,
+                        &paramLowerBoundMin, &paramLowerBoundMax, "%.1f");
     sv_->supIn.p_ = paramLowerBound;
 
     covModification = sv_->supIn.dPmod_;
-    ImGui::SliderFloat("Cov Modification", &covModification, 0.0005f, 0.1f);
+    ImGui::SliderScalar("Cov Modification", ImGuiDataType_Double, &covModification,
+                        &covModificationMin, &covModificationMax, "%.1f");
     sv_->supIn.dPmod_ = covModification;
+
+    uwt = sv_->supIn.uwt[0] / 0.025;
+    ImGui::SliderScalar("uwt", ImGuiDataType_Double, &uwt, &uwtMin, &uwtMax, "%.1f");
+    for (int ch = 0; ch < 2 * no; ++ch)
+      sv_->supIn.uwt[ch] = 0.025 * uwt;
 
     ImGui::TreePop();
   }

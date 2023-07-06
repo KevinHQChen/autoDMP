@@ -25,7 +25,11 @@ class CtrlWindow : public Window {
 
   event_bus currEv_, newEv_;
   int srcState, destState, moveTime, holdTime;
-  float excitationAmp, paramLowerBound, covModification;
+  double excitationAmp, paramLowerBound, covModification;
+  double excitationAmpMin{0.0}, excitationAmpMax{10.0}, paramLowerBoundMin{0.0005},
+      paramLowerBoundMax{0.1}, covModificationMin{0.0005}, covModificationMax{0.1};
+  double uwt, umax;
+  double uwtMin{0.0}, uwtMax{10.0}, umaxMin{80.0}, umaxMax{200.0};
 
   int openAction = -1;
   double dropletLength = 0, dNeck = 0, dPlug = 0, wCh = 0;
