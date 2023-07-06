@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2213
+// Model version                  : 1.2214
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Thu Jul  6 12:01:08 2023
+// C/C++ source code generated on : Thu Jul  6 12:43:17 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -483,7 +483,7 @@ class SupervisoryController final
     real_T DiscreteFilter1_InitialStates;// Expression: 0
                                             //  Referenced by: '<S2>/Discrete Filter1'
 
-    real_T Saturation_UpperSat;        // Expression: 80
+    real_T Saturation_UpperSat;        // Expression: 1000
                                           //  Referenced by: '<S2>/Saturation'
 
     real_T Saturation_LowerSat;        // Expression: 0
