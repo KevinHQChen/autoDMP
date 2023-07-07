@@ -6,8 +6,10 @@ ImProc::ImProc(ImCap *imCap, std::shared_ptr<logger> log)
       dataPath(toml::get<std::string>(conf["postproc"]["procDataPath"])), imCap(imCap),
       procData(new QueueFPS<std::vector<double>>(dataPath + "procDataQueue.txt")), lg(log) {
   lg->info("Initializing ImProc...");
-  // for (int ch = 0; ch < impConf.numChs_; ++ch)
-  //   procData->out << "time (ms), fgLoc.y (px)\n";
+  procData->out << "time (ms), ";
+  procData->out << "yState1_1, yState1_2, yState1_3, yState2_1, yState2_2, yState2_3, ";
+  procData->out << "y1, y2, y3, y4, y5, y6, ";
+  procData->out << "yPrev1, yPrev2, yPrev3, yPrev4, yPrev5, yPrev6, ";
 
   // save images with proper format PNG, CV_16UC1
   compParams.push_back(cv::IMWRITE_PNG_COMPRESSION);
@@ -105,7 +107,7 @@ bool ImProc::initStates() {
   if (doneInit)
     return true;
 
-  int maxInitialDirectChs = no - 2;
+  int maxInitialDirectChs = 1;
 
   for (size_t ch = 0; ch < no; ++ch) {
     if (directMeasAvail[ch] && (yDirect1[ch] < 0) && (numInitDirectChs < maxInitialDirectChs)) {
@@ -148,6 +150,8 @@ void ImProc::updateMeasAndStateOnZeroCross() {
   int epsil = 56 / 2; // half of channel width
   bool d2iTxRequested = false;
   size_t d2iCh = no;
+
+  // TODO don't synchronize i2d transitions with d2i, just let them happen whenever they happen
 
   // TODO HANDLE multiple d2i requests occurring simultaneously (currently this causes inferred
   // measurements to jump to an extremely high value)
@@ -212,6 +216,7 @@ void ImProc::updateMeas() {
    * to previous measurements,
    * if any of them don't exist, just use the previous measurement
    */
+  // TODO handle empty direct or inferred clstrs, don't just use previous measurement
   yPrev1 = y1;
   yPrev2 = y2;
   for (int ch = 0; ch < no; ++ch) {
@@ -311,7 +316,7 @@ void ImProc::start() {
       for (int ch = 0; ch < impConf.numChs_; ++ch) {
         segAndOrientCh(tempFgMask, tempChFgMask, procFrameArr[ch], impConf.chROIs_[ch],
                        impConf.chWidth_);
-        // find fgLocs in center column (excluding all +ve values except first 2 rows)
+        // find fgLocs in center column (excluding all +ve values except 2 rows above row Wch/2)
         cv::findNonZero(
             procFrameArr[ch](cv::Range(impConf.chWidth_ / 2 - 2, procFrameArr[ch].rows),
                              cv::Range(procFrameArr[ch].cols / 2, procFrameArr[ch].cols / 2 + 1)),
@@ -361,6 +366,7 @@ void ImProc::start() {
 
       procData->push(y);
       procFrameBuf.set(procFrameArr);
+      procData->out << "\n";
       // print y1 and y2
       // for (int ch = 0; ch < impConf.numChs_; ++ch)
       //   lg->info("ch: {}, y1: {}, y2: {}", ch, y1[ch], y2[ch]);
