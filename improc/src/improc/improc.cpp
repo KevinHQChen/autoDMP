@@ -119,8 +119,8 @@ void ImProc::initStates(int maxInitialDirectChs) {
 
 /*
  * update measurement given current state
- *   - direct = yDirect (if it's valid and close to previous measurement)
- *   - inferred = yInferred (if it's valid and close to previous measurement)
+ *   - in direct state: y[ch] = yDirect[ch] (if it'ss valid and close to yPrev[ch])
+ *   - in inferred state: y[ch] = yInferred[ch] (if it's valid and close to yPrev[ch])
  */
 void updateMeasCh(std::vector<double> &y, std::vector<double> &yPrev,
                   const std::vector<OptDouble> &yDirect, const std::vector<OptDouble> &yInferred,

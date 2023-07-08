@@ -165,13 +165,12 @@ private:
   void initStates(int maxInitialDirectChs);
 
   /*
-   * check for direct->inferred (i.e. -ve to +ve) zero crossings from current measurement
-   *   - if a zero crossing occurred in either y1 or y2, and y1/y2 is currently controlled,
-   *     - flip each state in y2/y1 (i.e. the uncontrolled measurement set),
-   *     - and set y2/y1 to a small value in the new state
+   * if direct->inferred (i.e. -ve to +ve) zero crossing occurred in y1 or y2,
+   *   - if y1/y2 is currently controlled,
+   *     - set the uncontrolled measurement (y2/y1) to a small value in its current state
    *   - update each channel state
-         - direct->inferred: if y[ch] > 0 and hysteresis countdown expires
-         - inferred->direct: if any d2i occurred in y1/y2
+         - direct->inferred: if y[ch] >= 0
+         - inferred->direct: if the closest directFgClstr[ch] to 0 is -ve and close to current y[ch]
    */
   void updateMeasAndStateOnZeroCross();
 };
