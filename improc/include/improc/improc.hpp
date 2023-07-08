@@ -5,6 +5,8 @@
 
 #define MAX_NO 20
 
+using OptDouble = std::optional<double>;
+
 void rotateMat(cv::Mat &src, cv::Mat &dst, double angle);
 
 class RotRect : public cv::Rect {
@@ -114,7 +116,7 @@ public:
   std::vector<bool> directMeasAvail, yState1, yState2;
   std::vector<unsigned char> zeroCross;
 
-  std::vector<double> yDirect1, yDirect2, yInferred1, yInferred2;
+  std::vector<OptDouble> yDirect1, yDirect2, yInferred1, yInferred2;
   std::vector<double> y, y1, y2, yPrev1, yPrev2;
 
 private:
@@ -139,14 +141,13 @@ private:
   // std::vector<bool> directMeasAvail, yState1, yState2;
   // std::vector<double> yDirect1, yDirect2, yInferred1, yInferred2;
   // std::vector<double> y, y1, y2, yPrev1, yPrev2;
-  int txCooldown, numInitDirectChs;
-  bool doneInit;
+  int numInitDirectChs;
   // bool txOccurred1, txOccurred2;
   double r[2 * MAX_NO];
 
   void start(); // Called within imProcThread context
 
-  double minDist(std::vector<double> &vec, double value);
+  std::optional<double> argMinDist(std::vector<double> &vec, double value);
 
   void segAndOrientCh(cv::Mat &srcImg, cv::Mat &tmpImg, cv::Mat &destImg, RotRect &chROI,
                       int &chWidth);
@@ -161,14 +162,13 @@ private:
    *   - given n channels,
    *     initialization is complete after n-2 channels transition to direct (1) state
    */
-  bool initStates();
+  void initStates(int maxInitialDirectChs);
 
   /*
    * check for direct->inferred (i.e. -ve to +ve) zero crossings from current measurement
    *   - if a zero crossing occurred in either y1 or y2, and y1/y2 is currently controlled,
-   *     - set y2/y1 (i.e. the uncontrolled measurement set) to inferred state,
-   *     - update yDirect and yInferred for y2/y1 (whichever is uncontrolled),
-   *       and set y2/y1 to the updated yInferred
+   *     - flip each state in y2/y1 (i.e. the uncontrolled measurement set),
+   *     - and set y2/y1 to a small value in the new state
    *   - update each channel state
          - direct->inferred: if y[ch] > 0 and hysteresis countdown expires
          - inferred->direct: if any d2i occurred in y1/y2

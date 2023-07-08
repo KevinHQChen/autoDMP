@@ -114,6 +114,19 @@ inline void displayArrayNd(const char *arrName, const std::vector<double> &arr,
   }
 }
 
+inline void displayArrayNOptD(const char *arrName, const std::vector<std::optional<double>> &arr,
+                              const char *txtFmt = "%.1f", const char *helpText = "") {
+  ImGui::TableNextRow();
+  ImGui::TableSetColumnIndex(0);
+  ImGui::Text("%s", arrName);
+  ImGui::SameLine();
+  HelpMarker(helpText);
+  for (size_t i = 0; i < arr.size(); ++i) {
+    ImGui::TableSetColumnIndex(i + 1);
+    ImGui::Text(txtFmt, arr[i].value_or(0.0));
+  }
+}
+
 inline void displayArrayNb(const char *arrName, const std::vector<bool> &arr,
                            const char *txtFmt = "%d", const char *helpText = "") {
   ImGui::TableNextRow();

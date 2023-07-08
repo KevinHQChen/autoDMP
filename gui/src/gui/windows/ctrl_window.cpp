@@ -242,10 +242,10 @@ void CtrlWindow::renderSupervisorStatus() {
         displayArrayNd("y_max1", std::vector<double>(sv_->supIn.ymax, sv_->supIn.ymax + no));
         // displayArrayNd("y_max2",
         //                std::vector<double>(sv_->supIn.ymax + no, sv_->supIn.ymax + 2 * no));
-        displayArrayNd("yDirect1", imProc_->yDirect1);
-        displayArrayNd("yDirect2", imProc_->yDirect2);
-        displayArrayNd("yInferred1", imProc_->yInferred1);
-        displayArrayNd("yInferred2", imProc_->yInferred2);
+        displayArrayNOptD("yDirect1", imProc_->yDirect1);
+        displayArrayNOptD("yDirect2", imProc_->yDirect2);
+        displayArrayNOptD("yInferred1", imProc_->yInferred1);
+        displayArrayNOptD("yInferred2", imProc_->yInferred2);
         displayArrayNb("y1State", imProc_->yState1);
         displayArrayNb("y2State", imProc_->yState2);
         displayArrayNd("zeroCross1", std::vector<double>(sv_->supIn.yo, sv_->supIn.yo + no));
