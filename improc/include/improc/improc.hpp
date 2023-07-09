@@ -116,7 +116,7 @@ public:
   std::vector<bool> directMeasAvail, yState1, yState2;
   std::vector<unsigned char> zeroCross;
 
-  std::vector<OptDouble> yDirect1, yDirect2, yInferred1, yInferred2;
+  std::vector<OptDouble> yDirect0, yDirect1, yDirect2, yInferred0, yInferred1, yInferred2;
   std::vector<double> y, y1, y2, yPrev1, yPrev2;
 
 private:

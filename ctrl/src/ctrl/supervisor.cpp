@@ -51,7 +51,7 @@ void Supervisor::startThread() {
       supOut.yhat[no + ch] = 0;
       // input
       supIn.u0[ch] = pump->outputs[ch];
-      supIn.umax[ch] = 100;
+      supIn.umax[ch] = 80;
       supIn.uwt[ch] = 0.025;
       // zero-cross flag
       supIn.yo[ch] = false;

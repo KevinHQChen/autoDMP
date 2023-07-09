@@ -142,6 +142,10 @@ void updateMeasCh(std::vector<double> &y, std::vector<double> &yPrev,
 void ImProc::updateMeasAndStateOnZeroCross() {
   int epsil = 56 / 2; // half of channel width
   bool d2iTxRequested = false;
+  for (int ch = 0; ch < no; ++ch) {
+    yDirect0[ch] = argMinDist(directFgClstrs[ch], 0);
+    yInferred0[ch] = argMinDist(inferredFgClstrs[ch], 0);
+  }
 
   for (int ch = 0; ch < no; ++ch) {
     if ((yState1[ch] && y1[ch] >= 0) || (yState2[ch] && y2[ch] >= 0)) {
@@ -171,32 +175,45 @@ void ImProc::updateMeasAndStateOnZeroCross() {
 
   for (int ch = 0; ch < no; ++ch) {
     if (yState1[ch]) {
-      if (y1[ch] >= 0)
+      if (y1[ch] >= 0) {
         yState1[ch] = false;
+        lg->info("y1 d2i tx 1 ch: {}", ch);
+      } else if (!yDirect0[ch].has_value() && yInferred0[ch].has_value() &&
+                 yInferred0[ch].value() > 0 && std::abs(yInferred0[ch].value() - y1[ch]) < epsil) {
+        yState1[ch] = false;
+        lg->info("y1 d2i tx 2 ch: {}", ch);
+      }
     } else {
-      OptDouble yDirect = argMinDist(directFgClstrs[ch], 0);
-      if (yDirect.has_value() && yDirect.value() < 0 &&
-          std::abs(yDirect.value() - y1[ch]) < epsil) {
+      if (yDirect0[ch].has_value() && yDirect0[ch].value() < 0 &&
+          std::abs(yDirect0[ch].value() - y1[ch]) < epsil) {
         yState1[ch] = true;
-        y1[ch] = yDirect.value();
+        y1[ch] = yDirect0[ch].value();
+        lg->info("y1 i2d tx ch: {}", ch);
       }
     }
     if (yState2[ch]) {
-      if (y2[ch] >= 0)
+      if (y2[ch] >= 0) {
         yState2[ch] = false;
+        lg->info("y2 d2i tx 1 ch: {}", ch);
+      } else if (!yDirect0[ch].has_value() && yInferred0[ch].has_value() &&
+                 yInferred0[ch].value() > 0 && std::abs(yInferred0[ch].value() - y2[ch]) < epsil) {
+        yState2[ch] = false;
+        lg->info("y2 d2i tx 2 ch: {}", ch);
+      }
     } else {
-      OptDouble yDirect = argMinDist(directFgClstrs[ch], 0);
-      if (yDirect.has_value() && yDirect.value() < 0 &&
-          std::abs(yDirect.value() - y2[ch]) < epsil) {
+      if (yDirect0[ch].has_value() && yDirect0[ch].value() < 0 &&
+          std::abs(yDirect0[ch].value() - y2[ch]) < epsil) {
         yState2[ch] = true;
-        y2[ch] = yDirect.value();
+        y2[ch] = yDirect0[ch].value();
+        lg->info("y2 i2d tx ch: {}", ch);
       }
     }
   }
 }
 
 void ImProc::updateMeas() {
-  // get closest direct & inferred clstr (yDirect and yInferred) to prev measurements if they exist
+  // get closest direct & inferred clstr (yDirect and yInferred) to prev measurements if they
+  // exist
   yPrev1 = y1;
   yPrev2 = y2;
   for (int ch = 0; ch < no; ++ch) {
@@ -248,8 +265,10 @@ void ImProc::startThread() {
     yPrev2.assign(no, 0);
     yState1.assign(no, false);
     yState2.assign(no, false);
+    yDirect0.assign(no, 0);
     yDirect1.assign(no, 0);
     yDirect2.assign(no, 0);
+    yInferred0.assign(no, 0);
     yInferred1.assign(no, 0);
     yInferred2.assign(no, 0);
     directMeasAvail.assign(no, false);
