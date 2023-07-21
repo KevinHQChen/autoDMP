@@ -1,12 +1,8 @@
-function RST = simJunction_(y_, no, currTraj, currEv, ywt, beta)
-persistent yPrev rPrev currTrajPrev rstCountDown;
-y = [y_(1:2:end); y_(2:2:end)];
+function RST = simJunction_(currTraj, currEv, ywt, no, beta)
+persistent rPrev currTrajPrev rstCountDown;
 RST = logical(zeros(2*no, 1));
 
 % initialize variables
-if isempty(yPrev)
-    yPrev = y;
-end
 if isempty(rPrev)
     rPrev = currEv.r;
 end
@@ -35,7 +31,6 @@ end
 if any(ywt < 0.995*beta & ywt > 0.005*beta)
     RST = logical(zeros(2*no, 1));
 end
-yPrev = y_;
 rPrev = currEv.r;
 currTrajPrev = currTraj;
 

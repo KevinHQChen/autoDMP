@@ -2,36 +2,18 @@ clc, close all, clear all
 rootPath = "~/autoDMP/ctrl/scripts/";
 cd(rootPath);
 plantConstants;
-%% define constants for control
 
-% overall plant model (we can decompose all channel topologies such that each pump has a channel it's directly connected to, and all intermediate channels are just extensions of these direct channels)
-A_0 = diag(ones(no,1)-dt);
-B_0 = dt*normalize( diag(ones(no,1)) - 0.5*(eye(no) ~= 1) );
-C_0 = eye(no);
-D_0 = zeros(no, ni);
-K_0 = zeros(no);
-y0_0 = zeros(no, 1);
-x0_0 = y0_0;
-% double each output to provide smooth switching between multiple measurements in each channel
-G = idss(blkdiag(A_0, A_0),... % A = 2*no x 2*no   (x, x)
-         [B_0; B_0],...        % B = 2*no x ni     (x, u)
-         blkdiag(C_0, C_0),... % C = 2*no x 2*no   (y, x)
-         [D_0; D_0],...        % D = 2*no x ni     (y, u)
-         blkdiag(K_0, K_0),... % K = 2*no x 2*no   (x, y)
-         [x0_0; x0_0], dt);      % x0 = 2*no x 1     (x, 1)
+%% define overall plant model
+[G, y_0, x_0, ns, np, theta0, P_0, mdlStr] = get1stOrderMdl(no, ni, dt);
+% [G, y_0, x_0, ns, np, theta0, P_0, mdlStr] = get2ndOrderMdl(no, ni, dt);
 
-% initialize normalized MPC weight vectors
-uwt0 = zeros(1, ni);
-duwt0 = dt*ones(1, ni);
-ywt0 = zeros(1, 2*no);
+keySet = {'integrator', '1stOrder', '2ndOrder'};
+valSet = {0, 1, 2};
+mdlMap = containers.Map(keySet, valSet);
+mdlNum = mdlMap(mdlStr);
 
 %% define non-virtual buses for AMPC
-mdl0 = struct('A', A_0, 'B', B_0, 'C', C_0, 'D', D_0, 'U', u_o, 'Y', y0_0, 'X', x0_0, 'DX', zeros(no, 1));
-busInfo = Simulink.Bus.createObject(mdl0);
-mdl0_bus = evalin('base', busInfo.busName);
-evalin('base', ['clear ' busInfo.busName]);
-
-mdlFull = struct('A', G.A, 'B', G.B, 'C', G.C, 'D', G.D, 'U', u_o, 'Y', y_o, 'X', y_o, 'DX', zeros(2*no, 1));
+mdlFull = struct('A', G.A, 'B', G.B, 'C', G.C, 'D', G.D, 'U', u_0, 'Y', y_0, 'X', x_0, 'DX', zeros(2*ns, 1));
 busInfo = Simulink.Bus.createObject(mdlFull);
 mdl_bus = evalin('base', busInfo.busName);
 evalin('base', ['clear ' busInfo.busName]);
@@ -43,8 +25,8 @@ ampc.PredictionHorizon = 20;
 %% specify control horizon
 ampc.ControlHorizon = 1;
 %% specify nominal values for inputs and outputs
-ampc.Model.Nominal.U = u_o;
-ampc.Model.Nominal.Y = y_o;
+ampc.Model.Nominal.U = u_0;
+ampc.Model.Nominal.Y = y_0;
 %% specify constraints for MV and MV Rate
 for i = 1:ni
     ampc.MV(i).Min = 0;
@@ -52,7 +34,7 @@ for i = 1:ni
 end
 %% specify target for MV
 for i = 1:ni
-    ampc.MV(i).Target = u_o(i);
+    ampc.MV(i).Target = u_0(i);
 end
 %% specify constraints for OV
 for i = 1:2*no
@@ -61,6 +43,10 @@ for i = 1:2*no
 end
 %% specify overall adjustment factor applied to weights
 beta = 0.13534; % maximize robustness in closed-loop performance
+%% initialize normalized MPC weight vectors
+uwt0 = zeros(1, ni);
+duwt0 = dt*ones(1, ni);
+ywt0 = zeros(1, 2*no);
 %% specify weights
 ampc.Weights.MV = uwt0*beta;
 ampc.Weights.MVRate = duwt0/beta;
@@ -68,19 +54,9 @@ ampc.Weights.OV = ywt0*beta;
 ampc.Weights.ECR = 100000;
 
 %% constants for recursive least squares
-np = ni+1; % number of parameters for each output
-
 % parameter projection
 tau = 10; % memory horizon (in seconds)
 forgettingFactor = 1 - dt/tau;
-
-% initialize paramEst variables
-prms = [-dt*ones(1, 2*no); G.B'];
-theta0 = zeros(2*np*no, 1);
-for i=1:2*no % stack each row of prms into a single column vector
-    theta0( ((i-1)*np + 1):i*np ) = prms(:,i);
-end
-P_0 = 1*eye(2*np*no);
 
 %% use custom state estimator implementation
 setEstimator(ampc, 'custom');
@@ -90,7 +66,12 @@ s = tf('s');
 % 1/s^2 * sign(G.B); % OD model for cross-coupled ramp-like disturbances that account for geometric constraints
 % 1/s^2 * diag(ones(numChs,1)); % default OD model for ramp-like disturbances
 % tfOD = tf(zeros(2*no));
-tfOD = blkdiag(1/s^2 * sign(B_0), 1/s^2 * sign(B_0));
+B_0 = G.B(1:ns, :);
+if mdlNum == 0 || mdlNum == 1
+    tfOD = blkdiag(1/s^2 * sign(B_0), 1/s^2 * sign(B_0));
+elseif mdlNum == 2
+    tfOD = blkdiag( 1/s^2 * sign(B_0(2:2:end,:)), 1/s^2 * sign(B_0(2:2:end,:)) );
+end
 setoutdist(ampc, 'model', tfOD);
 God = getoutdist(ampc);
 Aod = God.A;

@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2224
+// Model version                  : 1.2270
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Thu Jul  6 16:16:39 2023
+// C/C++ source code generated on : Fri Jul 21 16:35:17 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -237,18 +237,6 @@ class SupervisoryController final
     real_T e_data[1199];
     real_T t_data[1199];
     real_T tmp_data[1199];
-    real_T SFunction_o11;              // '<Root>/SupervisoryController'
-    real_T SFunction_o12;              // '<Root>/SupervisoryController'
-    real_T SFunction_o13;              // '<Root>/SupervisoryController'
-    real_T SFunction_o14;              // '<Root>/SupervisoryController'
-    real_T SFunction_o15;              // '<Root>/SupervisoryController'
-    real_T SFunction_o16;              // '<Root>/SupervisoryController'
-    real_T SFunction_o17;              // '<Root>/SupervisoryController'
-    real_T SFunction_o18;              // '<Root>/SupervisoryController'
-    real_T SFunction_o19;              // '<Root>/SupervisoryController'
-    real_T SFunction_o20;              // '<Root>/SupervisoryController'
-    real_T SFunction_o21;              // '<Root>/SupervisoryController'
-    real_T SFunction_o22;              // '<Root>/SupervisoryController'
     uint32_T RandSeed[3];              // '<S2>/excitation'
     uint16_T waypt;                    // '<Root>/SupervisoryController'
     uint16_T trajSize;                 // '<Root>/SupervisoryController'
@@ -276,6 +264,7 @@ class SupervisoryController final
     real_T y[6];                       // '<Root>/y'
     real_T ymax[6];                    // '<Root>/ymax'
     real_T y0[6];                      // '<Root>/y0'
+    real_T x0[6];                      // '<Root>/x0'
     real_T u0[3];                      // '<Root>/u0'
     real_T umax[3];                    // '<Root>/umax'
     real_T uwt[3];                     // '<Root>/uwt'
@@ -299,7 +288,7 @@ class SupervisoryController final
     event_bus currEv;                  // '<Root>/currEv'
     real_T theta[24];                  // '<Root>/theta'
     real_T prmErr[6];                  // '<Root>/prmErr'
-    real_T P_j[576];                   // '<Root>/P'
+    real_T P_e[576];                   // '<Root>/P'
     boolean_T requestEvent;            // '<Root>/requestEvent'
   };
 
@@ -348,12 +337,21 @@ class SupervisoryController final
                                           //  Referenced by:
                                           //    '<Root>/SupervisoryController'
                                           //    '<S2>/MATLAB Function'
+                                          //    '<S2>/MATLAB Function2'
+                                          //    '<S85>/MATLAB Function1'
+                                          //    '<S89>/MATLAB Function1'
 
     real_T lpfDen;                     // Variable: lpfDen
                                           //  Referenced by: '<S2>/Discrete Filter1'
 
     real_T lpfNum[60];                 // Variable: lpfNum
                                           //  Referenced by: '<S2>/Discrete Filter1'
+
+    real_T mdlNum;                     // Variable: mdlNum
+                                          //  Referenced by:
+                                          //    '<S2>/MATLAB Function2'
+                                          //    '<S85>/MATLAB Function1'
+                                          //    '<S89>/MATLAB Function1'
 
     real_T uwt0[3];                    // Variable: uwt0
                                           //  Referenced by: '<S2>/Delay1'
@@ -400,10 +398,7 @@ class SupervisoryController final
     real_T Constant13_Value[18];       // Expression: G.D
                                           //  Referenced by: '<S2>/Constant13'
 
-    real_T Constant11_Value;           // Expression: 1
-                                          //  Referenced by: '<S2>/Constant11'
-
-    real_T Constant2_Value[6];         // Expression: zeros(2*no, 1)
+    real_T Constant2_Value[6];         // Expression: zeros(2*ns, 1)
                                           //  Referenced by: '<S2>/Constant2'
 
     real_T Constant1_Value[12];        // Expression: zeros(size(God.A,1),1)

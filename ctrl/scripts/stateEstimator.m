@@ -1,6 +1,6 @@
-function [A, B, C, D, Q, R, N] = stateEstimator(Ap, Bp, Cp, Dp, Aod, Bod, Cod, Dod, Dn, no, ni)
+function [A, B, C, D, Q, R, N] = stateEstimator(Ap, Bp, Cp, Dp, Aod, Bod, Cod, Dod, Dn, no, ni, ns_)
 %#codegen
-nsp = 2*no;             % n_plant_states
+nsp = 2*ns_;             % n_plant_states
 nsod = size(Aod,1);     % n_od_states
 ns = nsp + nsod;        % n_states = n_plant_states + n_od_states
 
@@ -24,7 +24,7 @@ D(1:2*no, 1:ni) = Dp;
 B_est = zeros(ns, ni + 2*no + 2*no);
 B_est(1:ns, 1:ni+2*no) = blkdiag(Bp, Bod);
 D_est = [Dp Dod Dn];
-Q = blkdiag(Bp(1:no,1:ni)*Bp(1:no,1:ni)', Bp(no+1:2*no,1:ni)*Bp(no+1:2*no,1:ni)', Bod*Bod');
+Q(1:ns, 1:ns) = blkdiag(Bp(1:ns_,1:ni)*Bp(1:ns_,1:ni)', Bp(ns_+1:2*ns_,1:ni)*Bp(ns_+1:2*ns_,1:ni)', Bod*Bod');
 % Q = B_est * B_est';
 R = D_est * D_est';
 N = B_est * D_est';

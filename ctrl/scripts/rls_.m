@@ -1,16 +1,16 @@
 function [dtheta, dP, L] = rls_(theta, phi, epsil, EN, p_, dPmod_, lambda, P, no, ni, np)
 %#codegen
-dtheta = zeros(np*no, 1);
-dP = zeros(np*no,np*no);
-L = zeros(np*no, no);
+dtheta = zeros(no*np, 1);
+dP = zeros(no*np,no*np);
+L = zeros(no*np, no);
 
 L = P*phi*inv(lambda*eye(no) + phi'*P*phi);
 
-dtheta(1:np*no, 1) = L*epsil;
-dP(1:np*no, 1:np*no) = L*phi'*P;
+dtheta(1:no*np, 1) = L*epsil;
+dP(1:no*np, 1:no*np) = L*phi'*P;
 
 % parameter projection
-for i = 1:np*no
+for i = 1:no*np
     if mod(i-1, np) == 0 % a_i requires lower and upper bounds
         if ~( (theta(i) + dtheta(i) > p_) || ... % lower bound
               ( (theta(i) + dtheta(i) == p_) && (dtheta(i) >= 0) ) ) ...

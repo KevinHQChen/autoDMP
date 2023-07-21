@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2224
+// Model version                  : 1.2270
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Thu Jul  6 16:16:39 2023
+// C/C++ source code generated on : Fri Jul 21 16:35:17 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -91,6 +91,9 @@ SupervisoryController::P SupervisoryController::rtP{
   //  Referenced by:
   //    '<Root>/SupervisoryController'
   //    '<S2>/MATLAB Function'
+  //    '<S2>/MATLAB Function2'
+  //    '<S85>/MATLAB Function1'
+  //    '<S89>/MATLAB Function1'
 
   0.025,
 
@@ -122,6 +125,14 @@ SupervisoryController::P SupervisoryController::rtP{
     0.002358892157775442, -0.00023795039586547393, -0.0016761062869331484,
     -0.0012869873067591802, -0.0001072340498580264, 0.00061498512134384043,
     0.00053156288262108274, 0.0001062405464448335, -0.0001395194037777206 },
+
+  // Variable: mdlNum
+  //  Referenced by:
+  //    '<S2>/MATLAB Function2'
+  //    '<S85>/MATLAB Function1'
+  //    '<S89>/MATLAB Function1'
+
+  1.0,
 
   // Variable: uwt0
   //  Referenced by: '<S2>/Delay1'
@@ -222,12 +233,7 @@ SupervisoryController::P SupervisoryController::rtP{
   { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0 },
 
-  // Expression: 1
-  //  Referenced by: '<S2>/Constant11'
-
-  1.0,
-
-  // Expression: zeros(2*no, 1)
+  // Expression: zeros(2*ns, 1)
   //  Referenced by: '<S2>/Constant2'
 
   { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
