@@ -10,8 +10,9 @@ Supervisor::Supervisor(ImProc *imProc, Pump *pump, std::shared_ptr<logger> log)
   lg->info("Initializing Supervisor...");
   sup->initialize();
   rtM = sup->getRTM();
-  nullEv = *(event_bus *)getSupervisorParam(&rtM->DataMapInfo.mmi, 0);
+  nullEv = *(event_bus *)getSupervisorParam(&rtM->DataMapInfo.mmi, 53 - 53);
   currEv_ = nullEv;
+  mdlNum = *(double *)getSupervisorParam(&rtM->DataMapInfo.mmi, 63 - 53);
 }
 
 Supervisor::~Supervisor() {
@@ -31,14 +32,25 @@ void Supervisor::startThread() {
     no = imProc->impConf.getNumChs();
     lg->info("Supervisor found {} channels.", no);
 
+    switch ((int)mdlNum) {
+    case 0: // integrator model
+      ns = no;
+      break;
+    case 1: // first-order model
+      ns = no;
+      break;
+    }
+    lg->info("Supervisor found {} states.", ns);
+
     // initialize adaptive control constants
-    supIn.excitation = 0;
+    supIn.excitation = 1;
     supIn.dPmod_ = 0.0001;
     supIn.p_ = 0.0001;
     supIn.lambda = 0.9975;
     supIn.k_2 = 2;
     for (int ch = 0; ch < 2 * no; ++ch)
       supIn.enAdapt[ch] = true;
+
     // initialize input/output constants
     for (int ch = 0; ch < no; ++ch) {
       // primary output
@@ -57,6 +69,11 @@ void Supervisor::startThread() {
       supIn.yo[ch] = false;
       supIn.yo[no + ch] = false;
     }
+    for (int s = 0; s < ns; ++s) {
+      supIn.x0[s] = 0;
+      supIn.x0[ns + s] = 0;
+    }
+
     // initialize SupervisoryController
     sup->initialize();
 

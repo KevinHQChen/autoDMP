@@ -30,7 +30,7 @@ PumpWindow::~PumpWindow() {
 }
 
 void PumpWindow::render() {
-  if (ImGui::IsKeyPressed(ImGuiKey_P))
+  if (ImGui::GetIO().KeyAlt && ImGui::IsKeyPressed(ImGuiKey_P))
     visible_ = !visible_;
   if (visible_ && ImGui::Begin("Pump Setup", &visible_)) {
     maxOutputSlider_->render();
@@ -56,9 +56,7 @@ void PumpWindow::setPumps() {
     pp_->setOutput(i, outputSlider_->get(i));
 }
 
-void PumpWindow::syncPumps() {
-  pp_->outputs[1] = pp_->outputs[0];
-}
+void PumpWindow::syncPumps() { pp_->outputs[1] = pp_->outputs[0]; }
 
 void PumpWindow::setFreq() {
   if (!controlToggle_->get())

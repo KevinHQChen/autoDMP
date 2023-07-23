@@ -7,9 +7,9 @@ ImProcWindow::ImProcWindow(ImCap *imCap, ImProc *imProc) : imCap_(imCap), imProc
   // procImage_ = std::make_unique<IMMImage>("Proc Image", 1);
   // for (int i = 0; i < numChans_; i++)
   //   chImages_[i] = std::make_unique<IMMImage>("Channel " + std::to_string(i), 1);
-  imCapToggle_ = std::make_unique<Toggle>("ImCap (c)", &startedImCap_);
+  imCapToggle_ = std::make_unique<Toggle>("ImCap (ALT + c)", &startedImCap_);
   imProcSetupToggle_ = std::make_unique<Toggle>("ImProc Setup (s)", &improcSetupVisible_);
-  imProcToggle_ = std::make_unique<Toggle>("ImProc (i)", &startedImProc_);
+  imProcToggle_ = std::make_unique<Toggle>("ImProc (ALT + i)", &startedImProc_);
 }
 
 ImProcWindow::~ImProcWindow() {
@@ -28,11 +28,11 @@ void ImProcWindow::render() {
 }
 
 void ImProcWindow::renderImCap() {
-  if (ImGui::IsKeyPressed(ImGuiKey_C) || imCapToggle_->changed())
+  if ((ImGui::GetIO().KeyAlt && ImGui::IsKeyPressed(ImGuiKey_C)) || imCapToggle_->changed())
     !imCap_->started() ? imCap_->startThread() : imCap_->stopThread();
-  if (ImGui::IsKeyPressed(ImGuiKey_D))
+  if (ImGui::GetIO().KeyAlt && ImGui::IsKeyPressed(ImGuiKey_D))
     visible_ = !visible_;
-  if (ImGui::IsKeyPressed(ImGuiKey_S))
+  if (ImGui::GetIO().KeyAlt && ImGui::IsKeyPressed(ImGuiKey_S))
     improcSetupVisible_ = !improcSetupVisible_;
   if (visible_ && ImGui::Begin("Raw Image Capture", &visible_)) {
     // draw image
@@ -89,9 +89,9 @@ void ImProcWindow::renderImCap() {
 }
 
 void ImProcWindow::renderImProc() {
-  if (ImGui::IsKeyPressed(ImGuiKey_I) || imProcToggle_->changed())
+  if ((ImGui::GetIO().KeyAlt && ImGui::IsKeyPressed(ImGuiKey_I)) || imProcToggle_->changed())
     !imProc_->started() ? imProc_->startThread() : imProc_->stopThread();
-  if (ImGui::IsKeyPressed(ImGuiKey_J))
+  if (ImGui::GetIO().KeyAlt && ImGui::IsKeyPressed(ImGuiKey_J))
     improcVisible_ = !improcVisible_;
   if (improcVisible_ && ImGui::Begin("Channels", &improcVisible_)) {
     y = imProc_->getY();

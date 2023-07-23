@@ -20,9 +20,10 @@ public:
   SupervisoryController::ExtY supOut;
   SupervisoryController::RT_MODEL *rtM;
 
-  int no;
+  int no, ns;
 
   event_bus nullEv;
+  double mdlNum;
 
   void startThread();
   void stopThread();
@@ -66,11 +67,11 @@ private:
   /**
    * Function: getSupervisorParam
    * ----------------------------
-   * Retrieves the address of indexed variable block parameters defined in
-   * `$GITROOT/external/SupervisoryController/scripts/SupervisoryController_ert_rtw/SupervisoryController_data.cpp`.
+   * Returns a pointer to a tunable parameter defined in
+   * `$GITROOT/external/SupervisoryController/scripts/SupervisoryController_ert_rtw/SupervisoryController_capi.cpp/rtModelParameters`.
    *
    * @param mmi: A pointer to the model mapping information structure.
-   * @param paramIdx: The index of the parameter whose address is to be retrieved.
+   * @param paramIdx: The index of the tunable parameter of interest.
    *
    * @return: A void pointer to the address of the specified parameter. This must be cast to the
    * appropriate type. If the model parameters are not available or the parameter address is not

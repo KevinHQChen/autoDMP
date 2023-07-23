@@ -8,7 +8,7 @@ PlotWindow::~PlotWindow() { destroyDataVecs(); }
 
 void PlotWindow::render() {
   initDataVecs();
-  if (ImGui::IsKeyPressed(ImGuiKey_V))
+  if (ImGui::GetIO().KeyAlt && ImGui::IsKeyPressed(ImGuiKey_V))
     visible_ = !visible_;
   if (visible_ && ImGui::Begin("Real Time Plot", &visible_)) {
     if (!pausePlot) {

@@ -46,7 +46,7 @@ CtrlWindow::CtrlWindow(Supervisor *sv, ImProc *imProc) : sv_(sv), imProc_(imProc
 CtrlWindow::~CtrlWindow() {}
 
 void CtrlWindow::render() {
-  if (ImGui::IsKeyPressed(ImGuiKey_U))
+  if (ImGui::GetIO().KeyAlt && ImGui::IsKeyPressed(ImGuiKey_U))
     ctrlSetupVisible_ = !ctrlSetupVisible_;
   if (ctrlSetupVisible_ && ImGui::Begin("Ctrl Setup", &ctrlSetupVisible_)) {
     no = imProc_->impConf.getNumChs();

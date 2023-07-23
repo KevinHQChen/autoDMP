@@ -85,24 +85,24 @@ GUI::~GUI() {
 void GUI::renderMenu() {
   // called by imgui_bundle within BeginMenuBar()/EndMenuBar() context
   if (ImGui::BeginMenu("File")) {
-    runnerParams.appShallExit = ImGui::MenuItem("Quit", "q");
+    runnerParams.appShallExit = ImGui::MenuItem("Quit", "ALT + q");
     ImGui::MenuItem("Show Demo Window", nullptr, &guiConf.showDebug);
     ImGui::EndMenu();
   }
   if (ImGui::BeginMenu("View")) {
     // shortcuts are just for show, they are not implemented here (yet)
-    ImGui::MenuItem("Image Capture", "d", &imProcWindow_->visible_);
-    ImGui::MenuItem("Image Processing Setup", "s", &imProcWindow_->improcSetupVisible_);
-    ImGui::MenuItem("Image Processing", "j", &imProcWindow_->improcVisible_);
-    ImGui::MenuItem("Pump Control", "p", &pumpWindow_->visible_);
-    ImGui::MenuItem("Supervisor Setup", "u", &ctrlWindow_->ctrlSetupVisible_);
-    ImGui::MenuItem("Real-Time Plot", "v", &plotWindow_->visible_);
+    ImGui::MenuItem("Image Capture", "ALT + d", &imProcWindow_->visible_);
+    ImGui::MenuItem("Image Processing Setup", "ALT + s", &imProcWindow_->improcSetupVisible_);
+    ImGui::MenuItem("Image Processing", "ALT + j", &imProcWindow_->improcVisible_);
+    ImGui::MenuItem("Pump Control", "ALT + p", &pumpWindow_->visible_);
+    ImGui::MenuItem("Supervisor Setup", "ALT + u", &ctrlWindow_->ctrlSetupVisible_);
+    ImGui::MenuItem("Real-Time Plot", "ALT + v", &plotWindow_->visible_);
     ImGui::EndMenu();
   }
 }
 
 void GUI::render() {
-  if (ImGui::IsKeyPressed(ImGuiKey_Q))
+  if (ImGui::GetIO().KeyAlt && ImGui::IsKeyPressed(ImGuiKey_Q))
     runnerParams.appShallExit = true;
   imProcWindow_->render();
   pumpWindow_->render();
