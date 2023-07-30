@@ -14,6 +14,9 @@
 
 namespace gui {
 
+namespace py = pybind11;
+using namespace py::literals;
+
 class CtrlWindow : public Window {
   Supervisor *sv_;
   ImProc *imProc_;
@@ -35,6 +38,7 @@ class CtrlWindow : public Window {
       paramLowerBoundMax{0.1}, covModificationMin{0.0005}, covModificationMax{0.1};
   double uwt, umax;
   double uwtMin{0.0}, uwtMax{10.0}, umaxMin{80.0}, umaxMax{200.0};
+  double minValMin{-10.0f}, minValMax{0.0f}, maxValMin{0.0f}, maxValMax{10.0f};
 
   int openAction = -1;
   double dropletLength = 0, dNeck = 0, dPlug = 0, wCh = 0;
@@ -52,10 +56,9 @@ class CtrlWindow : public Window {
   }
 
   // for sysID
-  Eigen::VectorXd excitationSignal_;
   std::vector<double> timeVec_, uVec_;
   int numSamples_ = 1000;
-  float minVal_, maxVal_, uref_;
+  double minVal_, maxVal_;
   int order_;
 
   void renderAddEventDialog();
@@ -66,6 +69,8 @@ class CtrlWindow : public Window {
   void renderSysIdDialog();
 
   void loadEventsFromFile(const std::string &filename);
+
+  void generateExcitationSignal(double minVal, double maxVal, int order);
 
 public:
   bool ctrlSetupVisible_{false}, ctrlVisible_{false};

@@ -326,19 +326,19 @@ void CtrlWindow::renderSysIdDialog() {
     ImGui::SliderScalar("Max Value", ImGuiDataType_Double, &maxVal_, &maxValMin, &maxValMax, "%.1f");
     ImGui::SliderInt("Order", &order_, 1, 10);
     if (ImGui::Button("Generate Excitation Signal"))
-      generateExcitationSignal(minVal, maxVal, order);
+      generateExcitationSignal(minVal_, maxVal_, order_);
 
-    if (excitationSignal_.size() != 0) {
+    if (sv_->excitationSignal_.size() != 0) {
       timeVec_.clear();
       uVec_.clear();
-      for (int i = 0; i < excitationSignal_.cols(); ++i) {
+      for (int i = 0; i < sv_->excitationSignal_.size(); ++i) {
         timeVec_.push_back(i * 0.1);
-        uVec_.push_back(excitationSignal_(i));
+        uVec_.push_back(sv_->excitationSignal_(i));
       }
 
       if (ImPlot::BeginPlot("Preview")) {
         ImPlot::SetupAxes("time (s)", "Input");
-        ImPlot::PlotLine("u", timeVec_.data(), uVec_.data(), excitationSignal_.cols());
+        ImPlot::PlotLine("u", timeVec_.data(), uVec_.data(), sv_->excitationSignal_.size());
         ImPlot::EndPlot();
       }
     }
@@ -353,9 +353,9 @@ void CtrlWindow::generateExcitationSignal(double minVal, double maxVal, int orde
     py::object prbs = py::module::import("prbs").attr("prbs");
 
     // Call the prbs function with the provided minVal, maxVal, and order parameters
-    excitationSignal_ = prbs(minVal, maxVal, order).cast<Eigen::VectorXd>();
+    sv_->excitationSignal_ = prbs(minVal, maxVal, order).cast<Eigen::VectorXd>();
 
-    info("Excitation signal dimensions: {}x{}", excitationSignal_.rows(), excitationSignal_.cols());
+    info("Excitation signal dimensions: {}x{}", sv_->excitationSignal_.rows(), sv_->excitationSignal_.cols());
 }
 
 } // namespace gui

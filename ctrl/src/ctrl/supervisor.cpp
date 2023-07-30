@@ -161,15 +161,15 @@ void Supervisor::start() {
         // Only update the excitation signal every fourth iteration to achieve 10 Hz
         if (actualStep % 4 == 0) {
           // Get current step of excitation signal
-          if (excitationStep < ctrlWindow->excitationSignal_.size()) {
-            u = ctrlWindow->excitationSignal_(excitationStep);
+          if (excitationStep < excitationSignal_.size()) {
+            uStep = excitationSignal_(excitationStep);
             excitationStep++;
           } else
-            u = 0;
+            uStep = 0;
         }
 
-        pump->setOutput(0, u/2 + uref[0]);
-        pump->setOutput(1, -u/2 + uref[1]);
+        pump->setOutput(0, uStep/2 + uref[0]);
+        pump->setOutput(1, -uStep/2 + uref[1]);
 
         // Increment update counter, resetting if it reaches 4
         actualStep = (actualStep + 1) % 4;
