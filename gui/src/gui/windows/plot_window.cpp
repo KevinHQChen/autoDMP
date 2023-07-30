@@ -2,7 +2,7 @@
 
 namespace gui {
 
-PlotWindow::PlotWindow(ImProc *imProc, Supervisor *sv) : imProc_(imProc), sv_(sv) {}
+PlotWindow::PlotWindow(ImProc *imProc, Pump *pp, Supervisor *sv) : imProc_(imProc), pp_(pp), sv_(sv) {}
 
 PlotWindow::~PlotWindow() { destroyDataVecs(); }
 
@@ -31,6 +31,9 @@ void PlotWindow::render() {
         int np = 4;
         for (int i = 0; i < np * 2 * sv_->no; ++i)
           theta[i]->AddPoint(guiTime, sv_->supOut.theta[i]);
+      } else {
+        for (int i = 0; i < pp_->getNumPumps(); ++i)
+          u[i]->AddPoint(guiTime, pp_->outputs[i]);
       }
     }
 
@@ -125,12 +128,13 @@ void PlotWindow::initDataVecs() {
   if (imProc_->started() && y.empty())
     for (int ch = 0; ch < 2 * imProc_->impConf.getNumChs(); ++ch)
       y.push_back(new ScrollingBuffer());
+  if (u.empty())
+    for (int ch = 0; ch < pp_->getNumPumps(); ++ch)
+      u.push_back(new ScrollingBuffer());
 
   if (!sv_->started()) {
     if (!yhat.empty())
       yhat.clear();
-    if (!u.empty())
-      u.clear();
     if (!ywt.empty())
       ywt.clear();
     if (!theta.empty())
@@ -142,9 +146,6 @@ void PlotWindow::initDataVecs() {
     if (yhat.empty())
       for (int ch = 0; ch < 2 * sv_->no; ++ch)
         yhat.push_back(new ScrollingBuffer());
-    if (u.empty())
-      for (int ch = 0; ch < sv_->no; ++ch)
-        u.push_back(new ScrollingBuffer());
     if (ywt.empty())
       for (int ch = 0; ch < 2 * sv_->no; ++ch)
         ywt.push_back(new ScrollingBuffer());

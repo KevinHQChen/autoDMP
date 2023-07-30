@@ -12,6 +12,7 @@ namespace gui {
 class PlotWindow : public Window {
   Supervisor *sv_;
   ImProc *imProc_;
+  Pump *pp_;
 
   float guiTime{0.0f}, history{30.0f};
   bool pausePlot{false};
@@ -26,7 +27,7 @@ class PlotWindow : public Window {
   void destroyDataVecs();
 
 public:
-  PlotWindow(ImProc *imProc, Supervisor *sv);
+  PlotWindow(ImProc *imProc, Pump *pp, Supervisor *sv);
   ~PlotWindow();
   void render() override;
 };

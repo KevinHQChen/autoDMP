@@ -53,7 +53,7 @@ private:
 
   ordered_value conf;
   std::string dataPath, confPath;
-  bool simModeActive;
+  bool simModeActive, sysID{true};
 
   std::vector<double> y;
   std::vector<unsigned char> yo;
