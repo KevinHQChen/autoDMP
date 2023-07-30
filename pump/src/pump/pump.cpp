@@ -107,6 +107,12 @@ Pump::Pump(std::shared_ptr<logger> log) : lg(log) {
      lg->error("Error {} from tcsetattr: {}", errno, strerror(errno));
 
     lg->info("Pump serial port {} successfully configured", ttyname(serialPort));
+
+    for (unsigned char ch = 0; ch < numPumpChannels; ch++) {
+      // initialize data structures
+      outputs.push_back(0.0);
+      prevOutputs.push_back(0.0);
+    }
   }
 }
 
@@ -151,6 +157,7 @@ bool Pump::setOutput(unsigned int pumpIdx, float output) {
     lg->info("Pump {} set to {} V.", pumpIdx + 1, output);
     return true;
   } else if (pumpType_ == "BARTELS") {
+    int16_t outputInt = static_cast<int16_t>(output);
     // check pump index
     if (pumpIdx >= numPumpChannels) {
      lg->error("Pump index {} out of range (max {})", pumpIdx, numPumpChannels - 1);
@@ -158,20 +165,20 @@ bool Pump::setOutput(unsigned int pumpIdx, float output) {
     }
 
     // do nothing if pump output has not changed
-    if (output == prevOutputs[pumpIdx])
+    if (outputInt == static_cast<int16_t>(prevOutputs[pumpIdx]))
       return true;
 
-    auto pumpCommand = "P" + std::to_string(pumpIdx + 1) + "V" + std::to_string(output) + "\r\n";
+    auto pumpCommand = "P" + std::to_string(pumpIdx + 1) + "V" + std::to_string(outputInt) + "\r\n";
 
     if (!simModeActive && (!sendCmd(pumpCommand, 4) || std::strncmp("OK", readData, 2) != 0)) {
-     lg->error("Error setting pump {} to {} V.", pumpIdx + 1, output);
+     lg->error("Error setting pump {} to {} V.", pumpIdx + 1, outputInt);
       return false;
     }
 
     // sim mode is active or command was successful
     outputs[pumpIdx] = output;
     prevOutputs[pumpIdx] = output;
-    lg->info("Pump {} set to {} V.", pumpIdx + 1, output);
+    lg->info("Pump {} set to {} V.", pumpIdx + 1, outputInt);
     return true;
   } else {
    lg->error("Pump type {} not supported", pumpType_);
@@ -269,8 +276,6 @@ std::string Pump::getPumpType() { return pumpType_; }
 int Pump::getNumPumps() {
   if (pumpType_ == "FLUIGENT")
     return numPressureChannels;
-  else if (pumpType_ == "BARTELS")
+  else // BARTELS
     return numPumpChannels;
-  else
-    return 0;
 }
