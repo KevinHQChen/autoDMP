@@ -14,15 +14,18 @@ void PlotWindow::render() {
     if (!pausePlot) {
       // update all plotted data
       guiTime += ImGui::GetIO().DeltaTime;
+
+      for (int i = 0; i < pp_->getNumPumps(); ++i)
+        u[i]->AddPoint(guiTime, pp_->outputs[i]);
+
       if (imProc_->started()) {
         for (int i = 0; i < 2 * imProc_->impConf.getNumChs(); ++i) {
           y_ = imProc_->getY();
           y[i]->AddPoint(guiTime, y_[i]);
         }
       }
+
       if (sv_->started()) {
-        for (int i = 0; i < sv_->no; ++i)
-          u[i]->AddPoint(guiTime, sv_->supOut.u[i]);
         for (int i = 0; i < 2 * sv_->no; ++i) {
           yhat[i]->AddPoint(guiTime, sv_->supOut.yhat[i]);
           ywt[i]->AddPoint(guiTime, sv_->supOut.ywt[i]);
@@ -31,9 +34,6 @@ void PlotWindow::render() {
         int np = 4;
         for (int i = 0; i < np * 2 * sv_->no; ++i)
           theta[i]->AddPoint(guiTime, sv_->supOut.theta[i]);
-      } else {
-        for (int i = 0; i < pp_->getNumPumps(); ++i)
-          u[i]->AddPoint(guiTime, pp_->outputs[i]);
       }
     }
 

@@ -7,6 +7,11 @@
 
 #include "ctrl/supervisor.hpp"
 
+#include <pybind11/eigen.h>
+#include <pybind11/embed.h>
+#include <pybind11/numpy.h>
+#include <pybind11/stl.h>
+
 namespace gui {
 
 class CtrlWindow : public Window {
@@ -46,11 +51,19 @@ class CtrlWindow : public Window {
     return e;
   }
 
+  // for sysID
+  Eigen::VectorXd excitationSignal_;
+  std::vector<double> timeVec_, uVec_;
+  int numSamples_ = 1000;
+  float minVal_, maxVal_, uref_;
+  int order_;
+
   void renderAddEventDialog();
   void renderDropletGenDialog();
   void renderEventQueueContents();
   void renderSupervisorStatus();
   void renderControllerTuningDialog();
+  void renderSysIdDialog();
 
   void loadEventsFromFile(const std::string &filename);
 

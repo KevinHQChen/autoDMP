@@ -46,6 +46,9 @@ public:
   std::string getDataPath() const { return dataPath; }
   std::string getConfPath() const { return confPath; }
 
+  bool sysID{true};
+  Eigen::VectorXd excitationSignal_;
+
 private:
   std::shared_ptr<logger> lg;
   std::atomic<bool> startedCtrl{false}, startedSysIDFlag{false};
@@ -53,7 +56,7 @@ private:
 
   ordered_value conf;
   std::string dataPath, confPath;
-  bool simModeActive, sysID{true};
+  bool simModeActive;
 
   std::vector<double> y;
   std::vector<unsigned char> yo;

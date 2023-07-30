@@ -102,6 +102,10 @@ void Supervisor::stopThread() {
 }
 
 void Supervisor::start() {
+  std::vector<double> uref(pump->outputs.begin(), pump->outputs.end());
+  int excitationStep = 0;
+  int actualStep = 0;
+
   while (startedCtrl) {
     std::lock_guard<std::mutex> guard(ctrlMtx);
     if (!imProc->procData->empty()) {
@@ -151,6 +155,24 @@ void Supervisor::start() {
                               << supOut.theta[18] << ", " << supOut.theta[19] << ", "
                               << supOut.theta[20] << ", " << supOut.theta[21] << ", "
                               << supOut.theta[22] << ", " << supOut.theta[23] << "\n";
+      } else {
+        y = imProc->procData->get();
+
+        // Only update the excitation signal every fourth iteration to achieve 10 Hz
+        if (actualStep % 4 == 0) {
+          // Get current step of excitation signal
+          if (excitationStep < ctrlWindow->excitationSignal_.size()) {
+            u = ctrlWindow->excitationSignal_(excitationStep);
+            excitationStep++;
+          } else
+            u = 0;
+        }
+
+        pump->setOutput(0, u/2 + uref[0]);
+        pump->setOutput(1, -u/2 + uref[1]);
+
+        // Increment update counter, resetting if it reaches 4
+        actualStep = (actualStep + 1) % 4;
       }
     }
   }

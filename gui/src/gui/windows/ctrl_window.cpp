@@ -73,6 +73,7 @@ void CtrlWindow::render() {
     renderEventQueueContents();
     renderSupervisorStatus();
     renderControllerTuningDialog();
+    renderSysIdDialog();
 
     ImGui::PopStyleVar();
     ImGui::End();
@@ -313,6 +314,48 @@ void CtrlWindow::renderControllerTuningDialog() {
     ImGui::TreePop();
   }
   ImGui::Separator();
+}
+
+void CtrlWindow::renderSysIdDialog() {
+  if (openAction != -1)
+    ImGui::SetNextItemOpen(openAction != 0);
+  if (ImGui::TreeNode("SysID Setup")) {
+    // TODO add a button to set sysID to true/false (false by default)
+    ImGui::Checkbox("Enable SysID", &sv_->sysID);
+    ImGui::SliderScalar("Min Value", ImGuiDataType_Double, &minVal_, &minValMin, &minValMax, "%.1f");
+    ImGui::SliderScalar("Max Value", ImGuiDataType_Double, &maxVal_, &maxValMin, &maxValMax, "%.1f");
+    ImGui::SliderInt("Order", &order_, 1, 10);
+    if (ImGui::Button("Generate Excitation Signal"))
+      generateExcitationSignal(minVal, maxVal, order);
+
+    if (excitationSignal_.size() != 0) {
+      timeVec_.clear();
+      uVec_.clear();
+      for (int i = 0; i < excitationSignal_.cols(); ++i) {
+        timeVec_.push_back(i * 0.1);
+        uVec_.push_back(excitationSignal_(i));
+      }
+
+      if (ImPlot::BeginPlot("Preview")) {
+        ImPlot::SetupAxes("time (s)", "Input");
+        ImPlot::PlotLine("u", timeVec_.data(), uVec_.data(), excitationSignal_.cols());
+        ImPlot::EndPlot();
+      }
+    }
+    ImGui::TreePop();
+  }
+  ImGui::Separator();
+}
+
+void CtrlWindow::generateExcitationSignal(double minVal, double maxVal, int order) {
+    info("Generating excitation signal...");
+    py::gil_scoped_acquire acquire;
+    py::object prbs = py::module::import("prbs").attr("prbs");
+
+    // Call the prbs function with the provided minVal, maxVal, and order parameters
+    excitationSignal_ = prbs(minVal, maxVal, order).cast<Eigen::VectorXd>();
+
+    info("Excitation signal dimensions: {}x{}", excitationSignal_.rows(), excitationSignal_.cols());
 }
 
 } // namespace gui
