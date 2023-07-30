@@ -78,9 +78,9 @@ void PumpWindow::setMaxOutput() { outputSlider_->setMax(maxOutputSlider_->get())
 void PumpWindow::resetPump() {
   if (resetBtn_->get()) {
     for (int i = 0; i < pp_->getNumPumps(); ++i) {
+      pp_->setOutput(i, 0);
       if (pp_->getPumpType() == "BARTELS")
         pp_->setValve(i, false);
-      pp_->setOutput(i, 0);
     }
     if (pp_->getPumpType() == "BARTELS")
       pp_->setFreq(0);

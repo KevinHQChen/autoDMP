@@ -128,7 +128,7 @@ Pump::~Pump() {
   }
 }
 
-bool Pump::setOutput(unsigned int pumpIdx, float voltage) {
+bool Pump::setOutput(unsigned int pumpIdx, float output) {
   std::lock_guard lock(mutex);
 
   if (pumpType_ == "FLUIGENT") {
@@ -139,33 +139,39 @@ bool Pump::setOutput(unsigned int pumpIdx, float voltage) {
     }
 
     // do nothing if pump output has not changed
-    if (voltage == prevOutputs[pumpIdx])
+    if (output == prevOutputs[pumpIdx])
       return true;
 
     if (!simModeActive)
-      Fgt_set_pressure(pumpIdx, voltage);
+      Fgt_set_pressure(pumpIdx, output);
 
     // sim mode is active or command was successful
-    outputs[pumpIdx] = voltage;
-    prevOutputs[pumpIdx] = voltage;
-    lg->info("Pump {} set to {} V.", pumpIdx + 1, voltage);
+    outputs[pumpIdx] = output;
+    prevOutputs[pumpIdx] = output;
+    lg->info("Pump {} set to {} V.", pumpIdx + 1, output);
     return true;
   } else if (pumpType_ == "BARTELS") {
-    // Check if voltage is different from current voltage, return early if it's the same
-    if (voltage == prevOutputs[pumpIdx])
+    // check pump index
+    if (pumpIdx >= numPumpChannels) {
+     lg->error("Pump index {} out of range (max {})", pumpIdx, numPumpChannels - 1);
+      return false;
+    }
+
+    // do nothing if pump output has not changed
+    if (output == prevOutputs[pumpIdx])
       return true;
 
-    auto presCommand = "P" + std::to_string(pumpIdx + 1) + "V" + std::to_string(voltage) + "\r\n";
+    auto pumpCommand = "P" + std::to_string(pumpIdx + 1) + "V" + std::to_string(output) + "\r\n";
 
-    if (!simModeActive && (!sendCmd(presCommand, 4) || std::strncmp("OK", readData, 2) != 0)) {
-     lg->error("Error setting pump {} to {} V.", pumpIdx + 1, voltage);
+    if (!simModeActive && (!sendCmd(pumpCommand, 4) || std::strncmp("OK", readData, 2) != 0)) {
+     lg->error("Error setting pump {} to {} V.", pumpIdx + 1, output);
       return false;
     }
 
     // sim mode is active or command was successful
-    outputs[pumpIdx] = voltage;
-    prevOutputs[pumpIdx] = voltage;
-    lg->info("Pump {} set to {} V.", pumpIdx + 1, voltage);
+    outputs[pumpIdx] = output;
+    prevOutputs[pumpIdx] = output;
+    lg->info("Pump {} set to {} V.", pumpIdx + 1, output);
     return true;
   } else {
    lg->error("Pump type {} not supported", pumpType_);
@@ -253,8 +259,18 @@ void Pump::setOutputs(std::vector<double> u) {
   if (pumpType_ == "FLUIGENT")
     for (int ch = 0; ch < numPressureChannels; ++ch)
       setOutput(ch, u[ch]);
+  else if (pumpType_ == "BARTELS")
+    for (int ch = 0; ch < numPumpChannels; ++ch)
+      setOutput(ch, u[ch]);
 }
 
 std::string Pump::getPumpType() { return pumpType_; }
 
-int Pump::getNumPumps() { return numPressureChannels; }
+int Pump::getNumPumps() {
+  if (pumpType_ == "FLUIGENT")
+    return numPressureChannels;
+  else if (pumpType_ == "BARTELS")
+    return numPumpChannels;
+  else
+    return 0;
+}

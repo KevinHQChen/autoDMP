@@ -57,7 +57,6 @@ class CtrlWindow : public Window {
 
   // for sysID
   std::vector<double> timeVec_, uVec_;
-  int numSamples_ = 1000;
   double minVal_, maxVal_;
   int order_;
 

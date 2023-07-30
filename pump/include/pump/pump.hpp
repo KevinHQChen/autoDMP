@@ -75,5 +75,6 @@ private:
   // config to this struct
   termios tty;
   char *readData{nullptr};
+  unsigned char numPumpChannels = 4;
   /* BARTELS END */
 };
