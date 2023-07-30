@@ -48,7 +48,7 @@ public:
 
   bool sysID{true};
   Eigen::VectorXd excitationSignal_;
-  double uStep;
+  double minVal_, maxVal_, uStep;
 
 private:
   std::shared_ptr<logger> lg;

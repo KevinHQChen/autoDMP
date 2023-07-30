@@ -80,7 +80,7 @@ void Supervisor::startThread() {
     }
 
     if (!simModeActive && pump->getPumpType() == "BARTELS")
-      pump->setFreq(200);
+      pump->setFreq(250);
     ctrlThread = std::thread(&Supervisor::start, this);
     ctrlThread.detach();
   }
@@ -168,8 +168,20 @@ void Supervisor::start() {
             uStep = 0;
         }
 
-        pump->setOutput(0, uStep/2 + uref[0]);
-        pump->setOutput(1, -uStep/2 + uref[1]);
+        if (uStep > 0) {
+          pump->setOutput(0, maxVal_ + uref[0]);
+          pump->setOutput(1, minVal_ + uref[1]);
+        } else if (uStep < 0) {
+          pump->setOutput(0, -maxVal_ + uref[0]);
+          pump->setOutput(1, -minVal_ + uref[1]);
+        } else {
+          pump->setOutput(0, uref[0]);
+          pump->setOutput(1, uref[1]);
+        }
+
+        // Collect data
+        ctrlDataQueuePtr->push(0);
+        ctrlDataQueuePtr->out << y[0] << ", " << uStep << "\n";
 
         // Increment update counter, resetting if it reaches 4
         actualStep = (actualStep + 1) % 4;

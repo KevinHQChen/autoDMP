@@ -57,7 +57,6 @@ class CtrlWindow : public Window {
 
   // for sysID
   std::vector<double> timeVec_, uVec_;
-  double minVal_, maxVal_;
   int order_;
 
   void renderAddEventDialog();

@@ -67,8 +67,8 @@ findInferredClstrs(const std::vector<std::vector<double>> &directClstrs,
                       otherClstrs.end());
 
     int m = otherClstrs.size();
-    lg->info("{} otherClstrs with valid yDirect selected for calculating yInferred in channel {}",
-             m, ch);
+    // lg->info("{} otherClstrs with valid yDirect selected for calculating yInferred in channel {}",
+    //          m, ch);
 
     // find all ways to choose an index from each of the m vectors in `otherClstrs`
     std::vector<int> indices(m, 0);
@@ -222,10 +222,10 @@ void ImProc::updateMeas() {
     yInferred1[ch] = argMinDist(inferredFgClstrs[ch], yPrev1[ch]);
     yDirect2[ch] = argMinDist(directFgClstrs[ch], yPrev2[ch]);
     yInferred2[ch] = argMinDist(inferredFgClstrs[ch], yPrev2[ch]);
-    lg->info("ch: {}, yDirect1: {}, yInferred1: {}, yDirect2: {}, yInferred2: {}, yState1: {}, "
-             "yState2 : {} ",
-             ch, yDirect1[ch].value_or(1000), yInferred1[ch].value_or(1000),
-             yDirect2[ch].value_or(1000), yInferred2[ch].value_or(1000), yState1[ch], yState2[ch]);
+    // lg->info("ch: {}, yDirect1: {}, yInferred1: {}, yDirect2: {}, yInferred2: {}, yState1: {}, "
+    //          "yState2 : {} ",
+    //          ch, yDirect1[ch].value_or(1000), yInferred1[ch].value_or(1000),
+    //          yDirect2[ch].value_or(1000), yInferred2[ch].value_or(1000), yState1[ch], yState2[ch]);
   }
 
   initStates(1);
@@ -332,12 +332,12 @@ void ImProc::start() {
 
       inferredFgClstrs = findInferredClstrs(directFgClstrs, lg);
 
-      for (int ch = 0; ch < no; ++ch)
-        for (int i = 0; i < directFgClstrs[ch].size(); ++i)
-          lg->info("ch: {}, i: {}, directFgClstrs: {}", ch, i, directFgClstrs[ch][i]);
-      for (int ch = 0; ch < no; ++ch)
-        for (int i = 0; i < inferredFgClstrs[ch].size(); ++i)
-          lg->info("ch: {}, i: {}, inferredFgClstrs: {}", ch, i, inferredFgClstrs[ch][i]);
+      // for (int ch = 0; ch < no; ++ch)
+      //   for (int i = 0; i < directFgClstrs[ch].size(); ++i)
+      //     lg->info("ch: {}, i: {}, directFgClstrs: {}", ch, i, directFgClstrs[ch][i]);
+      // for (int ch = 0; ch < no; ++ch)
+      //   for (int i = 0; i < inferredFgClstrs[ch].size(); ++i)
+      //     lg->info("ch: {}, i: {}, inferredFgClstrs: {}", ch, i, inferredFgClstrs[ch][i]);
 
       updateMeas();
 
@@ -348,8 +348,8 @@ void ImProc::start() {
         y.insert(y.end(), y2.begin(), y2.end());
       }
       // print y1 and y2
-      for (int ch = 0; ch < no; ++ch)
-        lg->info("ch: {}, y1: {}, y2: {}", ch, y1[ch], y2[ch]);
+      // for (int ch = 0; ch < no; ++ch)
+      //   lg->info("ch: {}, y1: {}, y2: {}", ch, y1[ch], y2[ch]);
 
       procData->push(y);
       procFrameBuf.set(procFrameArr);

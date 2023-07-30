@@ -322,11 +322,11 @@ void CtrlWindow::renderSysIdDialog() {
   if (ImGui::TreeNode("SysID Setup")) {
     // TODO add a button to set sysID to true/false (false by default)
     ImGui::Checkbox("Enable SysID", &sv_->sysID);
-    ImGui::SliderScalar("Min Value", ImGuiDataType_Double, &minVal_, &minValMin, &minValMax, "%.1f");
-    ImGui::SliderScalar("Max Value", ImGuiDataType_Double, &maxVal_, &maxValMin, &maxValMax, "%.1f");
+    ImGui::SliderScalar("Min Value", ImGuiDataType_Double, &sv_->minVal_, &minValMin, &minValMax, "%.1f");
+    ImGui::SliderScalar("Max Value", ImGuiDataType_Double, &sv_->maxVal_, &maxValMin, &maxValMax, "%.1f");
     ImGui::SliderInt("Order", &order_, 1, 10);
     if (ImGui::Button("Generate Excitation Signal"))
-      generateExcitationSignal(minVal_, maxVal_, order_);
+      generateExcitationSignal(sv_->minVal_, sv_->maxVal_, order_);
 
     if (sv_->excitationSignal_.size() != 0) {
       timeVec_.clear();
