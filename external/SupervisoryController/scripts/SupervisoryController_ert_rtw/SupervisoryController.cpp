@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2275
+// Model version                  : 1.2277
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Tue Aug  1 22:19:13 2023
+// C/C++ source code generated on : Tue Aug  1 22:41:13 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -5020,7 +5020,7 @@ void SupervisoryController::step()
         rtDW.enAdapt_[2] = true;
       }
 
-      // '<S1>:59:15' if all(enAdapt) && all(enAdapt_)
+      // '<S1>:59:15' if ~all(enAdapt)
       c_y = true;
       b_k = 0;
       exitg1 = false;
@@ -5034,24 +5034,10 @@ void SupervisoryController::step()
         }
       }
 
-      if (c_y) {
-        b_k = 0;
-        exitg1 = false;
-        while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U))
-                == false) && (b_k < 6)) {
-          if (!rtDW.enAdapt_[b_k]) {
-            c_y = false;
-            exitg1 = true;
-          } else {
-            b_k++;
-          }
-        }
-
-        if (c_y) {
-          // '<S1>:59:16' enAdapt_(:) = true;
-          for (b_k = 0; b_k < 6; b_k++) {
-            rtDW.enAdapt_[b_k] = true;
-          }
+      if (!c_y) {
+        // '<S1>:59:16' enAdapt_(:) = false;
+        for (b_k = 0; b_k < 6; b_k++) {
+          rtDW.enAdapt_[b_k] = false;
         }
       }
 
