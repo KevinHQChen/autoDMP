@@ -69,8 +69,8 @@ C_aq = A_aq / k_aq + l_aq / K_aq;
 C_aq = unitConvert(C_aq, ut.px / ut.mbar); % convert to px for convenience
 C_aq = double(separateUnits(C_aq));
 
-C0 = 4.67e-4;
+C0 = 4.67e-4/10;
 Rc0 = 0;
-L0 = 1e-7;
+L0 = 1e-7/10;
 Rl0 = 0;
-Rr0 = 0.0023;
+Rr0 = 0.023;

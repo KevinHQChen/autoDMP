@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2270
+// Model version                  : 1.2275
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Fri Jul 21 16:35:17 2023
+// C/C++ source code generated on : Tue Aug  1 22:19:13 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -765,6 +765,7 @@ void SupervisoryController::paramEst1(const real_T rtu_y[3], const real_T
   for (p1 = 0; p1 < 3; p1++) {
     // 'rls_:36' if ~EN(i)
     if (!rtu_EN[p1]) {
+      //  set all elements of dtheta and dP to 0
       // 'rls_:37' dtheta( ((i-1)*np + 1):i*np ) = 0;
       p2_tmp = p1 << 2UL;
       p2 = p2_tmp;
@@ -4780,6 +4781,7 @@ void SupervisoryController::step()
       int32_T i_1;
       int32_T k;
       int32_T rtb_R_tmp_0;
+      boolean_T c_y;
       boolean_T exitg1;
       boolean_T guard1{ false };
 
@@ -5018,6 +5020,41 @@ void SupervisoryController::step()
         rtDW.enAdapt_[2] = true;
       }
 
+      // '<S1>:59:15' if all(enAdapt) && all(enAdapt_)
+      c_y = true;
+      b_k = 0;
+      exitg1 = false;
+      while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U)) ==
+              false) && (b_k < 6)) {
+        if (!rtU.enAdapt[b_k]) {
+          c_y = false;
+          exitg1 = true;
+        } else {
+          b_k++;
+        }
+      }
+
+      if (c_y) {
+        b_k = 0;
+        exitg1 = false;
+        while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U))
+                == false) && (b_k < 6)) {
+          if (!rtDW.enAdapt_[b_k]) {
+            c_y = false;
+            exitg1 = true;
+          } else {
+            b_k++;
+          }
+        }
+
+        if (c_y) {
+          // '<S1>:59:16' enAdapt_(:) = true;
+          for (b_k = 0; b_k < 6; b_k++) {
+            rtDW.enAdapt_[b_k] = true;
+          }
+        }
+      }
+
       // Outputs for Function Call SubSystem: '<S1>/paramEst1'
       // Inport: '<Root>/y' incorporates:
       //   Inport: '<Root>/lambda'
@@ -5026,11 +5063,11 @@ void SupervisoryController::step()
       //   Inport: '<Root>/y0'
       //   Outport: '<Root>/u'
 
-      // '<S1>:59:15' [theta(1:np*no), P(1:np*no, 1:np*no), prmErr(1:no)] = ...
-      // '<S1>:59:16'     paramEst1(y(1:no), y0(1:no), u, u0,...
-      // '<S1>:59:17'     enAdapt_(1:no),...
-      // '<S1>:59:18'     theta0_1, thetaSgn(1:np*no), rstTheta1, P0_1, rstP1,... 
-      // '<S1>:59:19'     p_, dPmod_, lambda);
+      // '<S1>:59:18' [theta(1:np*no), P(1:np*no, 1:np*no), prmErr(1:no)] = ...
+      // '<S1>:59:19'     paramEst1(y(1:no), y0(1:no), u, u0,...
+      // '<S1>:59:20'     enAdapt_(1:no),...
+      // '<S1>:59:21'     theta0_1, thetaSgn(1:np*no), rstTheta1, P0_1, rstP1,... 
+      // '<S1>:59:22'     p_, dPmod_, lambda);
       // Simulink Function 'paramEst1': '<S1>:574'
       paramEst1(&rtU.y[0], &rtU.y0[0], rtY.u, rtU.u0, &rtDW.enAdapt_[0],
                 rtDW.theta0_1, &rtDW.thetaSgn[0], rstTheta1, rtDW.P0_1, rstP1,
@@ -5067,11 +5104,11 @@ void SupervisoryController::step()
       //   Inport: '<Root>/y0'
       //   Outport: '<Root>/u'
 
-      // '<S1>:59:20' [theta(np*no+1:2*np*no), P(np*no+1:2*np*no, np*no+1:2*np*no), prmErr(no+1:2*no)] = ... 
-      // '<S1>:59:21'     paramEst2(y(no+1:2*no), y0(no+1:2*no), u, u0,...
-      // '<S1>:59:22'     enAdapt_(no+1:2*no),...
-      // '<S1>:59:23'     theta0_2, thetaSgn(np*no+1:2*np*no), rstTheta2, P0_2, rstP2,... 
-      // '<S1>:59:24'     p_, dPmod_, lambda);
+      // '<S1>:59:23' [theta(np*no+1:2*np*no), P(np*no+1:2*np*no, np*no+1:2*np*no), prmErr(no+1:2*no)] = ... 
+      // '<S1>:59:24'     paramEst2(y(no+1:2*no), y0(no+1:2*no), u, u0,...
+      // '<S1>:59:25'     enAdapt_(no+1:2*no),...
+      // '<S1>:59:26'     theta0_2, thetaSgn(np*no+1:2*np*no), rstTheta2, P0_2, rstP2,... 
+      // '<S1>:59:27'     p_, dPmod_, lambda);
       // Simulink Function 'paramEst2': '<S1>:844'
       paramEst1(&rtU.y[3], &rtU.y0[3], rtY.u, rtU.u0, &rtDW.enAdapt_[3],
                 rtDW.theta0_2, &rtDW.thetaSgn[12], rstTheta2, rtDW.P0_2, rstP2,
@@ -5105,9 +5142,9 @@ void SupervisoryController::step()
       // MATLAB Function: '<S2>/MATLAB Function' incorporates:
       //   Inport: '<Root>/k_2'
 
-      // '<S1>:59:25' [u, ywt, yhat, currTraj] = ...
-      // '<S1>:59:26'     ampc(traj(:,waypt), currEv.r, y, ymax, y0, x0, u0, umax, uwt,... 
-      // '<S1>:59:27'     excitation, theta, thetaSgn, k_2);
+      // '<S1>:59:28' [u, ywt, yhat, currTraj] = ...
+      // '<S1>:59:29'     ampc(traj(:,waypt), currEv.r, y, ymax, y0, x0, u0, umax, uwt,... 
+      // '<S1>:59:30'     excitation, theta, thetaSgn, k_2);
       // Simulink Function 'ampc': '<S1>:461'
       // MATLAB Function 'SupervisoryController/ampc/MATLAB Function': '<S6>:1'
       // '<S6>:1:2' [ywt, ywtT, uwt, uwtT] = wtMod_(y, yDest, ywtT, uwtT, dt, no, ni, k_2); 
@@ -5244,8 +5281,8 @@ void SupervisoryController::step()
                              b_k_tmp - 1);
         }
 
-        // 'theta2ss_:9' A(i, i) = [1 + prms(1,i)];
-        rtb_A_n[k + 6 * k] = prms[i] + 1.0;
+        // 'theta2ss_:9' A(i, i) = [1 - prms(1,i)];
+        rtb_A_n[k + 6 * k] = 1.0 - prms[i];
 
         // 'theta2ss_:10' B(i, :) = prms(2:end, i)';
         rtb_B_m[k] = prms[(k << 2UL) + 1];
@@ -6615,18 +6652,18 @@ void SupervisoryController::initialize()
   SupervisoryController_InitializeDataMapInfo((&rtM), &rtP);
 
   {
-    static const real_T tmp_2[24]{ -0.025, 0.028867513459481294,
-      -0.014433756729740647, -0.014433756729740647, -0.025,
-      -0.014433756729740647, 0.028867513459481294, -0.014433756729740647, -0.025,
-      -0.014433756729740647, -0.014433756729740647, 0.028867513459481294, -0.025,
-      0.028867513459481294, -0.014433756729740647, -0.014433756729740647, -0.025,
-      -0.014433756729740647, 0.028867513459481294, -0.014433756729740647, -0.025,
-      -0.014433756729740647, -0.014433756729740647, 0.028867513459481294 };
+    static const real_T tmp_2[24]{ 0.025, 0.028867513459481294,
+      -0.014433756729740647, -0.014433756729740647, 0.025, -0.014433756729740647,
+      0.028867513459481294, -0.014433756729740647, 0.025, -0.014433756729740647,
+      -0.014433756729740647, 0.028867513459481294, 0.025, 0.028867513459481294,
+      -0.014433756729740647, -0.014433756729740647, 0.025, -0.014433756729740647,
+      0.028867513459481294, -0.014433756729740647, 0.025, -0.014433756729740647,
+      -0.014433756729740647, 0.028867513459481294 };
 
-    static const real_T tmp_0[12]{ -0.025, 0.028867513459481294,
-      -0.014433756729740647, -0.014433756729740647, -0.025,
-      -0.014433756729740647, 0.028867513459481294, -0.014433756729740647, -0.025,
-      -0.014433756729740647, -0.014433756729740647, 0.028867513459481294 };
+    static const real_T tmp_0[12]{ 0.025, 0.028867513459481294,
+      -0.014433756729740647, -0.014433756729740647, 0.025, -0.014433756729740647,
+      0.028867513459481294, -0.014433756729740647, 0.025, -0.014433756729740647,
+      -0.014433756729740647, 0.028867513459481294 };
 
     static const int8_T tmp_3[576]{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -6661,8 +6698,8 @@ void SupervisoryController::initialize()
       0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 1 };
 
-    static const int8_T tmp_1[24]{ -1, 1, -1, -1, -1, -1, 1, -1, -1, -1, -1, 1,
-      -1, 1, -1, -1, -1, -1, 1, -1, -1, -1, -1, 1 };
+    static const int8_T tmp_1[24]{ 1, 1, -1, -1, 1, -1, 1, -1, 1, -1, -1, 1, 1,
+      1, -1, -1, 1, -1, 1, -1, 1, -1, -1, 1 };
 
     real_T Product1_j[144];
     real_T Sum_h[12];
@@ -6715,6 +6752,11 @@ void SupervisoryController::initialize()
 
     paramEst1_Init(Sum_h, Product1_j, Sum2_c, &rtDW.paramEst1_o,
                    &rtP.paramEst1_o);
+
+    // SystemInitialize for Chart: '<Root>/SupervisoryController' incorporates:
+    //   SubSystem: '<S1>/paramEst2'
+
+    paramEst1_Init(Sum_h, Product1_j, Sum2_c, &rtDW.paramEst2, &rtP.paramEst2);
 
     // SystemInitialize for Chart: '<Root>/SupervisoryController' incorporates:
     //   SubSystem: '<S1>/ampc'
@@ -6816,11 +6858,6 @@ void SupervisoryController::initialize()
     }
 
     // End of SystemInitialize for SubSystem: '<S58>/MeasurementUpdate'
-
-    // SystemInitialize for Chart: '<Root>/SupervisoryController' incorporates:
-    //   SubSystem: '<S1>/paramEst2'
-
-    paramEst1_Init(Sum_h, Product1_j, Sum2_c, &rtDW.paramEst2, &rtP.paramEst2);
   }
 }
 

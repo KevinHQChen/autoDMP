@@ -33,7 +33,7 @@ for i = 1:no*np
 end
 
 for i = 1:no
-    if ~EN(i)
+    if ~EN(i) % set all elements of dtheta and dP to 0
         dtheta( ((i-1)*np + 1):i*np ) = 0;
         dP( ((i-1)*np + 1):i*np,: ) = 0;
         dP( :,((i-1)*np + 1):i*np ) = 0;

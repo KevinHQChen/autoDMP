@@ -35,7 +35,7 @@ G = idss(blkdiag(A_0, A_0),...  % A = 2*ns x 2*ns   (x, x)
 np = ni + 1; % number of parameters for each output
 
 % initialize paramEst variables
-prms = [-tau*dt*ones(1, 2*no);
+prms = [tau*dt*ones(1, 2*no);
         G.B'];
 theta0 = zeros(2*no*np, 1);
 for i=1:2*no % stack each col of prms into a single column vector

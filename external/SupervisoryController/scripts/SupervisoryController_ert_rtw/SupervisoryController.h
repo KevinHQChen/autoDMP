@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2270
+// Model version                  : 1.2275
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Fri Jul 21 16:35:17 2023
+// C/C++ source code generated on : Tue Aug  1 22:19:13 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -253,9 +253,9 @@ class SupervisoryController final
   // Zero-crossing (trigger) state
   struct PrevZCX {
     ZCSigState SupervisoryController_Trig_ZCE;// '<Root>/SupervisoryController'
-    ZCE_paramEst1 paramEst2;           // '<S1>/paramEst2'
     ZCSigState MemoryX_Reset_ZCE;      // '<S39>/MemoryX'
     ZCSigState MemoryP_Reset_ZCE;      // '<S39>/MemoryP'
+    ZCE_paramEst1 paramEst2;           // '<S1>/paramEst2'
     ZCE_paramEst1 paramEst1_o;         // '<S1>/paramEst1'
   };
 
