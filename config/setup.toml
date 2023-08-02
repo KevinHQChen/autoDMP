@@ -76,7 +76,7 @@ confSrc = "fromFile"
 
 [pump]
 # select pump [string: "BARTELS"/"FLUIGENT"]
-type      = "BARTELS"
+type      = "FLUIGENT"
 
 [ctrl]
 # path for control data

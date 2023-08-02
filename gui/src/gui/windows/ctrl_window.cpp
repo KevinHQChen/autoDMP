@@ -277,14 +277,15 @@ void CtrlWindow::renderControllerTuningDialog() {
       if (ImGui::Button("Stop Controller"))
         ctrlVisible_ = false;
 
-    // for (int ch = 0; ch < 2 * no; ++ch) {
-    //   if (!sv_->supIn.enAdapt[ch])
-    //     if (ImGui::Button(("Start Online Param Est Ch" + std::to_string(ch)).c_str()))
-    //       sv_->supIn.enAdapt[ch] = true;
-    //   if (sv_->supIn.enAdapt[ch])
-    //     if (ImGui::Button(("Stop Online Param Est Ch" + std::to_string(ch)).c_str()))
-    //       sv_->supIn.enAdapt[ch] = false;
-    // }
+    if (!sv_->supIn.enAdapt[0]) {
+      if (ImGui::Button(("Start Online Param Est")))
+        for (int ch = 0; ch < 2 * no; ++ch)
+          sv_->supIn.enAdapt[ch] = true;
+    } else {
+      if (ImGui::Button(("Stop Online Param Est")))
+        for (int ch = 0; ch < 2 * no; ++ch)
+          sv_->supIn.enAdapt[ch] = false;
+    }
 
     umax = sv_->supIn.umax[0];
     ImGui::SliderScalar("uMax", ImGuiDataType_Double, &umax, &umaxMin, &umaxMax, "%.1f");
@@ -322,8 +323,10 @@ void CtrlWindow::renderSysIdDialog() {
   if (ImGui::TreeNode("SysID Setup")) {
     // TODO add a button to set sysID to true/false (false by default)
     ImGui::Checkbox("Enable SysID", &sv_->sysID);
-    ImGui::SliderScalar("Min Value", ImGuiDataType_Double, &sv_->minVal_, &minValMin, &minValMax, "%.1f");
-    ImGui::SliderScalar("Max Value", ImGuiDataType_Double, &sv_->maxVal_, &maxValMin, &maxValMax, "%.1f");
+    ImGui::SliderScalar("Min Value", ImGuiDataType_Double, &sv_->minVal_, &minValMin, &minValMax,
+                        "%.1f");
+    ImGui::SliderScalar("Max Value", ImGuiDataType_Double, &sv_->maxVal_, &maxValMin, &maxValMax,
+                        "%.1f");
     ImGui::SliderInt("Order", &order_, 1, 10);
     if (ImGui::Button("Generate Excitation Signal"))
       generateExcitationSignal(sv_->minVal_, sv_->maxVal_, order_);
@@ -348,14 +351,15 @@ void CtrlWindow::renderSysIdDialog() {
 }
 
 void CtrlWindow::generateExcitationSignal(double minVal, double maxVal, int order) {
-    info("Generating excitation signal...");
-    py::gil_scoped_acquire acquire;
-    py::object prbs = py::module::import("prbs").attr("prbs");
+  info("Generating excitation signal...");
+  py::gil_scoped_acquire acquire;
+  py::object prbs = py::module::import("prbs").attr("prbs");
 
-    // Call the prbs function with the provided minVal, maxVal, and order parameters
-    sv_->excitationSignal_ = prbs(minVal, maxVal, order).cast<Eigen::VectorXd>();
+  // Call the prbs function with the provided minVal, maxVal, and order parameters
+  sv_->excitationSignal_ = prbs(minVal, maxVal, order).cast<Eigen::VectorXd>();
 
-    info("Excitation signal dimensions: {}x{}", sv_->excitationSignal_.rows(), sv_->excitationSignal_.cols());
+  info("Excitation signal dimensions: {}x{}", sv_->excitationSignal_.rows(),
+       sv_->excitationSignal_.cols());
 }
 
 } // namespace gui
