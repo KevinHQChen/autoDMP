@@ -12,6 +12,28 @@ valSet = {0, 1, 2};
 mdlMap = containers.Map(keySet, valSet);
 mdlNum = mdlMap(mdlStr);
 
+%% define constants for control
+G0_ = load('G0').G;
+A = blkdiag(G0_.A, G0_.A);
+B = [G0_.B; G0_.B];
+C = blkdiag(G0_.C, G0_.C);
+D = [G0_.D; G0_.D];
+G0 = ss(A, B, C, D, dt);
+
+G1_ = load('G1').G;
+A = blkdiag(G1_.A, G1_.A);
+B = [G1_.B; G1_.B];
+C = blkdiag(G1_.C, G1_.C);
+D = [G1_.D; G1_.D];
+G1 = ss(A, B, C, D, dt);
+
+G2_ = load('G2').G;
+A = blkdiag(G2_.A, G2_.A);
+B = [G2_.B; G2_.B];
+C = blkdiag(G2_.C, G2_.C);
+D = [G2_.D; G2_.D];
+G2 = ss(A, B, C, D, dt);
+
 %% define non-virtual buses for AMPC
 mdlFull = struct('A', G.A, 'B', G.B, 'C', G.C, 'D', G.D, 'U', u_0, 'Y', y_0, 'X', x_0, 'DX', zeros(2*ns, 1));
 busInfo = Simulink.Bus.createObject(mdlFull);
@@ -52,6 +74,99 @@ ampc.Weights.MV = uwt0*beta;
 ampc.Weights.MVRate = duwt0/beta;
 ampc.Weights.OV = ywt0*beta;
 ampc.Weights.ECR = 100000;
+
+%% create MPC controller object with sample time
+mpc0 = mpc(G0, dt);
+%% specify prediction horizon
+mpc0.PredictionHorizon = 20;
+%% specify control horizon
+mpc0.ControlHorizon = 1;
+%% specify nominal values for inputs and outputs
+mpc0.Model.Nominal.U = u_0;
+mpc0.Model.Nominal.Y = y_0;
+%% specify constraints for MV and MV Rate
+for i = 1:ni
+    mpc0.MV(i).Min = 0;
+    mpc0.MV(i).Max = u_max(i);
+end
+%% specify target for MV
+for i = 1:ni
+    mpc0.MV(i).Target = u_0(i);
+end
+%% specify constraints for OV
+for i = 1:2*no
+    mpc0.OV(i).Min = -y_max(i);
+    mpc0.OV(i).Max = y_max(i);
+end
+%% specify overall adjustment factor applied to weights
+beta = 0.13534; % maximize robustness in closed-loop performance
+%% specify weights
+mpc0.Weights.MV = uwt0*beta;
+mpc0.Weights.MVRate = duwt0/beta;
+mpc0.Weights.OV = ywt0*beta;
+mpc0.Weights.ECR = 100000;
+
+%% create MPC controller object with sample time
+mpc1 = mpc(G1, dt);
+%% specify prediction horizon
+mpc1.PredictionHorizon = 20;
+%% specify control horizon
+mpc1.ControlHorizon = 1;
+%% specify nominal values for inputs and outputs
+mpc1.Model.Nominal.U = u_0;
+mpc1.Model.Nominal.Y = y_0;
+%% specify constraints for MV and MV Rate
+for i = 1:ni
+    mpc1.MV(i).Min = 0;
+    mpc1.MV(i).Max = u_max(i);
+end
+%% specify target for MV
+for i = 1:ni
+    mpc1.MV(i).Target = u_0(i);
+end
+%% specify constraints for OV
+for i = 1:2*no
+    mpc1.OV(i).Min = -y_max(i);
+    mpc1.OV(i).Max = y_max(i);
+end
+%% specify overall adjustment factor applied to weights
+beta = 0.13534; % maximize robustness in closed-loop performance
+%% specify weights
+mpc1.Weights.MV = uwt0*beta;
+mpc1.Weights.MVRate = duwt0/beta;
+mpc1.Weights.OV = ywt0*beta;
+mpc1.Weights.ECR = 100000;
+
+%% create MPC controller object with sample time
+mpc2 = mpc(G2, dt);
+%% specify prediction horizon
+mpc2.PredictionHorizon = 20;
+%% specify control horizon
+mpc2.ControlHorizon = 1;
+%% specify nominal values for inputs and outputs
+mpc2.Model.Nominal.U = u_0;
+mpc2.Model.Nominal.Y = y_0;
+%% specify constraints for MV and MV Rate
+for i = 1:ni
+    mpc2.MV(i).Min = 0;
+    mpc2.MV(i).Max = u_max(i);
+end
+%% specify target for MV
+for i = 1:ni
+    mpc2.MV(i).Target = u_0(i);
+end
+%% specify constraints for OV
+for i = 1:2*no
+    mpc2.OV(i).Min = -y_max(i);
+    mpc2.OV(i).Max = y_max(i);
+end
+%% specify overall adjustment factor applied to weights
+beta = 0.13534; % maximize robustness in closed-loop performance
+%% specify weights
+mpc2.Weights.MV = uwt0*beta;
+mpc2.Weights.MVRate = duwt0/beta;
+mpc2.Weights.OV = ywt0*beta;
+mpc2.Weights.ECR = 100000;
 
 %% constants for recursive least squares
 % parameter projection
@@ -184,7 +299,6 @@ set_param(sim, 'ReturnWorkspaceOutputs', 'on',...
                'SaveFormat', 'Dataset',...
                'OutputOption', 'SpecifiedOutputTimes',...
                'OutputTimes', 't');
-% set_param("T_junction/Selector", 'IndexOptionArray', { 'Select all' }); % capture data from all channels
 
 % solver setup
 % fixed solver step size mitigates consecutive zero crossing error (likely due to abs values)
