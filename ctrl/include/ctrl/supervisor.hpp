@@ -47,8 +47,10 @@ public:
   std::string getConfPath() const { return confPath; }
 
   bool sysID{true};
-  Eigen::VectorXd excitationSignal_;
-  double minVal_, maxVal_, uStep;
+  Eigen::MatrixXd excitationSignal_;
+  std::vector<double> minVal_;
+  std::vector<double> maxVal_;
+  Eigen::VectorXd du;
 
 private:
   std::shared_ptr<logger> lg;

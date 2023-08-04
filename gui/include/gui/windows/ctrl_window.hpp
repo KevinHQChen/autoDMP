@@ -56,7 +56,7 @@ class CtrlWindow : public Window {
   }
 
   // for sysID
-  std::vector<double> timeVec_, uVec_;
+  std::vector<double> timeVec_, u0Vec_, u1Vec_, u2Vec_;
   int order_;
 
   void renderAddEventDialog();
@@ -68,7 +68,7 @@ class CtrlWindow : public Window {
 
   void loadEventsFromFile(const std::string &filename);
 
-  void generateExcitationSignal(double minVal, double maxVal, int order);
+  void generateExcitationSignal(std::vector<double> minVal, std::vector<double> maxVal, int order);
 
 public:
   bool ctrlSetupVisible_{false}, ctrlVisible_{false};

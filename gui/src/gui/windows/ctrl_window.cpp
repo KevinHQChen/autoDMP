@@ -320,28 +320,39 @@ void CtrlWindow::renderControllerTuningDialog() {
 void CtrlWindow::renderSysIdDialog() {
   if (openAction != -1)
     ImGui::SetNextItemOpen(openAction != 0);
+
+  if (sv_->minVal_.size() == 0)
+    sv_->minVal_.assign(imProc_->impConf.getNumChs(), -1.0f);
+  if (sv_->maxVal_.size() == 0)
+    sv_->maxVal_.assign(imProc_->impConf.getNumChs(), 1.0f);
+
   if (ImGui::TreeNode("SysID Setup")) {
-    // TODO add a button to set sysID to true/false (false by default)
     ImGui::Checkbox("Enable SysID", &sv_->sysID);
-    ImGui::SliderScalar("Min Value", ImGuiDataType_Double, &sv_->minVal_, &minValMin, &minValMax,
-                        "%.1f");
-    ImGui::SliderScalar("Max Value", ImGuiDataType_Double, &sv_->maxVal_, &maxValMin, &maxValMax,
-                        "%.1f");
+    ImGui::SliderScalarN("Min Value", ImGuiDataType_Double, sv_->minVal_.data(),
+                         imProc_->impConf.getNumChs(), &minValMin, &minValMax, "%.1f");
+    ImGui::SliderScalarN("Max Value", ImGuiDataType_Double, sv_->maxVal_.data(),
+                         imProc_->impConf.getNumChs(), &maxValMin, &maxValMax, "%.1f");
     ImGui::SliderInt("Order", &order_, 1, 10);
     if (ImGui::Button("Generate Excitation Signal"))
       generateExcitationSignal(sv_->minVal_, sv_->maxVal_, order_);
 
     if (sv_->excitationSignal_.size() != 0) {
       timeVec_.clear();
-      uVec_.clear();
-      for (int i = 0; i < sv_->excitationSignal_.size(); ++i) {
+      u0Vec_.clear();
+      u1Vec_.clear();
+      u2Vec_.clear();
+      for (int i = 0; i < sv_->excitationSignal_.cols(); ++i) {
         timeVec_.push_back(i * 0.1);
-        uVec_.push_back(sv_->excitationSignal_(i));
+        u0Vec_.push_back(sv_->excitationSignal_(0, i));
+        u1Vec_.push_back(sv_->excitationSignal_(1, i));
+        u2Vec_.push_back(sv_->excitationSignal_(2, i));
       }
 
       if (ImPlot::BeginPlot("Preview")) {
         ImPlot::SetupAxes("time (s)", "Input");
-        ImPlot::PlotLine("u", timeVec_.data(), uVec_.data(), sv_->excitationSignal_.size());
+        ImPlot::PlotLine("u0", timeVec_.data(), u0Vec_.data(), sv_->excitationSignal_.cols());
+        ImPlot::PlotLine("u1", timeVec_.data(), u1Vec_.data(), sv_->excitationSignal_.cols());
+        ImPlot::PlotLine("u2", timeVec_.data(), u2Vec_.data(), sv_->excitationSignal_.cols());
         ImPlot::EndPlot();
       }
     }
@@ -350,13 +361,14 @@ void CtrlWindow::renderSysIdDialog() {
   ImGui::Separator();
 }
 
-void CtrlWindow::generateExcitationSignal(double minVal, double maxVal, int order) {
+void CtrlWindow::generateExcitationSignal(std::vector<double> minVal, std::vector<double> maxVal,
+                                          int order) {
   info("Generating excitation signal...");
   py::gil_scoped_acquire acquire;
   py::object prbs = py::module::import("prbs").attr("prbs");
 
   // Call the prbs function with the provided minVal, maxVal, and order parameters
-  sv_->excitationSignal_ = prbs(minVal, maxVal, order).cast<Eigen::VectorXd>();
+  sv_->excitationSignal_ = prbs(minVal, maxVal, order).cast<Eigen::MatrixXd>();
 
   info("Excitation signal dimensions: {}x{}", sv_->excitationSignal_.rows(),
        sv_->excitationSignal_.cols());

@@ -47,7 +47,7 @@ void Supervisor::startThread() {
       supIn.excitation = 1;
       supIn.dPmod_ = 0.0001;
       supIn.p_ = 0.0001;
-      supIn.lambda = 1; //0.9975;
+      supIn.lambda = 1; // 0.9975;
       supIn.k_2 = 2;
       for (int ch = 0; ch < 2 * no; ++ch)
         supIn.enAdapt[ch] = true;
@@ -161,27 +161,28 @@ void Supervisor::start() {
         // Only update the excitation signal every fourth iteration to achieve 10 Hz
         if (actualStep % 4 == 0) {
           // Get current step of excitation signal
-          if (excitationStep < excitationSignal_.size()) {
-            uStep = excitationSignal_(excitationStep);
+          if (excitationStep < excitationSignal_.cols()) {
+            du = excitationSignal_.col(excitationStep);
+            pump->setOutput(0, du[2] + uref[0]);
+            pump->setOutput(1, du[0] + uref[1]);
+            pump->setOutput(2, du[1] + uref[2]);
             excitationStep++;
-          } else
-            uStep = 0;
-        }
-
-        if (uStep > 0) {
-          pump->setOutput(0, maxVal_ + uref[0]);
-          pump->setOutput(1, minVal_ + uref[1]);
-        } else if (uStep < 0) {
-          pump->setOutput(0, -maxVal_ + uref[0]);
-          pump->setOutput(1, -minVal_ + uref[1]);
-        } else {
-          pump->setOutput(0, uref[0]);
-          pump->setOutput(1, uref[1]);
+          } else {
+            du = Eigen::VectorXd::Zero(no);
+            pump->setOutput(0, uref[0]);
+            pump->setOutput(1, uref[1]);
+            pump->setOutput(2, uref[2]);
+          }
         }
 
         // Collect data
         ctrlDataQueuePtr->push(0);
-        ctrlDataQueuePtr->out << y[0] << ", " << uStep << "\n";
+        // ctrlDataQueuePtr->out << y[0] << ", " << y[1] << ", " << y[2] << ", " << du[0] << ", "
+        //                       << du[1] << ", " << du[2] << "\n";
+        ctrlDataQueuePtr->out << imProc->yDirect1[0].value_or(0.0) << ", "
+                              << imProc->yDirect1[1].value_or(0.0) << ", "
+                              << imProc->yDirect1[2].value_or(0.0) << ", "
+                              << du[2] << ", " << du[0] << ", " << du[1] << "\n";
 
         // Increment update counter, resetting if it reaches 4
         actualStep = (actualStep + 1) % 4;
