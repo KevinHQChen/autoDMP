@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2337
+// Model version                  : 1.2402
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Fri Aug  4 06:09:14 2023
+// C/C++ source code generated on : Sun Aug  6 00:34:47 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -27,11 +27,11 @@
 #define TARGET_CONST
 #define TARGET_STRING(s)               (s)
 #ifndef SS_UINT64
-#define SS_UINT64                      23
+#define SS_UINT64                      24
 #endif
 
 #ifndef SS_INT64
-#define SS_INT64                       24
+#define SS_INT64                       25
 #endif
 
 #else                                  // HOST_CAPI_BUILD
@@ -99,292 +99,244 @@ static rtwCAPI_BlockParameters rtBlockParameters[]{
   { 15, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Discrete Filter1"),
     TARGET_STRING("InitialStates"), 0, 0, 0 },
 
-  { 16, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/u"),
+  { 16, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/u"),
     TARGET_STRING("InitialOutput"), 0, 0, 0 },
 
-  { 17, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/ywt"),
+  { 17, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/yhat"),
     TARGET_STRING("InitialOutput"), 0, 0, 0 },
 
-  { 18, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/r_"),
+  { 18, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/r_"),
     TARGET_STRING("InitialOutput"), 0, 0, 0 },
 
-  { 19, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Gain2"),
-    TARGET_STRING("Gain"), 0, 0, 0 },
-
-  { 20, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Gain3"),
-    TARGET_STRING("Gain"), 0, 0, 0 },
-
-  { 21, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Saturation"),
-    TARGET_STRING("UpperLimit"), 0, 0, 0 },
-
-  { 22, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Saturation"),
-    TARGET_STRING("LowerLimit"), 0, 0, 0 },
-
-  { 23, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Delay2"),
-    TARGET_STRING("InitialCondition"), 0, 0, 0 },
-
-  { 24, TARGET_STRING("SupervisoryController/SupervisoryController/paramEst1/theta"),
+  { 19, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/ywt"),
     TARGET_STRING("InitialOutput"), 0, 0, 0 },
 
-  { 25, TARGET_STRING("SupervisoryController/SupervisoryController/paramEst1/P"),
-    TARGET_STRING("InitialOutput"), 0, 0, 0 },
+  { 20, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/Constant"),
+    TARGET_STRING("Value"), 0, 0, 0 },
 
-  { 26, TARGET_STRING("SupervisoryController/SupervisoryController/paramEst1/err"),
-    TARGET_STRING("InitialOutput"), 0, 0, 0 },
+  { 21, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/Constant1"),
+    TARGET_STRING("Value"), 0, 0, 0 },
 
-  { 27, TARGET_STRING("SupervisoryController/SupervisoryController/paramEst2/theta"),
-    TARGET_STRING("InitialOutput"), 0, 0, 0 },
-
-  { 28, TARGET_STRING("SupervisoryController/SupervisoryController/paramEst2/P"),
-    TARGET_STRING("InitialOutput"), 0, 0, 0 },
-
-  { 29, TARGET_STRING("SupervisoryController/SupervisoryController/paramEst2/err"),
-    TARGET_STRING("InitialOutput"), 0, 0, 0 },
-
-  { 30, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/E_zero"),
-    TARGET_STRING("Value"), 0, 4, 0 },
-
-  { 31, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/F_zero"),
+  { 22, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/Constant12"),
     TARGET_STRING("Value"), 0, 5, 0 },
 
-  { 32, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/G_zero"),
-    TARGET_STRING("Value"), 0, 0, 0 },
-
-  { 33, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/S_zero"),
-    TARGET_STRING("Value"), 0, 0, 0 },
-
-  { 34, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/du.wt_zero"),
+  { 23, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/Constant13"),
     TARGET_STRING("Value"), 0, 6, 0 },
 
-  { 35, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/ecr.wt_zero"),
+  { 24, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/Constant2"),
     TARGET_STRING("Value"), 0, 0, 0 },
 
-  { 36, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/ext.mv_zero"),
-    TARGET_STRING("Value"), 0, 6, 0 },
-
-  { 37, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/md_zero"),
+  { 25, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/Constant3"),
     TARGET_STRING("Value"), 0, 0, 0 },
 
-  { 38, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/mv.target_zero"),
-    TARGET_STRING("Value"), 0, 6, 0 },
+  { 26, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/Constant4"),
+    TARGET_STRING("Value"), 0, 4, 0 },
 
-  { 39, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/switch_zero"),
-    TARGET_STRING("Value"), 0, 0, 0 },
+  { 27, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/Delay2"),
+    TARGET_STRING("InitialCondition"), 0, 0, 0 },
 
-  { 40, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/umin_zero"),
-    TARGET_STRING("Value"), 0, 6, 0 },
+  { 28, TARGET_STRING("SupervisoryController/SupervisoryController/paramEst1/theta"),
+    TARGET_STRING("InitialOutput"), 0, 0, 0 },
 
-  { 41, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/State Estimator OD (KF)/Constant1"),
+  { 29, TARGET_STRING("SupervisoryController/SupervisoryController/paramEst1/P"),
+    TARGET_STRING("InitialOutput"), 0, 0, 0 },
+
+  { 30, TARGET_STRING("SupervisoryController/SupervisoryController/paramEst1/err"),
+    TARGET_STRING("InitialOutput"), 0, 0, 0 },
+
+  { 31, TARGET_STRING("SupervisoryController/SupervisoryController/paramEst2/theta"),
+    TARGET_STRING("InitialOutput"), 0, 0, 0 },
+
+  { 32, TARGET_STRING("SupervisoryController/SupervisoryController/paramEst2/P"),
+    TARGET_STRING("InitialOutput"), 0, 0, 0 },
+
+  { 33, TARGET_STRING("SupervisoryController/SupervisoryController/paramEst2/err"),
+    TARGET_STRING("InitialOutput"), 0, 0, 0 },
+
+  { 34, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/E_zero"),
+    TARGET_STRING("Value"), 0, 4, 0 },
+
+  { 35, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/F_zero"),
     TARGET_STRING("Value"), 0, 7, 0 },
 
-  { 42, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/du.wt_zero"),
-    TARGET_STRING("Value"), 0, 6, 0 },
-
-  { 43, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/ecr.wt_zero"),
+  { 36, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/G_zero"),
     TARGET_STRING("Value"), 0, 0, 0 },
 
-  { 44, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/md_zero"),
+  { 37, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/S_zero"),
     TARGET_STRING("Value"), 0, 0, 0 },
 
-  { 45, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/mv.target_zero"),
-    TARGET_STRING("Value"), 0, 6, 0 },
+  { 38, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/du.wt_zero"),
+    TARGET_STRING("Value"), 0, 5, 0 },
 
-  { 46, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/u0_zero"),
-    TARGET_STRING("Value"), 0, 6, 0 },
+  { 39, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/ecr.wt_zero"),
+    TARGET_STRING("Value"), 0, 0, 0 },
 
-  { 47, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/umin_zero"),
-    TARGET_STRING("Value"), 0, 6, 0 },
+  { 40, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/ext.mv_zero"),
+    TARGET_STRING("Value"), 0, 5, 0 },
 
-  { 48, TARGET_STRING("SupervisoryController/SupervisoryController/paramEst1/Param Estimator (RLS)/Unit Delay3"),
-    TARGET_STRING("InitialCondition"), 0, 0, 0 },
+  { 41, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/md_zero"),
+    TARGET_STRING("Value"), 0, 0, 0 },
 
-  { 49, TARGET_STRING("SupervisoryController/SupervisoryController/paramEst2/Param Estimator (RLS)/Unit Delay3"),
-    TARGET_STRING("InitialCondition"), 0, 0, 0 },
+  { 42, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/mv.target_zero"),
+    TARGET_STRING("Value"), 0, 5, 0 },
 
-  { 50, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/MPC/ym_zero"),
-    TARGET_STRING("Value"), 0, 3, 0 },
+  { 43, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/switch_zero"),
+    TARGET_STRING("Value"), 0, 0, 0 },
 
-  { 51, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/MPC/ext.mv_scale"),
-    TARGET_STRING("Gain"), 0, 6, 0 },
+  { 44, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/umin_zero"),
+    TARGET_STRING("Value"), 0, 5, 0 },
 
-  { 52, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/MPC/u_scale"),
-    TARGET_STRING("Gain"), 0, 6, 0 },
-
-  { 53, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/MPC/umin_scale4"),
-    TARGET_STRING("Gain"), 0, 4, 0 },
-
-  { 54, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/MPC/uref_scale"),
-    TARGET_STRING("Gain"), 0, 6, 0 },
-
-  { 55, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/MPC/ymin_scale1"),
-    TARGET_STRING("Gain"), 0, 5, 0 },
-
-  { 56, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/MPC/ymin_scale2"),
-    TARGET_STRING("Gain"), 0, 0, 0 },
-
-  { 57, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/MPC/LastPcov"),
-    TARGET_STRING("InitialCondition"), 0, 8, 0 },
-
-  { 58, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/MPC/Memory"),
-    TARGET_STRING("InitialCondition"), 1, 9, 0 },
-
-  { 59, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/MPC/last_mv"),
-    TARGET_STRING("InitialCondition"), 0, 6, 0 },
-
-  { 60, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/State Estimator OD (KF)/Kalman Filter2/G"),
+  { 45, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/State Estimator OD (KF)/Constant1"),
     TARGET_STRING("Value"), 0, 8, 0 },
 
-  { 61, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/State Estimator OD (KF)/Kalman Filter2/H"),
+  { 46, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/MPC Controller1/E_zero"),
+    TARGET_STRING("Value"), 0, 4, 0 },
+
+  { 47, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/MPC Controller1/F_zero"),
+    TARGET_STRING("Value"), 0, 9, 0 },
+
+  { 48, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/MPC Controller1/G_zero"),
+    TARGET_STRING("Value"), 0, 0, 0 },
+
+  { 49, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/MPC Controller1/S_zero"),
+    TARGET_STRING("Value"), 0, 0, 0 },
+
+  { 50, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/MPC Controller1/du.wt_zero"),
+    TARGET_STRING("Value"), 0, 5, 0 },
+
+  { 51, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/MPC Controller1/ecr.wt_zero"),
+    TARGET_STRING("Value"), 0, 0, 0 },
+
+  { 52, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/MPC Controller1/ext.mv_zero"),
+    TARGET_STRING("Value"), 0, 5, 0 },
+
+  { 53, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/MPC Controller1/md_zero"),
+    TARGET_STRING("Value"), 0, 0, 0 },
+
+  { 54, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/MPC Controller1/mv.target_zero"),
+    TARGET_STRING("Value"), 0, 5, 0 },
+
+  { 55, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/MPC Controller1/switch_zero"),
+    TARGET_STRING("Value"), 0, 0, 0 },
+
+  { 56, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/MPC Controller1/u.wt_zero"),
+    TARGET_STRING("Value"), 0, 5, 0 },
+
+  { 57, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/MPC Controller1/umin_zero"),
+    TARGET_STRING("Value"), 0, 5, 0 },
+
+  { 58, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/MPC Controller1/y.wt_zero"),
     TARGET_STRING("Value"), 0, 10, 0 },
 
-  { 62, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/State Estimator OD (KF)/Kalman Filter2/P0"),
-    TARGET_STRING("Value"), 0, 8, 0 },
+  { 59, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/MPC Controller1/ymax_zero"),
+    TARGET_STRING("Value"), 0, 10, 0 },
 
-  { 63, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/State Estimator OD (KF)/Kalman Filter2/X0"),
+  { 60, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/MPC Controller1/ymin_zero"),
+    TARGET_STRING("Value"), 0, 10, 0 },
+
+  { 61, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/State Estimator OD (KF)/Constant1"),
+    TARGET_STRING("Value"), 0, 5, 0 },
+
+  { 62, TARGET_STRING("SupervisoryController/SupervisoryController/paramEst1/Param Estimator (RLS)/Unit Delay3"),
+    TARGET_STRING("InitialCondition"), 0, 0, 0 },
+
+  { 63, TARGET_STRING("SupervisoryController/SupervisoryController/paramEst2/Param Estimator (RLS)/Unit Delay3"),
+    TARGET_STRING("InitialCondition"), 0, 0, 0 },
+
+  { 64, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/MPC/ym_zero"),
+    TARGET_STRING("Value"), 0, 3, 0 },
+
+  { 65, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/MPC/ext.mv_scale"),
+    TARGET_STRING("Gain"), 0, 5, 0 },
+
+  { 66, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/MPC/u_scale"),
+    TARGET_STRING("Gain"), 0, 5, 0 },
+
+  { 67, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/MPC/umin_scale4"),
+    TARGET_STRING("Gain"), 0, 4, 0 },
+
+  { 68, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/MPC/uref_scale"),
+    TARGET_STRING("Gain"), 0, 5, 0 },
+
+  { 69, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/MPC/ymin_scale1"),
+    TARGET_STRING("Gain"), 0, 7, 0 },
+
+  { 70, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/MPC/ymin_scale2"),
+    TARGET_STRING("Gain"), 0, 0, 0 },
+
+  { 71, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/MPC/LastPcov"),
+    TARGET_STRING("InitialCondition"), 0, 11, 0 },
+
+  { 72, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/MPC/Memory"),
+    TARGET_STRING("InitialCondition"), 1, 12, 0 },
+
+  { 73, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/MPC/last_mv"),
+    TARGET_STRING("InitialCondition"), 0, 5, 0 },
+
+  { 74, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/State Estimator OD (KF)/Kalman Filter2/G"),
     TARGET_STRING("Value"), 0, 11, 0 },
 
-  { 64, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC1/E_zero"),
-    TARGET_STRING("Value"), 0, 4, 0 },
+  { 75, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/State Estimator OD (KF)/Kalman Filter2/H"),
+    TARGET_STRING("Value"), 0, 13, 0 },
 
-  { 65, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC1/F_zero"),
-    TARGET_STRING("Value"), 0, 5, 0 },
+  { 76, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/State Estimator OD (KF)/Kalman Filter2/P0"),
+    TARGET_STRING("Value"), 0, 11, 0 },
 
-  { 66, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC1/G_zero"),
-    TARGET_STRING("Value"), 0, 0, 0 },
+  { 77, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/State Estimator OD (KF)/Kalman Filter2/X0"),
+    TARGET_STRING("Value"), 0, 14, 0 },
 
-  { 67, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC1/S_zero"),
-    TARGET_STRING("Value"), 0, 0, 0 },
+  { 78, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/MPC Controller1/MPC/ym_zero"),
+    TARGET_STRING("Value"), 0, 10, 0 },
 
-  { 68, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC2/E_zero"),
-    TARGET_STRING("Value"), 0, 4, 0 },
+  { 79, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/MPC Controller1/MPC/ext.mv_scale"),
+    TARGET_STRING("Gain"), 0, 5, 0 },
 
-  { 69, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC2/F_zero"),
-    TARGET_STRING("Value"), 0, 5, 0 },
+  { 80, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/MPC Controller1/MPC/ext.mv_scale1"),
+    TARGET_STRING("Gain"), 0, 5, 0 },
 
-  { 70, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC2/G_zero"),
-    TARGET_STRING("Value"), 0, 0, 0 },
+  { 81, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/MPC Controller1/MPC/umin_scale1"),
+    TARGET_STRING("Gain"), 0, 5, 0 },
 
-  { 71, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC2/S_zero"),
-    TARGET_STRING("Value"), 0, 0, 0 },
+  { 82, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/MPC Controller1/MPC/umin_scale4"),
+    TARGET_STRING("Gain"), 0, 4, 0 },
 
-  { 72, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC3/E_zero"),
-    TARGET_STRING("Value"), 0, 4, 0 },
+  { 83, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/MPC Controller1/MPC/ymin_scale1"),
+    TARGET_STRING("Gain"), 0, 9, 0 },
 
-  { 73, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC3/F_zero"),
-    TARGET_STRING("Value"), 0, 5, 0 },
+  { 84, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/MPC Controller1/MPC/ymin_scale2"),
+    TARGET_STRING("Gain"), 0, 0, 0 },
 
-  { 74, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC3/G_zero"),
-    TARGET_STRING("Value"), 0, 0, 0 },
+  { 85, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/MPC Controller1/MPC/Memory"),
+    TARGET_STRING("InitialCondition"), 1, 15, 0 },
 
-  { 75, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC3/S_zero"),
-    TARGET_STRING("Value"), 0, 0, 0 },
+  { 86, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/MPC Controller1/MPC/last_mv"),
+    TARGET_STRING("InitialCondition"), 0, 5, 0 },
 
-  { 76, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/MPC/optimizer/FixedHorizonOptimizer"),
+  { 87, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/State Estimator OD (KF)/Kalman Filter2/G"),
+    TARGET_STRING("Value"), 0, 16, 0 },
+
+  { 88, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/State Estimator OD (KF)/Kalman Filter2/H"),
+    TARGET_STRING("Value"), 0, 17, 0 },
+
+  { 89, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/State Estimator OD (KF)/Kalman Filter2/P0"),
+    TARGET_STRING("Value"), 0, 16, 0 },
+
+  { 90, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/State Estimator OD (KF)/Kalman Filter2/X0"),
+    TARGET_STRING("Value"), 0, 10, 0 },
+
+  { 91, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/MPC/optimizer/FixedHorizonOptimizer"),
     TARGET_STRING("Ndis"), 2, 0, 0 },
 
-  { 77, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC1/MPC/constant"),
-    TARGET_STRING("Value"), 0, 6, 0 },
-
-  { 78, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC1/MPC/ext.mv_scale"),
-    TARGET_STRING("Gain"), 0, 6, 0 },
-
-  { 79, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC1/MPC/ext.mv_scale1"),
-    TARGET_STRING("Gain"), 0, 6, 0 },
-
-  { 80, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC1/MPC/umin_scale1"),
-    TARGET_STRING("Gain"), 0, 6, 0 },
-
-  { 81, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC1/MPC/umin_scale2"),
-    TARGET_STRING("Gain"), 0, 6, 0 },
-
-  { 82, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC1/MPC/umin_scale4"),
-    TARGET_STRING("Gain"), 0, 4, 0 },
-
-  { 83, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC1/MPC/ymin_scale1"),
-    TARGET_STRING("Gain"), 0, 5, 0 },
-
-  { 84, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC1/MPC/ymin_scale2"),
-    TARGET_STRING("Gain"), 0, 0, 0 },
-
-  { 85, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC1/MPC/Memory"),
-    TARGET_STRING("InitialCondition"), 1, 9, 0 },
-
-  { 86, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC1/MPC/last_x"),
-    TARGET_STRING("InitialCondition"), 0, 12, 0 },
-
-  { 87, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC1/MPC/last_mv"),
-    TARGET_STRING("InitialCondition"), 0, 6, 0 },
-
-  { 88, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC2/MPC/constant"),
-    TARGET_STRING("Value"), 0, 6, 0 },
-
-  { 89, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC2/MPC/ext.mv_scale"),
-    TARGET_STRING("Gain"), 0, 6, 0 },
-
-  { 90, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC2/MPC/ext.mv_scale1"),
-    TARGET_STRING("Gain"), 0, 6, 0 },
-
-  { 91, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC2/MPC/umin_scale1"),
-    TARGET_STRING("Gain"), 0, 6, 0 },
-
-  { 92, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC2/MPC/umin_scale2"),
-    TARGET_STRING("Gain"), 0, 6, 0 },
-
-  { 93, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC2/MPC/umin_scale4"),
-    TARGET_STRING("Gain"), 0, 4, 0 },
-
-  { 94, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC2/MPC/ymin_scale1"),
-    TARGET_STRING("Gain"), 0, 5, 0 },
-
-  { 95, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC2/MPC/ymin_scale2"),
-    TARGET_STRING("Gain"), 0, 0, 0 },
-
-  { 96, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC2/MPC/Memory"),
-    TARGET_STRING("InitialCondition"), 1, 9, 0 },
-
-  { 97, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC2/MPC/last_x"),
-    TARGET_STRING("InitialCondition"), 0, 13, 0 },
-
-  { 98, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC2/MPC/last_mv"),
-    TARGET_STRING("InitialCondition"), 0, 6, 0 },
-
-  { 99, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC3/MPC/constant"),
-    TARGET_STRING("Value"), 0, 6, 0 },
-
-  { 100, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC3/MPC/ext.mv_scale"),
-    TARGET_STRING("Gain"), 0, 6, 0 },
-
-  { 101, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC3/MPC/ext.mv_scale1"),
-    TARGET_STRING("Gain"), 0, 6, 0 },
-
-  { 102, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC3/MPC/umin_scale1"),
-    TARGET_STRING("Gain"), 0, 6, 0 },
-
-  { 103, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC3/MPC/umin_scale2"),
-    TARGET_STRING("Gain"), 0, 6, 0 },
-
-  { 104, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC3/MPC/umin_scale4"),
-    TARGET_STRING("Gain"), 0, 4, 0 },
-
-  { 105, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC3/MPC/ymin_scale1"),
-    TARGET_STRING("Gain"), 0, 5, 0 },
-
-  { 106, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC3/MPC/ymin_scale2"),
-    TARGET_STRING("Gain"), 0, 0, 0 },
-
-  { 107, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC3/MPC/Memory"),
-    TARGET_STRING("InitialCondition"), 1, 9, 0 },
-
-  { 108, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC3/MPC/last_x"),
-    TARGET_STRING("InitialCondition"), 0, 13, 0 },
-
-  { 109, TARGET_STRING("SupervisoryController/SupervisoryController/gmpc/Multiple MPC Controllers1/MPC3/MPC/last_mv"),
-    TARGET_STRING("InitialCondition"), 0, 6, 0 },
-
-  { 110, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/State Estimator OD (KF)/Kalman Filter2/CovarianceOutputConfigurator/decideOutput/isSqrtUsed"),
+  { 92, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/State Estimator OD (KF)/Kalman Filter2/CovarianceOutputConfigurator/decideOutput/isSqrtUsed"),
     TARGET_STRING("Value"), 1, 0, 0 },
 
-  { 111, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/State Estimator OD (KF)/Kalman Filter2/Observer/MeasurementUpdate/L*(y[k]-yhat[k|k-1])"),
+  { 93, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/State Estimator OD (KF)/Kalman Filter2/Observer/MeasurementUpdate/L*(y[k]-yhat[k|k-1])"),
+    TARGET_STRING("InitialOutput"), 0, 0, 0 },
+
+  { 94, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/State Estimator OD (KF)/Kalman Filter2/CovarianceOutputConfigurator/decideOutput/isSqrtUsed"),
+    TARGET_STRING("Value"), 1, 0, 0 },
+
+  { 95, TARGET_STRING("SupervisoryController/SupervisoryController/mpc1/State Estimator OD (KF)/Kalman Filter2/Observer/MeasurementUpdate/L*(y[k]-yhat[k|k-1])"),
     TARGET_STRING("InitialOutput"), 0, 0, 0 },
 
   {
@@ -395,31 +347,41 @@ static rtwCAPI_BlockParameters rtBlockParameters[]{
 // Tunable variable parameters
 static rtwCAPI_ModelParameters rtModelParameters[]{
   // addrMapIndex, varName, dataTypeIndex, dimIndex, fixPtIndex
-  { 112, TARGET_STRING("nullEv"), 3, 0, 0 },
+  { 96, TARGET_STRING("nullEv"), 3, 0, 0 },
 
-  { 113, TARGET_STRING("Aod"), 0, 16, 0 },
+  { 97, TARGET_STRING("Aod"), 0, 20, 0 },
 
-  { 114, TARGET_STRING("Bod"), 0, 17, 0 },
+  { 98, TARGET_STRING("Aod1"), 0, 6, 0 },
 
-  { 115, TARGET_STRING("Cod"), 0, 18, 0 },
+  { 99, TARGET_STRING("Bod"), 0, 21, 0 },
 
-  { 116, TARGET_STRING("Dmn"), 0, 1, 0 },
+  { 100, TARGET_STRING("Bod1"), 0, 6, 0 },
 
-  { 117, TARGET_STRING("Dod"), 0, 1, 0 },
+  { 101, TARGET_STRING("Cod"), 0, 22, 0 },
 
-  { 118, TARGET_STRING("beta"), 0, 0, 0 },
+  { 102, TARGET_STRING("Cod1"), 0, 6, 0 },
 
-  { 119, TARGET_STRING("dt"), 0, 0, 0 },
+  { 103, TARGET_STRING("Dmn"), 0, 1, 0 },
 
-  { 120, TARGET_STRING("lpfDen"), 0, 0, 0 },
+  { 104, TARGET_STRING("Dmn1"), 0, 6, 0 },
 
-  { 121, TARGET_STRING("lpfNum"), 0, 19, 0 },
+  { 105, TARGET_STRING("Dod"), 0, 1, 0 },
 
-  { 122, TARGET_STRING("mdlNum"), 0, 0, 0 },
+  { 106, TARGET_STRING("Dod1"), 0, 6, 0 },
 
-  { 123, TARGET_STRING("uwt0"), 0, 4, 0 },
+  { 107, TARGET_STRING("beta"), 0, 0, 0 },
 
-  { 124, TARGET_STRING("ywt0"), 0, 5, 0 },
+  { 108, TARGET_STRING("dt"), 0, 0, 0 },
+
+  { 109, TARGET_STRING("lpfDen"), 0, 0, 0 },
+
+  { 110, TARGET_STRING("lpfNum"), 0, 23, 0 },
+
+  { 111, TARGET_STRING("mdlNum"), 0, 0, 0 },
+
+  { 112, TARGET_STRING("uwt0"), 0, 4, 0 },
+
+  { 113, TARGET_STRING("ywt0"), 0, 7, 0 },
 
   { 0, (nullptr), 0, 0, 0 }
 };
@@ -445,115 +407,104 @@ static void InitializeDataAddr(void* dataAddr[], SupervisoryController::P *rtP)
   dataAddr[13] = (void*) (&rtP->Saturation_UpperSat);
   dataAddr[14] = (void*) (&rtP->Saturation_LowerSat);
   dataAddr[15] = (void*) (&rtP->DiscreteFilter1_InitialStates);
-  dataAddr[16] = (void*) (&rtP->u_Y0_j);
-  dataAddr[17] = (void*) (&rtP->ywt_Y0_j);
-  dataAddr[18] = (void*) (&rtP->r_Y0_g);
-  dataAddr[19] = (void*) (&rtP->Gain2_Gain_b);
-  dataAddr[20] = (void*) (&rtP->Gain3_Gain_d);
-  dataAddr[21] = (void*) (&rtP->Saturation_UpperSat_d);
-  dataAddr[22] = (void*) (&rtP->Saturation_LowerSat_k);
-  dataAddr[23] = (void*) (&rtP->Delay2_InitialCondition);
-  dataAddr[24] = (void*) (&rtP->paramEst1_o.theta_Y0);
-  dataAddr[25] = (void*) (&rtP->paramEst1_o.P_Y0);
-  dataAddr[26] = (void*) (&rtP->paramEst1_o.err_Y0);
-  dataAddr[27] = (void*) (&rtP->paramEst2.theta_Y0);
-  dataAddr[28] = (void*) (&rtP->paramEst2.P_Y0);
-  dataAddr[29] = (void*) (&rtP->paramEst2.err_Y0);
-  dataAddr[30] = (void*) (&rtP->E_zero_Value[0]);
-  dataAddr[31] = (void*) (&rtP->F_zero_Value[0]);
-  dataAddr[32] = (void*) (&rtP->G_zero_Value);
-  dataAddr[33] = (void*) (&rtP->S_zero_Value);
-  dataAddr[34] = (void*) (&rtP->duwt_zero_Value[0]);
-  dataAddr[35] = (void*) (&rtP->ecrwt_zero_Value);
-  dataAddr[36] = (void*) (&rtP->extmv_zero_Value[0]);
-  dataAddr[37] = (void*) (&rtP->md_zero_Value);
-  dataAddr[38] = (void*) (&rtP->mvtarget_zero_Value[0]);
-  dataAddr[39] = (void*) (&rtP->switch_zero_Value);
-  dataAddr[40] = (void*) (&rtP->umin_zero_Value[0]);
-  dataAddr[41] = (void*) (&rtP->Constant1_Value[0]);
-  dataAddr[42] = (void*) (&rtP->duwt_zero_Value_k[0]);
-  dataAddr[43] = (void*) (&rtP->ecrwt_zero_Value_h);
-  dataAddr[44] = (void*) (&rtP->md_zero_Value_e);
-  dataAddr[45] = (void*) (&rtP->mvtarget_zero_Value_n[0]);
-  dataAddr[46] = (void*) (&rtP->u0_zero_Value[0]);
-  dataAddr[47] = (void*) (&rtP->umin_zero_Value_m[0]);
-  dataAddr[48] = (void*) (&rtP->paramEst1_o.UnitDelay3_InitialCondition);
-  dataAddr[49] = (void*) (&rtP->paramEst2.UnitDelay3_InitialCondition);
-  dataAddr[50] = (void*) (&rtP->ym_zero_Value[0]);
-  dataAddr[51] = (void*) (&rtP->extmv_scale_Gain[0]);
-  dataAddr[52] = (void*) (&rtP->u_scale_Gain[0]);
-  dataAddr[53] = (void*) (&rtP->umin_scale4_Gain[0]);
-  dataAddr[54] = (void*) (&rtP->uref_scale_Gain[0]);
-  dataAddr[55] = (void*) (&rtP->ymin_scale1_Gain[0]);
-  dataAddr[56] = (void*) (&rtP->ymin_scale2_Gain);
-  dataAddr[57] = (void*) (&rtP->LastPcov_InitialCondition[0]);
-  dataAddr[58] = (void*) (&rtP->Memory_InitialCondition[0]);
-  dataAddr[59] = (void*) (&rtP->last_mv_InitialCondition[0]);
-  dataAddr[60] = (void*) (&rtP->G_Value[0]);
-  dataAddr[61] = (void*) (&rtP->H_Value[0]);
-  dataAddr[62] = (void*) (&rtP->P0_Value[0]);
-  dataAddr[63] = (void*) (&rtP->X0_Value[0]);
-  dataAddr[64] = (void*) (&rtP->E_zero_Value_f[0]);
-  dataAddr[65] = (void*) (&rtP->F_zero_Value_f[0]);
-  dataAddr[66] = (void*) (&rtP->G_zero_Value_d);
-  dataAddr[67] = (void*) (&rtP->S_zero_Value_h);
-  dataAddr[68] = (void*) (&rtP->E_zero_Value_c[0]);
-  dataAddr[69] = (void*) (&rtP->F_zero_Value_k[0]);
-  dataAddr[70] = (void*) (&rtP->G_zero_Value_l);
-  dataAddr[71] = (void*) (&rtP->S_zero_Value_k);
-  dataAddr[72] = (void*) (&rtP->E_zero_Value_p[0]);
-  dataAddr[73] = (void*) (&rtP->F_zero_Value_o[0]);
-  dataAddr[74] = (void*) (&rtP->G_zero_Value_e);
-  dataAddr[75] = (void*) (&rtP->S_zero_Value_o);
-  dataAddr[76] = (void*) (&rtP->FixedHorizonOptimizer_Ndis);
-  dataAddr[77] = (void*) (&rtP->constant_Value[0]);
-  dataAddr[78] = (void*) (&rtP->extmv_scale_Gain_g[0]);
-  dataAddr[79] = (void*) (&rtP->extmv_scale1_Gain[0]);
-  dataAddr[80] = (void*) (&rtP->umin_scale1_Gain[0]);
-  dataAddr[81] = (void*) (&rtP->umin_scale2_Gain[0]);
+  dataAddr[16] = (void*) (&rtP->u_Y0_b);
+  dataAddr[17] = (void*) (&rtP->yhat_Y0_d);
+  dataAddr[18] = (void*) (&rtP->r_Y0_m);
+  dataAddr[19] = (void*) (&rtP->ywt_Y0_m);
+  dataAddr[20] = (void*) (&rtP->Constant_Value);
+  dataAddr[21] = (void*) (&rtP->Constant1_Value_e);
+  dataAddr[22] = (void*) (&rtP->Constant12_Value_e[0]);
+  dataAddr[23] = (void*) (&rtP->Constant13_Value_c[0]);
+  dataAddr[24] = (void*) (&rtP->Constant2_Value_a);
+  dataAddr[25] = (void*) (&rtP->Constant3_Value);
+  dataAddr[26] = (void*) (&rtP->Constant4_Value[0]);
+  dataAddr[27] = (void*) (&rtP->Delay2_InitialCondition);
+  dataAddr[28] = (void*) (&rtP->paramEst1_o.theta_Y0);
+  dataAddr[29] = (void*) (&rtP->paramEst1_o.P_Y0);
+  dataAddr[30] = (void*) (&rtP->paramEst1_o.err_Y0);
+  dataAddr[31] = (void*) (&rtP->paramEst2.theta_Y0);
+  dataAddr[32] = (void*) (&rtP->paramEst2.P_Y0);
+  dataAddr[33] = (void*) (&rtP->paramEst2.err_Y0);
+  dataAddr[34] = (void*) (&rtP->E_zero_Value[0]);
+  dataAddr[35] = (void*) (&rtP->F_zero_Value[0]);
+  dataAddr[36] = (void*) (&rtP->G_zero_Value);
+  dataAddr[37] = (void*) (&rtP->S_zero_Value);
+  dataAddr[38] = (void*) (&rtP->duwt_zero_Value[0]);
+  dataAddr[39] = (void*) (&rtP->ecrwt_zero_Value);
+  dataAddr[40] = (void*) (&rtP->extmv_zero_Value[0]);
+  dataAddr[41] = (void*) (&rtP->md_zero_Value);
+  dataAddr[42] = (void*) (&rtP->mvtarget_zero_Value[0]);
+  dataAddr[43] = (void*) (&rtP->switch_zero_Value);
+  dataAddr[44] = (void*) (&rtP->umin_zero_Value[0]);
+  dataAddr[45] = (void*) (&rtP->Constant1_Value[0]);
+  dataAddr[46] = (void*) (&rtP->E_zero_Value_a[0]);
+  dataAddr[47] = (void*) (&rtP->F_zero_Value_g[0]);
+  dataAddr[48] = (void*) (&rtP->G_zero_Value_m);
+  dataAddr[49] = (void*) (&rtP->S_zero_Value_g);
+  dataAddr[50] = (void*) (&rtP->duwt_zero_Value_p[0]);
+  dataAddr[51] = (void*) (&rtP->ecrwt_zero_Value_o);
+  dataAddr[52] = (void*) (&rtP->extmv_zero_Value_e[0]);
+  dataAddr[53] = (void*) (&rtP->md_zero_Value_p);
+  dataAddr[54] = (void*) (&rtP->mvtarget_zero_Value_k[0]);
+  dataAddr[55] = (void*) (&rtP->switch_zero_Value_e);
+  dataAddr[56] = (void*) (&rtP->uwt_zero_Value[0]);
+  dataAddr[57] = (void*) (&rtP->umin_zero_Value_d[0]);
+  dataAddr[58] = (void*) (&rtP->ywt_zero_Value[0]);
+  dataAddr[59] = (void*) (&rtP->ymax_zero_Value[0]);
+  dataAddr[60] = (void*) (&rtP->ymin_zero_Value[0]);
+  dataAddr[61] = (void*) (&rtP->Constant1_Value_j[0]);
+  dataAddr[62] = (void*) (&rtP->paramEst1_o.UnitDelay3_InitialCondition);
+  dataAddr[63] = (void*) (&rtP->paramEst2.UnitDelay3_InitialCondition);
+  dataAddr[64] = (void*) (&rtP->ym_zero_Value[0]);
+  dataAddr[65] = (void*) (&rtP->extmv_scale_Gain[0]);
+  dataAddr[66] = (void*) (&rtP->u_scale_Gain[0]);
+  dataAddr[67] = (void*) (&rtP->umin_scale4_Gain[0]);
+  dataAddr[68] = (void*) (&rtP->uref_scale_Gain[0]);
+  dataAddr[69] = (void*) (&rtP->ymin_scale1_Gain[0]);
+  dataAddr[70] = (void*) (&rtP->ymin_scale2_Gain);
+  dataAddr[71] = (void*) (&rtP->LastPcov_InitialCondition[0]);
+  dataAddr[72] = (void*) (&rtP->Memory_InitialCondition[0]);
+  dataAddr[73] = (void*) (&rtP->last_mv_InitialCondition[0]);
+  dataAddr[74] = (void*) (&rtP->G_Value[0]);
+  dataAddr[75] = (void*) (&rtP->H_Value[0]);
+  dataAddr[76] = (void*) (&rtP->P0_Value[0]);
+  dataAddr[77] = (void*) (&rtP->X0_Value[0]);
+  dataAddr[78] = (void*) (&rtP->ym_zero_Value_c[0]);
+  dataAddr[79] = (void*) (&rtP->extmv_scale_Gain_e[0]);
+  dataAddr[80] = (void*) (&rtP->extmv_scale1_Gain[0]);
+  dataAddr[81] = (void*) (&rtP->umin_scale1_Gain[0]);
   dataAddr[82] = (void*) (&rtP->umin_scale4_Gain_p[0]);
-  dataAddr[83] = (void*) (&rtP->ymin_scale1_Gain_d[0]);
-  dataAddr[84] = (void*) (&rtP->ymin_scale2_Gain_g);
-  dataAddr[85] = (void*) (&rtP->Memory_InitialCondition_c[0]);
-  dataAddr[86] = (void*) (&rtP->last_x_InitialCondition[0]);
-  dataAddr[87] = (void*) (&rtP->last_mv_InitialCondition_n[0]);
-  dataAddr[88] = (void*) (&rtP->constant_Value_l[0]);
-  dataAddr[89] = (void*) (&rtP->extmv_scale_Gain_o[0]);
-  dataAddr[90] = (void*) (&rtP->extmv_scale1_Gain_g[0]);
-  dataAddr[91] = (void*) (&rtP->umin_scale1_Gain_l[0]);
-  dataAddr[92] = (void*) (&rtP->umin_scale2_Gain_m[0]);
-  dataAddr[93] = (void*) (&rtP->umin_scale4_Gain_d[0]);
-  dataAddr[94] = (void*) (&rtP->ymin_scale1_Gain_l[0]);
-  dataAddr[95] = (void*) (&rtP->ymin_scale2_Gain_c);
-  dataAddr[96] = (void*) (&rtP->Memory_InitialCondition_cu[0]);
-  dataAddr[97] = (void*) (&rtP->last_x_InitialCondition_k[0]);
-  dataAddr[98] = (void*) (&rtP->last_mv_InitialCondition_l[0]);
-  dataAddr[99] = (void*) (&rtP->constant_Value_e[0]);
-  dataAddr[100] = (void*) (&rtP->extmv_scale_Gain_a[0]);
-  dataAddr[101] = (void*) (&rtP->extmv_scale1_Gain_gf[0]);
-  dataAddr[102] = (void*) (&rtP->umin_scale1_Gain_f[0]);
-  dataAddr[103] = (void*) (&rtP->umin_scale2_Gain_l[0]);
-  dataAddr[104] = (void*) (&rtP->umin_scale4_Gain_g[0]);
-  dataAddr[105] = (void*) (&rtP->ymin_scale1_Gain_a[0]);
-  dataAddr[106] = (void*) (&rtP->ymin_scale2_Gain_h);
-  dataAddr[107] = (void*) (&rtP->Memory_InitialCondition_f[0]);
-  dataAddr[108] = (void*) (&rtP->last_x_InitialCondition_p[0]);
-  dataAddr[109] = (void*) (&rtP->last_mv_InitialCondition_g[0]);
-  dataAddr[110] = (void*) (&rtP->isSqrtUsed_Value);
-  dataAddr[111] = (void*) (&rtP->Lykyhatkk1_Y0);
-  dataAddr[112] = (void*) (&rtP->nullEv);
-  dataAddr[113] = (void*) (&rtP->Aod[0]);
-  dataAddr[114] = (void*) (&rtP->Bod[0]);
-  dataAddr[115] = (void*) (&rtP->Cod[0]);
-  dataAddr[116] = (void*) (&rtP->Dmn[0]);
-  dataAddr[117] = (void*) (&rtP->Dod[0]);
-  dataAddr[118] = (void*) (&rtP->beta);
-  dataAddr[119] = (void*) (&rtP->dt);
-  dataAddr[120] = (void*) (&rtP->lpfDen);
-  dataAddr[121] = (void*) (&rtP->lpfNum[0]);
-  dataAddr[122] = (void*) (&rtP->mdlNum);
-  dataAddr[123] = (void*) (&rtP->uwt0[0]);
-  dataAddr[124] = (void*) (&rtP->ywt0[0]);
+  dataAddr[83] = (void*) (&rtP->ymin_scale1_Gain_j[0]);
+  dataAddr[84] = (void*) (&rtP->ymin_scale2_Gain_f);
+  dataAddr[85] = (void*) (&rtP->Memory_InitialCondition_f[0]);
+  dataAddr[86] = (void*) (&rtP->last_mv_InitialCondition_f[0]);
+  dataAddr[87] = (void*) (&rtP->G_Value_a[0]);
+  dataAddr[88] = (void*) (&rtP->H_Value_o[0]);
+  dataAddr[89] = (void*) (&rtP->P0_Value_a[0]);
+  dataAddr[90] = (void*) (&rtP->X0_Value_f[0]);
+  dataAddr[91] = (void*) (&rtP->FixedHorizonOptimizer_Ndis);
+  dataAddr[92] = (void*) (&rtP->isSqrtUsed_Value);
+  dataAddr[93] = (void*) (&rtP->Lykyhatkk1_Y0);
+  dataAddr[94] = (void*) (&rtP->isSqrtUsed_Value_d);
+  dataAddr[95] = (void*) (&rtP->Lykyhatkk1_Y0_c);
+  dataAddr[96] = (void*) (&rtP->nullEv);
+  dataAddr[97] = (void*) (&rtP->Aod[0]);
+  dataAddr[98] = (void*) (&rtP->Aod1[0]);
+  dataAddr[99] = (void*) (&rtP->Bod[0]);
+  dataAddr[100] = (void*) (&rtP->Bod1[0]);
+  dataAddr[101] = (void*) (&rtP->Cod[0]);
+  dataAddr[102] = (void*) (&rtP->Cod1[0]);
+  dataAddr[103] = (void*) (&rtP->Dmn[0]);
+  dataAddr[104] = (void*) (&rtP->Dmn1[0]);
+  dataAddr[105] = (void*) (&rtP->Dod[0]);
+  dataAddr[106] = (void*) (&rtP->Dod1[0]);
+  dataAddr[107] = (void*) (&rtP->beta);
+  dataAddr[108] = (void*) (&rtP->dt);
+  dataAddr[109] = (void*) (&rtP->lpfDen);
+  dataAddr[110] = (void*) (&rtP->lpfNum[0]);
+  dataAddr[111] = (void*) (&rtP->mdlNum);
+  dataAddr[112] = (void*) (&rtP->uwt0[0]);
+  dataAddr[113] = (void*) (&rtP->ywt0[0]);
 }
 
 #endif
@@ -687,17 +638,6 @@ static void InitializeLoggingFunctions(RTWLoggingFcnPtr loggingPtrs[])
   loggingPtrs[111] = (nullptr);
   loggingPtrs[112] = (nullptr);
   loggingPtrs[113] = (nullptr);
-  loggingPtrs[114] = (nullptr);
-  loggingPtrs[115] = (nullptr);
-  loggingPtrs[116] = (nullptr);
-  loggingPtrs[117] = (nullptr);
-  loggingPtrs[118] = (nullptr);
-  loggingPtrs[119] = (nullptr);
-  loggingPtrs[120] = (nullptr);
-  loggingPtrs[121] = (nullptr);
-  loggingPtrs[122] = (nullptr);
-  loggingPtrs[123] = (nullptr);
-  loggingPtrs[124] = (nullptr);
 }
 
 #endif
@@ -726,13 +666,13 @@ static TARGET_CONST rtwCAPI_ElementMap rtElementMap[]{
   // elementName, elementOffset, dataTypeIndex, dimIndex, fxpIndex
   { (nullptr), 0, 0, 0, 0 },
 
-  { "r", rt_offsetof(event_bus, r), 0, 14, 0 },
+  { "r", rt_offsetof(event_bus, r), 0, 18, 0 },
 
-  { "preT", rt_offsetof(event_bus, preT), 0, 15, 0 },
+  { "preT", rt_offsetof(event_bus, preT), 0, 19, 0 },
 
-  { "moveT", rt_offsetof(event_bus, moveT), 0, 15, 0 },
+  { "moveT", rt_offsetof(event_bus, moveT), 0, 19, 0 },
 
-  { "postT", rt_offsetof(event_bus, postT), 0, 15, 0 }
+  { "postT", rt_offsetof(event_bus, postT), 0, 19, 0 }
 };
 
 // Dimension Map - use dimensionMapIndex to access elements of ths structure
@@ -750,33 +690,41 @@ static rtwCAPI_DimensionMap rtDimensionMap[]{
 
   { rtwCAPI_VECTOR, 10, 2, 0 },
 
-  { rtwCAPI_VECTOR, 12, 2, 0 },
+  { rtwCAPI_MATRIX_COL_MAJOR, 12, 2, 0 },
 
   { rtwCAPI_VECTOR, 14, 2, 0 },
 
-  { rtwCAPI_MATRIX_COL_MAJOR, 16, 2, 0 },
+  { rtwCAPI_VECTOR, 16, 2, 0 },
 
   { rtwCAPI_VECTOR, 18, 2, 0 },
 
-  { rtwCAPI_MATRIX_COL_MAJOR, 20, 2, 0 },
+  { rtwCAPI_VECTOR, 20, 2, 0 },
 
-  { rtwCAPI_VECTOR, 22, 2, 0 },
+  { rtwCAPI_MATRIX_COL_MAJOR, 22, 2, 0 },
 
   { rtwCAPI_VECTOR, 24, 2, 0 },
 
-  { rtwCAPI_VECTOR, 26, 2, 0 },
+  { rtwCAPI_MATRIX_COL_MAJOR, 26, 2, 0 },
+
+  { rtwCAPI_VECTOR, 28, 2, 0 },
+
+  { rtwCAPI_VECTOR, 30, 2, 0 },
+
+  { rtwCAPI_MATRIX_COL_MAJOR, 32, 2, 0 },
+
+  { rtwCAPI_MATRIX_COL_MAJOR, 34, 2, 0 },
 
   { rtwCAPI_MATRIX_COL_MAJOR, 6, 2, 0 },
 
   { rtwCAPI_MATRIX_COL_MAJOR, 0, 2, 0 },
 
-  { rtwCAPI_MATRIX_COL_MAJOR, 28, 2, 0 },
+  { rtwCAPI_MATRIX_COL_MAJOR, 36, 2, 0 },
 
-  { rtwCAPI_MATRIX_COL_MAJOR, 30, 2, 0 },
+  { rtwCAPI_MATRIX_COL_MAJOR, 38, 2, 0 },
 
-  { rtwCAPI_MATRIX_COL_MAJOR, 32, 2, 0 },
+  { rtwCAPI_MATRIX_COL_MAJOR, 40, 2, 0 },
 
-  { rtwCAPI_VECTOR, 34, 2, 0 }
+  { rtwCAPI_VECTOR, 42, 2, 0 }
 };
 
 // Dimension Array- use dimArrayIndex to access elements of this array
@@ -791,32 +739,40 @@ static uint_T rtDimensionArray[]{
   1,                                   // 7
   1,                                   // 8
   3,                                   // 9
-  1,                                   // 10
-  6,                                   // 11
+  3,                                   // 10
+  1,                                   // 11
   3,                                   // 12
-  1,                                   // 13
-  12,                                  // 14
-  1,                                   // 15
-  18,                                  // 16
-  18,                                  // 17
-  246,                                 // 18
-  1,                                   // 19
-  6,                                   // 20
-  18,                                  // 21
+  3,                                   // 13
+  1,                                   // 14
+  6,                                   // 15
+  12,                                  // 16
+  1,                                   // 17
+  1,                                   // 18
+  4,                                   // 19
+  4,                                   // 20
+  1,                                   // 21
   18,                                  // 22
-  1,                                   // 23
-  8,                                   // 24
+  18,                                  // 23
+  246,                                 // 24
   1,                                   // 25
-  10,                                  // 26
-  1,                                   // 27
-  12,                                  // 28
-  12,                                  // 29
-  12,                                  // 30
-  6,                                   // 31
-  6,                                   // 32
-  12,                                  // 33
-  1,                                   // 34
-  60                                   // 35
+  6,                                   // 26
+  18,                                  // 27
+  18,                                  // 28
+  1,                                   // 29
+  166,                                 // 30
+  1,                                   // 31
+  4,                                   // 32
+  4,                                   // 33
+  3,                                   // 34
+  4,                                   // 35
+  12,                                  // 36
+  12,                                  // 37
+  12,                                  // 38
+  6,                                   // 39
+  6,                                   // 40
+  12,                                  // 41
+  1,                                   // 42
+  60                                   // 43
 };
 
 // Fixed Point Map
@@ -848,8 +804,8 @@ static rtwCAPI_ModelMappingStaticInfo mmiStatic{
     (nullptr), 0,
     (nullptr), 0 },
 
-  { rtBlockParameters, 112,
-    rtModelParameters, 13 },
+  { rtBlockParameters, 96,
+    rtModelParameters, 18 },
 
   { (nullptr), 0 },
 
@@ -857,10 +813,10 @@ static rtwCAPI_ModelMappingStaticInfo mmiStatic{
     rtElementMap, rtSampleTimeMap, rtDimensionArray },
   "float",
 
-  { 2900346511U,
-    2865944295U,
-    3387641527U,
-    1620784386U },
+  { 2151219993U,
+    1065238771U,
+    1058039005U,
+    3205653434U },
   (nullptr), 0,
   (boolean_T)0
 };

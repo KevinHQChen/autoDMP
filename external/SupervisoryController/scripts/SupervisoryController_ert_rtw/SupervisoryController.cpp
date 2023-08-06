@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2337
+// Model version                  : 1.2402
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Fri Aug  4 06:09:14 2023
+// C/C++ source code generated on : Sun Aug  6 00:34:47 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -33,10 +33,6 @@
 const int32_T degrees{ 4 };
 
 const int32_T nu{ 3 };
-
-const int32_T ny{ 6 };
-
-const int32_T p{ 20 };
 
 // Named constants for Chart: '<Root>/SupervisoryController'
 const uint8_T IN_HandleEvent{ 1U };
@@ -346,7 +342,7 @@ void SupervisoryController::binary_expand_op(real_T in1[36], int32_T in2,
   int32_T in3_idx_0;
   int32_T stride_0_0;
 
-  // MATLAB Function: '<S158>/MATLAB Function1'
+  // MATLAB Function: '<S157>/MATLAB Function1'
   in3_idx_0 = in3 - in2;
   stride_0_0 = (in7 - in6) + 1 != 1 ? static_cast<int32_T>(1) : static_cast<
     int32_T>(0);
@@ -354,7 +350,7 @@ void SupervisoryController::binary_expand_op(real_T in1[36], int32_T in2,
     in1[(in2 + i) + 12 * in4] = in5[i * stride_0_0 + in6] * in8[(in4 << 2UL) + i];
   }
 
-  // End of MATLAB Function: '<S158>/MATLAB Function1'
+  // End of MATLAB Function: '<S157>/MATLAB Function1'
 }
 
 //
@@ -365,15 +361,15 @@ void SupervisoryController::binary_expand_op(real_T in1[36], int32_T in2,
 void SupervisoryController::paramEst1_Init(real_T rty_theta[12], real_T rty_P
   [144], real_T rty_err[3], DW_paramEst1 *localDW, P_paramEst1 *localP)
 {
-  // InitializeConditions for Delay: '<S160>/Delay1'
+  // InitializeConditions for Delay: '<S159>/Delay1'
   localDW->icLoad = true;
 
-  // InitializeConditions for UnitDelay: '<S158>/Unit Delay3'
+  // InitializeConditions for UnitDelay: '<S157>/Unit Delay3'
   localDW->UnitDelay3_DSTATE[0] = localP->UnitDelay3_InitialCondition;
   localDW->UnitDelay3_DSTATE[1] = localP->UnitDelay3_InitialCondition;
   localDW->UnitDelay3_DSTATE[2] = localP->UnitDelay3_InitialCondition;
 
-  // InitializeConditions for Delay: '<S160>/Delay'
+  // InitializeConditions for Delay: '<S159>/Delay'
   localDW->icLoad_n = true;
 
   // SystemInitialize for Outport: '<S4>/theta'
@@ -432,7 +428,7 @@ void SupervisoryController::paramEst1(const real_T rtu_y[3], const real_T
   int32_T p2_tmp;
   int32_T scalarLB;
 
-  // Delay: '<S160>/Delay1'
+  // Delay: '<S159>/Delay1'
   localDW->icLoad = ((rtu_rstP && (static_cast<uint32_T>
     (localZCE->Delay1_Reset_ZCE) != POS_ZCSIG)) || localDW->icLoad);
   localZCE->Delay1_Reset_ZCE = rtu_rstP ? static_cast<ZCSigState>(1) :
@@ -442,30 +438,30 @@ void SupervisoryController::paramEst1(const real_T rtu_y[3], const real_T
                       (real_T));
   }
 
-  // Sum: '<S158>/Add1'
+  // Sum: '<S157>/Add1'
   rtb_Add1_c[0] = rtu_y[0] - rtu_y0[0];
 
-  // Sum: '<S158>/Add3'
+  // Sum: '<S157>/Add3'
   rtb_Add3_idx_0 = rtu_u[0] - rtu_u0[0];
 
-  // Sum: '<S158>/Add1'
+  // Sum: '<S157>/Add1'
   rtb_Add1_c[1] = rtu_y[1] - rtu_y0[1];
 
-  // Sum: '<S158>/Add3'
+  // Sum: '<S157>/Add3'
   rtb_Add3_idx_1 = rtu_u[1] - rtu_u0[1];
 
-  // Sum: '<S158>/Add1'
+  // Sum: '<S157>/Add1'
   rtb_Add1_c[2] = rtu_y[2] - rtu_y0[2];
 
-  // Sum: '<S158>/Add3'
+  // Sum: '<S157>/Add3'
   rtb_Add3_idx_2 = rtu_u[2] - rtu_u0[2];
 
-  // MATLAB Function: '<S158>/MATLAB Function1' incorporates:
-  //   Sum: '<S158>/Add1'
-  //   Sum: '<S158>/Add3'
+  // MATLAB Function: '<S157>/MATLAB Function1' incorporates:
+  //   Sum: '<S157>/Add1'
+  //   Sum: '<S157>/Add3'
 
-  // MATLAB Function 'SupervisoryController/paramEst1/Param Estimator (RLS)/MATLAB Function1': '<S159>:1' 
-  // '<S159>:1:2' [z, phi] = getRegressors_(y, yPrev, u, sign_, no, ni, np, dt, mdlNum); 
+  // MATLAB Function 'SupervisoryController/paramEst1/Param Estimator (RLS)/MATLAB Function1': '<S158>:1' 
+  // '<S158>:1:2' [z, phi] = getRegressors_(y, yPrev, u, sign_, no, ni, np, dt, mdlNum); 
   // 'getRegressors_:3' z = zeros(no, 1);
   // 'getRegressors_:4' phi = zeros(no*np, no);
   (void)std::memset(&rtb_phi[0], 0, 36U * sizeof(real_T));
@@ -526,7 +522,7 @@ void SupervisoryController::paramEst1(const real_T rtu_y[3], const real_T
     }
   }
 
-  // Delay: '<S160>/Delay'
+  // Delay: '<S159>/Delay'
   // 'getRegressors_:11' z = y - yPrev;
   localDW->icLoad_n = ((rtu_rstTheta && (static_cast<uint32_T>
     (localZCE->Delay_Reset_ZCE) != POS_ZCSIG)) || localDW->icLoad_n);
@@ -538,37 +534,37 @@ void SupervisoryController::paramEst1(const real_T rtu_y[3], const real_T
   }
 
   for (i = 0; i < 12; i++) {
-    // Math: '<S160>/Transpose' incorporates:
-    //   MATLAB Function: '<S160>/MATLAB Function'
+    // Math: '<S159>/Transpose' incorporates:
+    //   MATLAB Function: '<S159>/MATLAB Function'
 
     tmp[3 * i] = rtb_phi[i];
     tmp[3 * i + 1] = rtb_phi[i + 12];
     tmp[3 * i + 2] = rtb_phi[i + 24];
   }
 
-  // MATLAB Function 'SupervisoryController/paramEst1/Param Estimator (RLS)/RLS/MATLAB Function': '<S161>:1' 
-  // '<S161>:1:2' [dtheta, dP, L] = rls_(theta, phi, epsil, EN, p_, dPmod_, lambda, P, no, ni, np); 
+  // MATLAB Function 'SupervisoryController/paramEst1/Param Estimator (RLS)/RLS/MATLAB Function': '<S160>:1' 
+  // '<S160>:1:2' [dtheta, dP, L] = rls_(theta, phi, epsil, EN, p_, dPmod_, lambda, P, no, ni, np); 
   // 'rls_:3' dtheta = zeros(no*np, 1);
   // 'rls_:4' dP = zeros(no*np,no*np);
   // 'rls_:5' L = zeros(no*np, no);
   // 'rls_:7' L = P*phi*inv(lambda*eye(no) + phi'*P*phi);
   for (i = 0; i < 3; i++) {
-    // Sum: '<S160>/Sum2' incorporates:
-    //   Delay: '<S160>/Delay'
-    //   MATLAB Function: '<S158>/MATLAB Function1'
-    //   Math: '<S160>/Transpose'
-    //   Sum: '<S158>/Add1'
-    //   UnitDelay: '<S158>/Unit Delay3'
+    // Sum: '<S159>/Sum2' incorporates:
+    //   Delay: '<S159>/Delay'
+    //   MATLAB Function: '<S157>/MATLAB Function1'
+    //   Math: '<S159>/Transpose'
+    //   Sum: '<S157>/Add1'
+    //   UnitDelay: '<S157>/Unit Delay3'
 
     rtb_Add3_idx_0 = 0.0;
     for (p2 = 0; p2 < 12; p2++) {
-      // MATLAB Function: '<S160>/MATLAB Function'
+      // MATLAB Function: '<S159>/MATLAB Function'
       p1 = 3 * p2 + i;
       rtb_Add3_idx_0 += tmp[p1] * localDW->Delay_DSTATE[p2];
 
-      // MATLAB Function: '<S160>/MATLAB Function' incorporates:
-      //   Delay: '<S160>/Delay'
-      //   Delay: '<S160>/Delay1'
+      // MATLAB Function: '<S159>/MATLAB Function' incorporates:
+      //   Delay: '<S159>/Delay'
+      //   Delay: '<S159>/Delay1'
 
       tmp_0[p1] = 0.0;
       for (ibtile = 0; ibtile < 12; ibtile++) {
@@ -580,9 +576,9 @@ void SupervisoryController::paramEst1(const real_T rtu_y[3], const real_T
     rty_err[i] = (rtb_Add1_c[i] - localDW->UnitDelay3_DSTATE[i]) -
       rtb_Add3_idx_0;
 
-    // End of Sum: '<S160>/Sum2'
+    // End of Sum: '<S159>/Sum2'
 
-    // MATLAB Function: '<S160>/MATLAB Function'
+    // MATLAB Function: '<S159>/MATLAB Function'
     for (p2 = 0; p2 < 3; p2++) {
       rtb_Add3_idx_0 = 0.0;
       for (p1 = 0; p1 < 12; p1++) {
@@ -594,9 +590,9 @@ void SupervisoryController::paramEst1(const real_T rtu_y[3], const real_T
     }
   }
 
-  // MATLAB Function: '<S160>/MATLAB Function' incorporates:
-  //   Delay: '<S160>/Delay'
-  //   Delay: '<S160>/Delay1'
+  // MATLAB Function: '<S159>/MATLAB Function' incorporates:
+  //   Delay: '<S159>/Delay'
+  //   Delay: '<S159>/Delay1'
 
   (void)std::memcpy(&b_x[0], &b_b[0], 9U * sizeof(real_T));
   p1 = 0;
@@ -828,11 +824,11 @@ void SupervisoryController::paramEst1(const real_T rtu_y[3], const real_T
   //      dP = - ( P + 1*eye(3) );
   //  end
   for (i = 0; i <= 142; i += 2) {
-    // Delay: '<S160>/Delay1'
+    // Delay: '<S159>/Delay1'
     tmp_1 = _mm_loadu_pd(&localDW->Delay1_DSTATE[i]);
 
-    // Product: '<S160>/Product1' incorporates:
-    //   Delay: '<S160>/Delay1'
+    // Product: '<S159>/Product1' incorporates:
+    //   Delay: '<S159>/Delay1'
 
     tmp_2 = _mm_loadu_pd(&rty_P[i]);
     (void)_mm_storeu_pd(&rty_P[i], _mm_div_pd(_mm_sub_pd(tmp_1, tmp_2),
@@ -840,115 +836,31 @@ void SupervisoryController::paramEst1(const real_T rtu_y[3], const real_T
   }
 
   for (i = 0; i <= 10; i += 2) {
-    // Delay: '<S160>/Delay'
+    // Delay: '<S159>/Delay'
     tmp_1 = _mm_loadu_pd(&localDW->Delay_DSTATE[i]);
 
-    // Sum: '<S160>/Sum' incorporates:
-    //   Delay: '<S160>/Delay'
+    // Sum: '<S159>/Sum' incorporates:
+    //   Delay: '<S159>/Delay'
 
     tmp_2 = _mm_loadu_pd(&rty_theta[i]);
     (void)_mm_storeu_pd(&rty_theta[i], _mm_add_pd(tmp_1, tmp_2));
   }
 
-  // Update for Delay: '<S160>/Delay1'
+  // Update for Delay: '<S159>/Delay1'
   localDW->icLoad = false;
   (void)std::memcpy(&localDW->Delay1_DSTATE[0], &rty_P[0], 144U * sizeof(real_T));
 
-  // Update for UnitDelay: '<S158>/Unit Delay3' incorporates:
-  //   Sum: '<S158>/Add1'
+  // Update for UnitDelay: '<S157>/Unit Delay3' incorporates:
+  //   Sum: '<S157>/Add1'
 
   localDW->UnitDelay3_DSTATE[0] = rtb_Add1_c[0];
   localDW->UnitDelay3_DSTATE[1] = rtb_Add1_c[1];
   localDW->UnitDelay3_DSTATE[2] = rtb_Add1_c[2];
 
-  // Update for Delay: '<S160>/Delay'
+  // Update for Delay: '<S159>/Delay'
   localDW->icLoad_n = false;
   (void)std::memcpy(&localDW->Delay_DSTATE[0], &rty_theta[0], 12U * sizeof
                     (real_T));
-}
-
-//
-// Output and update for atomic system:
-//    '<S2>/MATLAB Function'
-//    '<S3>/MATLAB Function'
-//
-void SupervisoryController::MATLABFunction(const real_T rtu_yDest[6], real_T
-  rtu_k_2, real_T rty_ywtT[6], real_T rty_ywt[6], real_T rty_uwt[3], P *rtP)
-{
-  real_T dwt;
-  real_T sigmoid_workspace_k_1;
-  real_T sigmoid_workspace_x0;
-
-  // MATLAB Function 'SupervisoryController/ampc/MATLAB Function': '<S7>:1'
-  // '<S7>:1:2' [ywt, ywtT, uwt, uwtT] = wtMod_(y, yDest, ywtT, uwtT, dt, no, ni, k_2); 
-  // 'wtMod_:3' ywt = zeros(1,2*no);
-  // 'wtMod_:4' uwt = dt*ones(1,ni);
-  rty_uwt[0] = rtP->dt;
-  rty_uwt[1] = rtP->dt;
-  rty_uwt[2] = rtP->dt;
-
-  //  time-scaled sigmoid (around 0->1 in 0->k_2 seconds, k_2 being a time scale factor) 
-  // 'wtMod_:7' r = 0.2;
-  //  10% to 90% rise time
-  // 'wtMod_:8' dwt = dt/k_2;
-  dwt = rtP->dt / rtu_k_2;
-
-  // 'wtMod_:9' k_1 = 2.197/(r*k_2);
-  sigmoid_workspace_k_1 = 2.197 / (0.2 * rtu_k_2);
-
-  // 'wtMod_:10' x0 = 0.5*k_2;
-  sigmoid_workspace_x0 = 0.5 * rtu_k_2;
-
-  //  midpoint
-  // 'wtMod_:11' sigmoid = @(x) 1/(1 + exp(-k_1*(x-x0)));
-  // 'wtMod_:13' for i = 1:2*no
-  for (int32_T i{0}; i < 6; i++) {
-    // 'wtMod_:14' if yDest(i) ~= 0
-    if (rtu_yDest[i] != 0.0) {
-      //  drive ywt to 1
-      // 'wtMod_:16' if (ywtT(i) <= 1)
-      if (rty_ywtT[i] <= 1.0) {
-        // 'wtMod_:17' ywtT(i) = ywtT(i) + dwt;
-        rty_ywtT[i] += dwt;
-      }
-
-      // 'wtMod_:19' else
-      //  drive ywt to 0
-      // 'wtMod_:21' if (ywtT(i) > 0)
-    } else if (rty_ywtT[i] > 0.0) {
-      // 'wtMod_:22' ywtT(i) = ywtT(i) - dwt;
-      rty_ywtT[i] -= dwt;
-    } else {
-      // no actions
-    }
-
-    // 'wtMod_:25' if ywtT(i) <= 0
-    if (rty_ywtT[i] <= 0.0) {
-      // 'wtMod_:26' ywt(i) = 0;
-      rty_ywt[i] = 0.0;
-    } else {
-      // 'wtMod_:27' else
-      // 'wtMod_:28' ywt(i) = sigmoid(ywtT(i)*k_2);
-      // 'wtMod_:11' @(x) 1/(1 + exp(-k_1*(x-x0)))
-      rty_ywt[i] = 1.0 / (std::exp((rty_ywtT[i] * rtu_k_2 - sigmoid_workspace_x0)
-        * -sigmoid_workspace_k_1) + 1.0);
-    }
-  }
-
-  //  for i = 1:ni
-  //      if yDest(i) ~= 0
-  //          % drive uwt to 0
-  //          if (uwtT(i) > 0)
-  //              uwtT(i) = uwtT(i) - dwt;
-  //          end
-  //      else
-  //          % drive uwt to 1
-  //          if (uwtT(i) <= 1)
-  //              uwtT(i) = uwtT(i) + dwt;
-  //          end
-  //      end
-  //      uwt(i) = sigmoid(uwtT(i)*k_2);
-  //  end
 }
 
 // Function for Chart: '<Root>/SupervisoryController'
@@ -1453,7 +1365,7 @@ void SupervisoryController::handleEvent(real_T *holdT, boolean_T *eventDone,
   *holdT = b_holdT;
 }
 
-// Function for Chart: '<Root>/SupervisoryController'
+// Function for MATLAB Function: '<S3>/MATLAB Function'
 boolean_T SupervisoryController::any(const real_T x[3])
 {
   int32_T k;
@@ -1475,244 +1387,7 @@ boolean_T SupervisoryController::any(const real_T x[3])
   return y;
 }
 
-// Function for MATLAB Function: '<S112>/optimizer'
-int32_T SupervisoryController::xpotrf(real_T b_A[16])
-{
-  int32_T info;
-  int32_T j;
-  boolean_T exitg1;
-  info = 0;
-  j = 0;
-  exitg1 = false;
-  while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U)) ==
-          false) && (j < 4)) {
-    real_T c;
-    real_T ssq;
-    int32_T idxAjj;
-    idxAjj = (j << 2UL) + j;
-    ssq = 0.0;
-    if (j >= 1) {
-      for (int32_T b_k{0}; b_k < j; b_k++) {
-        c = b_A[(b_k << 2UL) + j];
-        ssq += c * c;
-      }
-    }
-
-    ssq = b_A[idxAjj] - ssq;
-    if (ssq > 0.0) {
-      ssq = std::sqrt(ssq);
-      b_A[idxAjj] = ssq;
-      if (j + 1 < 4) {
-        int32_T b_iy;
-        int32_T d;
-        int32_T jm1;
-        if (j != 0) {
-          b_iy = (((j - 1) << 2UL) + j) + 2;
-          for (int32_T b_k{j + 2}; b_k <= b_iy; b_k += 4) {
-            jm1 = b_k - j;
-            c = -b_A[(((jm1 - 2) >> 2UL) << 2UL) + j];
-            d = jm1 + 2;
-            for (jm1 = b_k; jm1 <= d; jm1++) {
-              int32_T tmp_0;
-              tmp_0 = ((idxAjj + jm1) - b_k) + 1;
-              b_A[tmp_0] += b_A[jm1 - 1] * c;
-            }
-          }
-        }
-
-        ssq = 1.0 / ssq;
-        jm1 = (idxAjj - j) + 4;
-        b_iy = (((((jm1 - idxAjj) - 1) / 2) << 1UL) + idxAjj) + 2;
-        d = b_iy - 2;
-        for (int32_T b_k{idxAjj + 2}; b_k <= d; b_k += 2) {
-          __m128d tmp;
-          tmp = _mm_loadu_pd(&b_A[b_k - 1]);
-          (void)_mm_storeu_pd(&b_A[b_k - 1], _mm_mul_pd(tmp, _mm_set1_pd(ssq)));
-        }
-
-        for (int32_T b_k{b_iy}; b_k <= jm1; b_k++) {
-          b_A[b_k - 1] *= ssq;
-        }
-      }
-
-      j++;
-    } else {
-      b_A[idxAjj] = ssq;
-      info = j + 1;
-      exitg1 = true;
-    }
-  }
-
-  return info;
-}
-
-// Function for MATLAB Function: '<S112>/optimizer'
-real_T SupervisoryController::minimum(const real_T x[4])
-{
-  real_T ex;
-  int32_T idx;
-  int32_T k;
-  if (!std::isnan(x[0])) {
-    idx = 1;
-  } else {
-    boolean_T exitg1;
-    idx = 0;
-    k = 2;
-    exitg1 = false;
-    while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U)) ==
-            false) && (k < 5)) {
-      if (!std::isnan(x[k - 1])) {
-        idx = k;
-        exitg1 = true;
-      } else {
-        k++;
-      }
-    }
-  }
-
-  if (idx == 0) {
-    ex = x[0];
-  } else {
-    ex = x[idx - 1];
-    for (k = idx + 1; k < 5; k++) {
-      real_T tmp;
-      tmp = x[k - 1];
-      if (ex > tmp) {
-        ex = tmp;
-      }
-    }
-  }
-
-  return ex;
-}
-
-// Function for MATLAB Function: '<S112>/optimizer'
-void SupervisoryController::mpc_checkhessian(real_T b_H[16], real_T b_L[16],
-  real_T *BadH)
-{
-  real_T varargin_1[4];
-  int32_T Tries;
-  int8_T b[16];
-  boolean_T guard1{ false };
-
-  *BadH = 0.0;
-  (void)std::memcpy(&b_L[0], &b_H[0], sizeof(real_T) << 4UL);
-  Tries = xpotrf(b_L);
-  guard1 = false;
-  if (Tries == 0) {
-    varargin_1[0] = b_L[0];
-    varargin_1[1] = b_L[5];
-    varargin_1[2] = b_L[10];
-    varargin_1[3] = b_L[15];
-    if (minimum(varargin_1) > 1.4901161193847656E-7) {
-    } else {
-      guard1 = true;
-    }
-  } else {
-    guard1 = true;
-  }
-
-  if (guard1) {
-    real_T normH;
-    boolean_T exitg2;
-    normH = 0.0;
-    Tries = 0;
-    exitg2 = false;
-    while (((exitg2 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U)) ==
-            false) && (Tries < 4)) {
-      real_T s;
-      s = ((std::abs(b_H[Tries + 4]) + std::abs(b_H[Tries])) + std::abs
-           (b_H[Tries + 8])) + std::abs(b_H[Tries + 12]);
-      if (std::isnan(s)) {
-        normH = (rtNaN);
-        exitg2 = true;
-      } else {
-        if (s > normH) {
-          normH = s;
-        }
-
-        Tries++;
-      }
-    }
-
-    if (normH >= 1.0E+10) {
-      *BadH = 2.0;
-    } else {
-      boolean_T exitg1;
-      Tries = 0;
-      exitg1 = false;
-      while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U)) ==
-              false) && (Tries <= 4)) {
-        int32_T j;
-        boolean_T guard2{ false };
-
-        normH = rt_powd_snf(10.0, static_cast<real_T>(Tries)) *
-          1.4901161193847656E-7;
-        for (j = 0; j < 16; j++) {
-          b[j] = 0;
-        }
-
-        b[0] = 1;
-        b[5] = 1;
-        b[10] = 1;
-        b[15] = 1;
-        for (j = 0; j < 16; j++) {
-          b_H[j] += normH * static_cast<real_T>(b[j]);
-          b_L[j] = b_H[j];
-        }
-
-        j = xpotrf(b_L);
-        guard2 = false;
-        if (j == 0) {
-          varargin_1[0] = b_L[0];
-          varargin_1[1] = b_L[5];
-          varargin_1[2] = b_L[10];
-          varargin_1[3] = b_L[15];
-          if (minimum(varargin_1) > 1.4901161193847656E-7) {
-            *BadH = 1.0;
-            exitg1 = true;
-          } else {
-            guard2 = true;
-          }
-        } else {
-          guard2 = true;
-        }
-
-        if (guard2) {
-          *BadH = 3.0;
-          Tries++;
-        }
-      }
-    }
-  }
-}
-
-// Function for MATLAB Function: '<S112>/optimizer'
-void SupervisoryController::trisolve(const real_T b_A[16], real_T B_1[16])
-{
-  for (int32_T j{0}; j < 4; j++) {
-    int32_T jBcol;
-    jBcol = j << 2UL;
-    for (int32_T b_k{0}; b_k < 4; b_k++) {
-      real_T tmp_0;
-      int32_T kAcol;
-      int32_T tmp;
-      kAcol = b_k << 2UL;
-      tmp = b_k + jBcol;
-      tmp_0 = B_1[tmp];
-      if (tmp_0 != 0.0) {
-        B_1[tmp] = tmp_0 / b_A[b_k + kAcol];
-        for (int32_T i{b_k + 2}; i < 5; i++) {
-          int32_T tmp_1;
-          tmp_1 = (i + jBcol) - 1;
-          B_1[tmp_1] -= b_A[(i + kAcol) - 1] * B_1[tmp];
-        }
-      }
-    }
-  }
-}
-
-// Function for MATLAB Function: '<S112>/optimizer'
+// Function for MATLAB Function: '<S109>/optimizer'
 real_T SupervisoryController::norm(const real_T x[4])
 {
   real_T absxk;
@@ -1762,7 +1437,7 @@ real_T SupervisoryController::norm(const real_T x[4])
   return scale * std::sqrt(y);
 }
 
-// Function for MATLAB Function: '<S112>/optimizer'
+// Function for MATLAB Function: '<S109>/optimizer'
 real_T SupervisoryController::maximum(const real_T x[4])
 {
   real_T ex;
@@ -1802,7 +1477,7 @@ real_T SupervisoryController::maximum(const real_T x[4])
   return ex;
 }
 
-// Function for MATLAB Function: '<S112>/optimizer'
+// Function for MATLAB Function: '<S109>/optimizer'
 real_T SupervisoryController::xnrm2(int32_T n, const real_T x[16], int32_T ix0)
 {
   real_T y;
@@ -1839,27 +1514,27 @@ real_T SupervisoryController::xnrm2(int32_T n, const real_T x[16], int32_T ix0)
 
 real_T rt_hypotd_snf(real_T u0, real_T u1)
 {
-  real_T a_c;
+  real_T a;
   real_T b;
   real_T y;
-  a_c = std::abs(u0);
+  a = std::abs(u0);
   b = std::abs(u1);
-  if (a_c < b) {
-    a_c /= b;
-    y = std::sqrt(a_c * a_c + 1.0) * b;
-  } else if (a_c > b) {
-    b /= a_c;
-    y = std::sqrt(b * b + 1.0) * a_c;
+  if (a < b) {
+    a /= b;
+    y = std::sqrt(a * a + 1.0) * b;
+  } else if (a > b) {
+    b /= a;
+    y = std::sqrt(b * b + 1.0) * a;
   } else if (std::isnan(b)) {
     y = (rtNaN);
   } else {
-    y = a_c * 1.4142135623730951;
+    y = a * 1.4142135623730951;
   }
 
   return y;
 }
 
-// Function for MATLAB Function: '<S112>/optimizer'
+// Function for MATLAB Function: '<S109>/optimizer'
 void SupervisoryController::xgemv(int32_T b_m, int32_T n, const real_T b_A[16],
   int32_T ia0, const real_T x[16], int32_T ix0, real_T y[4])
 {
@@ -1886,7 +1561,7 @@ void SupervisoryController::xgemv(int32_T b_m, int32_T n, const real_T b_A[16],
   }
 }
 
-// Function for MATLAB Function: '<S112>/optimizer'
+// Function for MATLAB Function: '<S109>/optimizer'
 void SupervisoryController::xgerc(int32_T b_m, int32_T n, real_T alpha1, int32_T
   ix0, const real_T y[4], real_T b_A[16], int32_T ia0)
 {
@@ -1910,9 +1585,9 @@ void SupervisoryController::xgerc(int32_T b_m, int32_T n, real_T alpha1, int32_T
   }
 }
 
-// Function for MATLAB Function: '<S112>/optimizer'
-void SupervisoryController::KWIKfactor(const real_T b_Ac[984], const int32_T iC
-  [246], int32_T nA, const real_T b_Linv[16], real_T D[16], real_T b_H[16],
+// Function for MATLAB Function: '<S109>/optimizer'
+void SupervisoryController::KWIKfactor(const real_T b_Ac[664], const int32_T iC
+  [166], int32_T nA, const real_T b_Linv[16], real_T D[16], real_T b_H[16],
   int32_T n, real_T RLinv[16], real_T *Status)
 {
   __m128d tmp;
@@ -1940,9 +1615,9 @@ void SupervisoryController::KWIKfactor(const real_T b_Ac[984], const int32_T iC
       knt = (k_i << 2UL) + b_coltop;
       RLinv[knt] = 0.0;
       RLinv[knt] += b_Ac[b_lastv - 1] * b_Linv[b_coltop];
-      RLinv[knt] += b_Linv[b_coltop + 4] * b_Ac[b_lastv + 245];
-      RLinv[knt] += b_Linv[b_coltop + 8] * b_Ac[b_lastv + 491];
-      RLinv[knt] += b_Linv[b_coltop + 12] * b_Ac[b_lastv + 737];
+      RLinv[knt] += b_Linv[b_coltop + 4] * b_Ac[b_lastv + 165];
+      RLinv[knt] += b_Linv[b_coltop + 8] * b_Ac[b_lastv + 331];
+      RLinv[knt] += b_Linv[b_coltop + 12] * b_Ac[b_lastv + 497];
     }
   }
 
@@ -2256,9 +1931,9 @@ void SupervisoryController::KWIKfactor(const real_T b_Ac[984], const int32_T iC
   } while (exitg1 == 0);
 }
 
-// Function for MATLAB Function: '<S112>/optimizer'
-void SupervisoryController::DropConstraint(int32_T kDrop, boolean_T iA[246],
-  int32_T *nA, int32_T iC[246])
+// Function for MATLAB Function: '<S109>/optimizer'
+void SupervisoryController::DropConstraint(int32_T kDrop, boolean_T iA[166],
+  int32_T *nA, int32_T iC[166])
 {
   if (kDrop > 0) {
     iA[iC[kDrop - 1] - 1] = false;
@@ -2273,14 +1948,14 @@ void SupervisoryController::DropConstraint(int32_T kDrop, boolean_T iA[246],
   }
 }
 
-// Function for MATLAB Function: '<S112>/optimizer'
+// Function for MATLAB Function: '<S109>/optimizer'
 void SupervisoryController::qpkwik(const real_T b_Linv[16], const real_T b_Hinv
-  [16], const real_T f[4], const real_T b_Ac[984], const real_T b[246],
-  boolean_T iA[246], int32_T maxiter, real_T FeasTol, real_T x[4], real_T
-  lambda[246], int32_T *status)
+  [16], const real_T f[4], const real_T b_Ac[664], const real_T b[166],
+  boolean_T iA[166], int32_T maxiter, real_T FeasTol, real_T x[4], real_T
+  lambda[166], int32_T *status)
 {
   __m128d tmp_3;
-  real_T cTol[246];
+  real_T cTol[166];
   real_T D[16];
   real_T RLinv[16];
   real_T U[16];
@@ -2292,7 +1967,7 @@ void SupervisoryController::qpkwik(const real_T b_Linv[16], const real_T b_Hinv
   real_T Xnorm0;
   real_T cMin;
   real_T rMin;
-  int32_T iC[246];
+  int32_T iC[166];
   int32_T b_exponent;
   int32_T exponent;
   int32_T i;
@@ -2316,14 +1991,14 @@ void SupervisoryController::qpkwik(const real_T b_Linv[16], const real_T b_Hinv
   r[3] = 0.0;
   rMin = 0.0;
   cTolComputed = false;
-  for (i = 0; i < 246; i++) {
+  for (i = 0; i < 166; i++) {
     lambda[i] = 0.0;
     cTol[i] = 1.0;
     iC[i] = 0;
   }
 
   nA = 0;
-  for (tmp = 0; tmp < 246; tmp++) {
+  for (tmp = 0; tmp < 166; tmp++) {
     if (iA[tmp]) {
       nA++;
       iC[nA - 1] = tmp + 1;
@@ -2355,8 +2030,8 @@ void SupervisoryController::qpkwik(const real_T b_Linv[16], const real_T b_Hinv
             exitg3 = 2;
           } else {
             nA = 0;
-            (void)std::memset(&iA[0], 0, 246U * sizeof(boolean_T));
-            (void)std::memset(&iC[0], 0, 246U * sizeof(int32_T));
+            (void)std::memset(&iA[0], 0, 166U * sizeof(boolean_T));
+            (void)std::memset(&iC[0], 0, 166U * sizeof(int32_T));
             ColdReset = true;
           }
         } else {
@@ -2426,8 +2101,8 @@ void SupervisoryController::qpkwik(const real_T b_Linv[16], const real_T b_Hinv
 
             if (*status > iC_0) {
               nA = 0;
-              (void)std::memset(&iA[0], 0, 246U * sizeof(boolean_T));
-              (void)std::memset(&iC[0], 0, 246U * sizeof(int32_T));
+              (void)std::memset(&iA[0], 0, 166U * sizeof(boolean_T));
+              (void)std::memset(&iC[0], 0, 166U * sizeof(int32_T));
               ColdReset = true;
             } else {
               lambda[iC[i] - 1] = 0.0;
@@ -2437,7 +2112,7 @@ void SupervisoryController::qpkwik(const real_T b_Linv[16], const real_T b_Hinv
         }
       } else {
         if (nA <= 0) {
-          (void)std::memset(&lambda[0], 0, 246U * sizeof(real_T));
+          (void)std::memset(&lambda[0], 0, 166U * sizeof(real_T));
           for (tmp = 0; tmp <= 2; tmp += 2) {
             tmp_3 = _mm_set1_pd(-1.0);
             (void)_mm_storeu_pd(&x[tmp], _mm_add_pd(_mm_add_pd(_mm_add_pd
@@ -2481,19 +2156,19 @@ void SupervisoryController::qpkwik(const real_T b_Linv[16], const real_T b_Hinv
       real_T t;
       cMin = -FeasTol;
       tmp = -1;
-      for (i = 0; i < 246; i++) {
+      for (i = 0; i < 166; i++) {
         t = cTol[i];
         if (!cTolComputed) {
           z[0] = std::abs(b_Ac[i] * x[0]);
-          z[1] = std::abs(b_Ac[i + 246] * x[1]);
-          z[2] = std::abs(b_Ac[i + 492] * x[2]);
-          z[3] = std::abs(b_Ac[i + 738] * x[3]);
+          z[1] = std::abs(b_Ac[i + 166] * x[1]);
+          z[2] = std::abs(b_Ac[i + 332] * x[2]);
+          z[3] = std::abs(b_Ac[i + 498] * x[3]);
           t = std::fmax(t, maximum(z));
         }
 
         if (!iA[i]) {
-          cVal = ((((b_Ac[i + 246] * x[1] + b_Ac[i] * x[0]) + b_Ac[i + 492] * x
-                    [2]) + b_Ac[i + 738] * x[3]) - b[i]) / t;
+          cVal = ((((b_Ac[i + 166] * x[1] + b_Ac[i] * x[0]) + b_Ac[i + 332] * x
+                    [2]) + b_Ac[i + 498] * x[3]) - b[i]) / t;
           if (cVal < cMin) {
             cMin = cVal;
             tmp = i;
@@ -2520,10 +2195,10 @@ void SupervisoryController::qpkwik(const real_T b_Linv[16], const real_T b_Hinv
             if (nA == 0) {
               for (iC_0 = 0; iC_0 <= 2; iC_0 += 2) {
                 (void)_mm_storeu_pd(&z[iC_0], _mm_add_pd(_mm_mul_pd(_mm_loadu_pd
-                  (&b_Hinv[iC_0 + 12]), _mm_set1_pd(b_Ac[tmp + 738])),
+                  (&b_Hinv[iC_0 + 12]), _mm_set1_pd(b_Ac[tmp + 498])),
                   _mm_add_pd(_mm_mul_pd(_mm_loadu_pd(&b_Hinv[iC_0 + 8]),
-                  _mm_set1_pd(b_Ac[tmp + 492])), _mm_add_pd(_mm_mul_pd
-                  (_mm_loadu_pd(&b_Hinv[iC_0 + 4]), _mm_set1_pd(b_Ac[tmp + 246])),
+                  _mm_set1_pd(b_Ac[tmp + 332])), _mm_add_pd(_mm_mul_pd
+                  (_mm_loadu_pd(&b_Hinv[iC_0 + 4]), _mm_set1_pd(b_Ac[tmp + 166])),
                   _mm_add_pd(_mm_mul_pd(_mm_loadu_pd(&b_Hinv[iC_0]), _mm_set1_pd
                   (b_Ac[tmp])), _mm_set1_pd(0.0))))));
               }
@@ -2550,17 +2225,17 @@ void SupervisoryController::qpkwik(const real_T b_Linv[16], const real_T b_Hinv
                   tmp_1 = _mm_loadu_pd(&U[iC_0 + 8]);
                   tmp_2 = _mm_loadu_pd(&U[iC_0 + 12]);
                   (void)_mm_storeu_pd(&z[iC_0], _mm_add_pd(_mm_mul_pd(tmp_2,
-                    _mm_set1_pd(b_Ac[tmp + 738])), _mm_add_pd(_mm_mul_pd(tmp_1,
-                    _mm_set1_pd(b_Ac[tmp + 492])), _mm_add_pd(_mm_mul_pd(tmp_0,
-                    _mm_set1_pd(b_Ac[tmp + 246])), _mm_add_pd(_mm_mul_pd(tmp_3,
+                    _mm_set1_pd(b_Ac[tmp + 498])), _mm_add_pd(_mm_mul_pd(tmp_1,
+                    _mm_set1_pd(b_Ac[tmp + 332])), _mm_add_pd(_mm_mul_pd(tmp_0,
+                    _mm_set1_pd(b_Ac[tmp + 166])), _mm_add_pd(_mm_mul_pd(tmp_3,
                     _mm_set1_pd(b_Ac[tmp])), _mm_set1_pd(0.0))))));
                 }
 
                 for (i = 0; i < nA; i++) {
                   iSave = i << 2UL;
-                  r[i] = ((D[iSave + 1] * b_Ac[tmp + 246] + D[iSave] * b_Ac[tmp])
-                          + D[iSave + 2] * b_Ac[tmp + 492]) + D[iSave + 3] *
-                    b_Ac[tmp + 738];
+                  r[i] = ((D[iSave + 1] * b_Ac[tmp + 166] + D[iSave] * b_Ac[tmp])
+                          + D[iSave + 2] * b_Ac[tmp + 332]) + D[iSave + 3] *
+                    b_Ac[tmp + 498];
                 }
 
                 guard2 = true;
@@ -2608,9 +2283,9 @@ void SupervisoryController::qpkwik(const real_T b_Linv[16], const real_T b_Hinv
                 }
               }
 
-              t = b_Ac[tmp + 246];
-              cVal_tmp = b_Ac[tmp + 492];
-              cVal_tmp_0 = b_Ac[tmp + 738];
+              t = b_Ac[tmp + 166];
+              cVal_tmp = b_Ac[tmp + 332];
+              cVal_tmp_0 = b_Ac[tmp + 498];
               cVal = ((t * z[1] + z[0] * b_Ac[tmp]) + cVal_tmp * z[2]) +
                 cVal_tmp_0 * z[3];
               if (cVal <= 0.0) {
@@ -2639,7 +2314,7 @@ void SupervisoryController::qpkwik(const real_T b_Linv[16], const real_T b_Hinv
                 for (iSave = 0; iSave < nA; iSave++) {
                   iC_0 = iC[iSave];
                   lambda[iC_0 - 1] -= t * r[iSave];
-                  if ((iC_0 <= 246) && (lambda[iC_0 - 1] < 0.0)) {
+                  if ((iC_0 <= 166) && (lambda[iC_0 - 1] < 0.0)) {
                     lambda[iC_0 - 1] = 0.0;
                   }
                 }
@@ -2694,7 +2369,7 @@ void SupervisoryController::qpkwik(const real_T b_Linv[16], const real_T b_Hinv
             cMin = norm(x);
             if (std::abs(cMin - Xnorm0) > 0.001) {
               Xnorm0 = cMin;
-              for (tmp = 0; tmp < 246; tmp++) {
+              for (tmp = 0; tmp < 166; tmp++) {
                 cTol[tmp] = std::fmax(std::abs(b[tmp]), 1.0);
               }
 
@@ -2713,1224 +2388,100 @@ void SupervisoryController::qpkwik(const real_T b_Linv[16], const real_T b_Hinv
   }
 }
 
-// Function for MATLAB Function: '<S112>/optimizer'
-void SupervisoryController::mpcblock_optimizer(const real_T rseq[120], const
-  real_T vseq[21], const real_T umax[3], const real_T ymin[6], const real_T
-  ymax[6], int32_T switch_in, const real_T x[8], const real_T old_u[3], const
-  boolean_T iA[246], const real_T b_Mlim[246], const real_T b_Mx[1968], const
-  real_T b_Mu1[738], const real_T b_Mv[5166], const real_T b_utarget[60], const
-  real_T b_uoff[3], const real_T b_yoff[6], int32_T b_enable_value, real_T b_H
-  [16], const real_T b_Ac[984], const real_T ywt[6], const real_T uwt[3], const
-  real_T b_Wdu[3], const real_T b_Jm[180], const real_T b_SuJm[360], const
-  real_T b_Su1[360], const real_T b_Sx[960], const real_T b_Hv[2520], const
-  real_T b_I1[180], const int32_T b_Mrows[246], const real_T b_RYscale[6], const
-  real_T b_RMVscale[3], real_T u[3], real_T *cost, real_T useq[63], real_T
-  *status, boolean_T iAout[246])
+// Function for MATLAB Function: '<S113>/Discrete-Time KF - Calculate PLMZ'
+void SupervisoryController::mrdiv(const real_T A[12], const real_T B_0[9],
+  real_T Y[12])
 {
-  static const int8_T b_A[400]{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,
-    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,
-    1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 };
-
-  real_T WySuJm[360];
-  real_T Bc[246];
-  real_T a__1[246];
-  real_T I2Jm[180];
-  real_T WduJm[180];
-  real_T WuI2Jm[180];
-  real_T aux2[120];
-  real_T b_Sx_0[120];
-  real_T b_Kv[63];
-  real_T K[60];
-  real_T a_1[60];
-  real_T aux3[60];
-  real_T b_Kx[24];
-  real_T b_Linv[16];
-  real_T c_Linv[16];
-  real_T B_0[9];
-  real_T b_I1_0[9];
-  real_T b_Jm_0[9];
-  real_T b_Wy[6];
-  real_T ymax_incr[6];
-  real_T ymin_incr[6];
-  real_T aux[4];
-  real_T f[4];
-  real_T zopt[4];
-  real_T b_Wu[3];
-  real_T umax_incr[3];
-  real_T ywt_0;
-  int32_T kidx;
-  int8_T a_0[3600];
-  int8_T b_B[16];
-  boolean_T ymax_incr_flag[6];
-  boolean_T ymin_incr_flag[6];
-  boolean_T umax_incr_flag[3];
-  *cost = 0.0;
-  *status = 1.0;
-  (void)std::memset(&iAout[0], 0, 246U * sizeof(boolean_T));
-  if (switch_in != b_enable_value) {
-    u[0] = old_u[0] + b_uoff[0];
-    u[1] = old_u[1] + b_uoff[1];
-    u[2] = old_u[2] + b_uoff[2];
-    for (int32_T i{0}; i < 21; i++) {
-      useq[i] = u[0];
-      useq[i + 21] = u[1];
-      useq[i + 42] = u[2];
-    }
-  } else {
-    __m128d tmp;
-    __m128d tmp_0;
-    int32_T a_tmp;
-    int32_T b_Kx_tmp;
-    int32_T b_Linv_tmp;
-    int32_T i;
-    int32_T i1;
-    int32_T j2;
-    int16_T ixw;
-    for (kidx = 0; kidx < 6; kidx++) {
-      ywt_0 = ywt[kidx];
-      if (ywt_0 < 0.0) {
-        b_Wy[kidx] = 0.0;
-      } else {
-        b_Wy[kidx] = ywt_0 * ywt_0;
-      }
-    }
-
-    if (uwt[0] < 0.0) {
-      b_Wu[0] = 0.0;
-    } else {
-      b_Wu[0] = uwt[0] * uwt[0];
-    }
-
-    if (uwt[1] < 0.0) {
-      b_Wu[1] = 0.0;
-    } else {
-      b_Wu[1] = uwt[1] * uwt[1];
-    }
-
-    if (uwt[2] < 0.0) {
-      b_Wu[2] = 0.0;
-    } else {
-      b_Wu[2] = uwt[2] * uwt[2];
-    }
-
-    (void)std::memset(&B_0[0], 0, 9U * sizeof(real_T));
-    B_0[0] = 1.0;
-    B_0[4] = 1.0;
-    B_0[8] = 1.0;
-    kidx = -1;
-    for (i = 0; i < 20; i++) {
-      for (j2 = 0; j2 < 3; j2++) {
-        for (i1 = 0; i1 < 20; i1++) {
-          a_tmp = static_cast<int32_T>(b_A[20 * i + i1]);
-          a_0[kidx + 1] = static_cast<int8_T>(static_cast<int32_T>(B_0[3 * j2]) *
-            a_tmp);
-          a_0[kidx + 2] = static_cast<int8_T>(static_cast<int32_T>(B_0[3 * j2 +
-            1]) * a_tmp);
-          a_0[kidx + 3] = static_cast<int8_T>(static_cast<int32_T>(B_0[3 * j2 +
-            2]) * a_tmp);
-          kidx += 3;
-        }
-      }
-    }
-
-    i = 0;
-    for (kidx = 0; kidx < 3; kidx++) {
-      for (j2 = 0; j2 < 60; j2++) {
-        a_tmp = j2 + i;
-        I2Jm[a_tmp] = 0.0;
-        i1 = 0;
-        for (b_Linv_tmp = 0; b_Linv_tmp < 60; b_Linv_tmp++) {
-          I2Jm[a_tmp] += static_cast<real_T>(a_0[i1 + j2]) * b_Jm[b_Linv_tmp + i];
-          i1 += 60;
-        }
-      }
-
-      i += 60;
-    }
-
-    ixw = 1;
-    for (kidx = 0; kidx < 120; kidx++) {
-      ywt_0 = b_Wy[ixw - 1];
-      WySuJm[kidx] = ywt_0 * b_SuJm[kidx];
-      WySuJm[kidx + 120] = b_SuJm[kidx + 120] * ywt_0;
-      WySuJm[kidx + 240] = b_SuJm[kidx + 240] * ywt_0;
-      ixw = static_cast<int16_T>(ixw + 1);
-      if (ixw > 6) {
-        ixw = 1;
-      }
-    }
-
-    ixw = 1;
-    for (kidx = 0; kidx < 60; kidx++) {
-      ywt_0 = b_Wu[ixw - 1];
-      WuI2Jm[kidx] = ywt_0 * I2Jm[kidx];
-      WuI2Jm[kidx + 60] = I2Jm[kidx + 60] * ywt_0;
-      WuI2Jm[kidx + 120] = I2Jm[kidx + 120] * ywt_0;
-      ixw = static_cast<int16_T>(ixw + 1);
-      if (ixw > 3) {
-        ixw = 1;
-      }
-    }
-
-    ixw = 1;
-    for (kidx = 0; kidx < 60; kidx++) {
-      ywt_0 = b_Wdu[ixw - 1];
-      WduJm[kidx] = ywt_0 * b_Jm[kidx];
-      WduJm[kidx + 60] = b_Jm[kidx + 60] * ywt_0;
-      WduJm[kidx + 120] = b_Jm[kidx + 120] * ywt_0;
-      ixw = static_cast<int16_T>(ixw + 1);
-      if (ixw > 3) {
-        ixw = 1;
-      }
-    }
-
-    for (i = 0; i < 3; i++) {
-      for (kidx = 0; kidx < 3; kidx++) {
-        a_tmp = 3 * kidx + i;
-        B_0[a_tmp] = 0.0;
-        for (j2 = 0; j2 < 120; j2++) {
-          B_0[a_tmp] += b_SuJm[120 * i + j2] * WySuJm[120 * kidx + j2];
-        }
-
-        b_Jm_0[a_tmp] = 0.0;
-        ywt_0 = 0.0;
-        for (j2 = 0; j2 < 60; j2++) {
-          i1 = 60 * i + j2;
-          b_Linv_tmp = 60 * kidx + j2;
-          ywt_0 += I2Jm[i1] * WuI2Jm[b_Linv_tmp];
-          b_Jm_0[a_tmp] += b_Jm[i1] * WduJm[b_Linv_tmp];
-        }
-
-        b_H[i + (kidx << 2UL)] = (B_0[a_tmp] + b_Jm_0[a_tmp]) + ywt_0;
-      }
-    }
-
-    for (i = 0; i < 3; i++) {
-      for (kidx = 0; kidx < 3; kidx++) {
-        i1 = 3 * kidx + i;
-        b_Jm_0[i1] = 0.0;
-        for (j2 = 0; j2 < 120; j2++) {
-          b_Jm_0[i1] += b_Su1[120 * i + j2] * WySuJm[120 * kidx + j2];
-        }
-
-        b_I1_0[i1] = 0.0;
-        for (j2 = 0; j2 < 60; j2++) {
-          b_I1_0[i1] += b_I1[60 * i + j2] * WuI2Jm[60 * kidx + j2];
-        }
-      }
-    }
-
-    for (i = 0; i <= 6; i += 2) {
-      tmp = _mm_loadu_pd(&b_Jm_0[i]);
-      tmp_0 = _mm_loadu_pd(&b_I1_0[i]);
-      (void)_mm_storeu_pd(&B_0[i], _mm_add_pd(tmp, tmp_0));
-    }
-
-    for (i = 8; i < 9; i++) {
-      B_0[i] = b_Jm_0[i] + b_I1_0[i];
-    }
-
-    for (i = 0; i <= 178; i += 2) {
-      tmp = _mm_loadu_pd(&WuI2Jm[i]);
-      (void)_mm_storeu_pd(&WuI2Jm[i], _mm_mul_pd(tmp, _mm_set1_pd(-1.0)));
-    }
-
-    i = 0;
-    for (kidx = 0; kidx < 8; kidx++) {
-      j2 = 0;
-      i1 = 0;
-      for (b_Linv_tmp = 0; b_Linv_tmp < 3; b_Linv_tmp++) {
-        b_Kx_tmp = j2 + kidx;
-        b_Kx[b_Kx_tmp] = 0.0;
-        for (a_tmp = 0; a_tmp < 120; a_tmp++) {
-          b_Kx[b_Kx_tmp] += b_Sx[a_tmp + i] * WySuJm[a_tmp + i1];
-        }
-
-        j2 += 8;
-        i1 += 120;
-      }
-
-      i += 120;
-    }
-
-    i = 0;
-    for (kidx = 0; kidx < 21; kidx++) {
-      j2 = 0;
-      i1 = 0;
-      for (b_Linv_tmp = 0; b_Linv_tmp < 3; b_Linv_tmp++) {
-        b_Kx_tmp = j2 + kidx;
-        b_Kv[b_Kx_tmp] = 0.0;
-        for (a_tmp = 0; a_tmp < 120; a_tmp++) {
-          b_Kv[b_Kx_tmp] += b_Hv[a_tmp + i] * WySuJm[a_tmp + i1];
-        }
-
-        j2 += 21;
-        i1 += 120;
-      }
-
-      i += 120;
-    }
-
-    for (i = 0; i <= 358; i += 2) {
-      tmp = _mm_loadu_pd(&WySuJm[i]);
-      (void)_mm_storeu_pd(&WySuJm[i], _mm_mul_pd(tmp, _mm_set1_pd(-1.0)));
-    }
-
-    (void)std::memcpy(&b_Linv[0], &b_H[0], sizeof(real_T) << 4UL);
-    mpc_checkhessian(b_Linv, c_Linv, &ywt_0);
-    if (ywt_0 > 1.0) {
-      u[0] = old_u[0] + b_uoff[0];
-      u[1] = old_u[1] + b_uoff[1];
-      u[2] = old_u[2] + b_uoff[2];
-      for (i = 0; i < 21; i++) {
-        useq[i] = u[0];
-        useq[i + 21] = u[1];
-        useq[i + 42] = u[2];
-      }
-
-      *status = -2.0;
-    } else {
-      real_T WySuJm_0;
-      real_T b_Kv_0;
-      for (i = 0; i < 16; i++) {
-        b_B[i] = 0;
-      }
-
-      b_B[0] = 1;
-      b_B[5] = 1;
-      b_B[10] = 1;
-      b_B[15] = 1;
-      i = 0;
-      for (kidx = 0; kidx < 4; kidx++) {
-        b_Linv[i] = static_cast<real_T>(b_B[i]);
-        b_Linv[i + 1] = static_cast<real_T>(b_B[i + 1]);
-        b_Linv[i + 2] = static_cast<real_T>(b_B[i + 2]);
-        b_Linv[i + 3] = static_cast<real_T>(b_B[i + 3]);
-        i += 4;
-      }
-
-      trisolve(c_Linv, b_Linv);
-      for (i = 0; i < 246; i++) {
-        ywt_0 = 0.0;
-        for (kidx = 0; kidx < 8; kidx++) {
-          ywt_0 += b_Mx[246 * kidx + i] * x[kidx];
-        }
-
-        WySuJm_0 = 0.0;
-        for (kidx = 0; kidx < 21; kidx++) {
-          WySuJm_0 += b_Mv[246 * kidx + i] * vseq[kidx];
-        }
-
-        Bc[i] = -((((b_Mu1[i + 246] * old_u[1] + b_Mu1[i] * old_u[0]) + b_Mu1[i
-                    + 492] * old_u[2]) + (b_Mlim[i] + ywt_0)) + WySuJm_0);
-      }
-
-      for (i = 0; i < 6; i++) {
-        ymax_incr_flag[i] = false;
-        ymax_incr[i] = 0.0;
-        ymin_incr_flag[i] = false;
-        ymin_incr[i] = 0.0;
-      }
-
-      umax_incr_flag[0] = false;
-      umax_incr[0] = 0.0;
-      umax_incr_flag[1] = false;
-      umax_incr[1] = 0.0;
-      umax_incr_flag[2] = false;
-      umax_incr[2] = 0.0;
-      if (b_Mrows[0] > 0) {
-        boolean_T exitg1;
-        kidx = 0;
-        exitg1 = false;
-        while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U))
-                == false) && (kidx < 246)) {
-          if (b_Mrows[kidx] <= 120) {
-            boolean_T c_Del_Save_Flag0;
-            i = (b_Mrows[kidx] - div_nde_s32_floor(b_Mrows[kidx] - 1,
-                  static_cast<int32_T>(ny)) * static_cast<int32_T>(ny)) - 1;
-            c_Del_Save_Flag0 = ymax_incr_flag[i];
-            if (!ymax_incr_flag[i]) {
-              ywt_0 = -(b_RYscale[i] * ymax[i] - b_yoff[i]) - (-b_Mlim[kidx]);
-              c_Del_Save_Flag0 = true;
-            } else {
-              ywt_0 = ymax_incr[i];
-            }
-
-            ymax_incr[i] = ywt_0;
-            ymax_incr_flag[i] = c_Del_Save_Flag0;
-            Bc[kidx] += ywt_0;
-            kidx++;
-          } else if (b_Mrows[kidx] <= 240) {
-            boolean_T c_Del_Save_Flag0;
-            i = (b_Mrows[kidx] - div_nde_s32_floor(b_Mrows[kidx] - 121,
-                  static_cast<int32_T>(ny)) * static_cast<int32_T>(ny)) - 121;
-            c_Del_Save_Flag0 = ymin_incr_flag[i];
-            if (!ymin_incr_flag[i]) {
-              ywt_0 = (b_RYscale[i] * ymin[i] - b_yoff[i]) - (-b_Mlim[kidx]);
-              c_Del_Save_Flag0 = true;
-            } else {
-              ywt_0 = ymin_incr[i];
-            }
-
-            ymin_incr[i] = ywt_0;
-            ymin_incr_flag[i] = c_Del_Save_Flag0;
-            Bc[kidx] += ywt_0;
-            kidx++;
-          } else if (b_Mrows[kidx] <= 300) {
-            boolean_T c_Del_Save_Flag0;
-            i = (b_Mrows[kidx] - div_nde_s32_floor(b_Mrows[kidx] - 241,
-                  static_cast<int32_T>(nu)) * static_cast<int32_T>(nu)) - 241;
-            c_Del_Save_Flag0 = umax_incr_flag[i];
-            if (!umax_incr_flag[i]) {
-              ywt_0 = -(b_RMVscale[i] * umax[i] - b_uoff[i]) - (-b_Mlim[kidx]);
-              c_Del_Save_Flag0 = true;
-            } else {
-              ywt_0 = umax_incr[i];
-            }
-
-            umax_incr[i] = ywt_0;
-            umax_incr_flag[i] = c_Del_Save_Flag0;
-            Bc[kidx] += ywt_0;
-            kidx++;
-          } else if (b_Mrows[kidx] <= 360) {
-            kidx++;
-          } else {
-            exitg1 = true;
-          }
-        }
-      }
-
-      f[0] = 0.0;
-      f[1] = 0.0;
-      f[2] = 0.0;
-      f[3] = 0.0;
-      for (kidx = 0; kidx < 3; kidx++) {
-        real_T WuI2Jm_0;
-        ywt_0 = 0.0;
-        for (i = 0; i < 8; i++) {
-          ywt_0 += b_Kx[(kidx << 3UL) + i] * x[i];
-        }
-
-        WySuJm_0 = 0.0;
-        for (i = 0; i < 120; i++) {
-          WySuJm_0 += WySuJm[120 * kidx + i] * rseq[i];
-        }
-
-        b_Kv_0 = 0.0;
-        for (i = 0; i < 21; i++) {
-          b_Kv_0 += b_Kv[21 * kidx + i] * vseq[i];
-        }
-
-        WuI2Jm_0 = 0.0;
-        for (i = 0; i < 60; i++) {
-          WuI2Jm_0 += WuI2Jm[60 * kidx + i] * b_utarget[i];
-        }
-
-        f[kidx] = ((((B_0[3 * kidx + 1] * old_u[1] + B_0[3 * kidx] * old_u[0]) +
-                     B_0[3 * kidx + 2] * old_u[2]) + (ywt_0 + WySuJm_0)) +
-                   b_Kv_0) + WuI2Jm_0;
-      }
-
-      (void)std::memcpy(&iAout[0], &iA[0], 246U * sizeof(boolean_T));
-      i = 0;
-      for (kidx = 0; kidx < 4; kidx++) {
-        j2 = 0;
-        for (i1 = 0; i1 < 4; i1++) {
-          b_Linv_tmp = j2 + kidx;
-          c_Linv[b_Linv_tmp] = 0.0;
-          c_Linv[b_Linv_tmp] += b_Linv[i] * b_Linv[j2];
-          c_Linv[b_Linv_tmp] += b_Linv[i + 1] * b_Linv[j2 + 1];
-          c_Linv[b_Linv_tmp] += b_Linv[i + 2] * b_Linv[j2 + 2];
-          c_Linv[b_Linv_tmp] += b_Linv[i + 3] * b_Linv[j2 + 3];
-          j2 += 4;
-        }
-
-        i += 4;
-      }
-
-      qpkwik(b_Linv, c_Linv, f, b_Ac, Bc, iAout, 1000, 1.0E-6, zopt, a__1, &kidx);
-      if ((kidx < 0) || (kidx == 0)) {
-        zopt[0] = 0.0;
-        zopt[1] = 0.0;
-        zopt[2] = 0.0;
-        zopt[3] = 0.0;
-      }
-
-      *status = static_cast<real_T>(kidx);
-      u[0] = (old_u[0] + zopt[0]) + b_uoff[0];
-      u[1] = (old_u[1] + zopt[1]) + b_uoff[1];
-      u[2] = (old_u[2] + zopt[2]) + b_uoff[2];
-      if (kidx > 0) {
-        for (i = 0; i < 120; i++) {
-          b_Sx_0[i] = 0.0;
-          for (kidx = 0; kidx < 8; kidx++) {
-            b_Sx_0[i] += b_Sx[120 * kidx + i] * x[kidx];
-          }
-
-          ywt_0 = 0.0;
-          for (kidx = 0; kidx < 21; kidx++) {
-            ywt_0 += b_Hv[120 * kidx + i] * vseq[kidx];
-          }
-
-          aux2[i] = ((((b_Su1[i + 120] * old_u[1] + b_Su1[i] * old_u[0]) +
-                       b_Su1[i + 240] * old_u[2]) + b_Sx_0[i]) + ywt_0) - rseq[i];
-        }
-
-        for (i = 0; i <= 58; i += 2) {
-          (void)_mm_storeu_pd(&aux3[i], _mm_sub_pd(_mm_add_pd(_mm_add_pd
-            (_mm_mul_pd(_mm_loadu_pd(&b_I1[i + 60]), _mm_set1_pd(old_u[1])),
-             _mm_mul_pd(_mm_loadu_pd(&b_I1[i]), _mm_set1_pd(old_u[0]))),
-            _mm_mul_pd(_mm_loadu_pd(&b_I1[i + 120]), _mm_set1_pd(old_u[2]))),
-            _mm_loadu_pd(&b_utarget[i])));
-        }
-
-        kidx = -1;
-        for (i = 0; i < 20; i++) {
-          K[kidx + 1] = b_Wu[0];
-          K[kidx + 2] = b_Wu[1];
-          K[kidx + 3] = b_Wu[2];
-          kidx += 3;
-        }
-
-        kidx = -1;
-        for (i = 0; i < 20; i++) {
-          for (j2 = 0; j2 < 6; j2++) {
-            b_Sx_0[(kidx + j2) + 1] = b_Wy[j2];
-          }
-
-          kidx += 6;
-        }
-
-        aux[0] = zopt[0];
-        aux[1] = zopt[1];
-        aux[2] = zopt[2];
-        aux[3] = zopt[3];
-        ywt_0 = 0.0;
-        for (i = 0; i < 60; i++) {
-          WySuJm_0 = aux3[i];
-          ywt_0 += K[i] * WySuJm_0 * WySuJm_0;
-        }
-
-        WySuJm_0 = 0.0;
-        for (i = 0; i < 120; i++) {
-          b_Kv_0 = aux2[i];
-          WySuJm_0 += b_Sx_0[i] * b_Kv_0 * b_Kv_0;
-        }
-
-        b_Kv_0 = 0.0;
-        for (i = 0; i < 4; i++) {
-          b_Kv_0 += ((((b_H[i + 4] * aux[1] + b_H[i] * aux[0]) + b_H[i + 8] *
-                       aux[2]) + b_H[i + 12] * aux[3]) + 2.0 * f[i]) * aux[i];
-        }
-
-        *cost = (ywt_0 + WySuJm_0) + b_Kv_0;
-      }
-
-      (void)std::memset(&B_0[0], 0, 9U * sizeof(real_T));
-      B_0[0] = 1.0;
-      B_0[4] = 1.0;
-      B_0[8] = 1.0;
-      kidx = -1;
-      for (i = 0; i < 20; i++) {
-        for (j2 = 0; j2 < 3; j2++) {
-          for (i1 = 0; i1 < 20; i1++) {
-            a_tmp = static_cast<int32_T>(b_A[20 * i + i1]);
-            a_0[kidx + 1] = static_cast<int8_T>(static_cast<int32_T>(B_0[3 * j2])
-              * a_tmp);
-            a_0[kidx + 2] = static_cast<int8_T>(static_cast<int32_T>(B_0[3 * j2
-              + 1]) * a_tmp);
-            a_0[kidx + 3] = static_cast<int8_T>(static_cast<int32_T>(B_0[3 * j2
-              + 2]) * a_tmp);
-            kidx += 3;
-          }
-        }
-      }
-
-      i = 0;
-      for (kidx = 0; kidx < 3; kidx++) {
-        for (j2 = 0; j2 < 60; j2++) {
-          a_tmp = j2 + i;
-          I2Jm[a_tmp] = 0.0;
-          i1 = 0;
-          for (b_Linv_tmp = 0; b_Linv_tmp < 60; b_Linv_tmp++) {
-            I2Jm[a_tmp] += static_cast<real_T>(a_0[i1 + j2]) * b_Jm[b_Linv_tmp +
-              i];
-            i1 += 60;
-          }
-        }
-
-        i += 60;
-      }
-
-      ywt_0 = old_u[0] + b_uoff[0];
-      WySuJm_0 = old_u[1] + b_uoff[1];
-      b_Kv_0 = old_u[2] + b_uoff[2];
-      for (i = 0; i <= 58; i += 2) {
-        tmp = _mm_set1_pd(0.0);
-        (void)_mm_storeu_pd(&aux3[i], tmp);
-        (void)_mm_storeu_pd(&K[i], tmp);
-        tmp = _mm_loadu_pd(&I2Jm[i]);
-        tmp_0 = _mm_loadu_pd(&aux3[i]);
-        (void)_mm_storeu_pd(&aux3[i], _mm_add_pd(_mm_mul_pd(tmp, _mm_set1_pd
-          (zopt[0])), tmp_0));
-        tmp = _mm_loadu_pd(&K[i]);
-        (void)_mm_storeu_pd(&K[i], _mm_add_pd(_mm_mul_pd(_mm_loadu_pd(&b_I1[i]),
-          _mm_set1_pd(ywt_0)), tmp));
-        tmp = _mm_loadu_pd(&I2Jm[i + 60]);
-        tmp_0 = _mm_loadu_pd(&aux3[i]);
-        (void)_mm_storeu_pd(&aux3[i], _mm_add_pd(_mm_mul_pd(tmp, _mm_set1_pd
-          (zopt[1])), tmp_0));
-        tmp = _mm_loadu_pd(&K[i]);
-        (void)_mm_storeu_pd(&K[i], _mm_add_pd(_mm_mul_pd(_mm_loadu_pd(&b_I1[i +
-          60]), _mm_set1_pd(WySuJm_0)), tmp));
-        tmp = _mm_loadu_pd(&I2Jm[i + 120]);
-        tmp_0 = _mm_loadu_pd(&aux3[i]);
-        (void)_mm_storeu_pd(&aux3[i], _mm_add_pd(_mm_mul_pd(tmp, _mm_set1_pd
-          (zopt[2])), tmp_0));
-        tmp = _mm_loadu_pd(&K[i]);
-        (void)_mm_storeu_pd(&K[i], _mm_add_pd(_mm_mul_pd(_mm_loadu_pd(&b_I1[i +
-          120]), _mm_set1_pd(b_Kv_0)), tmp));
-        tmp = _mm_loadu_pd(&aux3[i]);
-        tmp_0 = _mm_loadu_pd(&K[i]);
-        (void)_mm_storeu_pd(&a_1[i], _mm_add_pd(tmp, tmp_0));
-      }
-
-      i = 0;
-      for (kidx = 0; kidx < 20; kidx++) {
-        useq[kidx] = a_1[i];
-        useq[kidx + 21] = a_1[i + 1];
-        useq[kidx + 42] = a_1[i + 2];
-        i += 3;
-      }
-
-      useq[20] = useq[19];
-      useq[41] = useq[40];
-      useq[62] = useq[61];
-    }
+  real_T b_A[9];
+  real_T Y_tmp_1;
+  real_T Y_tmp_2;
+  real_T Y_tmp_3;
+  real_T Y_tmp_4;
+  real_T a21;
+  real_T maxval;
+  int32_T Y_tmp;
+  int32_T Y_tmp_0;
+  int32_T r1;
+  int32_T r2;
+  int32_T r3;
+  int32_T rtemp;
+  (void)std::memcpy(&b_A[0], &B_0[0], 9U * sizeof(real_T));
+  r1 = 0;
+  r2 = 1;
+  r3 = 2;
+  maxval = std::abs(B_0[0]);
+  a21 = std::abs(B_0[1]);
+  if (a21 > maxval) {
+    maxval = a21;
+    r1 = 1;
+    r2 = 0;
   }
-}
 
-// Function for MATLAB Function: '<S134>/optimizer'
-void SupervisoryController::mpcblock_optimizer_h(const real_T rseq[120], const
-  real_T vseq[21], const real_T umax[3], const real_T ymin[6], const real_T
-  ymax[6], int32_T switch_in, const real_T x[10], const real_T old_u[3], const
-  boolean_T iA[246], const real_T b_Mlim[246], const real_T b_Mx[2460], const
-  real_T b_Mu1[738], const real_T b_Mv[5166], const real_T b_utarget[60], const
-  real_T b_uoff[3], const real_T b_yoff[6], int32_T b_enable_value, real_T b_H
-  [16], const real_T b_Ac[984], const real_T ywt[6], const real_T uwt[3], const
-  real_T b_Wdu[3], const real_T b_Jm[180], const real_T b_SuJm[360], const
-  real_T b_Su1[360], const real_T b_Sx[1200], const real_T b_Hv[2520], const
-  real_T b_I1[180], const int32_T b_Mrows[246], const real_T b_RYscale[6], const
-  real_T b_RMVscale[3], real_T u[3], real_T *cost, real_T useq[63], real_T
-  *status, boolean_T iAout[246])
-{
-  static const int8_T b_A[400]{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0,
-    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,
-    1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 };
-
-  real_T WySuJm[360];
-  real_T Bc[246];
-  real_T a__1[246];
-  real_T I2Jm[180];
-  real_T WduJm[180];
-  real_T WuI2Jm[180];
-  real_T aux2[120];
-  real_T b_Sx_0[120];
-  real_T b_Kv[63];
-  real_T K[60];
-  real_T a_3[60];
-  real_T aux3[60];
-  real_T b_Kx[30];
-  real_T b_Linv[16];
-  real_T c_Linv[16];
-  real_T B_2[9];
-  real_T b_I1_0[9];
-  real_T b_Jm_0[9];
-  real_T b_Wy[6];
-  real_T ymax_incr[6];
-  real_T ymin_incr[6];
-  real_T aux[4];
-  real_T f[4];
-  real_T zopt[4];
-  real_T b_Wu[3];
-  real_T umax_incr[3];
-  real_T ywt_0;
-  int32_T kidx;
-  int8_T a_2[3600];
-  int8_T b_B[16];
-  boolean_T ymax_incr_flag[6];
-  boolean_T ymin_incr_flag[6];
-  boolean_T umax_incr_flag[3];
-  *cost = 0.0;
-  *status = 1.0;
-  (void)std::memset(&iAout[0], 0, 246U * sizeof(boolean_T));
-  if (switch_in != b_enable_value) {
-    u[0] = old_u[0] + b_uoff[0];
-    u[1] = old_u[1] + b_uoff[1];
-    u[2] = old_u[2] + b_uoff[2];
-    for (int32_T i{0}; i < 21; i++) {
-      useq[i] = u[0];
-      useq[i + 21] = u[1];
-      useq[i + 42] = u[2];
-    }
-  } else {
-    __m128d tmp;
-    __m128d tmp_0;
-    int32_T a_tmp;
-    int32_T b_Kx_tmp;
-    int32_T b_Linv_tmp;
-    int32_T i;
-    int32_T i1;
-    int32_T j2;
-    int16_T ixw;
-    for (kidx = 0; kidx < 6; kidx++) {
-      ywt_0 = ywt[kidx];
-      if (ywt_0 < 0.0) {
-        b_Wy[kidx] = 0.0;
-      } else {
-        b_Wy[kidx] = ywt_0 * ywt_0;
-      }
-    }
-
-    if (uwt[0] < 0.0) {
-      b_Wu[0] = 0.0;
-    } else {
-      b_Wu[0] = uwt[0] * uwt[0];
-    }
-
-    if (uwt[1] < 0.0) {
-      b_Wu[1] = 0.0;
-    } else {
-      b_Wu[1] = uwt[1] * uwt[1];
-    }
-
-    if (uwt[2] < 0.0) {
-      b_Wu[2] = 0.0;
-    } else {
-      b_Wu[2] = uwt[2] * uwt[2];
-    }
-
-    (void)std::memset(&B_2[0], 0, 9U * sizeof(real_T));
-    B_2[0] = 1.0;
-    B_2[4] = 1.0;
-    B_2[8] = 1.0;
-    kidx = -1;
-    for (i = 0; i < 20; i++) {
-      for (j2 = 0; j2 < 3; j2++) {
-        for (i1 = 0; i1 < 20; i1++) {
-          a_tmp = static_cast<int32_T>(b_A[20 * i + i1]);
-          a_2[kidx + 1] = static_cast<int8_T>(static_cast<int32_T>(B_2[3 * j2]) *
-            a_tmp);
-          a_2[kidx + 2] = static_cast<int8_T>(static_cast<int32_T>(B_2[3 * j2 +
-            1]) * a_tmp);
-          a_2[kidx + 3] = static_cast<int8_T>(static_cast<int32_T>(B_2[3 * j2 +
-            2]) * a_tmp);
-          kidx += 3;
-        }
-      }
-    }
-
-    i = 0;
-    for (kidx = 0; kidx < 3; kidx++) {
-      for (j2 = 0; j2 < 60; j2++) {
-        a_tmp = j2 + i;
-        I2Jm[a_tmp] = 0.0;
-        i1 = 0;
-        for (b_Linv_tmp = 0; b_Linv_tmp < 60; b_Linv_tmp++) {
-          I2Jm[a_tmp] += static_cast<real_T>(a_2[i1 + j2]) * b_Jm[b_Linv_tmp + i];
-          i1 += 60;
-        }
-      }
-
-      i += 60;
-    }
-
-    ixw = 1;
-    for (kidx = 0; kidx < 120; kidx++) {
-      ywt_0 = b_Wy[ixw - 1];
-      WySuJm[kidx] = ywt_0 * b_SuJm[kidx];
-      WySuJm[kidx + 120] = b_SuJm[kidx + 120] * ywt_0;
-      WySuJm[kidx + 240] = b_SuJm[kidx + 240] * ywt_0;
-      ixw = static_cast<int16_T>(ixw + 1);
-      if (ixw > 6) {
-        ixw = 1;
-      }
-    }
-
-    ixw = 1;
-    for (kidx = 0; kidx < 60; kidx++) {
-      ywt_0 = b_Wu[ixw - 1];
-      WuI2Jm[kidx] = ywt_0 * I2Jm[kidx];
-      WuI2Jm[kidx + 60] = I2Jm[kidx + 60] * ywt_0;
-      WuI2Jm[kidx + 120] = I2Jm[kidx + 120] * ywt_0;
-      ixw = static_cast<int16_T>(ixw + 1);
-      if (ixw > 3) {
-        ixw = 1;
-      }
-    }
-
-    ixw = 1;
-    for (kidx = 0; kidx < 60; kidx++) {
-      ywt_0 = b_Wdu[ixw - 1];
-      WduJm[kidx] = ywt_0 * b_Jm[kidx];
-      WduJm[kidx + 60] = b_Jm[kidx + 60] * ywt_0;
-      WduJm[kidx + 120] = b_Jm[kidx + 120] * ywt_0;
-      ixw = static_cast<int16_T>(ixw + 1);
-      if (ixw > 3) {
-        ixw = 1;
-      }
-    }
-
-    for (i = 0; i < 3; i++) {
-      for (kidx = 0; kidx < 3; kidx++) {
-        a_tmp = 3 * kidx + i;
-        B_2[a_tmp] = 0.0;
-        for (j2 = 0; j2 < 120; j2++) {
-          B_2[a_tmp] += b_SuJm[120 * i + j2] * WySuJm[120 * kidx + j2];
-        }
-
-        b_Jm_0[a_tmp] = 0.0;
-        ywt_0 = 0.0;
-        for (j2 = 0; j2 < 60; j2++) {
-          i1 = 60 * i + j2;
-          b_Linv_tmp = 60 * kidx + j2;
-          ywt_0 += I2Jm[i1] * WuI2Jm[b_Linv_tmp];
-          b_Jm_0[a_tmp] += b_Jm[i1] * WduJm[b_Linv_tmp];
-        }
-
-        b_H[i + (kidx << 2UL)] = (B_2[a_tmp] + b_Jm_0[a_tmp]) + ywt_0;
-      }
-    }
-
-    for (i = 0; i < 3; i++) {
-      for (kidx = 0; kidx < 3; kidx++) {
-        i1 = 3 * kidx + i;
-        b_Jm_0[i1] = 0.0;
-        for (j2 = 0; j2 < 120; j2++) {
-          b_Jm_0[i1] += b_Su1[120 * i + j2] * WySuJm[120 * kidx + j2];
-        }
-
-        b_I1_0[i1] = 0.0;
-        for (j2 = 0; j2 < 60; j2++) {
-          b_I1_0[i1] += b_I1[60 * i + j2] * WuI2Jm[60 * kidx + j2];
-        }
-      }
-    }
-
-    for (i = 0; i <= 6; i += 2) {
-      tmp = _mm_loadu_pd(&b_Jm_0[i]);
-      tmp_0 = _mm_loadu_pd(&b_I1_0[i]);
-      (void)_mm_storeu_pd(&B_2[i], _mm_add_pd(tmp, tmp_0));
-    }
-
-    for (i = 8; i < 9; i++) {
-      B_2[i] = b_Jm_0[i] + b_I1_0[i];
-    }
-
-    for (i = 0; i <= 178; i += 2) {
-      tmp = _mm_loadu_pd(&WuI2Jm[i]);
-      (void)_mm_storeu_pd(&WuI2Jm[i], _mm_mul_pd(tmp, _mm_set1_pd(-1.0)));
-    }
-
-    i = 0;
-    for (kidx = 0; kidx < 10; kidx++) {
-      j2 = 0;
-      i1 = 0;
-      for (b_Linv_tmp = 0; b_Linv_tmp < 3; b_Linv_tmp++) {
-        b_Kx_tmp = j2 + kidx;
-        b_Kx[b_Kx_tmp] = 0.0;
-        for (a_tmp = 0; a_tmp < 120; a_tmp++) {
-          b_Kx[b_Kx_tmp] += b_Sx[a_tmp + i] * WySuJm[a_tmp + i1];
-        }
-
-        j2 += 10;
-        i1 += 120;
-      }
-
-      i += 120;
-    }
-
-    i = 0;
-    for (kidx = 0; kidx < 21; kidx++) {
-      j2 = 0;
-      i1 = 0;
-      for (b_Linv_tmp = 0; b_Linv_tmp < 3; b_Linv_tmp++) {
-        b_Kx_tmp = j2 + kidx;
-        b_Kv[b_Kx_tmp] = 0.0;
-        for (a_tmp = 0; a_tmp < 120; a_tmp++) {
-          b_Kv[b_Kx_tmp] += b_Hv[a_tmp + i] * WySuJm[a_tmp + i1];
-        }
-
-        j2 += 21;
-        i1 += 120;
-      }
-
-      i += 120;
-    }
-
-    for (i = 0; i <= 358; i += 2) {
-      tmp = _mm_loadu_pd(&WySuJm[i]);
-      (void)_mm_storeu_pd(&WySuJm[i], _mm_mul_pd(tmp, _mm_set1_pd(-1.0)));
-    }
-
-    (void)std::memcpy(&b_Linv[0], &b_H[0], sizeof(real_T) << 4UL);
-    mpc_checkhessian(b_Linv, c_Linv, &ywt_0);
-    if (ywt_0 > 1.0) {
-      u[0] = old_u[0] + b_uoff[0];
-      u[1] = old_u[1] + b_uoff[1];
-      u[2] = old_u[2] + b_uoff[2];
-      for (i = 0; i < 21; i++) {
-        useq[i] = u[0];
-        useq[i + 21] = u[1];
-        useq[i + 42] = u[2];
-      }
-
-      *status = -2.0;
-    } else {
-      real_T WySuJm_0;
-      real_T b_Kv_0;
-      for (i = 0; i < 16; i++) {
-        b_B[i] = 0;
-      }
-
-      b_B[0] = 1;
-      b_B[5] = 1;
-      b_B[10] = 1;
-      b_B[15] = 1;
-      i = 0;
-      for (kidx = 0; kidx < 4; kidx++) {
-        b_Linv[i] = static_cast<real_T>(b_B[i]);
-        b_Linv[i + 1] = static_cast<real_T>(b_B[i + 1]);
-        b_Linv[i + 2] = static_cast<real_T>(b_B[i + 2]);
-        b_Linv[i + 3] = static_cast<real_T>(b_B[i + 3]);
-        i += 4;
-      }
-
-      trisolve(c_Linv, b_Linv);
-      for (i = 0; i < 246; i++) {
-        ywt_0 = 0.0;
-        for (kidx = 0; kidx < 10; kidx++) {
-          ywt_0 += b_Mx[246 * kidx + i] * x[kidx];
-        }
-
-        WySuJm_0 = 0.0;
-        for (kidx = 0; kidx < 21; kidx++) {
-          WySuJm_0 += b_Mv[246 * kidx + i] * vseq[kidx];
-        }
-
-        Bc[i] = -((((b_Mu1[i + 246] * old_u[1] + b_Mu1[i] * old_u[0]) + b_Mu1[i
-                    + 492] * old_u[2]) + (b_Mlim[i] + ywt_0)) + WySuJm_0);
-      }
-
-      for (i = 0; i < 6; i++) {
-        ymax_incr_flag[i] = false;
-        ymax_incr[i] = 0.0;
-        ymin_incr_flag[i] = false;
-        ymin_incr[i] = 0.0;
-      }
-
-      umax_incr_flag[0] = false;
-      umax_incr[0] = 0.0;
-      umax_incr_flag[1] = false;
-      umax_incr[1] = 0.0;
-      umax_incr_flag[2] = false;
-      umax_incr[2] = 0.0;
-      if (b_Mrows[0] > 0) {
-        boolean_T exitg1;
-        kidx = 0;
-        exitg1 = false;
-        while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U))
-                == false) && (kidx < 246)) {
-          if (b_Mrows[kidx] <= 120) {
-            boolean_T c_Del_Save_Flag0;
-            i = (b_Mrows[kidx] - div_nde_s32_floor(b_Mrows[kidx] - 1,
-                  static_cast<int32_T>(ny)) * static_cast<int32_T>(ny)) - 1;
-            c_Del_Save_Flag0 = ymax_incr_flag[i];
-            if (!ymax_incr_flag[i]) {
-              ywt_0 = -(b_RYscale[i] * ymax[i] - b_yoff[i]) - (-b_Mlim[kidx]);
-              c_Del_Save_Flag0 = true;
-            } else {
-              ywt_0 = ymax_incr[i];
-            }
-
-            ymax_incr[i] = ywt_0;
-            ymax_incr_flag[i] = c_Del_Save_Flag0;
-            Bc[kidx] += ywt_0;
-            kidx++;
-          } else if (b_Mrows[kidx] <= 240) {
-            boolean_T c_Del_Save_Flag0;
-            i = (b_Mrows[kidx] - div_nde_s32_floor(b_Mrows[kidx] - 121,
-                  static_cast<int32_T>(ny)) * static_cast<int32_T>(ny)) - 121;
-            c_Del_Save_Flag0 = ymin_incr_flag[i];
-            if (!ymin_incr_flag[i]) {
-              ywt_0 = (b_RYscale[i] * ymin[i] - b_yoff[i]) - (-b_Mlim[kidx]);
-              c_Del_Save_Flag0 = true;
-            } else {
-              ywt_0 = ymin_incr[i];
-            }
-
-            ymin_incr[i] = ywt_0;
-            ymin_incr_flag[i] = c_Del_Save_Flag0;
-            Bc[kidx] += ywt_0;
-            kidx++;
-          } else if (b_Mrows[kidx] <= 300) {
-            boolean_T c_Del_Save_Flag0;
-            i = (b_Mrows[kidx] - div_nde_s32_floor(b_Mrows[kidx] - 241,
-                  static_cast<int32_T>(nu)) * static_cast<int32_T>(nu)) - 241;
-            c_Del_Save_Flag0 = umax_incr_flag[i];
-            if (!umax_incr_flag[i]) {
-              ywt_0 = -(b_RMVscale[i] * umax[i] - b_uoff[i]) - (-b_Mlim[kidx]);
-              c_Del_Save_Flag0 = true;
-            } else {
-              ywt_0 = umax_incr[i];
-            }
-
-            umax_incr[i] = ywt_0;
-            umax_incr_flag[i] = c_Del_Save_Flag0;
-            Bc[kidx] += ywt_0;
-            kidx++;
-          } else if (b_Mrows[kidx] <= 360) {
-            kidx++;
-          } else {
-            exitg1 = true;
-          }
-        }
-      }
-
-      f[0] = 0.0;
-      f[1] = 0.0;
-      f[2] = 0.0;
-      f[3] = 0.0;
-      for (kidx = 0; kidx < 3; kidx++) {
-        real_T WuI2Jm_0;
-        ywt_0 = 0.0;
-        for (i = 0; i < 10; i++) {
-          ywt_0 += b_Kx[10 * kidx + i] * x[i];
-        }
-
-        WySuJm_0 = 0.0;
-        for (i = 0; i < 120; i++) {
-          WySuJm_0 += WySuJm[120 * kidx + i] * rseq[i];
-        }
-
-        b_Kv_0 = 0.0;
-        for (i = 0; i < 21; i++) {
-          b_Kv_0 += b_Kv[21 * kidx + i] * vseq[i];
-        }
-
-        WuI2Jm_0 = 0.0;
-        for (i = 0; i < 60; i++) {
-          WuI2Jm_0 += WuI2Jm[60 * kidx + i] * b_utarget[i];
-        }
-
-        f[kidx] = ((((B_2[3 * kidx + 1] * old_u[1] + B_2[3 * kidx] * old_u[0]) +
-                     B_2[3 * kidx + 2] * old_u[2]) + (ywt_0 + WySuJm_0)) +
-                   b_Kv_0) + WuI2Jm_0;
-      }
-
-      (void)std::memcpy(&iAout[0], &iA[0], 246U * sizeof(boolean_T));
-      i = 0;
-      for (kidx = 0; kidx < 4; kidx++) {
-        j2 = 0;
-        for (i1 = 0; i1 < 4; i1++) {
-          b_Linv_tmp = j2 + kidx;
-          c_Linv[b_Linv_tmp] = 0.0;
-          c_Linv[b_Linv_tmp] += b_Linv[i] * b_Linv[j2];
-          c_Linv[b_Linv_tmp] += b_Linv[i + 1] * b_Linv[j2 + 1];
-          c_Linv[b_Linv_tmp] += b_Linv[i + 2] * b_Linv[j2 + 2];
-          c_Linv[b_Linv_tmp] += b_Linv[i + 3] * b_Linv[j2 + 3];
-          j2 += 4;
-        }
-
-        i += 4;
-      }
-
-      qpkwik(b_Linv, c_Linv, f, b_Ac, Bc, iAout, 1000, 1.0E-6, zopt, a__1, &kidx);
-      if ((kidx < 0) || (kidx == 0)) {
-        zopt[0] = 0.0;
-        zopt[1] = 0.0;
-        zopt[2] = 0.0;
-        zopt[3] = 0.0;
-      }
-
-      *status = static_cast<real_T>(kidx);
-      u[0] = (old_u[0] + zopt[0]) + b_uoff[0];
-      u[1] = (old_u[1] + zopt[1]) + b_uoff[1];
-      u[2] = (old_u[2] + zopt[2]) + b_uoff[2];
-      if (kidx > 0) {
-        for (i = 0; i < 120; i++) {
-          b_Sx_0[i] = 0.0;
-          for (kidx = 0; kidx < 10; kidx++) {
-            b_Sx_0[i] += b_Sx[120 * kidx + i] * x[kidx];
-          }
-
-          ywt_0 = 0.0;
-          for (kidx = 0; kidx < 21; kidx++) {
-            ywt_0 += b_Hv[120 * kidx + i] * vseq[kidx];
-          }
-
-          aux2[i] = ((((b_Su1[i + 120] * old_u[1] + b_Su1[i] * old_u[0]) +
-                       b_Su1[i + 240] * old_u[2]) + b_Sx_0[i]) + ywt_0) - rseq[i];
-        }
-
-        for (i = 0; i <= 58; i += 2) {
-          (void)_mm_storeu_pd(&aux3[i], _mm_sub_pd(_mm_add_pd(_mm_add_pd
-            (_mm_mul_pd(_mm_loadu_pd(&b_I1[i + 60]), _mm_set1_pd(old_u[1])),
-             _mm_mul_pd(_mm_loadu_pd(&b_I1[i]), _mm_set1_pd(old_u[0]))),
-            _mm_mul_pd(_mm_loadu_pd(&b_I1[i + 120]), _mm_set1_pd(old_u[2]))),
-            _mm_loadu_pd(&b_utarget[i])));
-        }
-
-        kidx = -1;
-        for (i = 0; i < 20; i++) {
-          K[kidx + 1] = b_Wu[0];
-          K[kidx + 2] = b_Wu[1];
-          K[kidx + 3] = b_Wu[2];
-          kidx += 3;
-        }
-
-        kidx = -1;
-        for (i = 0; i < 20; i++) {
-          for (j2 = 0; j2 < 6; j2++) {
-            b_Sx_0[(kidx + j2) + 1] = b_Wy[j2];
-          }
-
-          kidx += 6;
-        }
-
-        aux[0] = zopt[0];
-        aux[1] = zopt[1];
-        aux[2] = zopt[2];
-        aux[3] = zopt[3];
-        ywt_0 = 0.0;
-        for (i = 0; i < 60; i++) {
-          WySuJm_0 = aux3[i];
-          ywt_0 += K[i] * WySuJm_0 * WySuJm_0;
-        }
-
-        WySuJm_0 = 0.0;
-        for (i = 0; i < 120; i++) {
-          b_Kv_0 = aux2[i];
-          WySuJm_0 += b_Sx_0[i] * b_Kv_0 * b_Kv_0;
-        }
-
-        b_Kv_0 = 0.0;
-        for (i = 0; i < 4; i++) {
-          b_Kv_0 += ((((b_H[i + 4] * aux[1] + b_H[i] * aux[0]) + b_H[i + 8] *
-                       aux[2]) + b_H[i + 12] * aux[3]) + 2.0 * f[i]) * aux[i];
-        }
-
-        *cost = (ywt_0 + WySuJm_0) + b_Kv_0;
-      }
-
-      (void)std::memset(&B_2[0], 0, 9U * sizeof(real_T));
-      B_2[0] = 1.0;
-      B_2[4] = 1.0;
-      B_2[8] = 1.0;
-      kidx = -1;
-      for (i = 0; i < 20; i++) {
-        for (j2 = 0; j2 < 3; j2++) {
-          for (i1 = 0; i1 < 20; i1++) {
-            a_tmp = static_cast<int32_T>(b_A[20 * i + i1]);
-            a_2[kidx + 1] = static_cast<int8_T>(static_cast<int32_T>(B_2[3 * j2])
-              * a_tmp);
-            a_2[kidx + 2] = static_cast<int8_T>(static_cast<int32_T>(B_2[3 * j2
-              + 1]) * a_tmp);
-            a_2[kidx + 3] = static_cast<int8_T>(static_cast<int32_T>(B_2[3 * j2
-              + 2]) * a_tmp);
-            kidx += 3;
-          }
-        }
-      }
-
-      i = 0;
-      for (kidx = 0; kidx < 3; kidx++) {
-        for (j2 = 0; j2 < 60; j2++) {
-          a_tmp = j2 + i;
-          I2Jm[a_tmp] = 0.0;
-          i1 = 0;
-          for (b_Linv_tmp = 0; b_Linv_tmp < 60; b_Linv_tmp++) {
-            I2Jm[a_tmp] += static_cast<real_T>(a_2[i1 + j2]) * b_Jm[b_Linv_tmp +
-              i];
-            i1 += 60;
-          }
-        }
-
-        i += 60;
-      }
-
-      ywt_0 = old_u[0] + b_uoff[0];
-      WySuJm_0 = old_u[1] + b_uoff[1];
-      b_Kv_0 = old_u[2] + b_uoff[2];
-      for (i = 0; i <= 58; i += 2) {
-        tmp = _mm_set1_pd(0.0);
-        (void)_mm_storeu_pd(&aux3[i], tmp);
-        (void)_mm_storeu_pd(&K[i], tmp);
-        tmp = _mm_loadu_pd(&I2Jm[i]);
-        tmp_0 = _mm_loadu_pd(&aux3[i]);
-        (void)_mm_storeu_pd(&aux3[i], _mm_add_pd(_mm_mul_pd(tmp, _mm_set1_pd
-          (zopt[0])), tmp_0));
-        tmp = _mm_loadu_pd(&K[i]);
-        (void)_mm_storeu_pd(&K[i], _mm_add_pd(_mm_mul_pd(_mm_loadu_pd(&b_I1[i]),
-          _mm_set1_pd(ywt_0)), tmp));
-        tmp = _mm_loadu_pd(&I2Jm[i + 60]);
-        tmp_0 = _mm_loadu_pd(&aux3[i]);
-        (void)_mm_storeu_pd(&aux3[i], _mm_add_pd(_mm_mul_pd(tmp, _mm_set1_pd
-          (zopt[1])), tmp_0));
-        tmp = _mm_loadu_pd(&K[i]);
-        (void)_mm_storeu_pd(&K[i], _mm_add_pd(_mm_mul_pd(_mm_loadu_pd(&b_I1[i +
-          60]), _mm_set1_pd(WySuJm_0)), tmp));
-        tmp = _mm_loadu_pd(&I2Jm[i + 120]);
-        tmp_0 = _mm_loadu_pd(&aux3[i]);
-        (void)_mm_storeu_pd(&aux3[i], _mm_add_pd(_mm_mul_pd(tmp, _mm_set1_pd
-          (zopt[2])), tmp_0));
-        tmp = _mm_loadu_pd(&K[i]);
-        (void)_mm_storeu_pd(&K[i], _mm_add_pd(_mm_mul_pd(_mm_loadu_pd(&b_I1[i +
-          120]), _mm_set1_pd(b_Kv_0)), tmp));
-        tmp = _mm_loadu_pd(&aux3[i]);
-        tmp_0 = _mm_loadu_pd(&K[i]);
-        (void)_mm_storeu_pd(&a_3[i], _mm_add_pd(tmp, tmp_0));
-      }
-
-      i = 0;
-      for (kidx = 0; kidx < 20; kidx++) {
-        useq[kidx] = a_3[i];
-        useq[kidx + 21] = a_3[i + 1];
-        useq[kidx + 42] = a_3[i + 2];
-        i += 3;
-      }
-
-      useq[20] = useq[19];
-      useq[41] = useq[40];
-      useq[62] = useq[61];
-    }
+  if (std::abs(B_0[2]) > maxval) {
+    r1 = 2;
+    r2 = 1;
+    r3 = 0;
   }
+
+  b_A[r2] = B_0[r2] / B_0[r1];
+  b_A[r3] /= b_A[r1];
+  b_A[r2 + 3] -= b_A[r1 + 3] * b_A[r2];
+  b_A[r3 + 3] -= b_A[r1 + 3] * b_A[r3];
+  b_A[r2 + 6] -= b_A[r1 + 6] * b_A[r2];
+  b_A[r3 + 6] -= b_A[r1 + 6] * b_A[r3];
+  if (std::abs(b_A[r3 + 3]) > std::abs(b_A[r2 + 3])) {
+    rtemp = r2;
+    r2 = r3;
+    r3 = rtemp;
+  }
+
+  b_A[r3 + 3] /= b_A[r2 + 3];
+  b_A[r3 + 6] -= b_A[r3 + 3] * b_A[r2 + 6];
+  rtemp = r1 << 2UL;
+  Y[rtemp] = A[0] / b_A[r1];
+  Y_tmp = r2 << 2UL;
+  maxval = b_A[r1 + 3];
+  Y[Y_tmp] = A[4] - Y[rtemp] * maxval;
+  Y_tmp_0 = r3 << 2UL;
+  a21 = b_A[r1 + 6];
+  Y[Y_tmp_0] = A[8] - Y[rtemp] * a21;
+  Y_tmp_1 = b_A[r2 + 3];
+  Y[Y_tmp] /= Y_tmp_1;
+  Y_tmp_2 = b_A[r2 + 6];
+  Y[Y_tmp_0] -= Y[Y_tmp] * Y_tmp_2;
+  Y_tmp_3 = b_A[r3 + 6];
+  Y[Y_tmp_0] /= Y_tmp_3;
+  Y_tmp_4 = b_A[r3 + 3];
+  Y[Y_tmp] -= Y[Y_tmp_0] * Y_tmp_4;
+  Y[rtemp] -= Y[Y_tmp_0] * b_A[r3];
+  Y[rtemp] -= Y[Y_tmp] * b_A[r2];
+  Y[rtemp + 1] = A[1] / b_A[r1];
+  Y[Y_tmp + 1] = A[5] - Y[rtemp + 1] * maxval;
+  Y[Y_tmp_0 + 1] = A[9] - Y[rtemp + 1] * a21;
+  Y[Y_tmp + 1] /= Y_tmp_1;
+  Y[Y_tmp_0 + 1] -= Y[Y_tmp + 1] * Y_tmp_2;
+  Y[Y_tmp_0 + 1] /= Y_tmp_3;
+  Y[Y_tmp + 1] -= Y[Y_tmp_0 + 1] * Y_tmp_4;
+  Y[rtemp + 1] -= Y[Y_tmp_0 + 1] * b_A[r3];
+  Y[rtemp + 1] -= Y[Y_tmp + 1] * b_A[r2];
+  Y[rtemp + 2] = A[2] / b_A[r1];
+  Y[Y_tmp + 2] = A[6] - Y[rtemp + 2] * maxval;
+  Y[Y_tmp_0 + 2] = A[10] - Y[rtemp + 2] * a21;
+  Y[Y_tmp + 2] /= Y_tmp_1;
+  Y[Y_tmp_0 + 2] -= Y[Y_tmp + 2] * Y_tmp_2;
+  Y[Y_tmp_0 + 2] /= Y_tmp_3;
+  Y[Y_tmp + 2] -= Y[Y_tmp_0 + 2] * Y_tmp_4;
+  Y[rtemp + 2] -= Y[Y_tmp_0 + 2] * b_A[r3];
+  Y[rtemp + 2] -= Y[Y_tmp + 2] * b_A[r2];
+  Y[rtemp + 3] = A[3] / b_A[r1];
+  Y[Y_tmp + 3] = A[7] - Y[rtemp + 3] * maxval;
+  Y[Y_tmp_0 + 3] = A[11] - Y[rtemp + 3] * a21;
+  Y[Y_tmp + 3] /= Y_tmp_1;
+  Y[Y_tmp_0 + 3] -= Y[Y_tmp + 3] * Y_tmp_2;
+  Y[Y_tmp_0 + 3] /= Y_tmp_3;
+  Y[Y_tmp + 3] -= Y[Y_tmp_0 + 3] * Y_tmp_4;
+  Y[rtemp + 3] -= Y[Y_tmp_0 + 3] * b_A[r3];
+  Y[rtemp + 3] -= Y[Y_tmp + 3] * b_A[r2];
 }
 
 real_T rt_urand_Upu32_Yd_f_pw_snf(uint32_T *u)
@@ -3980,1446 +2531,178 @@ real_T rt_nrand_Upu32_Yd_f_pw_snf(uint32_T *u)
 // Model step function
 void SupervisoryController::step()
 {
-  static const real_T d_0[2460]{ -0.0, -0.99801496201563555,
-    -0.00012982817451900192, -0.0, -0.0, -0.0, -0.0, -0.99603367687094413,
-    -0.00025924037690453866, -0.0, -0.0, -0.0, -0.0, -0.99405613771726609,
-    -0.00038823760144369459, -0.0, -0.0, -0.0, -0.0, -0.99208233771810028,
-    -0.00051682084032238652, -0.0, -0.0, -0.0, -0.0, -0.99011227004908309,
-    -0.00064499108362950342, -0.0, -0.0, -0.0, -0.0, -0.9881459278979674,
-    -0.00077274931936103868, -0.0, -0.0, -0.0, -0.0, -0.98618330446460145,
-    -0.00090009653342421417, -0.0, -0.0, -0.0, -0.0, -0.984224392960908,
-    -0.0010270337096415967, -0.0, -0.0, -0.0, -0.0, -0.98226918661086315,
-    -0.001153561829755207, -0.0, -0.0, -0.0, -0.0, -0.98031767865047559,
-    -0.0012796818734306208, -0.0, -0.0, -0.0, -0.0, -0.97836986232776568,
-    -0.0014053948182610615, -0.0, -0.0, -0.0, -0.0, -0.97642573090274454,
-    -0.0015307016397714866, -0.0, -0.0, -0.0, -0.0, -0.97448527764739334,
-    -0.0016556033114226655, -0.0, -0.0, -0.0, -0.0, -0.97254849584564251,
-    -0.0017801008046152487, -0.0, -0.0, -0.0, -0.0, -0.97061537879335091,
-    -0.0019041950886938322, -0.0, -0.0, -0.0, -0.0, -0.968685919798285,
-    -0.0020278871309510108, -0.0, -0.0, -0.0, -0.0, -0.96676011218009861,
-    -0.0021511778966314264, -0.0, -0.0, -0.0, -0.0, -0.96483794927031175,
-    -0.0022740683489358075, -0.0, -0.0, -0.0, -0.0, -0.9629194244122905,
-    -0.0023965594490250011, -0.0, -0.0, -0.0, -0.0, -0.96100453096122618,
-    -0.0025186521560239968, -0.0, -0.0, -0.0, 0.0, 0.99801496201563555,
-    0.00012982817451900192, 0.0, 0.0, 0.0, 0.0, 0.99603367687094413,
-    0.00025924037690453866, 0.0, 0.0, 0.0, 0.0, 0.99405613771726609,
-    0.00038823760144369459, 0.0, 0.0, 0.0, 0.0, 0.99208233771810028,
-    0.00051682084032238652, 0.0, 0.0, 0.0, 0.0, 0.99011227004908309,
-    0.00064499108362950342, 0.0, 0.0, 0.0, 0.0, 0.9881459278979674,
-    0.00077274931936103868, 0.0, 0.0, 0.0, 0.0, 0.98618330446460145,
-    0.00090009653342421417, 0.0, 0.0, 0.0, 0.0, 0.984224392960908,
-    0.0010270337096415967, 0.0, 0.0, 0.0, 0.0, 0.98226918661086315,
-    0.001153561829755207, 0.0, 0.0, 0.0, 0.0, 0.98031767865047559,
-    0.0012796818734306208, 0.0, 0.0, 0.0, 0.0, 0.97836986232776568,
-    0.0014053948182610615, 0.0, 0.0, 0.0, 0.0, 0.97642573090274454,
-    0.0015307016397714866, 0.0, 0.0, 0.0, 0.0, 0.97448527764739334,
-    0.0016556033114226655, 0.0, 0.0, 0.0, 0.0, 0.97254849584564251,
-    0.0017801008046152487, 0.0, 0.0, 0.0, 0.0, 0.97061537879335091,
-    0.0019041950886938322, 0.0, 0.0, 0.0, 0.0, 0.968685919798285,
-    0.0020278871309510108, 0.0, 0.0, 0.0, 0.0, 0.96676011218009861,
-    0.0021511778966314264, 0.0, 0.0, 0.0, 0.0, 0.96483794927031175,
-    0.0022740683489358075, 0.0, 0.0, 0.0, 0.0, 0.9629194244122905,
-    0.0023965594490250011, 0.0, 0.0, 0.0, 0.0, 0.96100453096122618,
-    0.0025186521560239968, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0,
-    0.001444494825713849, -0.99878101747798131, -0.0, -0.0, -0.0, -0.0,
-    0.0028843614603847466, -0.99756333333822533, -0.0, -0.0, -0.0, -0.0,
-    0.0043196109666541723, -0.99634694659889633, -0.0, -0.0, -0.0, -0.0,
-    0.0057502543837855847, -0.99513185627791911, -0.0, -0.0, -0.0, -0.0,
-    0.0071763027277104837, -0.99391806139298267, -0.0, -0.0, -0.0, -0.0,
-    0.0085977669910743838, -0.99270556096154294, -0.0, -0.0, -0.0, -0.0,
-    0.0100146581432827, -0.99149435400082664, -0.0, -0.0, -0.0, -0.0,
-    0.011426987130546547, -0.99028443952783429, -0.0, -0.0, -0.0, -0.0,
-    0.012834764875928464, -0.9890758165593434, -0.0, -0.0, -0.0, -0.0,
-    0.014238002279388031, -0.987868484111912, -0.0, -0.0, -0.0, -0.0,
-    0.015636710217827417, -0.98666244120188173, -0.0, -0.0, -0.0, -0.0,
-    0.017030899545136844, -0.98545768684538126, -0.0, -0.0, -0.0, -0.0,
-    0.018420581092239943, -0.98425422005832941, -0.0, -0.0, -0.0, -0.0,
-    0.019805765667139059, -0.98305203985643841, -0.0, -0.0, -0.0, -0.0,
-    0.021186464054960434, -0.98185114525521711, -0.0, -0.0, -0.0, -0.0,
-    0.022562687017999343, -0.98065153526997417, -0.0, -0.0, -0.0, -0.0,
-    0.023934445295765105, -0.97945320891582144, -0.0, -0.0, -0.0, -0.0,
-    0.025301749605026048, -0.97825616520767711, -0.0, -0.0, -0.0, -0.0,
-    0.026664610639854355, -0.97706040316026854, -0.0, -0.0, -0.0, -0.0,
-    0.028023039071670849, -0.975865921788136, -0.0, -0.0, -0.0, 0.0,
-    -0.001444494825713849, 0.99878101747798131, 0.0, 0.0, 0.0, 0.0,
-    -0.0028843614603847466, 0.99756333333822533, 0.0, 0.0, 0.0, 0.0,
-    -0.0043196109666541723, 0.99634694659889633, 0.0, 0.0, 0.0, 0.0,
-    -0.0057502543837855847, 0.99513185627791911, 0.0, 0.0, 0.0, 0.0,
-    -0.0071763027277104837, 0.99391806139298267, 0.0, 0.0, 0.0, 0.0,
-    -0.0085977669910743838, 0.99270556096154294, 0.0, 0.0, 0.0, 0.0,
-    -0.0100146581432827, 0.99149435400082664, 0.0, 0.0, 0.0, 0.0,
-    -0.011426987130546547, 0.99028443952783429, 0.0, 0.0, 0.0, 0.0,
-    -0.012834764875928464, 0.9890758165593434, 0.0, 0.0, 0.0, 0.0,
-    -0.014238002279388031, 0.987868484111912, 0.0, 0.0, 0.0, 0.0,
-    -0.015636710217827417, 0.98666244120188173, 0.0, 0.0, 0.0, 0.0,
-    -0.017030899545136844, 0.98545768684538126, 0.0, 0.0, 0.0, 0.0,
-    -0.018420581092239943, 0.98425422005832941, 0.0, 0.0, 0.0, 0.0,
-    -0.019805765667139059, 0.98305203985643841, 0.0, 0.0, 0.0, 0.0,
-    -0.021186464054960434, 0.98185114525521711, 0.0, 0.0, 0.0, 0.0,
-    -0.022562687017999343, 0.98065153526997417, 0.0, 0.0, 0.0, 0.0,
-    -0.023934445295765105, 0.97945320891582144, 0.0, 0.0, 0.0, 0.0,
-    -0.025301749605026048, 0.97825616520767711, 0.0, 0.0, 0.0, 0.0,
-    -0.026664610639854355, 0.97706040316026854, 0.0, 0.0, 0.0, 0.0,
-    -0.028023039071670849, 0.975865921788136, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, -0.0, -0.0, -0.0, -0.0, -0.99801496201563555,
-    -0.00012982817451900192, -0.0, -0.0, -0.0, -0.0, -0.99603367687094413,
-    -0.00025924037690453866, -0.0, -0.0, -0.0, -0.0, -0.99405613771726609,
-    -0.00038823760144369459, -0.0, -0.0, -0.0, -0.0, -0.99208233771810028,
-    -0.00051682084032238652, -0.0, -0.0, -0.0, -0.0, -0.99011227004908309,
-    -0.00064499108362950342, -0.0, -0.0, -0.0, -0.0, -0.9881459278979674,
-    -0.00077274931936103868, -0.0, -0.0, -0.0, -0.0, -0.98618330446460145,
-    -0.00090009653342421417, -0.0, -0.0, -0.0, -0.0, -0.984224392960908,
-    -0.0010270337096415967, -0.0, -0.0, -0.0, -0.0, -0.98226918661086315,
-    -0.001153561829755207, -0.0, -0.0, -0.0, -0.0, -0.98031767865047559,
-    -0.0012796818734306208, -0.0, -0.0, -0.0, -0.0, -0.97836986232776568,
-    -0.0014053948182610615, -0.0, -0.0, -0.0, -0.0, -0.97642573090274454,
-    -0.0015307016397714866, -0.0, -0.0, -0.0, -0.0, -0.97448527764739334,
-    -0.0016556033114226655, -0.0, -0.0, -0.0, -0.0, -0.97254849584564251,
-    -0.0017801008046152487, -0.0, -0.0, -0.0, -0.0, -0.97061537879335091,
-    -0.0019041950886938322, -0.0, -0.0, -0.0, -0.0, -0.968685919798285,
-    -0.0020278871309510108, -0.0, -0.0, -0.0, -0.0, -0.96676011218009861,
-    -0.0021511778966314264, -0.0, -0.0, -0.0, -0.0, -0.96483794927031175,
-    -0.0022740683489358075, -0.0, -0.0, -0.0, -0.0, -0.9629194244122905,
-    -0.0023965594490250011, -0.0, -0.0, -0.0, -0.0, -0.96100453096122618,
-    -0.0025186521560239968, 0.0, 0.0, 0.0, 0.0, 0.99801496201563555,
-    0.00012982817451900192, 0.0, 0.0, 0.0, 0.0, 0.99603367687094413,
-    0.00025924037690453866, 0.0, 0.0, 0.0, 0.0, 0.99405613771726609,
-    0.00038823760144369459, 0.0, 0.0, 0.0, 0.0, 0.99208233771810028,
-    0.00051682084032238652, 0.0, 0.0, 0.0, 0.0, 0.99011227004908309,
-    0.00064499108362950342, 0.0, 0.0, 0.0, 0.0, 0.9881459278979674,
-    0.00077274931936103868, 0.0, 0.0, 0.0, 0.0, 0.98618330446460145,
-    0.00090009653342421417, 0.0, 0.0, 0.0, 0.0, 0.984224392960908,
-    0.0010270337096415967, 0.0, 0.0, 0.0, 0.0, 0.98226918661086315,
-    0.001153561829755207, 0.0, 0.0, 0.0, 0.0, 0.98031767865047559,
-    0.0012796818734306208, 0.0, 0.0, 0.0, 0.0, 0.97836986232776568,
-    0.0014053948182610615, 0.0, 0.0, 0.0, 0.0, 0.97642573090274454,
-    0.0015307016397714866, 0.0, 0.0, 0.0, 0.0, 0.97448527764739334,
-    0.0016556033114226655, 0.0, 0.0, 0.0, 0.0, 0.97254849584564251,
-    0.0017801008046152487, 0.0, 0.0, 0.0, 0.0, 0.97061537879335091,
-    0.0019041950886938322, 0.0, 0.0, 0.0, 0.0, 0.968685919798285,
-    0.0020278871309510108, 0.0, 0.0, 0.0, 0.0, 0.96676011218009861,
-    0.0021511778966314264, 0.0, 0.0, 0.0, 0.0, 0.96483794927031175,
-    0.0022740683489358075, 0.0, 0.0, 0.0, 0.0, 0.9629194244122905,
-    0.0023965594490250011, 0.0, 0.0, 0.0, 0.0, 0.96100453096122618,
-    0.0025186521560239968, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -0.0, -0.0, -0.0,
-    0.001444494825713849, -0.99878101747798131, -0.0, -0.0, -0.0, -0.0,
-    0.0028843614603847466, -0.99756333333822533, -0.0, -0.0, -0.0, -0.0,
-    0.0043196109666541723, -0.99634694659889633, -0.0, -0.0, -0.0, -0.0,
-    0.0057502543837855847, -0.99513185627791911, -0.0, -0.0, -0.0, -0.0,
-    0.0071763027277104837, -0.99391806139298267, -0.0, -0.0, -0.0, -0.0,
-    0.0085977669910743838, -0.99270556096154294, -0.0, -0.0, -0.0, -0.0,
-    0.0100146581432827, -0.99149435400082664, -0.0, -0.0, -0.0, -0.0,
-    0.011426987130546547, -0.99028443952783429, -0.0, -0.0, -0.0, -0.0,
-    0.012834764875928464, -0.9890758165593434, -0.0, -0.0, -0.0, -0.0,
-    0.014238002279388031, -0.987868484111912, -0.0, -0.0, -0.0, -0.0,
-    0.015636710217827417, -0.98666244120188173, -0.0, -0.0, -0.0, -0.0,
-    0.017030899545136844, -0.98545768684538126, -0.0, -0.0, -0.0, -0.0,
-    0.018420581092239943, -0.98425422005832941, -0.0, -0.0, -0.0, -0.0,
-    0.019805765667139059, -0.98305203985643841, -0.0, -0.0, -0.0, -0.0,
-    0.021186464054960434, -0.98185114525521711, -0.0, -0.0, -0.0, -0.0,
-    0.022562687017999343, -0.98065153526997417, -0.0, -0.0, -0.0, -0.0,
-    0.023934445295765105, -0.97945320891582144, -0.0, -0.0, -0.0, -0.0,
-    0.025301749605026048, -0.97825616520767711, -0.0, -0.0, -0.0, -0.0,
-    0.026664610639854355, -0.97706040316026854, -0.0, -0.0, -0.0, -0.0,
-    0.028023039071670849, -0.975865921788136, 0.0, 0.0, 0.0, 0.0,
-    -0.001444494825713849, 0.99878101747798131, 0.0, 0.0, 0.0, 0.0,
-    -0.0028843614603847466, 0.99756333333822533, 0.0, 0.0, 0.0, 0.0,
-    -0.0043196109666541723, 0.99634694659889633, 0.0, 0.0, 0.0, 0.0,
-    -0.0057502543837855847, 0.99513185627791911, 0.0, 0.0, 0.0, 0.0,
-    -0.0071763027277104837, 0.99391806139298267, 0.0, 0.0, 0.0, 0.0,
-    -0.0085977669910743838, 0.99270556096154294, 0.0, 0.0, 0.0, 0.0,
-    -0.0100146581432827, 0.99149435400082664, 0.0, 0.0, 0.0, 0.0,
-    -0.011426987130546547, 0.99028443952783429, 0.0, 0.0, 0.0, 0.0,
-    -0.012834764875928464, 0.9890758165593434, 0.0, 0.0, 0.0, 0.0,
-    -0.014238002279388031, 0.987868484111912, 0.0, 0.0, 0.0, 0.0,
-    -0.015636710217827417, 0.98666244120188173, 0.0, 0.0, 0.0, 0.0,
-    -0.017030899545136844, 0.98545768684538126, 0.0, 0.0, 0.0, 0.0,
-    -0.018420581092239943, 0.98425422005832941, 0.0, 0.0, 0.0, 0.0,
-    -0.019805765667139059, 0.98305203985643841, 0.0, 0.0, 0.0, 0.0,
-    -0.021186464054960434, 0.98185114525521711, 0.0, 0.0, 0.0, 0.0,
-    -0.022562687017999343, 0.98065153526997417, 0.0, 0.0, 0.0, 0.0,
-    -0.023934445295765105, 0.97945320891582144, 0.0, 0.0, 0.0, 0.0,
-    -0.025301749605026048, 0.97825616520767711, 0.0, 0.0, 0.0, 0.0,
-    -0.026664610639854355, 0.97706040316026854, 0.0, 0.0, 0.0, 0.0,
-    -0.028023039071670849, 0.975865921788136, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
-
-  static const real_T d_1[2460]{ -0.99747143658641013, -0.0011849245467832059,
-    -0.0, -0.0, -0.0, -0.0, -0.9949489107331112, -0.0023674262193844361, -0.0,
-    -0.0, -0.0, -0.0, -0.99243240790182863, -0.0035475109996374703, -0.0, -0.0,
-    -0.0, -0.0, -0.9899219135892513, -0.0047251848550434227, -0.0, -0.0, -0.0,
-    -0.0, -0.98741741332694732, -0.0059004537388052374, -0.0, -0.0, -0.0, -0.0,
-    -0.98491889268128, -0.0070733235898620978, -0.0, -0.0, -0.0, -0.0,
-    -0.98242633725332451, -0.0082438003329237571, -0.0, -0.0, -0.0, -0.0,
-    -0.97993973267878431, -0.009411889878504786, -0.0, -0.0, -0.0, -0.0,
-    -0.97745906462790788, -0.010577598122958734, -0.0, -0.0, -0.0, -0.0,
-    -0.97498431880540515, -0.011740930948512213, -0.0, -0.0, -0.0, -0.0,
-    -0.97251548095036522, -0.012901894223298897, -0.0, -0.0, -0.0, -0.0,
-    -0.97005253683617321, -0.014060493801393438, -0.0, -0.0, -0.0, -0.0,
-    -0.9675954722704283, -0.015216735522845306, -0.0, -0.0, -0.0, -0.0,
-    -0.96514427309486084, -0.01637062521371254, -0.0, -0.0, -0.0, -0.0,
-    -0.96269892518525058, -0.017522168686095428, -0.0, -0.0, -0.0, -0.0,
-    -0.96025941445134477, -0.018671371738170094, -0.0, -0.0, -0.0, -0.0,
-    -0.95782572683677636, -0.019818240154222011, -0.0, -0.0, -0.0, -0.0,
-    -0.95539784831898256, -0.020962779704679434, -0.0, -0.0, -0.0, -0.0,
-    -0.95297576490912339, -0.022104996146146753, -0.0, -0.0, -0.0, -0.0,
-    -0.95055946265200075, -0.023244895221437765, -0.0, -0.0, -0.0, -0.0,
-    0.99747143658641013, 0.0011849245467832059, 0.0, 0.0, 0.0, 0.0,
-    0.9949489107331112, 0.0023674262193844361, 0.0, 0.0, 0.0, 0.0,
-    0.99243240790182863, 0.0035475109996374703, 0.0, 0.0, 0.0, 0.0,
-    0.9899219135892513, 0.0047251848550434227, 0.0, 0.0, 0.0, 0.0,
-    0.98741741332694732, 0.0059004537388052374, 0.0, 0.0, 0.0, 0.0,
-    0.98491889268128, 0.0070733235898620978, 0.0, 0.0, 0.0, 0.0,
-    0.98242633725332451, 0.0082438003329237571, 0.0, 0.0, 0.0, 0.0,
-    0.97993973267878431, 0.009411889878504786, 0.0, 0.0, 0.0, 0.0,
-    0.97745906462790788, 0.010577598122958734, 0.0, 0.0, 0.0, 0.0,
-    0.97498431880540515, 0.011740930948512213, 0.0, 0.0, 0.0, 0.0,
-    0.97251548095036522, 0.012901894223298897, 0.0, 0.0, 0.0, 0.0,
-    0.97005253683617321, 0.014060493801393438, 0.0, 0.0, 0.0, 0.0,
-    0.9675954722704283, 0.015216735522845306, 0.0, 0.0, 0.0, 0.0,
-    0.96514427309486084, 0.01637062521371254, 0.0, 0.0, 0.0, 0.0,
-    0.96269892518525058, 0.017522168686095428, 0.0, 0.0, 0.0, 0.0,
-    0.96025941445134477, 0.018671371738170094, 0.0, 0.0, 0.0, 0.0,
-    0.95782572683677636, 0.019818240154222011, 0.0, 0.0, 0.0, 0.0,
-    0.95539784831898256, 0.020962779704679434, 0.0, 0.0, 0.0, 0.0,
-    0.95297576490912339, 0.022104996146146753, 0.0, 0.0, 0.0, 0.0,
-    0.95055946265200075, 0.023244895221437765, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.00030050237926615431, -1.0004838136541614, -0.0, -0.0, -0.0,
-    -0.0, 0.00060039030636459647, -1.0009675053113292, -0.0, -0.0, -0.0, -0.0,
-    0.00089966529831621029, -1.001451075640559, -0.0, -0.0, -0.0, -0.0,
-    0.0011983288685070489, -1.0019345253094327, -0.0, -0.0, -0.0, -0.0,
-    0.0014963825266970827, -1.0024178549840617, -0.0, -0.0, -0.0, -0.0,
-    0.0017938277790289267, -1.0029010653290908, -0.0, -0.0, -0.0, -0.0,
-    0.0020906661280365455, -1.003384157007702, -0.0, -0.0, -0.0, -0.0,
-    0.0023868990726539398, -1.0038671306816174, -0.0, -0.0, -0.0, -0.0,
-    0.0026825281082238088, -1.004349987011103, -0.0, -0.0, -0.0, -0.0,
-    0.0029775547265061954, -1.004832726654973, -0.0, -0.0, -0.0, -0.0,
-    0.003271980415687107, -1.005315350270592, -0.0, -0.0, -0.0, -0.0,
-    0.0035658066603871182, -1.0057978585138798, -0.0, -0.0, -0.0, -0.0,
-    0.003859034941669952, -1.0062802520393141, -0.0, -0.0, -0.0, -0.0,
-    0.00415166673705104, -1.0067625314999344, -0.0, -0.0, -0.0, -0.0,
-    0.0044437035205060612, -1.0072446975473455, -0.0, -0.0, -0.0, -0.0,
-    0.0047351467624794641, -1.0077267508317205, -0.0, -0.0, -0.0, -0.0,
-    0.0050259979298929629, -1.008208692001805, -0.0, -0.0, -0.0, -0.0,
-    0.0053162584861540171, -1.0086905217049205, -0.0, -0.0, -0.0, -0.0,
-    0.0056059298911642881, -1.0091722405869672, -0.0, -0.0, -0.0, -0.0,
-    0.0058950136013280795, -1.0096538492924283, -0.0, -0.0, -0.0, -0.0,
-    -0.00030050237926615431, 1.0004838136541614, 0.0, 0.0, 0.0, 0.0,
-    -0.00060039030636459647, 1.0009675053113292, 0.0, 0.0, 0.0, 0.0,
-    -0.00089966529831621029, 1.001451075640559, 0.0, 0.0, 0.0, 0.0,
-    -0.0011983288685070489, 1.0019345253094327, 0.0, 0.0, 0.0, 0.0,
-    -0.0014963825266970827, 1.0024178549840617, 0.0, 0.0, 0.0, 0.0,
-    -0.0017938277790289267, 1.0029010653290908, 0.0, 0.0, 0.0, 0.0,
-    -0.0020906661280365455, 1.003384157007702, 0.0, 0.0, 0.0, 0.0,
-    -0.0023868990726539398, 1.0038671306816174, 0.0, 0.0, 0.0, 0.0,
-    -0.0026825281082238088, 1.004349987011103, 0.0, 0.0, 0.0, 0.0,
-    -0.0029775547265061954, 1.004832726654973, 0.0, 0.0, 0.0, 0.0,
-    -0.003271980415687107, 1.005315350270592, 0.0, 0.0, 0.0, 0.0,
-    -0.0035658066603871182, 1.0057978585138798, 0.0, 0.0, 0.0, 0.0,
-    -0.003859034941669952, 1.0062802520393141, 0.0, 0.0, 0.0, 0.0,
-    -0.00415166673705104, 1.0067625314999344, 0.0, 0.0, 0.0, 0.0,
-    -0.0044437035205060612, 1.0072446975473455, 0.0, 0.0, 0.0, 0.0,
-    -0.0047351467624794641, 1.0077267508317205, 0.0, 0.0, 0.0, 0.0,
-    -0.0050259979298929629, 1.008208692001805, 0.0, 0.0, 0.0, 0.0,
-    -0.0053162584861540171, 1.0086905217049205, 0.0, 0.0, 0.0, 0.0,
-    -0.0056059298911642881, 1.0091722405869672, 0.0, 0.0, 0.0, 0.0,
-    -0.0058950136013280795, 1.0096538492924283, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, -0.0, -0.0, -0.0, -0.99747143658641013,
-    -0.0011849245467832059, -0.0, -0.0, -0.0, -0.0, -0.9949489107331112,
-    -0.0023674262193844361, -0.0, -0.0, -0.0, -0.0, -0.99243240790182863,
-    -0.0035475109996374703, -0.0, -0.0, -0.0, -0.0, -0.9899219135892513,
-    -0.0047251848550434227, -0.0, -0.0, -0.0, -0.0, -0.98741741332694732,
-    -0.0059004537388052374, -0.0, -0.0, -0.0, -0.0, -0.98491889268128,
-    -0.0070733235898620978, -0.0, -0.0, -0.0, -0.0, -0.98242633725332451,
-    -0.0082438003329237571, -0.0, -0.0, -0.0, -0.0, -0.97993973267878431,
-    -0.009411889878504786, -0.0, -0.0, -0.0, -0.0, -0.97745906462790788,
-    -0.010577598122958734, -0.0, -0.0, -0.0, -0.0, -0.97498431880540515,
-    -0.011740930948512213, -0.0, -0.0, -0.0, -0.0, -0.97251548095036522,
-    -0.012901894223298897, -0.0, -0.0, -0.0, -0.0, -0.97005253683617321,
-    -0.014060493801393438, -0.0, -0.0, -0.0, -0.0, -0.9675954722704283,
-    -0.015216735522845306, -0.0, -0.0, -0.0, -0.0, -0.96514427309486084,
-    -0.01637062521371254, -0.0, -0.0, -0.0, -0.0, -0.96269892518525058,
-    -0.017522168686095428, -0.0, -0.0, -0.0, -0.0, -0.96025941445134477,
-    -0.018671371738170094, -0.0, -0.0, -0.0, -0.0, -0.95782572683677636,
-    -0.019818240154222011, -0.0, -0.0, -0.0, -0.0, -0.95539784831898256,
-    -0.020962779704679434, -0.0, -0.0, -0.0, -0.0, -0.95297576490912339,
-    -0.022104996146146753, -0.0, -0.0, -0.0, -0.0, -0.95055946265200075,
-    -0.023244895221437765, -0.0, 0.0, 0.0, 0.0, 0.99747143658641013,
-    0.0011849245467832059, 0.0, 0.0, 0.0, 0.0, 0.9949489107331112,
-    0.0023674262193844361, 0.0, 0.0, 0.0, 0.0, 0.99243240790182863,
-    0.0035475109996374703, 0.0, 0.0, 0.0, 0.0, 0.9899219135892513,
-    0.0047251848550434227, 0.0, 0.0, 0.0, 0.0, 0.98741741332694732,
-    0.0059004537388052374, 0.0, 0.0, 0.0, 0.0, 0.98491889268128,
-    0.0070733235898620978, 0.0, 0.0, 0.0, 0.0, 0.98242633725332451,
-    0.0082438003329237571, 0.0, 0.0, 0.0, 0.0, 0.97993973267878431,
-    0.009411889878504786, 0.0, 0.0, 0.0, 0.0, 0.97745906462790788,
-    0.010577598122958734, 0.0, 0.0, 0.0, 0.0, 0.97498431880540515,
-    0.011740930948512213, 0.0, 0.0, 0.0, 0.0, 0.97251548095036522,
-    0.012901894223298897, 0.0, 0.0, 0.0, 0.0, 0.97005253683617321,
-    0.014060493801393438, 0.0, 0.0, 0.0, 0.0, 0.9675954722704283,
-    0.015216735522845306, 0.0, 0.0, 0.0, 0.0, 0.96514427309486084,
-    0.01637062521371254, 0.0, 0.0, 0.0, 0.0, 0.96269892518525058,
-    0.017522168686095428, 0.0, 0.0, 0.0, 0.0, 0.96025941445134477,
-    0.018671371738170094, 0.0, 0.0, 0.0, 0.0, 0.95782572683677636,
-    0.019818240154222011, 0.0, 0.0, 0.0, 0.0, 0.95539784831898256,
-    0.020962779704679434, 0.0, 0.0, 0.0, 0.0, 0.95297576490912339,
-    0.022104996146146753, 0.0, 0.0, 0.0, 0.0, 0.95055946265200075,
-    0.023244895221437765, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -0.0, -0.0,
-    0.00030050237926615431, -1.0004838136541614, -0.0, -0.0, -0.0, -0.0,
-    0.00060039030636459647, -1.0009675053113292, -0.0, -0.0, -0.0, -0.0,
-    0.00089966529831621029, -1.001451075640559, -0.0, -0.0, -0.0, -0.0,
-    0.0011983288685070489, -1.0019345253094327, -0.0, -0.0, -0.0, -0.0,
-    0.0014963825266970827, -1.0024178549840617, -0.0, -0.0, -0.0, -0.0,
-    0.0017938277790289267, -1.0029010653290908, -0.0, -0.0, -0.0, -0.0,
-    0.0020906661280365455, -1.003384157007702, -0.0, -0.0, -0.0, -0.0,
-    0.0023868990726539398, -1.0038671306816174, -0.0, -0.0, -0.0, -0.0,
-    0.0026825281082238088, -1.004349987011103, -0.0, -0.0, -0.0, -0.0,
-    0.0029775547265061954, -1.004832726654973, -0.0, -0.0, -0.0, -0.0,
-    0.003271980415687107, -1.005315350270592, -0.0, -0.0, -0.0, -0.0,
-    0.0035658066603871182, -1.0057978585138798, -0.0, -0.0, -0.0, -0.0,
-    0.003859034941669952, -1.0062802520393141, -0.0, -0.0, -0.0, -0.0,
-    0.00415166673705104, -1.0067625314999344, -0.0, -0.0, -0.0, -0.0,
-    0.0044437035205060612, -1.0072446975473455, -0.0, -0.0, -0.0, -0.0,
-    0.0047351467624794641, -1.0077267508317205, -0.0, -0.0, -0.0, -0.0,
-    0.0050259979298929629, -1.008208692001805, -0.0, -0.0, -0.0, -0.0,
-    0.0053162584861540171, -1.0086905217049205, -0.0, -0.0, -0.0, -0.0,
-    0.0056059298911642881, -1.0091722405869672, -0.0, -0.0, -0.0, -0.0,
-    0.0058950136013280795, -1.0096538492924283, -0.0, 0.0, 0.0, 0.0,
-    -0.00030050237926615431, 1.0004838136541614, 0.0, 0.0, 0.0, 0.0,
-    -0.00060039030636459647, 1.0009675053113292, 0.0, 0.0, 0.0, 0.0,
-    -0.00089966529831621029, 1.001451075640559, 0.0, 0.0, 0.0, 0.0,
-    -0.0011983288685070489, 1.0019345253094327, 0.0, 0.0, 0.0, 0.0,
-    -0.0014963825266970827, 1.0024178549840617, 0.0, 0.0, 0.0, 0.0,
-    -0.0017938277790289267, 1.0029010653290908, 0.0, 0.0, 0.0, 0.0,
-    -0.0020906661280365455, 1.003384157007702, 0.0, 0.0, 0.0, 0.0,
-    -0.0023868990726539398, 1.0038671306816174, 0.0, 0.0, 0.0, 0.0,
-    -0.0026825281082238088, 1.004349987011103, 0.0, 0.0, 0.0, 0.0,
-    -0.0029775547265061954, 1.004832726654973, 0.0, 0.0, 0.0, 0.0,
-    -0.003271980415687107, 1.005315350270592, 0.0, 0.0, 0.0, 0.0,
-    -0.0035658066603871182, 1.0057978585138798, 0.0, 0.0, 0.0, 0.0,
-    -0.003859034941669952, 1.0062802520393141, 0.0, 0.0, 0.0, 0.0,
-    -0.00415166673705104, 1.0067625314999344, 0.0, 0.0, 0.0, 0.0,
-    -0.0044437035205060612, 1.0072446975473455, 0.0, 0.0, 0.0, 0.0,
-    -0.0047351467624794641, 1.0077267508317205, 0.0, 0.0, 0.0, 0.0,
-    -0.0050259979298929629, 1.008208692001805, 0.0, 0.0, 0.0, 0.0,
-    -0.0053162584861540171, 1.0086905217049205, 0.0, 0.0, 0.0, 0.0,
-    -0.0056059298911642881, 1.0091722405869672, 0.0, 0.0, 0.0, 0.0,
-    -0.0058950136013280795, 1.0096538492924283, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
-
-  static const real_T d[1968]{ -0.99867923888102927, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -0.99736022217199194, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -0.99604294756893919, -0.0, -0.0, -0.0, -0.0, -0.0, -0.9947274127709651,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -0.99341361548020291, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -0.99210155340182049, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -0.99079122424401689, -0.0, -0.0, -0.0, -0.0, -0.0, -0.989482625718018, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -0.98817575553807258, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -0.98687061142144838, -0.0, -0.0, -0.0, -0.0, -0.0, -0.985567191088428, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -0.98426549226230531, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -0.9829655126693807, -0.0, -0.0, -0.0, -0.0, -0.0, -0.98166725003895783,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -0.98037070210333943, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -0.97907586659782331, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -0.97778274126069831, -0.0, -0.0, -0.0, -0.0, -0.0, -0.97649132383324055,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -0.97520161205970934, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -0.97391360368734325, -0.0, -0.0, -0.0, -0.0, -0.0,
-    0.99867923888102927, 0.0, 0.0, 0.0, 0.0, 0.0, 0.99736022217199194, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.99604294756893919, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.9947274127709651, 0.0, 0.0, 0.0, 0.0, 0.0, 0.99341361548020291, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.99210155340182049, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.99079122424401689, 0.0, 0.0, 0.0, 0.0, 0.0, 0.989482625718018, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.98817575553807258, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.98687061142144838, 0.0, 0.0, 0.0, 0.0, 0.0, 0.985567191088428, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.98426549226230531, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.9829655126693807, 0.0, 0.0, 0.0, 0.0, 0.0, 0.98166725003895783, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.98037070210333943, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.97907586659782331, 0.0, 0.0, 0.0, 0.0, 0.0, 0.97778274126069831, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.97649132383324055, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.97520161205970934, 0.0, 0.0, 0.0, 0.0, 0.0, 0.97391360368734325, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -0.0, -0.0,
-    -0.99867923888102927, -0.0, -0.0, -0.0, -0.0, -0.0, -0.99736022217199194,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -0.99604294756893919, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -0.9947274127709651, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -0.99341361548020291, -0.0, -0.0, -0.0, -0.0, -0.0, -0.99210155340182049,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -0.99079122424401689, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -0.989482625718018, -0.0, -0.0, -0.0, -0.0, -0.0, -0.98817575553807258,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -0.98687061142144838, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -0.985567191088428, -0.0, -0.0, -0.0, -0.0, -0.0, -0.98426549226230531,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -0.9829655126693807, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -0.98166725003895783, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -0.98037070210333943, -0.0, -0.0, -0.0, -0.0, -0.0, -0.97907586659782331,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -0.97778274126069831, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -0.97649132383324055, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -0.97520161205970934, -0.0, -0.0, -0.0, -0.0, -0.0, -0.97391360368734325,
-    -0.0, -0.0, 0.0, 0.0, 0.0, 0.99867923888102927, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.99736022217199194, 0.0, 0.0, 0.0, 0.0, 0.0, 0.99604294756893919, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.9947274127709651, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.99341361548020291, 0.0, 0.0, 0.0, 0.0, 0.0, 0.99210155340182049, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.99079122424401689, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.989482625718018, 0.0, 0.0, 0.0, 0.0, 0.0, 0.98817575553807258, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.98687061142144838, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.985567191088428, 0.0, 0.0, 0.0, 0.0, 0.0, 0.98426549226230531, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.9829655126693807, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.98166725003895783, 0.0, 0.0, 0.0, 0.0, 0.0, 0.98037070210333943, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.97907586659782331, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.97778274126069831, 0.0, 0.0, 0.0, 0.0, 0.0, 0.97649132383324055, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.97520161205970934, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.97391360368734325, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
-
-  static const real_T n_0[1200]{ 0.0, 0.99801496201563555,
-    0.00012982817451900192, 0.0, 0.0, 0.0, 0.0, 0.99603367687094413,
-    0.00025924037690453866, 0.0, 0.0, 0.0, 0.0, 0.99405613771726609,
-    0.00038823760144369459, 0.0, 0.0, 0.0, 0.0, 0.99208233771810028,
-    0.00051682084032238652, 0.0, 0.0, 0.0, 0.0, 0.99011227004908309,
-    0.00064499108362950342, 0.0, 0.0, 0.0, 0.0, 0.9881459278979674,
-    0.00077274931936103868, 0.0, 0.0, 0.0, 0.0, 0.98618330446460145,
-    0.00090009653342421417, 0.0, 0.0, 0.0, 0.0, 0.984224392960908,
-    0.0010270337096415967, 0.0, 0.0, 0.0, 0.0, 0.98226918661086315,
-    0.001153561829755207, 0.0, 0.0, 0.0, 0.0, 0.98031767865047559,
-    0.0012796818734306208, 0.0, 0.0, 0.0, 0.0, 0.97836986232776568,
-    0.0014053948182610615, 0.0, 0.0, 0.0, 0.0, 0.97642573090274454,
-    0.0015307016397714866, 0.0, 0.0, 0.0, 0.0, 0.97448527764739334,
-    0.0016556033114226655, 0.0, 0.0, 0.0, 0.0, 0.97254849584564251,
-    0.0017801008046152487, 0.0, 0.0, 0.0, 0.0, 0.97061537879335091,
-    0.0019041950886938322, 0.0, 0.0, 0.0, 0.0, 0.968685919798285,
-    0.0020278871309510108, 0.0, 0.0, 0.0, 0.0, 0.96676011218009861,
-    0.0021511778966314264, 0.0, 0.0, 0.0, 0.0, 0.96483794927031175,
-    0.0022740683489358075, 0.0, 0.0, 0.0, 0.0, 0.9629194244122905,
-    0.0023965594490250011, 0.0, 0.0, 0.0, 0.0, 0.96100453096122618,
-    0.0025186521560239968, 0.0, 0.0, 0.0, 0.0, -0.001444494825713849,
-    0.99878101747798131, 0.0, 0.0, 0.0, 0.0, -0.0028843614603847466,
-    0.99756333333822533, 0.0, 0.0, 0.0, 0.0, -0.0043196109666541723,
-    0.99634694659889633, 0.0, 0.0, 0.0, 0.0, -0.0057502543837855847,
-    0.99513185627791911, 0.0, 0.0, 0.0, 0.0, -0.0071763027277104837,
-    0.99391806139298267, 0.0, 0.0, 0.0, 0.0, -0.0085977669910743838,
-    0.99270556096154294, 0.0, 0.0, 0.0, 0.0, -0.0100146581432827,
-    0.99149435400082664, 0.0, 0.0, 0.0, 0.0, -0.011426987130546547,
-    0.99028443952783429, 0.0, 0.0, 0.0, 0.0, -0.012834764875928464,
-    0.9890758165593434, 0.0, 0.0, 0.0, 0.0, -0.014238002279388031,
-    0.987868484111912, 0.0, 0.0, 0.0, 0.0, -0.015636710217827417,
-    0.98666244120188173, 0.0, 0.0, 0.0, 0.0, -0.017030899545136844,
-    0.98545768684538126, 0.0, 0.0, 0.0, 0.0, -0.018420581092239943,
-    0.98425422005832941, 0.0, 0.0, 0.0, 0.0, -0.019805765667139059,
-    0.98305203985643841, 0.0, 0.0, 0.0, 0.0, -0.021186464054960434,
-    0.98185114525521711, 0.0, 0.0, 0.0, 0.0, -0.022562687017999343,
-    0.98065153526997417, 0.0, 0.0, 0.0, 0.0, -0.023934445295765105,
-    0.97945320891582144, 0.0, 0.0, 0.0, 0.0, -0.025301749605026048,
-    0.97825616520767711, 0.0, 0.0, 0.0, 0.0, -0.026664610639854355,
-    0.97706040316026854, 0.0, 0.0, 0.0, 0.0, -0.028023039071670849,
-    0.975865921788136, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.99801496201563555,
-    0.00012982817451900192, 0.0, 0.0, 0.0, 0.0, 0.99603367687094413,
-    0.00025924037690453866, 0.0, 0.0, 0.0, 0.0, 0.99405613771726609,
-    0.00038823760144369459, 0.0, 0.0, 0.0, 0.0, 0.99208233771810028,
-    0.00051682084032238652, 0.0, 0.0, 0.0, 0.0, 0.99011227004908309,
-    0.00064499108362950342, 0.0, 0.0, 0.0, 0.0, 0.9881459278979674,
-    0.00077274931936103868, 0.0, 0.0, 0.0, 0.0, 0.98618330446460145,
-    0.00090009653342421417, 0.0, 0.0, 0.0, 0.0, 0.984224392960908,
-    0.0010270337096415967, 0.0, 0.0, 0.0, 0.0, 0.98226918661086315,
-    0.001153561829755207, 0.0, 0.0, 0.0, 0.0, 0.98031767865047559,
-    0.0012796818734306208, 0.0, 0.0, 0.0, 0.0, 0.97836986232776568,
-    0.0014053948182610615, 0.0, 0.0, 0.0, 0.0, 0.97642573090274454,
-    0.0015307016397714866, 0.0, 0.0, 0.0, 0.0, 0.97448527764739334,
-    0.0016556033114226655, 0.0, 0.0, 0.0, 0.0, 0.97254849584564251,
-    0.0017801008046152487, 0.0, 0.0, 0.0, 0.0, 0.97061537879335091,
-    0.0019041950886938322, 0.0, 0.0, 0.0, 0.0, 0.968685919798285,
-    0.0020278871309510108, 0.0, 0.0, 0.0, 0.0, 0.96676011218009861,
-    0.0021511778966314264, 0.0, 0.0, 0.0, 0.0, 0.96483794927031175,
-    0.0022740683489358075, 0.0, 0.0, 0.0, 0.0, 0.9629194244122905,
-    0.0023965594490250011, 0.0, 0.0, 0.0, 0.0, 0.96100453096122618,
-    0.0025186521560239968, 0.0, 0.0, 0.0, 0.0, -0.001444494825713849,
-    0.99878101747798131, 0.0, 0.0, 0.0, 0.0, -0.0028843614603847466,
-    0.99756333333822533, 0.0, 0.0, 0.0, 0.0, -0.0043196109666541723,
-    0.99634694659889633, 0.0, 0.0, 0.0, 0.0, -0.0057502543837855847,
-    0.99513185627791911, 0.0, 0.0, 0.0, 0.0, -0.0071763027277104837,
-    0.99391806139298267, 0.0, 0.0, 0.0, 0.0, -0.0085977669910743838,
-    0.99270556096154294, 0.0, 0.0, 0.0, 0.0, -0.0100146581432827,
-    0.99149435400082664, 0.0, 0.0, 0.0, 0.0, -0.011426987130546547,
-    0.99028443952783429, 0.0, 0.0, 0.0, 0.0, -0.012834764875928464,
-    0.9890758165593434, 0.0, 0.0, 0.0, 0.0, -0.014238002279388031,
-    0.987868484111912, 0.0, 0.0, 0.0, 0.0, -0.015636710217827417,
-    0.98666244120188173, 0.0, 0.0, 0.0, 0.0, -0.017030899545136844,
-    0.98545768684538126, 0.0, 0.0, 0.0, 0.0, -0.018420581092239943,
-    0.98425422005832941, 0.0, 0.0, 0.0, 0.0, -0.019805765667139059,
-    0.98305203985643841, 0.0, 0.0, 0.0, 0.0, -0.021186464054960434,
-    0.98185114525521711, 0.0, 0.0, 0.0, 0.0, -0.022562687017999343,
-    0.98065153526997417, 0.0, 0.0, 0.0, 0.0, -0.023934445295765105,
-    0.97945320891582144, 0.0, 0.0, 0.0, 0.0, -0.025301749605026048,
-    0.97825616520767711, 0.0, 0.0, 0.0, 0.0, -0.026664610639854355,
-    0.97706040316026854, 0.0, 0.0, 0.0, 0.0, -0.028023039071670849,
-    0.975865921788136, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0 };
-
-  static const real_T n_1[1200]{ 0.99747143658641013, 0.0011849245467832059, 0.0,
-    0.0, 0.0, 0.0, 0.9949489107331112, 0.0023674262193844361, 0.0, 0.0, 0.0, 0.0,
-    0.99243240790182863, 0.0035475109996374703, 0.0, 0.0, 0.0, 0.0,
-    0.9899219135892513, 0.0047251848550434227, 0.0, 0.0, 0.0, 0.0,
-    0.98741741332694732, 0.0059004537388052374, 0.0, 0.0, 0.0, 0.0,
-    0.98491889268128, 0.0070733235898620978, 0.0, 0.0, 0.0, 0.0,
-    0.98242633725332451, 0.0082438003329237571, 0.0, 0.0, 0.0, 0.0,
-    0.97993973267878431, 0.009411889878504786, 0.0, 0.0, 0.0, 0.0,
-    0.97745906462790788, 0.010577598122958734, 0.0, 0.0, 0.0, 0.0,
-    0.97498431880540515, 0.011740930948512213, 0.0, 0.0, 0.0, 0.0,
-    0.97251548095036522, 0.012901894223298897, 0.0, 0.0, 0.0, 0.0,
-    0.97005253683617321, 0.014060493801393438, 0.0, 0.0, 0.0, 0.0,
-    0.9675954722704283, 0.015216735522845306, 0.0, 0.0, 0.0, 0.0,
-    0.96514427309486084, 0.01637062521371254, 0.0, 0.0, 0.0, 0.0,
-    0.96269892518525058, 0.017522168686095428, 0.0, 0.0, 0.0, 0.0,
-    0.96025941445134477, 0.018671371738170094, 0.0, 0.0, 0.0, 0.0,
-    0.95782572683677636, 0.019818240154222011, 0.0, 0.0, 0.0, 0.0,
-    0.95539784831898256, 0.020962779704679434, 0.0, 0.0, 0.0, 0.0,
-    0.95297576490912339, 0.022104996146146753, 0.0, 0.0, 0.0, 0.0,
-    0.95055946265200075, 0.023244895221437765, 0.0, 0.0, 0.0, 0.0,
-    -0.00030050237926615431, 1.0004838136541614, 0.0, 0.0, 0.0, 0.0,
-    -0.00060039030636459647, 1.0009675053113292, 0.0, 0.0, 0.0, 0.0,
-    -0.00089966529831621029, 1.001451075640559, 0.0, 0.0, 0.0, 0.0,
-    -0.0011983288685070489, 1.0019345253094327, 0.0, 0.0, 0.0, 0.0,
-    -0.0014963825266970827, 1.0024178549840617, 0.0, 0.0, 0.0, 0.0,
-    -0.0017938277790289267, 1.0029010653290908, 0.0, 0.0, 0.0, 0.0,
-    -0.0020906661280365455, 1.003384157007702, 0.0, 0.0, 0.0, 0.0,
-    -0.0023868990726539398, 1.0038671306816174, 0.0, 0.0, 0.0, 0.0,
-    -0.0026825281082238088, 1.004349987011103, 0.0, 0.0, 0.0, 0.0,
-    -0.0029775547265061954, 1.004832726654973, 0.0, 0.0, 0.0, 0.0,
-    -0.003271980415687107, 1.005315350270592, 0.0, 0.0, 0.0, 0.0,
-    -0.0035658066603871182, 1.0057978585138798, 0.0, 0.0, 0.0, 0.0,
-    -0.003859034941669952, 1.0062802520393141, 0.0, 0.0, 0.0, 0.0,
-    -0.00415166673705104, 1.0067625314999344, 0.0, 0.0, 0.0, 0.0,
-    -0.0044437035205060612, 1.0072446975473455, 0.0, 0.0, 0.0, 0.0,
-    -0.0047351467624794641, 1.0077267508317205, 0.0, 0.0, 0.0, 0.0,
-    -0.0050259979298929629, 1.008208692001805, 0.0, 0.0, 0.0, 0.0,
-    -0.0053162584861540171, 1.0086905217049205, 0.0, 0.0, 0.0, 0.0,
-    -0.0056059298911642881, 1.0091722405869672, 0.0, 0.0, 0.0, 0.0,
-    -0.0058950136013280795, 1.0096538492924283, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.99747143658641013, 0.0011849245467832059, 0.0, 0.0, 0.0, 0.0,
-    0.9949489107331112, 0.0023674262193844361, 0.0, 0.0, 0.0, 0.0,
-    0.99243240790182863, 0.0035475109996374703, 0.0, 0.0, 0.0, 0.0,
-    0.9899219135892513, 0.0047251848550434227, 0.0, 0.0, 0.0, 0.0,
-    0.98741741332694732, 0.0059004537388052374, 0.0, 0.0, 0.0, 0.0,
-    0.98491889268128, 0.0070733235898620978, 0.0, 0.0, 0.0, 0.0,
-    0.98242633725332451, 0.0082438003329237571, 0.0, 0.0, 0.0, 0.0,
-    0.97993973267878431, 0.009411889878504786, 0.0, 0.0, 0.0, 0.0,
-    0.97745906462790788, 0.010577598122958734, 0.0, 0.0, 0.0, 0.0,
-    0.97498431880540515, 0.011740930948512213, 0.0, 0.0, 0.0, 0.0,
-    0.97251548095036522, 0.012901894223298897, 0.0, 0.0, 0.0, 0.0,
-    0.97005253683617321, 0.014060493801393438, 0.0, 0.0, 0.0, 0.0,
-    0.9675954722704283, 0.015216735522845306, 0.0, 0.0, 0.0, 0.0,
-    0.96514427309486084, 0.01637062521371254, 0.0, 0.0, 0.0, 0.0,
-    0.96269892518525058, 0.017522168686095428, 0.0, 0.0, 0.0, 0.0,
-    0.96025941445134477, 0.018671371738170094, 0.0, 0.0, 0.0, 0.0,
-    0.95782572683677636, 0.019818240154222011, 0.0, 0.0, 0.0, 0.0,
-    0.95539784831898256, 0.020962779704679434, 0.0, 0.0, 0.0, 0.0,
-    0.95297576490912339, 0.022104996146146753, 0.0, 0.0, 0.0, 0.0,
-    0.95055946265200075, 0.023244895221437765, 0.0, 0.0, 0.0, 0.0,
-    -0.00030050237926615431, 1.0004838136541614, 0.0, 0.0, 0.0, 0.0,
-    -0.00060039030636459647, 1.0009675053113292, 0.0, 0.0, 0.0, 0.0,
-    -0.00089966529831621029, 1.001451075640559, 0.0, 0.0, 0.0, 0.0,
-    -0.0011983288685070489, 1.0019345253094327, 0.0, 0.0, 0.0, 0.0,
-    -0.0014963825266970827, 1.0024178549840617, 0.0, 0.0, 0.0, 0.0,
-    -0.0017938277790289267, 1.0029010653290908, 0.0, 0.0, 0.0, 0.0,
-    -0.0020906661280365455, 1.003384157007702, 0.0, 0.0, 0.0, 0.0,
-    -0.0023868990726539398, 1.0038671306816174, 0.0, 0.0, 0.0, 0.0,
-    -0.0026825281082238088, 1.004349987011103, 0.0, 0.0, 0.0, 0.0,
-    -0.0029775547265061954, 1.004832726654973, 0.0, 0.0, 0.0, 0.0,
-    -0.003271980415687107, 1.005315350270592, 0.0, 0.0, 0.0, 0.0,
-    -0.0035658066603871182, 1.0057978585138798, 0.0, 0.0, 0.0, 0.0,
-    -0.003859034941669952, 1.0062802520393141, 0.0, 0.0, 0.0, 0.0,
-    -0.00415166673705104, 1.0067625314999344, 0.0, 0.0, 0.0, 0.0,
-    -0.0044437035205060612, 1.0072446975473455, 0.0, 0.0, 0.0, 0.0,
-    -0.0047351467624794641, 1.0077267508317205, 0.0, 0.0, 0.0, 0.0,
-    -0.0050259979298929629, 1.008208692001805, 0.0, 0.0, 0.0, 0.0,
-    -0.0053162584861540171, 1.0086905217049205, 0.0, 0.0, 0.0, 0.0,
-    -0.0056059298911642881, 1.0091722405869672, 0.0, 0.0, 0.0, 0.0,
-    -0.0058950136013280795, 1.0096538492924283, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0 };
-
-  static const real_T g[984]{ -0.3579347593572087, -0.0, -0.0,
-    -0.3579347593572087, -0.0, -0.0, -0.71539677240113031, -0.0, -0.0,
-    -0.71539677240113031, -0.0, -0.0, -1.0723866635167145, -0.0, -0.0,
-    -1.0723866635167145, -0.0, -0.0, -1.4289050562642476, -0.0, -0.0,
-    -1.4289050562642476, -0.0, -0.0, -1.7849525733804419, -0.0, -0.0,
-    -1.7849525733804419, -0.0, -0.0, -2.1405298367795229, -0.0, -0.0,
-    -2.1405298367795229, -0.0, -0.0, -2.4956374675543165, -0.0, -0.0,
-    -2.4956374675543165, -0.0, -0.0, -2.8502760859773328, -0.0, -0.0,
-    -2.8502760859773328, -0.0, -0.0, -3.2044463115018504, -0.0, -0.0,
-    -3.2044463115018504, -0.0, -0.0, -3.5581487627629982, -0.0, -0.0,
-    -3.5581487627629982, -0.0, -0.0, -3.9113840575788359, -0.0, -0.0,
-    -3.9113840575788359, -0.0, -0.0, -4.2641528129514326, -0.0, -0.0,
-    -4.2641528129514326, -0.0, -0.0, -4.616455645067945, -0.0, -0.0,
-    -4.616455645067945, -0.0, -0.0, -4.9682931693016954, -0.0, -0.0,
-    -4.9682931693016954, -0.0, -0.0, -5.3196660002132425, -0.0, -0.0,
-    -5.3196660002132425, -0.0, -0.0, -5.6705747515514595, -0.0, -0.0,
-    -5.6705747515514595, -0.0, -0.0, -6.021020036254602, -0.0, -0.0,
-    -6.021020036254602, -0.0, -0.0, -6.3710024664513822, -0.0, -0.0,
-    -6.3710024664513822, -0.0, -0.0, -6.7205226534620355, -0.0, -0.0,
-    -6.7205226534620355, -0.0, -0.0, -7.06958120779939, -0.0, -0.0,
-    -7.06958120779939, -0.0, -0.0, 0.3579347593572087, 0.0, 0.0,
-    0.3579347593572087, 0.0, 0.0, 0.71539677240113031, 0.0, 0.0,
-    0.71539677240113031, 0.0, 0.0, 1.0723866635167145, 0.0, 0.0,
-    1.0723866635167145, 0.0, 0.0, 1.4289050562642476, 0.0, 0.0,
-    1.4289050562642476, 0.0, 0.0, 1.7849525733804419, 0.0, 0.0,
-    1.7849525733804419, 0.0, 0.0, 2.1405298367795229, 0.0, 0.0,
-    2.1405298367795229, 0.0, 0.0, 2.4956374675543165, 0.0, 0.0,
-    2.4956374675543165, 0.0, 0.0, 2.8502760859773328, 0.0, 0.0,
-    2.8502760859773328, 0.0, 0.0, 3.2044463115018504, 0.0, 0.0,
-    3.2044463115018504, 0.0, 0.0, 3.5581487627629982, 0.0, 0.0,
-    3.5581487627629982, 0.0, 0.0, 3.9113840575788359, 0.0, 0.0,
-    3.9113840575788359, 0.0, 0.0, 4.2641528129514326, 0.0, 0.0,
-    4.2641528129514326, 0.0, 0.0, 4.616455645067945, 0.0, 0.0, 4.616455645067945,
-    0.0, 0.0, 4.9682931693016954, 0.0, 0.0, 4.9682931693016954, 0.0, 0.0,
-    5.3196660002132425, 0.0, 0.0, 5.3196660002132425, 0.0, 0.0,
-    5.6705747515514595, 0.0, 0.0, 5.6705747515514595, 0.0, 0.0,
-    6.021020036254602, 0.0, 0.0, 6.021020036254602, 0.0, 0.0, 6.3710024664513822,
-    0.0, 0.0, 6.3710024664513822, 0.0, 0.0, 6.7205226534620355, 0.0, 0.0,
-    6.7205226534620355, 0.0, 0.0, 7.06958120779939, 0.0, 0.0, 7.06958120779939,
-    0.0, 0.0, -1.0, -0.0, -0.0, 1.0, 0.0, 0.0, 0.042560663779893933, -0.0, -0.0,
-    0.042560663779893933, -0.0, -0.0, 0.0850651150898698, -0.0, -0.0,
-    0.0850651150898698, -0.0, -0.0, 0.12751342817317227, -0.0, -0.0,
-    0.12751342817317227, -0.0, -0.0, 0.16990567717498842, -0.0, -0.0,
-    0.16990567717498842, -0.0, -0.0, 0.21224193614257725, -0.0, -0.0,
-    0.21224193614257725, -0.0, -0.0, 0.254522279025399, -0.0, -0.0,
-    0.254522279025399, -0.0, -0.0, 0.29674677967524432, -0.0, -0.0,
-    0.29674677967524432, -0.0, -0.0, 0.33891551184636343, -0.0, -0.0,
-    0.33891551184636343, -0.0, -0.0, 0.38102854919559465, -0.0, -0.0,
-    0.38102854919559465, -0.0, -0.0, 0.4230859652824932, -0.0, -0.0,
-    0.4230859652824932, -0.0, -0.0, 0.46508783356945982, -0.0, -0.0,
-    0.46508783356945982, -0.0, -0.0, 0.50703422742186888, -0.0, -0.0,
-    0.50703422742186888, -0.0, -0.0, 0.54892522010819667, -0.0, -0.0,
-    0.54892522010819667, -0.0, -0.0, 0.59076088480014921, -0.0, -0.0,
-    0.59076088480014921, -0.0, -0.0, 0.6325412945727904, -0.0, -0.0,
-    0.6325412945727904, -0.0, -0.0, 0.67426652240466922, -0.0, -0.0,
-    0.67426652240466922, -0.0, -0.0, 0.71593664117794742, -0.0, -0.0,
-    0.71593664117794742, -0.0, -0.0, 0.757551723678527, -0.0, -0.0,
-    0.757551723678527, -0.0, -0.0, 0.79911184259617707, -0.0, -0.0,
-    0.79911184259617707, -0.0, -0.0, 0.840617070524661, -0.0, -0.0,
-    0.840617070524661, -0.0, -0.0, -0.042560663779893933, 0.0, 0.0,
-    -0.042560663779893933, 0.0, 0.0, -0.0850651150898698, 0.0, 0.0,
-    -0.0850651150898698, 0.0, 0.0, -0.12751342817317227, 0.0, 0.0,
-    -0.12751342817317227, 0.0, 0.0, -0.16990567717498842, 0.0, 0.0,
-    -0.16990567717498842, 0.0, 0.0, -0.21224193614257725, 0.0, 0.0,
-    -0.21224193614257725, 0.0, 0.0, -0.254522279025399, 0.0, 0.0,
-    -0.254522279025399, 0.0, 0.0, -0.29674677967524432, 0.0, 0.0,
-    -0.29674677967524432, 0.0, 0.0, -0.33891551184636343, 0.0, 0.0,
-    -0.33891551184636343, 0.0, 0.0, -0.38102854919559465, 0.0, 0.0,
-    -0.38102854919559465, 0.0, 0.0, -0.4230859652824932, 0.0, 0.0,
-    -0.4230859652824932, 0.0, 0.0, -0.46508783356945982, 0.0, 0.0,
-    -0.46508783356945982, 0.0, 0.0, -0.50703422742186888, 0.0, 0.0,
-    -0.50703422742186888, 0.0, 0.0, -0.54892522010819667, 0.0, 0.0,
-    -0.54892522010819667, 0.0, 0.0, -0.59076088480014921, 0.0, 0.0,
-    -0.59076088480014921, 0.0, 0.0, -0.6325412945727904, 0.0, 0.0,
-    -0.6325412945727904, 0.0, 0.0, -0.67426652240466922, 0.0, 0.0,
-    -0.67426652240466922, 0.0, 0.0, -0.71593664117794742, 0.0, 0.0,
-    -0.71593664117794742, 0.0, 0.0, -0.757551723678527, 0.0, 0.0,
-    -0.757551723678527, 0.0, 0.0, -0.79911184259617707, 0.0, 0.0,
-    -0.79911184259617707, 0.0, 0.0, -0.840617070524661, 0.0, 0.0,
-    -0.840617070524661, 0.0, 0.0, -0.0, -1.0, -0.0, 0.0, 1.0, 0.0,
-    0.0099627081344734868, -0.0, -0.0, 0.0099627081344734868, -0.0, -0.0,
-    0.01991225791140331, -0.0, -0.0, 0.01991225791140331, -0.0, -0.0,
-    0.029848666709836498, -0.0, -0.0, 0.029848666709836498, -0.0, -0.0,
-    0.039771951885866519, -0.0, -0.0, 0.039771951885866519, -0.0, -0.0,
-    0.049682130772663577, -0.0, -0.0, 0.049682130772663577, -0.0, -0.0,
-    0.059579220680504912, -0.0, -0.0, 0.059579220680504912, -0.0, -0.0,
-    0.069463238896805016, -0.0, -0.0, 0.069463238896805016, -0.0, -0.0,
-    0.079334202686145827, -0.0, -0.0, 0.079334202686145827, -0.0, -0.0,
-    0.089192129290306912, -0.0, -0.0, 0.089192129290306912, -0.0, -0.0,
-    0.099037035928295547, -0.0, -0.0, 0.099037035928295547, -0.0, -0.0,
-    0.10886893979637684, -0.0, -0.0, 0.10886893979637684, -0.0, -0.0,
-    0.11868785806810371, -0.0, -0.0, 0.11868785806810371, -0.0, -0.0,
-    0.12849380789434692, -0.0, -0.0, 0.12849380789434692, -0.0, -0.0,
-    0.13828680640332505, -0.0, -0.0, 0.13828680640332505, -0.0, -0.0,
-    0.1480668707006344, -0.0, -0.0, 0.1480668707006344, -0.0, -0.0,
-    0.15783401786927884, -0.0, -0.0, 0.15783401786927884, -0.0, -0.0,
-    0.16758826496969964, -0.0, -0.0, 0.16758826496969964, -0.0, -0.0,
-    0.17732962903980537, -0.0, -0.0, 0.17732962903980537, -0.0, -0.0,
-    0.18705812709500158, -0.0, -0.0, 0.18705812709500158, -0.0, -0.0,
-    0.1967737761282205, -0.0, -0.0, 0.1967737761282205, -0.0, -0.0,
-    -0.0099627081344734868, 0.0, 0.0, -0.0099627081344734868, 0.0, 0.0,
-    -0.01991225791140331, 0.0, 0.0, -0.01991225791140331, 0.0, 0.0,
-    -0.029848666709836498, 0.0, 0.0, -0.029848666709836498, 0.0, 0.0,
-    -0.039771951885866519, 0.0, 0.0, -0.039771951885866519, 0.0, 0.0,
-    -0.049682130772663577, 0.0, 0.0, -0.049682130772663577, 0.0, 0.0,
-    -0.059579220680504912, 0.0, 0.0, -0.059579220680504912, 0.0, 0.0,
-    -0.069463238896805016, 0.0, 0.0, -0.069463238896805016, 0.0, 0.0,
-    -0.079334202686145827, 0.0, 0.0, -0.079334202686145827, 0.0, 0.0,
-    -0.089192129290306912, 0.0, 0.0, -0.089192129290306912, 0.0, 0.0,
-    -0.099037035928295547, 0.0, 0.0, -0.099037035928295547, 0.0, 0.0,
-    -0.10886893979637684, 0.0, 0.0, -0.10886893979637684, 0.0, 0.0,
-    -0.11868785806810371, 0.0, 0.0, -0.11868785806810371, 0.0, 0.0,
-    -0.12849380789434692, 0.0, 0.0, -0.12849380789434692, 0.0, 0.0,
-    -0.13828680640332505, 0.0, 0.0, -0.13828680640332505, 0.0, 0.0,
-    -0.1480668707006344, 0.0, 0.0, -0.1480668707006344, 0.0, 0.0,
-    -0.15783401786927884, 0.0, 0.0, -0.15783401786927884, 0.0, 0.0,
-    -0.16758826496969964, 0.0, 0.0, -0.16758826496969964, 0.0, 0.0,
-    -0.17732962903980537, 0.0, 0.0, -0.17732962903980537, 0.0, 0.0,
-    -0.18705812709500158, 0.0, 0.0, -0.18705812709500158, 0.0, 0.0,
-    -0.1967737761282205, 0.0, 0.0, -0.1967737761282205, 0.0, 0.0, -0.0, -0.0,
-    -1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
-
-  static const real_T g_0[984]{ -0.0, 0.1888968412469153, 0.060492001339316988,
-    -0.0, 0.1888968412469153, 0.060492001339316988, -0.0, 0.3773313347058973,
-    0.1209347881183509, -0.0, 0.3773313347058973, 0.1209347881183509, -0.0,
-    0.56530446924504474, 0.18132836030302127, -0.0, 0.56530446924504474,
-    0.18132836030302127, -0.0, 0.75281723176956472, 0.24167271798767209, -0.0,
-    0.75281723176956472, 0.24167271798767209, -0.0, 0.939870607225484,
-    0.30196786139466048, -0.0, 0.939870607225484, 0.30196786139466048, -0.0,
-    1.1264655786033526, 0.36221379087394617, -0.0, 1.1264655786033526,
-    0.36221379087394617, -0.0, 1.3126031269419416, 0.42241050690268223, -0.0,
-    1.3126031269419416, 0.42241050690268223, -0.0, 1.4982842313319336,
-    0.48255801008480659, -0.0, 1.4982842313319336, 0.48255801008480659, -0.0,
-    1.6835098689196064, 0.54265630115063446, -0.0, 1.6835098689196064,
-    0.54265630115063446, -0.0, 1.8682810149105107, 0.6027053809564521, -0.0,
-    1.8682810149105107, 0.6027053809564521, -0.0, 2.05259864257314,
-    0.66270525048411089, -0.0, 2.05259864257314, 0.66270525048411089, -0.0,
-    2.2364637232425952, 0.72265591084062319, -0.0, 2.2364637232425952,
-    0.72265591084062319, -0.0, 2.41987722632424, 0.78255736325775849, -0.0,
-    2.41987722632424, 0.78255736325775849, -0.0, 2.6028401192973529,
-    0.842409609091641, -0.0, 2.6028401192973529, 0.842409609091641, -0.0,
-    2.7853533677187707, 0.90221264982234783, -0.0, 2.7853533677187707,
-    0.90221264982234783, -0.0, 2.9674179352265249, 0.96196648705350851, -0.0,
-    2.9674179352265249, 0.96196648705350851, -0.0, 3.1490347835434722,
-    1.0216711225119051, -0.0, 3.1490347835434722, 1.0216711225119051, -0.0,
-    3.3302048724809192, 1.081326558047073, -0.0, 3.3302048724809192,
-    1.081326558047073, -0.0, 3.5109291599422385, 1.1409327956309046, -0.0,
-    3.5109291599422385, 1.1409327956309046, -0.0, 3.69120860192648,
-    1.2004898373572503, -0.0, 3.69120860192648, 1.2004898373572503, 0.0,
-    -0.1888968412469153, -0.060492001339316988, 0.0, -0.1888968412469153,
-    -0.060492001339316988, 0.0, -0.3773313347058973, -0.1209347881183509, 0.0,
-    -0.3773313347058973, -0.1209347881183509, 0.0, -0.56530446924504474,
-    -0.18132836030302127, 0.0, -0.56530446924504474, -0.18132836030302127, 0.0,
-    -0.75281723176956472, -0.24167271798767209, 0.0, -0.75281723176956472,
-    -0.24167271798767209, 0.0, -0.939870607225484, -0.30196786139466048, 0.0,
-    -0.939870607225484, -0.30196786139466048, 0.0, -1.1264655786033526,
-    -0.36221379087394617, 0.0, -1.1264655786033526, -0.36221379087394617, 0.0,
-    -1.3126031269419416, -0.42241050690268223, 0.0, -1.3126031269419416,
-    -0.42241050690268223, 0.0, -1.4982842313319336, -0.48255801008480659, 0.0,
-    -1.4982842313319336, -0.48255801008480659, 0.0, -1.6835098689196064,
-    -0.54265630115063446, 0.0, -1.6835098689196064, -0.54265630115063446, 0.0,
-    -1.8682810149105107, -0.6027053809564521, 0.0, -1.8682810149105107,
-    -0.6027053809564521, 0.0, -2.05259864257314, -0.66270525048411089, 0.0,
-    -2.05259864257314, -0.66270525048411089, 0.0, -2.2364637232425952,
-    -0.72265591084062319, 0.0, -2.2364637232425952, -0.72265591084062319, 0.0,
-    -2.41987722632424, -0.78255736325775849, 0.0, -2.41987722632424,
-    -0.78255736325775849, 0.0, -2.6028401192973529, -0.842409609091641, 0.0,
-    -2.6028401192973529, -0.842409609091641, 0.0, -2.7853533677187707,
-    -0.90221264982234783, 0.0, -2.7853533677187707, -0.90221264982234783, 0.0,
-    -2.9674179352265249, -0.96196648705350851, 0.0, -2.9674179352265249,
-    -0.96196648705350851, 0.0, -3.1490347835434722, -1.0216711225119051, 0.0,
-    -3.1490347835434722, -1.0216711225119051, 0.0, -3.3302048724809192,
-    -1.081326558047073, 0.0, -3.3302048724809192, -1.081326558047073, 0.0,
-    -3.5109291599422385, -1.1409327956309046, 0.0, -3.5109291599422385,
-    -1.1409327956309046, 0.0, -3.69120860192648, -1.2004898373572503, 0.0,
-    -3.69120860192648, -1.2004898373572503, -1.0, -0.0, -0.0, 1.0, 0.0, 0.0,
-    -0.0, -0.1599184353223182, 0.089801925435736424, -0.0, -0.1599184353223182,
-    0.089801925435736424, -0.0, -0.31964914489275253, 0.17947362197539324, -0.0,
-    -0.31964914489275253, 0.17947362197539324, -0.0, -0.47919231323908462,
-    0.26901527273781028, -0.0, -0.47919231323908462, 0.26901527273781028, -0.0,
-    -0.63854812478731549, 0.35842706059465185, -0.0, -0.63854812478731549,
-    0.35842706059465185, -0.0, -0.797716763861511, 0.44770916817072121, -0.0,
-    -0.797716763861511, 0.44770916817072121, -0.0, -0.956698414683647,
-    0.53686177784427469, -0.0, -0.956698414683647, 0.53686177784427469, -0.0,
-    -1.1154932613734565, 0.62588507174733543, -0.0, -1.1154932613734565,
-    0.62588507174733543, -0.0, -1.2741014879482764, 0.71477923176600711, -0.0,
-    -1.2741014879482764, 0.71477923176600711, -0.0, -1.4325232783228956,
-    0.80354443954078658, -0.0, -1.4325232783228956, 0.80354443954078658, -0.0,
-    -1.5907588163094044, 0.89218087646687683, -0.0, -1.5907588163094044,
-    0.89218087646687683, -0.0, -1.748808285617043, 0.98068872369449933, -0.0,
-    -1.748808285617043, 0.98068872369449933, -0.0, -1.9066718698520528,
-    1.069068162129206, -0.0, -1.9066718698520528, 1.069068162129206, -0.0,
-    -2.0643497525175265, 1.1573193724321906, -0.0, -2.0643497525175265,
-    1.1573193724321906, -0.0, -2.221842117013261, 1.2454425350206004, -0.0,
-    -2.221842117013261, 1.2454425350206004, -0.0, -2.3791491466356085,
-    1.3334378300678469, -0.0, -2.3791491466356085, 1.3334378300678469, -0.0,
-    -2.536271024577331, 1.421305437503916, -0.0, -2.536271024577331,
-    1.421305437503916, -0.0, -2.6932079339274537, 1.5090455370156788, -0.0,
-    -2.6932079339274537, 1.5090455370156788, -0.0, -2.8499600576711197,
-    1.596658308047201, -0.0, -2.8499600576711197, 1.596658308047201, -0.0,
-    -3.0065275786894463, 1.6841439298000525, -0.0, -3.0065275786894463,
-    1.6841439298000525, -0.0, -3.16291067975938, 1.7715025812336165, -0.0,
-    -3.16291067975938, 1.7715025812336165, 0.0, 0.1599184353223182,
-    -0.089801925435736424, 0.0, 0.1599184353223182, -0.089801925435736424, 0.0,
-    0.31964914489275253, -0.17947362197539324, 0.0, 0.31964914489275253,
-    -0.17947362197539324, 0.0, 0.47919231323908462, -0.26901527273781028, 0.0,
-    0.47919231323908462, -0.26901527273781028, 0.0, 0.63854812478731549,
-    -0.35842706059465185, 0.0, 0.63854812478731549, -0.35842706059465185, 0.0,
-    0.797716763861511, -0.44770916817072121, 0.0, 0.797716763861511,
-    -0.44770916817072121, 0.0, 0.956698414683647, -0.53686177784427469, 0.0,
-    0.956698414683647, -0.53686177784427469, 0.0, 1.1154932613734565,
-    -0.62588507174733543, 0.0, 1.1154932613734565, -0.62588507174733543, 0.0,
-    1.2741014879482764, -0.71477923176600711, 0.0, 1.2741014879482764,
-    -0.71477923176600711, 0.0, 1.4325232783228956, -0.80354443954078658, 0.0,
-    1.4325232783228956, -0.80354443954078658, 0.0, 1.5907588163094044,
-    -0.89218087646687683, 0.0, 1.5907588163094044, -0.89218087646687683, 0.0,
-    1.748808285617043, -0.98068872369449933, 0.0, 1.748808285617043,
-    -0.98068872369449933, 0.0, 1.9066718698520528, -1.069068162129206, 0.0,
-    1.9066718698520528, -1.069068162129206, 0.0, 2.0643497525175265,
-    -1.1573193724321906, 0.0, 2.0643497525175265, -1.1573193724321906, 0.0,
-    2.221842117013261, -1.2454425350206004, 0.0, 2.221842117013261,
-    -1.2454425350206004, 0.0, 2.3791491466356085, -1.3334378300678469, 0.0,
-    2.3791491466356085, -1.3334378300678469, 0.0, 2.536271024577331,
-    -1.421305437503916, 0.0, 2.536271024577331, -1.421305437503916, 0.0,
-    2.6932079339274537, -1.5090455370156788, 0.0, 2.6932079339274537,
-    -1.5090455370156788, 0.0, 2.8499600576711197, -1.596658308047201, 0.0,
-    2.8499600576711197, -1.596658308047201, 0.0, 3.0065275786894463,
-    -1.6841439298000525, 0.0, 3.0065275786894463, -1.6841439298000525, 0.0,
-    3.16291067975938, -1.7715025812336165, 0.0, 3.16291067975938,
-    -1.7715025812336165, -0.0, -1.0, -0.0, 0.0, 1.0, 0.0, -0.0,
-    0.10536597514810161, -0.1119360731420971, -0.0, 0.10536597514810161,
-    -0.1119360731420971, -0.0, 0.21068448591173913, -0.22372201869524067, -0.0,
-    0.21068448591173913, -0.22372201869524067, -0.0, 0.31595540965099317,
-    -0.3353580258245521, -0.0, 0.31595540965099317, -0.3353580258245521, -0.0,
-    0.4211786242426373, -0.446844283480486, -0.0, 0.4211786242426373,
-    -0.446844283480486, -0.0, 0.52635400807880228, -0.55818098039902453, -0.0,
-    0.52635400807880228, -0.55818098039902453, -0.0, 0.63148144006564322,
-    -0.6693683051018724, -0.0, 0.63148144006564322, -0.6693683051018724, -0.0,
-    0.73656079962200982, -0.78040644589665065, -0.0, 0.73656079962200982,
-    -0.78040644589665065, -0.0, 0.84159196667811931, -0.89129559087709187, -0.0,
-    0.84159196667811931, -0.89129559087709187, -0.0, 0.94657482167423235,
-    -1.0020359279232338, -0.0, 0.94657482167423235, -1.0020359279232338, -0.0,
-    1.051509245559332, -1.1126276447016141, -0.0, 1.051509245559332,
-    -1.1126276447016141, -0.0, 1.1563951197898057, -1.2230709286654644, -0.0,
-    1.1563951197898057, -1.2230709286654644, -0.0, 1.2612323263281291,
-    -1.3333659670549041, -0.0, 1.2612323263281291, -1.3333659670549041, -0.0,
-    1.3660207476415547, -1.4435129468971351, -0.0, 1.3660207476415547,
-    -1.4435129468971351, -0.0, 1.4707602667008017, -1.5535120550066355, -0.0,
-    1.4707602667008017, -1.5535120550066355, -0.0, 1.5754507669787494,
-    -1.6633634779853532, -0.0, 1.5754507669787494, -1.6633634779853532, -0.0,
-    1.6800921324491334, -1.7730674022229005, -0.0, 1.6800921324491334,
-    -1.7730674022229005, -0.0, 1.7846842475852445, -1.8826240138967472, -0.0,
-    1.7846842475852445, -1.8826240138967472, -0.0, 1.8892269973586309,
-    -1.9920334989724147, -0.0, 1.8892269973586309, -1.9920334989724147, -0.0,
-    1.9937202672378032, -2.1012960432036696, -0.0, 1.9937202672378032,
-    -2.1012960432036696, -0.0, 2.098163943186941, -2.2104118321327175, -0.0,
-    2.098163943186941, -2.2104118321327175, 0.0, -0.10536597514810161,
-    0.1119360731420971, 0.0, -0.10536597514810161, 0.1119360731420971, 0.0,
-    -0.21068448591173913, 0.22372201869524067, 0.0, -0.21068448591173913,
-    0.22372201869524067, 0.0, -0.31595540965099317, 0.3353580258245521, 0.0,
-    -0.31595540965099317, 0.3353580258245521, 0.0, -0.4211786242426373,
-    0.446844283480486, 0.0, -0.4211786242426373, 0.446844283480486, 0.0,
-    -0.52635400807880228, 0.55818098039902453, 0.0, -0.52635400807880228,
-    0.55818098039902453, 0.0, -0.63148144006564322, 0.6693683051018724, 0.0,
-    -0.63148144006564322, 0.6693683051018724, 0.0, -0.73656079962200982,
-    0.78040644589665065, 0.0, -0.73656079962200982, 0.78040644589665065, 0.0,
-    -0.84159196667811931, 0.89129559087709187, 0.0, -0.84159196667811931,
-    0.89129559087709187, 0.0, -0.94657482167423235, 1.0020359279232338, 0.0,
-    -0.94657482167423235, 1.0020359279232338, 0.0, -1.051509245559332,
-    1.1126276447016141, 0.0, -1.051509245559332, 1.1126276447016141, 0.0,
-    -1.1563951197898057, 1.2230709286654644, 0.0, -1.1563951197898057,
-    1.2230709286654644, 0.0, -1.2612323263281291, 1.3333659670549041, 0.0,
-    -1.2612323263281291, 1.3333659670549041, 0.0, -1.3660207476415547,
-    1.4435129468971351, 0.0, -1.3660207476415547, 1.4435129468971351, 0.0,
-    -1.4707602667008017, 1.5535120550066355, 0.0, -1.4707602667008017,
-    1.5535120550066355, 0.0, -1.5754507669787494, 1.6633634779853532, 0.0,
-    -1.5754507669787494, 1.6633634779853532, 0.0, -1.6800921324491334,
-    1.7730674022229005, 0.0, -1.6800921324491334, 1.7730674022229005, 0.0,
-    -1.7846842475852445, 1.8826240138967472, 0.0, -1.7846842475852445,
-    1.8826240138967472, 0.0, -1.8892269973586309, 1.9920334989724147, 0.0,
-    -1.8892269973586309, 1.9920334989724147, 0.0, -1.9937202672378032,
-    2.1012960432036696, 0.0, -1.9937202672378032, 2.1012960432036696, 0.0,
-    -2.098163943186941, 2.2104118321327175, 0.0, -2.098163943186941,
-    2.2104118321327175, -0.0, -0.0, -1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+  static const real_T b_a[830]{ -0.99867923888102927, -0.0, -0.0, -0.025,
+    -0.99736022217199194, -0.0, -0.0, -0.049966980972025732,
+    -0.99604294756893919, -0.0, -0.0, -0.074900986526325541, -0.9947274127709651,
+    -0.0, -0.0, -0.099802060215549021, -0.99341361548020291, -0.0, -0.0,
+    -0.12467024553482314, -0.99210155340182049, -0.0, -0.0, -0.14950558592182822,
+    -0.99079122424401689, -0.0, -0.0, -0.17430812475687374, -0.989482625718018,
+    -0.0, -0.0, -0.19907790536297415, -0.98817575553807258, -0.0, -0.0,
+    -0.2238149710059246, -0.98687061142144838, -0.0, -0.0, -0.2485193648943764,
+    -0.985567191088428, -0.0, -0.0, -0.27319113017991259, -0.98426549226230531,
+    -0.0, -0.0, -0.29783030995712334, -0.9829655126693807, -0.0, -0.0,
+    -0.322436947263681, -0.98166725003895783, -0.0, -0.0, -0.34701108508041556,
+    -0.98037070210333943, -0.0, -0.0, -0.37155276633138951, -0.97907586659782331,
+    -0.0, -0.0, -0.396062033883973, -0.97778274126069831, -0.0, -0.0,
+    -0.42053893054891861, -0.97649132383324055, -0.0, -0.0, -0.44498349908043611,
+    -0.97520161205970934, -0.0, -0.0, -0.46939578217626715, -0.97391360368734325,
+    -0.0, -0.0, -0.49377582247775992, 0.99867923888102927, 0.0, 0.0, 0.025,
+    0.99736022217199194, 0.0, 0.0, 0.049966980972025732, 0.99604294756893919,
+    0.0, 0.0, 0.074900986526325541, 0.9947274127709651, 0.0, 0.0,
+    0.099802060215549021, 0.99341361548020291, 0.0, 0.0, 0.12467024553482314,
+    0.99210155340182049, 0.0, 0.0, 0.14950558592182822, 0.99079122424401689, 0.0,
+    0.0, 0.17430812475687374, 0.989482625718018, 0.0, 0.0, 0.19907790536297415,
+    0.98817575553807258, 0.0, 0.0, 0.2238149710059246, 0.98687061142144838, 0.0,
+    0.0, 0.2485193648943764, 0.985567191088428, 0.0, 0.0, 0.27319113017991259,
+    0.98426549226230531, 0.0, 0.0, 0.29783030995712334, 0.9829655126693807, 0.0,
+    0.0, 0.322436947263681, 0.98166725003895783, 0.0, 0.0, 0.34701108508041556,
+    0.98037070210333943, 0.0, 0.0, 0.37155276633138951, 0.97907586659782331, 0.0,
+    0.0, 0.396062033883973, 0.97778274126069831, 0.0, 0.0, 0.42053893054891861,
+    0.97649132383324055, 0.0, 0.0, 0.44498349908043611, 0.97520161205970934, 0.0,
+    0.0, 0.46939578217626715, 0.97391360368734325, 0.0, 0.0, 0.49377582247775992,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0,
+    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0,
+    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
+    -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
+    -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0,
+    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0,
+    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
+    1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+    0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0,
+    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0,
+    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
+    1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0,
+    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0,
+    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
+    -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
+    -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0,
+    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0,
+    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
+    1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+    0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0,
+    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0,
+    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
+    1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0,
+    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0,
+    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
+    -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
+    -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0,
+    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0,
+    -0.0, -0.0, -1.0, -0.0, -0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
+    1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+    0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0,
+    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0,
+    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
+    1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0,
+    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0,
+    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
+    -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
+    -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0,
+    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -1.0, -0.0,
+    -0.0, -0.0, -1.0, -0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
+    1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+    0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0,
+    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0,
+    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
+    1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0 };
 
-  static const real_T g_1[984]{ -0.12647183082737606, 0.14396327290074137, -0.0,
-    -0.12647183082737606, 0.14396327290074137, -0.0, -0.25266713091650589,
-    0.28784633762178591, -0.0, -0.25266713091650589, 0.28784633762178591, -0.0,
-    -0.37858657539014817, 0.43164948302538075, -0.0, -0.37858657539014817,
-    0.43164948302538075, -0.0, -0.50423083775077449, 0.57537299731355918, -0.0,
-    -0.50423083775077449, 0.57537299731355918, -0.0, -0.62960058988446832,
-    0.71901716802974069, -0.0, -0.62960058988446832, 0.71901716802974069, -0.0,
-    -0.75469650206481409, 0.862582282060328, -0.0, -0.75469650206481409,
-    0.862582282060328, -0.0, -0.87951924295677675, 1.0060686256362998, -0.0,
-    -0.87951924295677675, 1.0060686256362998, -0.0, -1.0040694796205727,
-    1.1494764843347998, -0.0, -1.0040694796205727, 1.1494764843347998, -0.0,
-    -1.1283478775155311, 1.2928061430807216, -0.0, -1.1283478775155311,
-    1.2928061430807216, -0.0, -1.2523551005039453, 1.4360578861482902, -0.0,
-    -1.2523551005039453, 1.4360578861482902, -0.0, -1.3760918108549158,
-    1.57923199716264, -0.0, -1.3760918108549158, 1.57923199716264, -0.0,
-    -1.4995586692481842, 1.7223287591013881, -0.0, -1.4995586692481842,
-    1.7223287591013881, -0.0, -1.6227563347779563, 1.8653484542962038, -0.0,
-    -1.6227563347779563, 1.8653484542962038, -0.0, -1.7456854649567182,
-    2.0082913644343763, -0.0, -1.7456854649567182, 2.0082913644343763, -0.0,
-    -1.8683467157190412, 2.1511577705603755, -0.0, -1.8683467157190412,
-    2.1511577705603755, -0.0, -1.9907407414253795, 2.2939479530774123, -0.0,
-    -1.9907407414253795, 2.2939479530774123, -0.0, -2.112868194865857,
-    2.4366621917489919, -0.0, -2.112868194865857, 2.4366621917489919, -0.0,
-    -2.2347297272640461, 2.5793007657004661, -0.0, -2.2347297272640461,
-    2.5793007657004661, -0.0, -2.3563259882807368, 2.7218639534205811, -0.0,
-    -2.3563259882807368, 2.7218639534205811, -0.0, -2.477657626017697,
-    2.86435203276302, -0.0, -2.477657626017697, 2.86435203276302, -0.0,
-    0.12647183082737606, -0.14396327290074137, 0.0, 0.12647183082737606,
-    -0.14396327290074137, 0.0, 0.25266713091650589, -0.28784633762178591, 0.0,
-    0.25266713091650589, -0.28784633762178591, 0.0, 0.37858657539014817,
-    -0.43164948302538075, 0.0, 0.37858657539014817, -0.43164948302538075, 0.0,
-    0.50423083775077449, -0.57537299731355918, 0.0, 0.50423083775077449,
-    -0.57537299731355918, 0.0, 0.62960058988446832, -0.71901716802974069, 0.0,
-    0.62960058988446832, -0.71901716802974069, 0.0, 0.75469650206481409,
-    -0.862582282060328, 0.0, 0.75469650206481409, -0.862582282060328, 0.0,
-    0.87951924295677675, -1.0060686256362998, 0.0, 0.87951924295677675,
-    -1.0060686256362998, 0.0, 1.0040694796205727, -1.1494764843347998, 0.0,
-    1.0040694796205727, -1.1494764843347998, 0.0, 1.1283478775155311,
-    -1.2928061430807216, 0.0, 1.1283478775155311, -1.2928061430807216, 0.0,
-    1.2523551005039453, -1.4360578861482902, 0.0, 1.2523551005039453,
-    -1.4360578861482902, 0.0, 1.3760918108549158, -1.57923199716264, 0.0,
-    1.3760918108549158, -1.57923199716264, 0.0, 1.4995586692481842,
-    -1.7223287591013881, 0.0, 1.4995586692481842, -1.7223287591013881, 0.0,
-    1.6227563347779563, -1.8653484542962038, 0.0, 1.6227563347779563,
-    -1.8653484542962038, 0.0, 1.7456854649567182, -2.0082913644343763, 0.0,
-    1.7456854649567182, -2.0082913644343763, 0.0, 1.8683467157190412,
-    -2.1511577705603755, 0.0, 1.8683467157190412, -2.1511577705603755, 0.0,
-    1.9907407414253795, -2.2939479530774123, 0.0, 1.9907407414253795,
-    -2.2939479530774123, 0.0, 2.112868194865857, -2.4366621917489919, 0.0,
-    2.112868194865857, -2.4366621917489919, 0.0, 2.2347297272640461,
-    -2.5793007657004661, 0.0, 2.2347297272640461, -2.5793007657004661, 0.0,
-    2.3563259882807368, -2.7218639534205811, 0.0, 2.3563259882807368,
-    -2.7218639534205811, 0.0, 2.477657626017697, -2.86435203276302, 0.0,
-    2.477657626017697, -2.86435203276302, 0.0, -1.0, -0.0, -0.0, 1.0, 0.0, 0.0,
-    0.18891678043810189, -0.2603991729373682, -0.0, 0.18891678043810189,
-    -0.2603991729373682, -0.0, 0.37743412338800142, -0.52070047841969547, -0.0,
-    0.37743412338800142, -0.52070047841969547, -0.0, 0.56555300944331421,
-    -0.78090434240065543, -0.0, 0.56555300944331421, -0.78090434240065543, -0.0,
-    0.7532744168461627, -1.0410111898780745, -0.0, 0.7532744168461627,
-    -1.0410111898780745, -0.0, 0.94059932149283521, -1.3010214448962558, -0.0,
-    0.94059932149283521, -1.3010214448962558, -0.0, 1.1275286969394305,
-    -1.560935530548297, -0.0, 1.1275286969394305, -1.560935530548297, -0.0,
-    1.3140635144074895, -1.8207538689784042, -0.0, 1.3140635144074895,
-    -1.8207538689784042, -0.0, 1.5002047427896132, -2.0804768813841976, -0.0,
-    1.5002047427896132, -2.0804768813841976, -0.0, 1.6859533486550675,
-    -2.3401049880190148, -0.0, 1.6859533486550675, -2.3401049880190148, -0.0,
-    1.8713102962553732, -2.5996386081942049, -0.0, 1.8713102962553732,
-    -2.5996386081942049, -0.0, 2.0562765475298841, -2.8590781602814213, -0.0,
-    2.0562765475298841, -2.8590781602814213, -0.0, 2.2408530621113516,
-    -3.1184240617149053, -0.0, 2.2408530621113516, -3.1184240617149053, -0.0,
-    2.4250407973314743, -3.3776767289937664, -0.0, 2.4250407973314743,
-    -3.3776767289937664, -0.0, 2.6088407082264355, -3.6368365776842562, -0.0,
-    2.6088407082264355, -3.6368365776842562, -0.0, 2.7922537475424285,
-    -3.8959040224220369, -0.0, 2.7922537475424285, -3.8959040224220369, -0.0,
-    2.975280865741166, -4.154879476914445, -0.0, 2.975280865741166,
-    -4.154879476914445, -0.0, 3.1579230110053778, -4.4137633539427483, -0.0,
-    3.1579230110053778, -4.4137633539427483, -0.0, 3.3401811292442956,
-    -4.6725560653643994, -0.0, 3.3401811292442956, -4.6725560653643994, -0.0,
-    3.5220561640991237, -4.9312580221152817, -0.0, 3.5220561640991237,
-    -4.9312580221152817, -0.0, 3.7035490569484968, -5.1898696342119521, -0.0,
-    3.7035490569484968, -5.1898696342119521, -0.0, -0.18891678043810189,
-    0.2603991729373682, 0.0, -0.18891678043810189, 0.2603991729373682, 0.0,
-    -0.37743412338800142, 0.52070047841969547, 0.0, -0.37743412338800142,
-    0.52070047841969547, 0.0, -0.56555300944331421, 0.78090434240065543, 0.0,
-    -0.56555300944331421, 0.78090434240065543, 0.0, -0.7532744168461627,
-    1.0410111898780745, 0.0, -0.7532744168461627, 1.0410111898780745, 0.0,
-    -0.94059932149283521, 1.3010214448962558, 0.0, -0.94059932149283521,
-    1.3010214448962558, 0.0, -1.1275286969394305, 1.560935530548297, 0.0,
-    -1.1275286969394305, 1.560935530548297, 0.0, -1.3140635144074895,
-    1.8207538689784042, 0.0, -1.3140635144074895, 1.8207538689784042, 0.0,
-    -1.5002047427896132, 2.0804768813841976, 0.0, -1.5002047427896132,
-    2.0804768813841976, 0.0, -1.6859533486550675, 2.3401049880190148, 0.0,
-    -1.6859533486550675, 2.3401049880190148, 0.0, -1.8713102962553732,
-    2.5996386081942049, 0.0, -1.8713102962553732, 2.5996386081942049, 0.0,
-    -2.0562765475298841, 2.8590781602814213, 0.0, -2.0562765475298841,
-    2.8590781602814213, 0.0, -2.2408530621113516, 3.1184240617149053, 0.0,
-    -2.2408530621113516, 3.1184240617149053, 0.0, -2.4250407973314743,
-    3.3776767289937664, 0.0, -2.4250407973314743, 3.3776767289937664, 0.0,
-    -2.6088407082264355, 3.6368365776842562, 0.0, -2.6088407082264355,
-    3.6368365776842562, 0.0, -2.7922537475424285, 3.8959040224220369, 0.0,
-    -2.7922537475424285, 3.8959040224220369, 0.0, -2.975280865741166,
-    4.154879476914445, 0.0, -2.975280865741166, 4.154879476914445, 0.0,
-    -3.1579230110053778, 4.4137633539427483, 0.0, -3.1579230110053778,
-    4.4137633539427483, 0.0, -3.3401811292442956, 4.6725560653643994, 0.0,
-    -3.3401811292442956, 4.6725560653643994, 0.0, -3.5220561640991237,
-    4.9312580221152817, 0.0, -3.5220561640991237, 4.9312580221152817, 0.0,
-    -3.7035490569484968, 5.1898696342119521, 0.0, -3.7035490569484968,
-    5.1898696342119521, 0.0, -0.0, -1.0, -0.0, 0.0, 1.0, 0.0,
-    0.13919179616088076, 0.07490340326547, -0.0, 0.13919179616088076,
-    0.07490340326547, -0.0, 0.27800912838762087, 0.15000797759616485, -0.0,
-    0.27800912838762087, 0.15000797759616485, -0.0, 0.41645288308364015,
-    0.22531337660988532, -0.0, 0.41645288308364015, 0.22531337660988532, -0.0,
-    0.55452394451511977, 0.30081925480716887, -0.0, 0.55452394451511977,
-    0.30081925480716887, -0.0, 0.69222319481614147, 0.37652526756918425, -0.0,
-    0.69222319481614147, 0.37652526756918425, -0.0, 0.82955151399381344,
-    0.4524310711556313, -0.0, 0.82955151399381344, 0.4524310711556313, -0.0,
-    0.96650977993338516, 0.52853632270264572, -0.0, 0.96650977993338516,
-    0.52853632270264572, -0.0, 1.1030988684033489, 0.60484068022070858, -0.0,
-    1.1030988684033489, 0.60484068022070858, -0.0, 1.2393196530605293,
-    0.68134380259256155, -0.0, 1.2393196530605293, 0.68134380259256155, -0.0,
-    1.375173005455161, 0.75804534957112635, -0.0, 1.375173005455161,
-    0.75804534957112635, -0.0, 1.5106597950359535, 0.83494498177742982, -0.0,
-    1.5106597950359535, 0.83494498177742982, -0.0, 1.6457808891551446,
-    0.91204236069853384, -0.0, 1.6457808891551446, 0.91204236069853384, -0.0,
-    1.7805371530735408, 0.98933714868547, -0.0, 1.7805371530735408,
-    0.98933714868547, -0.0, 1.914929449965546, 1.0668290089511794, -0.0,
-    1.914929449965546, 1.0668290089511794, -0.0, 2.048958640924178,
-    1.1445176055684576, -0.0, 2.048958640924178, 1.1445176055684576, -0.0,
-    2.1826255849660736, 1.2224026034679043, -0.0, 2.1826255849660736,
-    1.2224026034679043, -0.0, 2.315931139036481, 1.3004836684358778, -0.0,
-    2.315931139036481, 1.3004836684358778, -0.0, 2.4488761580142389,
-    1.3787604671124549, -0.0, 2.4488761580142389, 1.3787604671124549, -0.0,
-    2.5814614947167467, 1.4572326669893951, -0.0, 2.5814614947167467,
-    1.4572326669893951, -0.0, 2.7136879999049208, 1.53589993640811, -0.0,
-    2.7136879999049208, 1.53589993640811, -0.0, -0.13919179616088076,
-    -0.07490340326547, 0.0, -0.13919179616088076, -0.07490340326547, 0.0,
-    -0.27800912838762087, -0.15000797759616485, 0.0, -0.27800912838762087,
-    -0.15000797759616485, 0.0, -0.41645288308364015, -0.22531337660988532, 0.0,
-    -0.41645288308364015, -0.22531337660988532, 0.0, -0.55452394451511977,
-    -0.30081925480716887, 0.0, -0.55452394451511977, -0.30081925480716887, 0.0,
-    -0.69222319481614147, -0.37652526756918425, 0.0, -0.69222319481614147,
-    -0.37652526756918425, 0.0, -0.82955151399381344, -0.4524310711556313, 0.0,
-    -0.82955151399381344, -0.4524310711556313, 0.0, -0.96650977993338516,
-    -0.52853632270264572, 0.0, -0.96650977993338516, -0.52853632270264572, 0.0,
-    -1.1030988684033489, -0.60484068022070858, 0.0, -1.1030988684033489,
-    -0.60484068022070858, 0.0, -1.2393196530605293, -0.68134380259256155, 0.0,
-    -1.2393196530605293, -0.68134380259256155, 0.0, -1.375173005455161,
-    -0.75804534957112635, 0.0, -1.375173005455161, -0.75804534957112635, 0.0,
-    -1.5106597950359535, -0.83494498177742982, 0.0, -1.5106597950359535,
-    -0.83494498177742982, 0.0, -1.6457808891551446, -0.91204236069853384, 0.0,
-    -1.6457808891551446, -0.91204236069853384, 0.0, -1.7805371530735408,
-    -0.98933714868547, 0.0, -1.7805371530735408, -0.98933714868547, 0.0,
-    -1.914929449965546, -1.0668290089511794, 0.0, -1.914929449965546,
-    -1.0668290089511794, 0.0, -2.048958640924178, -1.1445176055684576, 0.0,
-    -2.048958640924178, -1.1445176055684576, 0.0, -2.1826255849660736,
-    -1.2224026034679043, 0.0, -2.1826255849660736, -1.2224026034679043, 0.0,
-    -2.315931139036481, -1.3004836684358778, 0.0, -2.315931139036481,
-    -1.3004836684358778, 0.0, -2.4488761580142389, -1.3787604671124549, 0.0,
-    -2.4488761580142389, -1.3787604671124549, 0.0, -2.5814614947167467,
-    -1.4572326669893951, 0.0, -2.5814614947167467, -1.4572326669893951, 0.0,
-    -2.7136879999049208, -1.53589993640811, 0.0, -2.7136879999049208,
-    -1.53589993640811, 0.0, -0.0, -0.0, -1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+  static const real_T b_Ac[664]{ -0.3579347593572087, -0.0, -0.0, -0.0,
+    -0.71539677240113031, -0.0, -0.0, -0.0089483689839302185,
+    -1.0723866635167145, -0.0, -0.0, -0.026833288293958472, -1.4289050562642476,
+    -0.0, -0.0, -0.053642954881876335, -1.7849525733804419, -0.0, -0.0,
+    -0.089365581288482529, -2.1405298367795229, -0.0, -0.0, -0.13398939562299356,
+    -2.4956374675543165, -0.0, -0.0, -0.18750264154248164, -2.8502760859773328,
+    -0.0, -0.0, -0.24989357823133956, -3.2044463115018504, -0.0, -0.0,
+    -0.32115048038077287, -3.5581487627629982, -0.0, -0.0, -0.40126163816831917,
+    -3.9113840575788359, -0.0, -0.0, -0.49021535723739412, -4.2641528129514326,
+    -0.0, -0.0, -0.587999958676865, -4.616455645067945, -0.0, -0.0,
+    -0.69460377900065084, -4.9682931693016954, -0.0, -0.0, -0.81001517012734947,
+    -5.3196660002132425, -0.0, -0.0, -0.93422249935989188, -5.6705747515514595,
+    -0.0, -0.0, -1.067214149365223, -6.021020036254602, -0.0, -0.0,
+    -1.2089785181540096, -6.3710024664513822, -0.0, -0.0, -1.3595040190603747,
+    -6.7205226534620355, -0.0, -0.0, -1.5187790807216592, -7.06958120779939,
+    -0.0, -0.0, -1.6867921470582101, 0.3579347593572087, 0.0, 0.0, 0.0,
+    0.71539677240113031, 0.0, 0.0, 0.0089483689839302185, 1.0723866635167145,
+    0.0, 0.0, 0.026833288293958472, 1.4289050562642476, 0.0, 0.0,
+    0.053642954881876335, 1.7849525733804419, 0.0, 0.0, 0.089365581288482529,
+    2.1405298367795229, 0.0, 0.0, 0.13398939562299356, 2.4956374675543165, 0.0,
+    0.0, 0.18750264154248164, 2.8502760859773328, 0.0, 0.0, 0.24989357823133956,
+    3.2044463115018504, 0.0, 0.0, 0.32115048038077287, 3.5581487627629982, 0.0,
+    0.0, 0.40126163816831917, 3.9113840575788359, 0.0, 0.0, 0.49021535723739412,
+    4.2641528129514326, 0.0, 0.0, 0.587999958676865, 4.616455645067945, 0.0, 0.0,
+    0.69460377900065084, 4.9682931693016954, 0.0, 0.0, 0.81001517012734947,
+    5.3196660002132425, 0.0, 0.0, 0.93422249935989188, 5.6705747515514595, 0.0,
+    0.0, 1.067214149365223, 6.021020036254602, 0.0, 0.0, 1.2089785181540096,
+    6.3710024664513822, 0.0, 0.0, 1.3595040190603747, 6.7205226534620355, 0.0,
+    0.0, 1.5187790807216592, 7.06958120779939, 0.0, 0.0, 1.6867921470582101,
+    -1.0, -0.0, -0.0, 1.0, 0.0, 0.0, 0.042560663779893933, -0.0, -0.0, -0.0,
+    0.0850651150898698, -0.0, -0.0, 0.0010640165944973484, 0.12751342817317227,
+    -0.0, -0.0, 0.0031906444717440929, 0.16990567717498842, -0.0, -0.0,
+    0.0063784801760733995, 0.21224193614257725, -0.0, -0.0, 0.01062612210544811,
+    0.254522279025399, -0.0, -0.0, 0.015932170509012543, 0.29674677967524432,
+    -0.0, -0.0, 0.022295227484647517, 0.33891551184636343, -0.0, -0.0,
+    0.029713896976528625, 0.38102854919559465, -0.0, -0.0, 0.038186784772687714,
+    0.4230859652824932, -0.0, -0.0, 0.047712498502577583, 0.46508783356945982,
+    -0.0, -0.0, 0.05828964763463991, 0.50703422742186888, -0.0, -0.0,
+    0.0699168434738764, 0.54892522010819667, -0.0, -0.0, 0.082592699159423133,
+    0.59076088480014921, -0.0, -0.0, 0.096315829662128052, 0.6325412945727904,
+    -0.0, -0.0, 0.11108485178213179, 0.67426652240466922, -0.0, -0.0,
+    0.12689838414645155, 0.71593664117794742, -0.0, -0.0, 0.14375504720656829,
+    0.757551723678527, -0.0, -0.0, 0.16165346323601698, 0.79911184259617707,
+    -0.0, -0.0, 0.18059225632798015, 0.840617070524661, -0.0, -0.0,
+    0.20057005239288458, -0.042560663779893933, 0.0, 0.0, 0.0,
+    -0.0850651150898698, 0.0, 0.0, -0.0010640165944973484, -0.12751342817317227,
+    0.0, 0.0, -0.0031906444717440929, -0.16990567717498842, 0.0, 0.0,
+    -0.0063784801760733995, -0.21224193614257725, 0.0, 0.0, -0.01062612210544811,
+    -0.254522279025399, 0.0, 0.0, -0.015932170509012543, -0.29674677967524432,
+    0.0, 0.0, -0.022295227484647517, -0.33891551184636343, 0.0, 0.0,
+    -0.029713896976528625, -0.38102854919559465, 0.0, 0.0, -0.038186784772687714,
+    -0.4230859652824932, 0.0, 0.0, -0.047712498502577583, -0.46508783356945982,
+    0.0, 0.0, -0.05828964763463991, -0.50703422742186888, 0.0, 0.0,
+    -0.0699168434738764, -0.54892522010819667, 0.0, 0.0, -0.082592699159423133,
+    -0.59076088480014921, 0.0, 0.0, -0.096315829662128052, -0.6325412945727904,
+    0.0, 0.0, -0.11108485178213179, -0.67426652240466922, 0.0, 0.0,
+    -0.12689838414645155, -0.71593664117794742, 0.0, 0.0, -0.14375504720656829,
+    -0.757551723678527, 0.0, 0.0, -0.16165346323601698, -0.79911184259617707,
+    0.0, 0.0, -0.18059225632798015, -0.840617070524661, 0.0, 0.0,
+    -0.20057005239288458, -0.0, -1.0, -0.0, 0.0, 1.0, 0.0, 0.0099627081344734868,
+    -0.0, -0.0, -0.0, 0.01991225791140331, -0.0, -0.0, 0.0002490677033618372,
+    0.029848666709836498, -0.0, -0.0, 0.00074687415114691987,
+    0.039771951885866519, -0.0, -0.0, 0.0014930908188928323,
+    0.049682130772663577, -0.0, -0.0, 0.002487389616039495, 0.059579220680504912,
+    -0.0, -0.0, 0.0037294428853560844, 0.069463238896805016, -0.0, -0.0,
+    0.0052189234023687072, 0.079334202686145827, -0.0, -0.0,
+    0.0069555043747888332, 0.089192129290306912, -0.0, -0.0, 0.00893885944194248,
+    0.099037035928295547, -0.0, -0.0, 0.011168662674200152, 0.10886893979637684,
+    -0.0, -0.0, 0.013644588572407541, 0.11868785806810371, -0.0, -0.0,
+    0.016366312067316962, 0.12849380789434692, -0.0, -0.0, 0.019333508519019556,
+    0.13828680640332505, -0.0, -0.0, 0.022545853716378229, 0.1480668707006344,
+    -0.0, -0.0, 0.026003023876461355, 0.15783401786927884, -0.0, -0.0,
+    0.029704695643977215, 0.16758826496969964, -0.0, -0.0, 0.033650546090709187,
+    0.17732962903980537, -0.0, -0.0, 0.037840252714951679, 0.18705812709500158,
+    -0.0, -0.0, 0.042273493440946816, 0.1967737761282205, -0.0, -0.0,
+    0.046949946618321858, -0.0099627081344734868, 0.0, 0.0, 0.0,
+    -0.01991225791140331, 0.0, 0.0, -0.0002490677033618372,
+    -0.029848666709836498, 0.0, 0.0, -0.00074687415114691987,
+    -0.039771951885866519, 0.0, 0.0, -0.0014930908188928323,
+    -0.049682130772663577, 0.0, 0.0, -0.002487389616039495,
+    -0.059579220680504912, 0.0, 0.0, -0.0037294428853560844,
+    -0.069463238896805016, 0.0, 0.0, -0.0052189234023687072,
+    -0.079334202686145827, 0.0, 0.0, -0.0069555043747888332,
+    -0.089192129290306912, 0.0, 0.0, -0.00893885944194248, -0.099037035928295547,
+    0.0, 0.0, -0.011168662674200152, -0.10886893979637684, 0.0, 0.0,
+    -0.013644588572407541, -0.11868785806810371, 0.0, 0.0, -0.016366312067316962,
+    -0.12849380789434692, 0.0, 0.0, -0.019333508519019556, -0.13828680640332505,
+    0.0, 0.0, -0.022545853716378229, -0.1480668707006344, 0.0, 0.0,
+    -0.026003023876461355, -0.15783401786927884, 0.0, 0.0, -0.029704695643977215,
+    -0.16758826496969964, 0.0, 0.0, -0.033650546090709187, -0.17732962903980537,
+    0.0, 0.0, -0.037840252714951679, -0.18705812709500158, 0.0, 0.0,
+    -0.042273493440946816, -0.1967737761282205, 0.0, 0.0, -0.046949946618321858,
+    -0.0, -0.0, -1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
     1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
     1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
     1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
@@ -5430,1075 +2713,252 @@ void SupervisoryController::step()
     1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
     1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
     1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0 };
+    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 
-  static const real_T n[960]{ 0.99867923888102927, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.99736022217199194, 0.0, 0.0, 0.0, 0.0, 0.0, 0.99604294756893919, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.9947274127709651, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.99341361548020291, 0.0, 0.0, 0.0, 0.0, 0.0, 0.99210155340182049, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.99079122424401689, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.989482625718018, 0.0, 0.0, 0.0, 0.0, 0.0, 0.98817575553807258, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.98687061142144838, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.985567191088428, 0.0, 0.0, 0.0, 0.0, 0.0, 0.98426549226230531, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.9829655126693807, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.98166725003895783, 0.0, 0.0, 0.0, 0.0, 0.0, 0.98037070210333943, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.97907586659782331, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.97778274126069831, 0.0, 0.0, 0.0, 0.0, 0.0, 0.97649132383324055, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.97520161205970934, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.97391360368734325, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.99867923888102927, 0.0, 0.0, 0.0, 0.0, 0.0, 0.99736022217199194, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.99604294756893919, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.9947274127709651, 0.0, 0.0, 0.0, 0.0, 0.0, 0.99341361548020291, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.99210155340182049, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.99079122424401689, 0.0, 0.0, 0.0, 0.0, 0.0, 0.989482625718018, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.98817575553807258, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.98687061142144838, 0.0, 0.0, 0.0, 0.0, 0.0, 0.985567191088428, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.98426549226230531, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.9829655126693807, 0.0, 0.0, 0.0, 0.0, 0.0, 0.98166725003895783, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.98037070210333943, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.97907586659782331, 0.0, 0.0, 0.0, 0.0, 0.0, 0.97778274126069831, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.97649132383324055, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.97520161205970934, 0.0, 0.0, 0.0, 0.0, 0.0, 0.97391360368734325, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0 };
+  static const real_T a[498]{ -0.3579347593572087, -0.0, -0.0, -0.0,
+    -0.71539677240113031, -0.0, -0.0, -0.0089483689839302185,
+    -1.0723866635167145, -0.0, -0.0, -0.026833288293958472, -1.4289050562642476,
+    -0.0, -0.0, -0.053642954881876335, -1.7849525733804419, -0.0, -0.0,
+    -0.089365581288482529, -2.1405298367795229, -0.0, -0.0, -0.13398939562299356,
+    -2.4956374675543165, -0.0, -0.0, -0.18750264154248164, -2.8502760859773328,
+    -0.0, -0.0, -0.24989357823133956, -3.2044463115018504, -0.0, -0.0,
+    -0.32115048038077287, -3.5581487627629982, -0.0, -0.0, -0.40126163816831917,
+    -3.9113840575788359, -0.0, -0.0, -0.49021535723739412, -4.2641528129514326,
+    -0.0, -0.0, -0.587999958676865, -4.616455645067945, -0.0, -0.0,
+    -0.69460377900065084, -4.9682931693016954, -0.0, -0.0, -0.81001517012734947,
+    -5.3196660002132425, -0.0, -0.0, -0.93422249935989188, -5.6705747515514595,
+    -0.0, -0.0, -1.067214149365223, -6.021020036254602, -0.0, -0.0,
+    -1.2089785181540096, -6.3710024664513822, -0.0, -0.0, -1.3595040190603747,
+    -6.7205226534620355, -0.0, -0.0, -1.5187790807216592, -7.06958120779939,
+    -0.0, -0.0, -1.6867921470582101, 0.3579347593572087, 0.0, 0.0, 0.0,
+    0.71539677240113031, 0.0, 0.0, 0.0089483689839302185, 1.0723866635167145,
+    0.0, 0.0, 0.026833288293958472, 1.4289050562642476, 0.0, 0.0,
+    0.053642954881876335, 1.7849525733804419, 0.0, 0.0, 0.089365581288482529,
+    2.1405298367795229, 0.0, 0.0, 0.13398939562299356, 2.4956374675543165, 0.0,
+    0.0, 0.18750264154248164, 2.8502760859773328, 0.0, 0.0, 0.24989357823133956,
+    3.2044463115018504, 0.0, 0.0, 0.32115048038077287, 3.5581487627629982, 0.0,
+    0.0, 0.40126163816831917, 3.9113840575788359, 0.0, 0.0, 0.49021535723739412,
+    4.2641528129514326, 0.0, 0.0, 0.587999958676865, 4.616455645067945, 0.0, 0.0,
+    0.69460377900065084, 4.9682931693016954, 0.0, 0.0, 0.81001517012734947,
+    5.3196660002132425, 0.0, 0.0, 0.93422249935989188, 5.6705747515514595, 0.0,
+    0.0, 1.067214149365223, 6.021020036254602, 0.0, 0.0, 1.2089785181540096,
+    6.3710024664513822, 0.0, 0.0, 1.3595040190603747, 6.7205226534620355, 0.0,
+    0.0, 1.5187790807216592, 7.06958120779939, 0.0, 0.0, 1.6867921470582101,
+    -1.0, -0.0, -0.0, 1.0, 0.0, 0.0, 0.042560663779893933, -0.0, -0.0, -0.0,
+    0.0850651150898698, -0.0, -0.0, 0.0010640165944973484, 0.12751342817317227,
+    -0.0, -0.0, 0.0031906444717440929, 0.16990567717498842, -0.0, -0.0,
+    0.0063784801760733995, 0.21224193614257725, -0.0, -0.0, 0.01062612210544811,
+    0.254522279025399, -0.0, -0.0, 0.015932170509012543, 0.29674677967524432,
+    -0.0, -0.0, 0.022295227484647517, 0.33891551184636343, -0.0, -0.0,
+    0.029713896976528625, 0.38102854919559465, -0.0, -0.0, 0.038186784772687714,
+    0.4230859652824932, -0.0, -0.0, 0.047712498502577583, 0.46508783356945982,
+    -0.0, -0.0, 0.05828964763463991, 0.50703422742186888, -0.0, -0.0,
+    0.0699168434738764, 0.54892522010819667, -0.0, -0.0, 0.082592699159423133,
+    0.59076088480014921, -0.0, -0.0, 0.096315829662128052, 0.6325412945727904,
+    -0.0, -0.0, 0.11108485178213179, 0.67426652240466922, -0.0, -0.0,
+    0.12689838414645155, 0.71593664117794742, -0.0, -0.0, 0.14375504720656829,
+    0.757551723678527, -0.0, -0.0, 0.16165346323601698, 0.79911184259617707,
+    -0.0, -0.0, 0.18059225632798015, 0.840617070524661, -0.0, -0.0,
+    0.20057005239288458, -0.042560663779893933, 0.0, 0.0, 0.0,
+    -0.0850651150898698, 0.0, 0.0, -0.0010640165944973484, -0.12751342817317227,
+    0.0, 0.0, -0.0031906444717440929, -0.16990567717498842, 0.0, 0.0,
+    -0.0063784801760733995, -0.21224193614257725, 0.0, 0.0, -0.01062612210544811,
+    -0.254522279025399, 0.0, 0.0, -0.015932170509012543, -0.29674677967524432,
+    0.0, 0.0, -0.022295227484647517, -0.33891551184636343, 0.0, 0.0,
+    -0.029713896976528625, -0.38102854919559465, 0.0, 0.0, -0.038186784772687714,
+    -0.4230859652824932, 0.0, 0.0, -0.047712498502577583, -0.46508783356945982,
+    0.0, 0.0, -0.05828964763463991, -0.50703422742186888, 0.0, 0.0,
+    -0.0699168434738764, -0.54892522010819667, 0.0, 0.0, -0.082592699159423133,
+    -0.59076088480014921, 0.0, 0.0, -0.096315829662128052, -0.6325412945727904,
+    0.0, 0.0, -0.11108485178213179, -0.67426652240466922, 0.0, 0.0,
+    -0.12689838414645155, -0.71593664117794742, 0.0, 0.0, -0.14375504720656829,
+    -0.757551723678527, 0.0, 0.0, -0.16165346323601698, -0.79911184259617707,
+    0.0, 0.0, -0.18059225632798015, -0.840617070524661, 0.0, 0.0,
+    -0.20057005239288458, -0.0, -1.0, -0.0, 0.0, 1.0, 0.0, 0.0099627081344734868,
+    -0.0, -0.0, -0.0, 0.01991225791140331, -0.0, -0.0, 0.0002490677033618372,
+    0.029848666709836498, -0.0, -0.0, 0.00074687415114691987,
+    0.039771951885866519, -0.0, -0.0, 0.0014930908188928323,
+    0.049682130772663577, -0.0, -0.0, 0.002487389616039495, 0.059579220680504912,
+    -0.0, -0.0, 0.0037294428853560844, 0.069463238896805016, -0.0, -0.0,
+    0.0052189234023687072, 0.079334202686145827, -0.0, -0.0,
+    0.0069555043747888332, 0.089192129290306912, -0.0, -0.0, 0.00893885944194248,
+    0.099037035928295547, -0.0, -0.0, 0.011168662674200152, 0.10886893979637684,
+    -0.0, -0.0, 0.013644588572407541, 0.11868785806810371, -0.0, -0.0,
+    0.016366312067316962, 0.12849380789434692, -0.0, -0.0, 0.019333508519019556,
+    0.13828680640332505, -0.0, -0.0, 0.022545853716378229, 0.1480668707006344,
+    -0.0, -0.0, 0.026003023876461355, 0.15783401786927884, -0.0, -0.0,
+    0.029704695643977215, 0.16758826496969964, -0.0, -0.0, 0.033650546090709187,
+    0.17732962903980537, -0.0, -0.0, 0.037840252714951679, 0.18705812709500158,
+    -0.0, -0.0, 0.042273493440946816, 0.1967737761282205, -0.0, -0.0,
+    0.046949946618321858, -0.0099627081344734868, 0.0, 0.0, 0.0,
+    -0.01991225791140331, 0.0, 0.0, -0.0002490677033618372,
+    -0.029848666709836498, 0.0, 0.0, -0.00074687415114691987,
+    -0.039771951885866519, 0.0, 0.0, -0.0014930908188928323,
+    -0.049682130772663577, 0.0, 0.0, -0.002487389616039495,
+    -0.059579220680504912, 0.0, 0.0, -0.0037294428853560844,
+    -0.069463238896805016, 0.0, 0.0, -0.0052189234023687072,
+    -0.079334202686145827, 0.0, 0.0, -0.0069555043747888332,
+    -0.089192129290306912, 0.0, 0.0, -0.00893885944194248, -0.099037035928295547,
+    0.0, 0.0, -0.011168662674200152, -0.10886893979637684, 0.0, 0.0,
+    -0.013644588572407541, -0.11868785806810371, 0.0, 0.0, -0.016366312067316962,
+    -0.12849380789434692, 0.0, 0.0, -0.019333508519019556, -0.13828680640332505,
+    0.0, 0.0, -0.022545853716378229, -0.1480668707006344, 0.0, 0.0,
+    -0.026003023876461355, -0.15783401786927884, 0.0, 0.0, -0.029704695643977215,
+    -0.16758826496969964, 0.0, 0.0, -0.033650546090709187, -0.17732962903980537,
+    0.0, 0.0, -0.037840252714951679, -0.18705812709500158, 0.0, 0.0,
+    -0.042273493440946816, -0.1967737761282205, 0.0, 0.0, -0.046949946618321858,
+    -0.0, -0.0, -1.0, 0.0, 0.0, 1.0 };
 
-  static const real_T e[738]{ -0.3579347593572087, -0.0, -0.0,
-    -0.3579347593572087, -0.0, -0.0, -0.71539677240113031, -0.0, -0.0,
-    -0.71539677240113031, -0.0, -0.0, -1.0723866635167145, -0.0, -0.0,
-    -1.0723866635167145, -0.0, -0.0, -1.4289050562642476, -0.0, -0.0,
-    -1.4289050562642476, -0.0, -0.0, -1.7849525733804419, -0.0, -0.0,
-    -1.7849525733804419, -0.0, -0.0, -2.1405298367795229, -0.0, -0.0,
-    -2.1405298367795229, -0.0, -0.0, -2.4956374675543165, -0.0, -0.0,
-    -2.4956374675543165, -0.0, -0.0, -2.8502760859773328, -0.0, -0.0,
-    -2.8502760859773328, -0.0, -0.0, -3.2044463115018504, -0.0, -0.0,
-    -3.2044463115018504, -0.0, -0.0, -3.5581487627629982, -0.0, -0.0,
-    -3.5581487627629982, -0.0, -0.0, -3.9113840575788359, -0.0, -0.0,
-    -3.9113840575788359, -0.0, -0.0, -4.2641528129514326, -0.0, -0.0,
-    -4.2641528129514326, -0.0, -0.0, -4.616455645067945, -0.0, -0.0,
-    -4.616455645067945, -0.0, -0.0, -4.9682931693016954, -0.0, -0.0,
-    -4.9682931693016954, -0.0, -0.0, -5.3196660002132425, -0.0, -0.0,
-    -5.3196660002132425, -0.0, -0.0, -5.6705747515514595, -0.0, -0.0,
-    -5.6705747515514595, -0.0, -0.0, -6.021020036254602, -0.0, -0.0,
-    -6.021020036254602, -0.0, -0.0, -6.3710024664513822, -0.0, -0.0,
-    -6.3710024664513822, -0.0, -0.0, -6.7205226534620355, -0.0, -0.0,
-    -6.7205226534620355, -0.0, -0.0, -7.06958120779939, -0.0, -0.0,
-    -7.06958120779939, -0.0, -0.0, 0.3579347593572087, 0.0, 0.0,
-    0.3579347593572087, 0.0, 0.0, 0.71539677240113031, 0.0, 0.0,
-    0.71539677240113031, 0.0, 0.0, 1.0723866635167145, 0.0, 0.0,
-    1.0723866635167145, 0.0, 0.0, 1.4289050562642476, 0.0, 0.0,
-    1.4289050562642476, 0.0, 0.0, 1.7849525733804419, 0.0, 0.0,
-    1.7849525733804419, 0.0, 0.0, 2.1405298367795229, 0.0, 0.0,
-    2.1405298367795229, 0.0, 0.0, 2.4956374675543165, 0.0, 0.0,
-    2.4956374675543165, 0.0, 0.0, 2.8502760859773328, 0.0, 0.0,
-    2.8502760859773328, 0.0, 0.0, 3.2044463115018504, 0.0, 0.0,
-    3.2044463115018504, 0.0, 0.0, 3.5581487627629982, 0.0, 0.0,
-    3.5581487627629982, 0.0, 0.0, 3.9113840575788359, 0.0, 0.0,
-    3.9113840575788359, 0.0, 0.0, 4.2641528129514326, 0.0, 0.0,
-    4.2641528129514326, 0.0, 0.0, 4.616455645067945, 0.0, 0.0, 4.616455645067945,
-    0.0, 0.0, 4.9682931693016954, 0.0, 0.0, 4.9682931693016954, 0.0, 0.0,
-    5.3196660002132425, 0.0, 0.0, 5.3196660002132425, 0.0, 0.0,
-    5.6705747515514595, 0.0, 0.0, 5.6705747515514595, 0.0, 0.0,
-    6.021020036254602, 0.0, 0.0, 6.021020036254602, 0.0, 0.0, 6.3710024664513822,
-    0.0, 0.0, 6.3710024664513822, 0.0, 0.0, 6.7205226534620355, 0.0, 0.0,
-    6.7205226534620355, 0.0, 0.0, 7.06958120779939, 0.0, 0.0, 7.06958120779939,
-    0.0, 0.0, -1.0, -0.0, -0.0, 1.0, 0.0, 0.0, 0.042560663779893933, -0.0, -0.0,
-    0.042560663779893933, -0.0, -0.0, 0.0850651150898698, -0.0, -0.0,
-    0.0850651150898698, -0.0, -0.0, 0.12751342817317227, -0.0, -0.0,
-    0.12751342817317227, -0.0, -0.0, 0.16990567717498842, -0.0, -0.0,
-    0.16990567717498842, -0.0, -0.0, 0.21224193614257725, -0.0, -0.0,
-    0.21224193614257725, -0.0, -0.0, 0.254522279025399, -0.0, -0.0,
-    0.254522279025399, -0.0, -0.0, 0.29674677967524432, -0.0, -0.0,
-    0.29674677967524432, -0.0, -0.0, 0.33891551184636343, -0.0, -0.0,
-    0.33891551184636343, -0.0, -0.0, 0.38102854919559465, -0.0, -0.0,
-    0.38102854919559465, -0.0, -0.0, 0.4230859652824932, -0.0, -0.0,
-    0.4230859652824932, -0.0, -0.0, 0.46508783356945982, -0.0, -0.0,
-    0.46508783356945982, -0.0, -0.0, 0.50703422742186888, -0.0, -0.0,
-    0.50703422742186888, -0.0, -0.0, 0.54892522010819667, -0.0, -0.0,
-    0.54892522010819667, -0.0, -0.0, 0.59076088480014921, -0.0, -0.0,
-    0.59076088480014921, -0.0, -0.0, 0.6325412945727904, -0.0, -0.0,
-    0.6325412945727904, -0.0, -0.0, 0.67426652240466922, -0.0, -0.0,
-    0.67426652240466922, -0.0, -0.0, 0.71593664117794742, -0.0, -0.0,
-    0.71593664117794742, -0.0, -0.0, 0.757551723678527, -0.0, -0.0,
-    0.757551723678527, -0.0, -0.0, 0.79911184259617707, -0.0, -0.0,
-    0.79911184259617707, -0.0, -0.0, 0.840617070524661, -0.0, -0.0,
-    0.840617070524661, -0.0, -0.0, -0.042560663779893933, 0.0, 0.0,
-    -0.042560663779893933, 0.0, 0.0, -0.0850651150898698, 0.0, 0.0,
-    -0.0850651150898698, 0.0, 0.0, -0.12751342817317227, 0.0, 0.0,
-    -0.12751342817317227, 0.0, 0.0, -0.16990567717498842, 0.0, 0.0,
-    -0.16990567717498842, 0.0, 0.0, -0.21224193614257725, 0.0, 0.0,
-    -0.21224193614257725, 0.0, 0.0, -0.254522279025399, 0.0, 0.0,
-    -0.254522279025399, 0.0, 0.0, -0.29674677967524432, 0.0, 0.0,
-    -0.29674677967524432, 0.0, 0.0, -0.33891551184636343, 0.0, 0.0,
-    -0.33891551184636343, 0.0, 0.0, -0.38102854919559465, 0.0, 0.0,
-    -0.38102854919559465, 0.0, 0.0, -0.4230859652824932, 0.0, 0.0,
-    -0.4230859652824932, 0.0, 0.0, -0.46508783356945982, 0.0, 0.0,
-    -0.46508783356945982, 0.0, 0.0, -0.50703422742186888, 0.0, 0.0,
-    -0.50703422742186888, 0.0, 0.0, -0.54892522010819667, 0.0, 0.0,
-    -0.54892522010819667, 0.0, 0.0, -0.59076088480014921, 0.0, 0.0,
-    -0.59076088480014921, 0.0, 0.0, -0.6325412945727904, 0.0, 0.0,
-    -0.6325412945727904, 0.0, 0.0, -0.67426652240466922, 0.0, 0.0,
-    -0.67426652240466922, 0.0, 0.0, -0.71593664117794742, 0.0, 0.0,
-    -0.71593664117794742, 0.0, 0.0, -0.757551723678527, 0.0, 0.0,
-    -0.757551723678527, 0.0, 0.0, -0.79911184259617707, 0.0, 0.0,
-    -0.79911184259617707, 0.0, 0.0, -0.840617070524661, 0.0, 0.0,
-    -0.840617070524661, 0.0, 0.0, -0.0, -1.0, -0.0, 0.0, 1.0, 0.0,
-    0.0099627081344734868, -0.0, -0.0, 0.0099627081344734868, -0.0, -0.0,
-    0.01991225791140331, -0.0, -0.0, 0.01991225791140331, -0.0, -0.0,
-    0.029848666709836498, -0.0, -0.0, 0.029848666709836498, -0.0, -0.0,
-    0.039771951885866519, -0.0, -0.0, 0.039771951885866519, -0.0, -0.0,
-    0.049682130772663577, -0.0, -0.0, 0.049682130772663577, -0.0, -0.0,
-    0.059579220680504912, -0.0, -0.0, 0.059579220680504912, -0.0, -0.0,
-    0.069463238896805016, -0.0, -0.0, 0.069463238896805016, -0.0, -0.0,
-    0.079334202686145827, -0.0, -0.0, 0.079334202686145827, -0.0, -0.0,
-    0.089192129290306912, -0.0, -0.0, 0.089192129290306912, -0.0, -0.0,
-    0.099037035928295547, -0.0, -0.0, 0.099037035928295547, -0.0, -0.0,
-    0.10886893979637684, -0.0, -0.0, 0.10886893979637684, -0.0, -0.0,
-    0.11868785806810371, -0.0, -0.0, 0.11868785806810371, -0.0, -0.0,
-    0.12849380789434692, -0.0, -0.0, 0.12849380789434692, -0.0, -0.0,
-    0.13828680640332505, -0.0, -0.0, 0.13828680640332505, -0.0, -0.0,
-    0.1480668707006344, -0.0, -0.0, 0.1480668707006344, -0.0, -0.0,
-    0.15783401786927884, -0.0, -0.0, 0.15783401786927884, -0.0, -0.0,
-    0.16758826496969964, -0.0, -0.0, 0.16758826496969964, -0.0, -0.0,
-    0.17732962903980537, -0.0, -0.0, 0.17732962903980537, -0.0, -0.0,
-    0.18705812709500158, -0.0, -0.0, 0.18705812709500158, -0.0, -0.0,
-    0.1967737761282205, -0.0, -0.0, 0.1967737761282205, -0.0, -0.0,
-    -0.0099627081344734868, 0.0, 0.0, -0.0099627081344734868, 0.0, 0.0,
-    -0.01991225791140331, 0.0, 0.0, -0.01991225791140331, 0.0, 0.0,
-    -0.029848666709836498, 0.0, 0.0, -0.029848666709836498, 0.0, 0.0,
-    -0.039771951885866519, 0.0, 0.0, -0.039771951885866519, 0.0, 0.0,
-    -0.049682130772663577, 0.0, 0.0, -0.049682130772663577, 0.0, 0.0,
-    -0.059579220680504912, 0.0, 0.0, -0.059579220680504912, 0.0, 0.0,
-    -0.069463238896805016, 0.0, 0.0, -0.069463238896805016, 0.0, 0.0,
-    -0.079334202686145827, 0.0, 0.0, -0.079334202686145827, 0.0, 0.0,
-    -0.089192129290306912, 0.0, 0.0, -0.089192129290306912, 0.0, 0.0,
-    -0.099037035928295547, 0.0, 0.0, -0.099037035928295547, 0.0, 0.0,
-    -0.10886893979637684, 0.0, 0.0, -0.10886893979637684, 0.0, 0.0,
-    -0.11868785806810371, 0.0, 0.0, -0.11868785806810371, 0.0, 0.0,
-    -0.12849380789434692, 0.0, 0.0, -0.12849380789434692, 0.0, 0.0,
-    -0.13828680640332505, 0.0, 0.0, -0.13828680640332505, 0.0, 0.0,
-    -0.1480668707006344, 0.0, 0.0, -0.1480668707006344, 0.0, 0.0,
-    -0.15783401786927884, 0.0, 0.0, -0.15783401786927884, 0.0, 0.0,
-    -0.16758826496969964, 0.0, 0.0, -0.16758826496969964, 0.0, 0.0,
-    -0.17732962903980537, 0.0, 0.0, -0.17732962903980537, 0.0, 0.0,
-    -0.18705812709500158, 0.0, 0.0, -0.18705812709500158, 0.0, 0.0,
-    -0.1967737761282205, 0.0, 0.0, -0.1967737761282205, 0.0, 0.0, -0.0, -0.0,
-    -1.0, 0.0, 0.0, 1.0 };
+  static const real_T b_Kr[240]{ -0.0065562607774523008, -0.0, -0.0, -0.0,
+    -0.013103862300583911, -0.0, -0.0, -0.00016390651943630754,
+    -0.019642816006201255, -0.0, -0.0, -0.0004915030769509053,
+    -0.02617313331600547, -0.0, -0.0, -0.00098257347710593661,
+    -0.032694825636612357, -0.0, -0.0, -0.0016369018100060736,
+    -0.03920790435957229, -0.0, -0.0, -0.0024542724509213822,
+    -0.045712380861390144, -0.0, -0.0, -0.0034344700599106895,
+    -0.052208266503545139, -0.0, -0.0, -0.0045772795814454431,
+    -0.0586955726325107, -0.0, -0.0, -0.0058824862440340717,
+    -0.065174310579774256, -0.0, -0.0, -0.0073498755598468395,
+    -0.07164449166185706, -0.0, -0.0, -0.0089792333243411959,
+    -0.078106127180333967, -0.0, -0.0, -0.010770345615887623,
+    -0.0845592284218531, -0.0, -0.0, -0.012722998795395972,
+    -0.091003806658155648, -0.0, -0.0, -0.014836979505942299,
+    -0.097439873146095535, -0.0, -0.0, -0.017112074672396192,
+    -0.10386743912765904, -0.0, -0.0, -0.019548071501048581,
+    -0.11028651582998447, -0.0, -0.0, -0.022144757479240058,
+    -0.11669711446538178, -0.0, -0.0, -0.024901920374989669,
+    -0.12309924623135213, -0.0, -0.0, -0.027819348236624214,
+    -0.12949292231060747, -0.0, -0.0, -0.03089682939240802, 0.000779580086336294,
+    -0.0, -0.0, -0.0, 0.0015581305336054313, -0.0, -0.0, 1.9489502158407351E-5,
+    0.0023356527017146583, -0.0, -0.0, 5.8442765498543121E-5,
+    0.0031121479487751088, -0.0, -0.0, 0.00011683408304140958,
+    0.0038876176311041766, -0.0, -0.0, 0.00019463778176078732,
+    0.004662063103227883, -0.0, -0.0, 0.00029182822253839174,
+    0.0054354857178832445, -0.0, -0.0, 0.00040837980011908882,
+    0.0062078868260206383, -0.0, -0.0, 0.00054426694306616993,
+    0.0069792677768061541, -0.0, -0.0, 0.00069946411371668593,
+    0.0077496299176239569, -0.0, -0.0, 0.00087394580813683978,
+    0.00851897459407864, -0.0, -0.0, 0.0010676865560774386,
+    0.0092873031499975771, -0.0, -0.0, 0.0012806609209294047,
+    0.010054616927433259, -0.0, -0.0, 0.0015128434996793442,
+    0.010820917266665654, -0.0, -0.0, 0.0017642089228651757,
+    0.011586205506204539, -0.0, -0.0, 0.0020347318545318174,
+    0.012350482982791833, -0.0, -0.0, 0.0023243869921869306,
+    0.013113751031403945, -0.0, -0.0, 0.0026331490667567269,
+    0.013876010985254098, -0.0, -0.0, 0.0029609928425418253,
+    0.014637264175794659, -0.0, -0.0, 0.003307893117173178, 0.01539751193271946,
+    -0.0, -0.0, 0.0036738247215680445, 0.00018248608404658427, -0.0, -0.0, -0.0,
+    0.00036473114756860667, -0.0, -0.0, 4.5621521011646072E-6,
+    0.00054673550889660478, -0.0, -0.0, 1.3680430790379773E-5,
+    0.00072849948594067774, -0.0, -0.0, 2.7348818512794892E-5,
+    0.00091002339619104138, -0.0, -0.0, 4.5561305661311833E-5,
+    0.0010913075567185828, -0.0, -0.0, 6.8311890566087865E-5,
+    0.0012723522841754144, -0.0, -0.0, 9.5594579484052438E-5,
+    0.0014531578947954262, -0.0, -0.0, 0.0001274033865884378,
+    0.0016337247043948394, -0.0, -0.0, 0.00016373233395832346,
+    0.001814053028372757, -0.0, -0.0, 0.00020457545156819446,
+    0.0019941431817117154, -0.0, -0.0, 0.00024992677727751338,
+    0.0021739954789782344, -0.0, -0.0, 0.00029978035682030625,
+    0.0023536102343233657, -0.0, -0.0, 0.00035413024379476213,
+    0.0025329877614832441, -0.0, -0.0, 0.0004129704996528463,
+    0.002712128373779633, -0.0, -0.0, 0.00047629519368992738,
+    0.002891032384120472, -0.0, -0.0, 0.00054409840303441825,
+    0.0030697001050004244, -0.0, -0.0, 0.00061637421263743006,
+    0.0032481318485014237, -0.0, -0.0, 0.00069311671526244066,
+    0.0034263279262932165, -0.0, -0.0, 0.00077432001147497624,
+    0.0036042886496339089, -0.0, -0.0, 0.00085997820963230681 };
 
-  static const real_T e_0[738]{ -0.0, 0.1888968412469153, 0.060492001339316988,
-    -0.0, 0.1888968412469153, 0.060492001339316988, -0.0, 0.3773313347058973,
-    0.1209347881183509, -0.0, 0.3773313347058973, 0.1209347881183509, -0.0,
-    0.56530446924504474, 0.18132836030302127, -0.0, 0.56530446924504474,
-    0.18132836030302127, -0.0, 0.75281723176956472, 0.24167271798767209, -0.0,
-    0.75281723176956472, 0.24167271798767209, -0.0, 0.939870607225484,
-    0.30196786139466048, -0.0, 0.939870607225484, 0.30196786139466048, -0.0,
-    1.1264655786033526, 0.36221379087394617, -0.0, 1.1264655786033526,
-    0.36221379087394617, -0.0, 1.3126031269419416, 0.42241050690268223, -0.0,
-    1.3126031269419416, 0.42241050690268223, -0.0, 1.4982842313319336,
-    0.48255801008480659, -0.0, 1.4982842313319336, 0.48255801008480659, -0.0,
-    1.6835098689196064, 0.54265630115063446, -0.0, 1.6835098689196064,
-    0.54265630115063446, -0.0, 1.8682810149105107, 0.6027053809564521, -0.0,
-    1.8682810149105107, 0.6027053809564521, -0.0, 2.05259864257314,
-    0.66270525048411089, -0.0, 2.05259864257314, 0.66270525048411089, -0.0,
-    2.2364637232425952, 0.72265591084062319, -0.0, 2.2364637232425952,
-    0.72265591084062319, -0.0, 2.41987722632424, 0.78255736325775849, -0.0,
-    2.41987722632424, 0.78255736325775849, -0.0, 2.6028401192973529,
-    0.842409609091641, -0.0, 2.6028401192973529, 0.842409609091641, -0.0,
-    2.7853533677187707, 0.90221264982234783, -0.0, 2.7853533677187707,
-    0.90221264982234783, -0.0, 2.9674179352265249, 0.96196648705350851, -0.0,
-    2.9674179352265249, 0.96196648705350851, -0.0, 3.1490347835434722,
-    1.0216711225119051, -0.0, 3.1490347835434722, 1.0216711225119051, -0.0,
-    3.3302048724809192, 1.081326558047073, -0.0, 3.3302048724809192,
-    1.081326558047073, -0.0, 3.5109291599422385, 1.1409327956309046, -0.0,
-    3.5109291599422385, 1.1409327956309046, -0.0, 3.69120860192648,
-    1.2004898373572503, -0.0, 3.69120860192648, 1.2004898373572503, 0.0,
-    -0.1888968412469153, -0.060492001339316988, 0.0, -0.1888968412469153,
-    -0.060492001339316988, 0.0, -0.3773313347058973, -0.1209347881183509, 0.0,
-    -0.3773313347058973, -0.1209347881183509, 0.0, -0.56530446924504474,
-    -0.18132836030302127, 0.0, -0.56530446924504474, -0.18132836030302127, 0.0,
-    -0.75281723176956472, -0.24167271798767209, 0.0, -0.75281723176956472,
-    -0.24167271798767209, 0.0, -0.939870607225484, -0.30196786139466048, 0.0,
-    -0.939870607225484, -0.30196786139466048, 0.0, -1.1264655786033526,
-    -0.36221379087394617, 0.0, -1.1264655786033526, -0.36221379087394617, 0.0,
-    -1.3126031269419416, -0.42241050690268223, 0.0, -1.3126031269419416,
-    -0.42241050690268223, 0.0, -1.4982842313319336, -0.48255801008480659, 0.0,
-    -1.4982842313319336, -0.48255801008480659, 0.0, -1.6835098689196064,
-    -0.54265630115063446, 0.0, -1.6835098689196064, -0.54265630115063446, 0.0,
-    -1.8682810149105107, -0.6027053809564521, 0.0, -1.8682810149105107,
-    -0.6027053809564521, 0.0, -2.05259864257314, -0.66270525048411089, 0.0,
-    -2.05259864257314, -0.66270525048411089, 0.0, -2.2364637232425952,
-    -0.72265591084062319, 0.0, -2.2364637232425952, -0.72265591084062319, 0.0,
-    -2.41987722632424, -0.78255736325775849, 0.0, -2.41987722632424,
-    -0.78255736325775849, 0.0, -2.6028401192973529, -0.842409609091641, 0.0,
-    -2.6028401192973529, -0.842409609091641, 0.0, -2.7853533677187707,
-    -0.90221264982234783, 0.0, -2.7853533677187707, -0.90221264982234783, 0.0,
-    -2.9674179352265249, -0.96196648705350851, 0.0, -2.9674179352265249,
-    -0.96196648705350851, 0.0, -3.1490347835434722, -1.0216711225119051, 0.0,
-    -3.1490347835434722, -1.0216711225119051, 0.0, -3.3302048724809192,
-    -1.081326558047073, 0.0, -3.3302048724809192, -1.081326558047073, 0.0,
-    -3.5109291599422385, -1.1409327956309046, 0.0, -3.5109291599422385,
-    -1.1409327956309046, 0.0, -3.69120860192648, -1.2004898373572503, 0.0,
-    -3.69120860192648, -1.2004898373572503, -1.0, -0.0, -0.0, 1.0, 0.0, 0.0,
-    -0.0, -0.1599184353223182, 0.089801925435736424, -0.0, -0.1599184353223182,
-    0.089801925435736424, -0.0, -0.31964914489275253, 0.17947362197539324, -0.0,
-    -0.31964914489275253, 0.17947362197539324, -0.0, -0.47919231323908462,
-    0.26901527273781028, -0.0, -0.47919231323908462, 0.26901527273781028, -0.0,
-    -0.63854812478731549, 0.35842706059465185, -0.0, -0.63854812478731549,
-    0.35842706059465185, -0.0, -0.797716763861511, 0.44770916817072121, -0.0,
-    -0.797716763861511, 0.44770916817072121, -0.0, -0.956698414683647,
-    0.53686177784427469, -0.0, -0.956698414683647, 0.53686177784427469, -0.0,
-    -1.1154932613734565, 0.62588507174733543, -0.0, -1.1154932613734565,
-    0.62588507174733543, -0.0, -1.2741014879482764, 0.71477923176600711, -0.0,
-    -1.2741014879482764, 0.71477923176600711, -0.0, -1.4325232783228956,
-    0.80354443954078658, -0.0, -1.4325232783228956, 0.80354443954078658, -0.0,
-    -1.5907588163094044, 0.89218087646687683, -0.0, -1.5907588163094044,
-    0.89218087646687683, -0.0, -1.748808285617043, 0.98068872369449933, -0.0,
-    -1.748808285617043, 0.98068872369449933, -0.0, -1.9066718698520528,
-    1.069068162129206, -0.0, -1.9066718698520528, 1.069068162129206, -0.0,
-    -2.0643497525175265, 1.1573193724321906, -0.0, -2.0643497525175265,
-    1.1573193724321906, -0.0, -2.221842117013261, 1.2454425350206004, -0.0,
-    -2.221842117013261, 1.2454425350206004, -0.0, -2.3791491466356085,
-    1.3334378300678469, -0.0, -2.3791491466356085, 1.3334378300678469, -0.0,
-    -2.536271024577331, 1.421305437503916, -0.0, -2.536271024577331,
-    1.421305437503916, -0.0, -2.6932079339274537, 1.5090455370156788, -0.0,
-    -2.6932079339274537, 1.5090455370156788, -0.0, -2.8499600576711197,
-    1.596658308047201, -0.0, -2.8499600576711197, 1.596658308047201, -0.0,
-    -3.0065275786894463, 1.6841439298000525, -0.0, -3.0065275786894463,
-    1.6841439298000525, -0.0, -3.16291067975938, 1.7715025812336165, -0.0,
-    -3.16291067975938, 1.7715025812336165, 0.0, 0.1599184353223182,
-    -0.089801925435736424, 0.0, 0.1599184353223182, -0.089801925435736424, 0.0,
-    0.31964914489275253, -0.17947362197539324, 0.0, 0.31964914489275253,
-    -0.17947362197539324, 0.0, 0.47919231323908462, -0.26901527273781028, 0.0,
-    0.47919231323908462, -0.26901527273781028, 0.0, 0.63854812478731549,
-    -0.35842706059465185, 0.0, 0.63854812478731549, -0.35842706059465185, 0.0,
-    0.797716763861511, -0.44770916817072121, 0.0, 0.797716763861511,
-    -0.44770916817072121, 0.0, 0.956698414683647, -0.53686177784427469, 0.0,
-    0.956698414683647, -0.53686177784427469, 0.0, 1.1154932613734565,
-    -0.62588507174733543, 0.0, 1.1154932613734565, -0.62588507174733543, 0.0,
-    1.2741014879482764, -0.71477923176600711, 0.0, 1.2741014879482764,
-    -0.71477923176600711, 0.0, 1.4325232783228956, -0.80354443954078658, 0.0,
-    1.4325232783228956, -0.80354443954078658, 0.0, 1.5907588163094044,
-    -0.89218087646687683, 0.0, 1.5907588163094044, -0.89218087646687683, 0.0,
-    1.748808285617043, -0.98068872369449933, 0.0, 1.748808285617043,
-    -0.98068872369449933, 0.0, 1.9066718698520528, -1.069068162129206, 0.0,
-    1.9066718698520528, -1.069068162129206, 0.0, 2.0643497525175265,
-    -1.1573193724321906, 0.0, 2.0643497525175265, -1.1573193724321906, 0.0,
-    2.221842117013261, -1.2454425350206004, 0.0, 2.221842117013261,
-    -1.2454425350206004, 0.0, 2.3791491466356085, -1.3334378300678469, 0.0,
-    2.3791491466356085, -1.3334378300678469, 0.0, 2.536271024577331,
-    -1.421305437503916, 0.0, 2.536271024577331, -1.421305437503916, 0.0,
-    2.6932079339274537, -1.5090455370156788, 0.0, 2.6932079339274537,
-    -1.5090455370156788, 0.0, 2.8499600576711197, -1.596658308047201, 0.0,
-    2.8499600576711197, -1.596658308047201, 0.0, 3.0065275786894463,
-    -1.6841439298000525, 0.0, 3.0065275786894463, -1.6841439298000525, 0.0,
-    3.16291067975938, -1.7715025812336165, 0.0, 3.16291067975938,
-    -1.7715025812336165, -0.0, -1.0, -0.0, 0.0, 1.0, 0.0, -0.0,
-    0.10536597514810161, -0.1119360731420971, -0.0, 0.10536597514810161,
-    -0.1119360731420971, -0.0, 0.21068448591173913, -0.22372201869524067, -0.0,
-    0.21068448591173913, -0.22372201869524067, -0.0, 0.31595540965099317,
-    -0.3353580258245521, -0.0, 0.31595540965099317, -0.3353580258245521, -0.0,
-    0.4211786242426373, -0.446844283480486, -0.0, 0.4211786242426373,
-    -0.446844283480486, -0.0, 0.52635400807880228, -0.55818098039902453, -0.0,
-    0.52635400807880228, -0.55818098039902453, -0.0, 0.63148144006564322,
-    -0.6693683051018724, -0.0, 0.63148144006564322, -0.6693683051018724, -0.0,
-    0.73656079962200982, -0.78040644589665065, -0.0, 0.73656079962200982,
-    -0.78040644589665065, -0.0, 0.84159196667811931, -0.89129559087709187, -0.0,
-    0.84159196667811931, -0.89129559087709187, -0.0, 0.94657482167423235,
-    -1.0020359279232338, -0.0, 0.94657482167423235, -1.0020359279232338, -0.0,
-    1.051509245559332, -1.1126276447016141, -0.0, 1.051509245559332,
-    -1.1126276447016141, -0.0, 1.1563951197898057, -1.2230709286654644, -0.0,
-    1.1563951197898057, -1.2230709286654644, -0.0, 1.2612323263281291,
-    -1.3333659670549041, -0.0, 1.2612323263281291, -1.3333659670549041, -0.0,
-    1.3660207476415547, -1.4435129468971351, -0.0, 1.3660207476415547,
-    -1.4435129468971351, -0.0, 1.4707602667008017, -1.5535120550066355, -0.0,
-    1.4707602667008017, -1.5535120550066355, -0.0, 1.5754507669787494,
-    -1.6633634779853532, -0.0, 1.5754507669787494, -1.6633634779853532, -0.0,
-    1.6800921324491334, -1.7730674022229005, -0.0, 1.6800921324491334,
-    -1.7730674022229005, -0.0, 1.7846842475852445, -1.8826240138967472, -0.0,
-    1.7846842475852445, -1.8826240138967472, -0.0, 1.8892269973586309,
-    -1.9920334989724147, -0.0, 1.8892269973586309, -1.9920334989724147, -0.0,
-    1.9937202672378032, -2.1012960432036696, -0.0, 1.9937202672378032,
-    -2.1012960432036696, -0.0, 2.098163943186941, -2.2104118321327175, -0.0,
-    2.098163943186941, -2.2104118321327175, 0.0, -0.10536597514810161,
-    0.1119360731420971, 0.0, -0.10536597514810161, 0.1119360731420971, 0.0,
-    -0.21068448591173913, 0.22372201869524067, 0.0, -0.21068448591173913,
-    0.22372201869524067, 0.0, -0.31595540965099317, 0.3353580258245521, 0.0,
-    -0.31595540965099317, 0.3353580258245521, 0.0, -0.4211786242426373,
-    0.446844283480486, 0.0, -0.4211786242426373, 0.446844283480486, 0.0,
-    -0.52635400807880228, 0.55818098039902453, 0.0, -0.52635400807880228,
-    0.55818098039902453, 0.0, -0.63148144006564322, 0.6693683051018724, 0.0,
-    -0.63148144006564322, 0.6693683051018724, 0.0, -0.73656079962200982,
-    0.78040644589665065, 0.0, -0.73656079962200982, 0.78040644589665065, 0.0,
-    -0.84159196667811931, 0.89129559087709187, 0.0, -0.84159196667811931,
-    0.89129559087709187, 0.0, -0.94657482167423235, 1.0020359279232338, 0.0,
-    -0.94657482167423235, 1.0020359279232338, 0.0, -1.051509245559332,
-    1.1126276447016141, 0.0, -1.051509245559332, 1.1126276447016141, 0.0,
-    -1.1563951197898057, 1.2230709286654644, 0.0, -1.1563951197898057,
-    1.2230709286654644, 0.0, -1.2612323263281291, 1.3333659670549041, 0.0,
-    -1.2612323263281291, 1.3333659670549041, 0.0, -1.3660207476415547,
-    1.4435129468971351, 0.0, -1.3660207476415547, 1.4435129468971351, 0.0,
-    -1.4707602667008017, 1.5535120550066355, 0.0, -1.4707602667008017,
-    1.5535120550066355, 0.0, -1.5754507669787494, 1.6633634779853532, 0.0,
-    -1.5754507669787494, 1.6633634779853532, 0.0, -1.6800921324491334,
-    1.7730674022229005, 0.0, -1.6800921324491334, 1.7730674022229005, 0.0,
-    -1.7846842475852445, 1.8826240138967472, 0.0, -1.7846842475852445,
-    1.8826240138967472, 0.0, -1.8892269973586309, 1.9920334989724147, 0.0,
-    -1.8892269973586309, 1.9920334989724147, 0.0, -1.9937202672378032,
-    2.1012960432036696, 0.0, -1.9937202672378032, 2.1012960432036696, 0.0,
-    -2.098163943186941, 2.2104118321327175, 0.0, -2.098163943186941,
-    2.2104118321327175, -0.0, -0.0, -1.0, 0.0, 0.0, 1.0 };
+  static const real_T b_Mlim[166]{ 612.0, 612.0, 612.0, 15.3, 612.0, 612.0,
+    612.0, 15.3, 612.0, 612.0, 612.0, 15.3, 612.0, 612.0, 612.0, 15.3, 612.0,
+    612.0, 612.0, 15.3, 612.0, 612.0, 612.0, 15.3, 612.0, 612.0, 612.0, 15.3,
+    612.0, 612.0, 612.0, 15.3, 612.0, 612.0, 612.0, 15.3, 612.0, 612.0, 612.0,
+    15.3, 612.0, 612.0, 612.0, 15.3, 612.0, 612.0, 612.0, 15.3, 612.0, 612.0,
+    612.0, 15.3, 612.0, 612.0, 612.0, 15.3, 612.0, 612.0, 612.0, 15.3, 612.0,
+    612.0, 612.0, 15.3, 612.0, 612.0, 612.0, 15.3, 612.0, 612.0, 612.0, 15.3,
+    612.0, 612.0, 612.0, 15.3, 612.0, 612.0, 612.0, 15.3, 612.0, 612.0, 612.0,
+    15.3, 612.0, 612.0, 612.0, 15.3, 612.0, 612.0, 612.0, 15.3, 612.0, 612.0,
+    612.0, 15.3, 612.0, 612.0, 612.0, 15.3, 612.0, 612.0, 612.0, 15.3, 612.0,
+    612.0, 612.0, 15.3, 612.0, 612.0, 612.0, 15.3, 612.0, 612.0, 612.0, 15.3,
+    612.0, 612.0, 612.0, 15.3, 612.0, 612.0, 612.0, 15.3, 612.0, 612.0, 612.0,
+    15.3, 612.0, 612.0, 612.0, 15.3, 612.0, 612.0, 612.0, 15.3, 612.0, 612.0,
+    612.0, 15.3, 612.0, 612.0, 612.0, 15.3, 612.0, 612.0, 612.0, 15.3, 612.0,
+    612.0, 612.0, 15.3, 612.0, 612.0, 612.0, 15.3, 612.0, 612.0, 612.0, 15.3,
+    80.0, 80.0, 80.0, -0.0, -0.0, -0.0 };
 
-  static const real_T e_1[738]{ -0.12647183082737606, 0.14396327290074137, -0.0,
-    -0.12647183082737606, 0.14396327290074137, -0.0, -0.25266713091650589,
-    0.28784633762178591, -0.0, -0.25266713091650589, 0.28784633762178591, -0.0,
-    -0.37858657539014817, 0.43164948302538075, -0.0, -0.37858657539014817,
-    0.43164948302538075, -0.0, -0.50423083775077449, 0.57537299731355918, -0.0,
-    -0.50423083775077449, 0.57537299731355918, -0.0, -0.62960058988446832,
-    0.71901716802974069, -0.0, -0.62960058988446832, 0.71901716802974069, -0.0,
-    -0.75469650206481409, 0.862582282060328, -0.0, -0.75469650206481409,
-    0.862582282060328, -0.0, -0.87951924295677675, 1.0060686256362998, -0.0,
-    -0.87951924295677675, 1.0060686256362998, -0.0, -1.0040694796205727,
-    1.1494764843347998, -0.0, -1.0040694796205727, 1.1494764843347998, -0.0,
-    -1.1283478775155311, 1.2928061430807216, -0.0, -1.1283478775155311,
-    1.2928061430807216, -0.0, -1.2523551005039453, 1.4360578861482902, -0.0,
-    -1.2523551005039453, 1.4360578861482902, -0.0, -1.3760918108549158,
-    1.57923199716264, -0.0, -1.3760918108549158, 1.57923199716264, -0.0,
-    -1.4995586692481842, 1.7223287591013881, -0.0, -1.4995586692481842,
-    1.7223287591013881, -0.0, -1.6227563347779563, 1.8653484542962038, -0.0,
-    -1.6227563347779563, 1.8653484542962038, -0.0, -1.7456854649567182,
-    2.0082913644343763, -0.0, -1.7456854649567182, 2.0082913644343763, -0.0,
-    -1.8683467157190412, 2.1511577705603755, -0.0, -1.8683467157190412,
-    2.1511577705603755, -0.0, -1.9907407414253795, 2.2939479530774123, -0.0,
-    -1.9907407414253795, 2.2939479530774123, -0.0, -2.112868194865857,
-    2.4366621917489919, -0.0, -2.112868194865857, 2.4366621917489919, -0.0,
-    -2.2347297272640461, 2.5793007657004661, -0.0, -2.2347297272640461,
-    2.5793007657004661, -0.0, -2.3563259882807368, 2.7218639534205811, -0.0,
-    -2.3563259882807368, 2.7218639534205811, -0.0, -2.477657626017697,
-    2.86435203276302, -0.0, -2.477657626017697, 2.86435203276302, -0.0,
-    0.12647183082737606, -0.14396327290074137, 0.0, 0.12647183082737606,
-    -0.14396327290074137, 0.0, 0.25266713091650589, -0.28784633762178591, 0.0,
-    0.25266713091650589, -0.28784633762178591, 0.0, 0.37858657539014817,
-    -0.43164948302538075, 0.0, 0.37858657539014817, -0.43164948302538075, 0.0,
-    0.50423083775077449, -0.57537299731355918, 0.0, 0.50423083775077449,
-    -0.57537299731355918, 0.0, 0.62960058988446832, -0.71901716802974069, 0.0,
-    0.62960058988446832, -0.71901716802974069, 0.0, 0.75469650206481409,
-    -0.862582282060328, 0.0, 0.75469650206481409, -0.862582282060328, 0.0,
-    0.87951924295677675, -1.0060686256362998, 0.0, 0.87951924295677675,
-    -1.0060686256362998, 0.0, 1.0040694796205727, -1.1494764843347998, 0.0,
-    1.0040694796205727, -1.1494764843347998, 0.0, 1.1283478775155311,
-    -1.2928061430807216, 0.0, 1.1283478775155311, -1.2928061430807216, 0.0,
-    1.2523551005039453, -1.4360578861482902, 0.0, 1.2523551005039453,
-    -1.4360578861482902, 0.0, 1.3760918108549158, -1.57923199716264, 0.0,
-    1.3760918108549158, -1.57923199716264, 0.0, 1.4995586692481842,
-    -1.7223287591013881, 0.0, 1.4995586692481842, -1.7223287591013881, 0.0,
-    1.6227563347779563, -1.8653484542962038, 0.0, 1.6227563347779563,
-    -1.8653484542962038, 0.0, 1.7456854649567182, -2.0082913644343763, 0.0,
-    1.7456854649567182, -2.0082913644343763, 0.0, 1.8683467157190412,
-    -2.1511577705603755, 0.0, 1.8683467157190412, -2.1511577705603755, 0.0,
-    1.9907407414253795, -2.2939479530774123, 0.0, 1.9907407414253795,
-    -2.2939479530774123, 0.0, 2.112868194865857, -2.4366621917489919, 0.0,
-    2.112868194865857, -2.4366621917489919, 0.0, 2.2347297272640461,
-    -2.5793007657004661, 0.0, 2.2347297272640461, -2.5793007657004661, 0.0,
-    2.3563259882807368, -2.7218639534205811, 0.0, 2.3563259882807368,
-    -2.7218639534205811, 0.0, 2.477657626017697, -2.86435203276302, 0.0,
-    2.477657626017697, -2.86435203276302, 0.0, -1.0, -0.0, -0.0, 1.0, 0.0, 0.0,
-    0.18891678043810189, -0.2603991729373682, -0.0, 0.18891678043810189,
-    -0.2603991729373682, -0.0, 0.37743412338800142, -0.52070047841969547, -0.0,
-    0.37743412338800142, -0.52070047841969547, -0.0, 0.56555300944331421,
-    -0.78090434240065543, -0.0, 0.56555300944331421, -0.78090434240065543, -0.0,
-    0.7532744168461627, -1.0410111898780745, -0.0, 0.7532744168461627,
-    -1.0410111898780745, -0.0, 0.94059932149283521, -1.3010214448962558, -0.0,
-    0.94059932149283521, -1.3010214448962558, -0.0, 1.1275286969394305,
-    -1.560935530548297, -0.0, 1.1275286969394305, -1.560935530548297, -0.0,
-    1.3140635144074895, -1.8207538689784042, -0.0, 1.3140635144074895,
-    -1.8207538689784042, -0.0, 1.5002047427896132, -2.0804768813841976, -0.0,
-    1.5002047427896132, -2.0804768813841976, -0.0, 1.6859533486550675,
-    -2.3401049880190148, -0.0, 1.6859533486550675, -2.3401049880190148, -0.0,
-    1.8713102962553732, -2.5996386081942049, -0.0, 1.8713102962553732,
-    -2.5996386081942049, -0.0, 2.0562765475298841, -2.8590781602814213, -0.0,
-    2.0562765475298841, -2.8590781602814213, -0.0, 2.2408530621113516,
-    -3.1184240617149053, -0.0, 2.2408530621113516, -3.1184240617149053, -0.0,
-    2.4250407973314743, -3.3776767289937664, -0.0, 2.4250407973314743,
-    -3.3776767289937664, -0.0, 2.6088407082264355, -3.6368365776842562, -0.0,
-    2.6088407082264355, -3.6368365776842562, -0.0, 2.7922537475424285,
-    -3.8959040224220369, -0.0, 2.7922537475424285, -3.8959040224220369, -0.0,
-    2.975280865741166, -4.154879476914445, -0.0, 2.975280865741166,
-    -4.154879476914445, -0.0, 3.1579230110053778, -4.4137633539427483, -0.0,
-    3.1579230110053778, -4.4137633539427483, -0.0, 3.3401811292442956,
-    -4.6725560653643994, -0.0, 3.3401811292442956, -4.6725560653643994, -0.0,
-    3.5220561640991237, -4.9312580221152817, -0.0, 3.5220561640991237,
-    -4.9312580221152817, -0.0, 3.7035490569484968, -5.1898696342119521, -0.0,
-    3.7035490569484968, -5.1898696342119521, -0.0, -0.18891678043810189,
-    0.2603991729373682, 0.0, -0.18891678043810189, 0.2603991729373682, 0.0,
-    -0.37743412338800142, 0.52070047841969547, 0.0, -0.37743412338800142,
-    0.52070047841969547, 0.0, -0.56555300944331421, 0.78090434240065543, 0.0,
-    -0.56555300944331421, 0.78090434240065543, 0.0, -0.7532744168461627,
-    1.0410111898780745, 0.0, -0.7532744168461627, 1.0410111898780745, 0.0,
-    -0.94059932149283521, 1.3010214448962558, 0.0, -0.94059932149283521,
-    1.3010214448962558, 0.0, -1.1275286969394305, 1.560935530548297, 0.0,
-    -1.1275286969394305, 1.560935530548297, 0.0, -1.3140635144074895,
-    1.8207538689784042, 0.0, -1.3140635144074895, 1.8207538689784042, 0.0,
-    -1.5002047427896132, 2.0804768813841976, 0.0, -1.5002047427896132,
-    2.0804768813841976, 0.0, -1.6859533486550675, 2.3401049880190148, 0.0,
-    -1.6859533486550675, 2.3401049880190148, 0.0, -1.8713102962553732,
-    2.5996386081942049, 0.0, -1.8713102962553732, 2.5996386081942049, 0.0,
-    -2.0562765475298841, 2.8590781602814213, 0.0, -2.0562765475298841,
-    2.8590781602814213, 0.0, -2.2408530621113516, 3.1184240617149053, 0.0,
-    -2.2408530621113516, 3.1184240617149053, 0.0, -2.4250407973314743,
-    3.3776767289937664, 0.0, -2.4250407973314743, 3.3776767289937664, 0.0,
-    -2.6088407082264355, 3.6368365776842562, 0.0, -2.6088407082264355,
-    3.6368365776842562, 0.0, -2.7922537475424285, 3.8959040224220369, 0.0,
-    -2.7922537475424285, 3.8959040224220369, 0.0, -2.975280865741166,
-    4.154879476914445, 0.0, -2.975280865741166, 4.154879476914445, 0.0,
-    -3.1579230110053778, 4.4137633539427483, 0.0, -3.1579230110053778,
-    4.4137633539427483, 0.0, -3.3401811292442956, 4.6725560653643994, 0.0,
-    -3.3401811292442956, 4.6725560653643994, 0.0, -3.5220561640991237,
-    4.9312580221152817, 0.0, -3.5220561640991237, 4.9312580221152817, 0.0,
-    -3.7035490569484968, 5.1898696342119521, 0.0, -3.7035490569484968,
-    5.1898696342119521, 0.0, -0.0, -1.0, -0.0, 0.0, 1.0, 0.0,
-    0.13919179616088076, 0.07490340326547, -0.0, 0.13919179616088076,
-    0.07490340326547, -0.0, 0.27800912838762087, 0.15000797759616485, -0.0,
-    0.27800912838762087, 0.15000797759616485, -0.0, 0.41645288308364015,
-    0.22531337660988532, -0.0, 0.41645288308364015, 0.22531337660988532, -0.0,
-    0.55452394451511977, 0.30081925480716887, -0.0, 0.55452394451511977,
-    0.30081925480716887, -0.0, 0.69222319481614147, 0.37652526756918425, -0.0,
-    0.69222319481614147, 0.37652526756918425, -0.0, 0.82955151399381344,
-    0.4524310711556313, -0.0, 0.82955151399381344, 0.4524310711556313, -0.0,
-    0.96650977993338516, 0.52853632270264572, -0.0, 0.96650977993338516,
-    0.52853632270264572, -0.0, 1.1030988684033489, 0.60484068022070858, -0.0,
-    1.1030988684033489, 0.60484068022070858, -0.0, 1.2393196530605293,
-    0.68134380259256155, -0.0, 1.2393196530605293, 0.68134380259256155, -0.0,
-    1.375173005455161, 0.75804534957112635, -0.0, 1.375173005455161,
-    0.75804534957112635, -0.0, 1.5106597950359535, 0.83494498177742982, -0.0,
-    1.5106597950359535, 0.83494498177742982, -0.0, 1.6457808891551446,
-    0.91204236069853384, -0.0, 1.6457808891551446, 0.91204236069853384, -0.0,
-    1.7805371530735408, 0.98933714868547, -0.0, 1.7805371530735408,
-    0.98933714868547, -0.0, 1.914929449965546, 1.0668290089511794, -0.0,
-    1.914929449965546, 1.0668290089511794, -0.0, 2.048958640924178,
-    1.1445176055684576, -0.0, 2.048958640924178, 1.1445176055684576, -0.0,
-    2.1826255849660736, 1.2224026034679043, -0.0, 2.1826255849660736,
-    1.2224026034679043, -0.0, 2.315931139036481, 1.3004836684358778, -0.0,
-    2.315931139036481, 1.3004836684358778, -0.0, 2.4488761580142389,
-    1.3787604671124549, -0.0, 2.4488761580142389, 1.3787604671124549, -0.0,
-    2.5814614947167467, 1.4572326669893951, -0.0, 2.5814614947167467,
-    1.4572326669893951, -0.0, 2.7136879999049208, 1.53589993640811, -0.0,
-    2.7136879999049208, 1.53589993640811, -0.0, -0.13919179616088076,
-    -0.07490340326547, 0.0, -0.13919179616088076, -0.07490340326547, 0.0,
-    -0.27800912838762087, -0.15000797759616485, 0.0, -0.27800912838762087,
-    -0.15000797759616485, 0.0, -0.41645288308364015, -0.22531337660988532, 0.0,
-    -0.41645288308364015, -0.22531337660988532, 0.0, -0.55452394451511977,
-    -0.30081925480716887, 0.0, -0.55452394451511977, -0.30081925480716887, 0.0,
-    -0.69222319481614147, -0.37652526756918425, 0.0, -0.69222319481614147,
-    -0.37652526756918425, 0.0, -0.82955151399381344, -0.4524310711556313, 0.0,
-    -0.82955151399381344, -0.4524310711556313, 0.0, -0.96650977993338516,
-    -0.52853632270264572, 0.0, -0.96650977993338516, -0.52853632270264572, 0.0,
-    -1.1030988684033489, -0.60484068022070858, 0.0, -1.1030988684033489,
-    -0.60484068022070858, 0.0, -1.2393196530605293, -0.68134380259256155, 0.0,
-    -1.2393196530605293, -0.68134380259256155, 0.0, -1.375173005455161,
-    -0.75804534957112635, 0.0, -1.375173005455161, -0.75804534957112635, 0.0,
-    -1.5106597950359535, -0.83494498177742982, 0.0, -1.5106597950359535,
-    -0.83494498177742982, 0.0, -1.6457808891551446, -0.91204236069853384, 0.0,
-    -1.6457808891551446, -0.91204236069853384, 0.0, -1.7805371530735408,
-    -0.98933714868547, 0.0, -1.7805371530735408, -0.98933714868547, 0.0,
-    -1.914929449965546, -1.0668290089511794, 0.0, -1.914929449965546,
-    -1.0668290089511794, 0.0, -2.048958640924178, -1.1445176055684576, 0.0,
-    -2.048958640924178, -1.1445176055684576, 0.0, -2.1826255849660736,
-    -1.2224026034679043, 0.0, -2.1826255849660736, -1.2224026034679043, 0.0,
-    -2.315931139036481, -1.3004836684358778, 0.0, -2.315931139036481,
-    -1.3004836684358778, 0.0, -2.4488761580142389, -1.3787604671124549, 0.0,
-    -2.4488761580142389, -1.3787604671124549, 0.0, -2.5814614947167467,
-    -1.4572326669893951, 0.0, -2.5814614947167467, -1.4572326669893951, 0.0,
-    -2.7136879999049208, -1.53589993640811, 0.0, -2.7136879999049208,
-    -1.53589993640811, 0.0, -0.0, -0.0, -1.0, 0.0, 0.0, 1.0 };
+  static const real_T b_Hinv[16]{ 0.57189917124941358, 3.4167895065313139,
+    0.799810754516104, 0.0, 3.4167895065313139, 28.900787487380914,
+    -0.09510246133020725, 0.0, 0.799810754516104, -0.09510246133020725,
+    29.28480313462051, 0.0, 0.0, 0.0, 0.0, 9.9999999999999974E-6 };
 
-  static const real_T l[360]{ 0.3579347593572087, 0.0, 0.0, 0.3579347593572087,
-    0.0, 0.0, 0.71539677240113031, 0.0, 0.0, 0.71539677240113031, 0.0, 0.0,
-    1.0723866635167145, 0.0, 0.0, 1.0723866635167145, 0.0, 0.0,
-    1.4289050562642476, 0.0, 0.0, 1.4289050562642476, 0.0, 0.0,
-    1.7849525733804419, 0.0, 0.0, 1.7849525733804419, 0.0, 0.0,
-    2.1405298367795229, 0.0, 0.0, 2.1405298367795229, 0.0, 0.0,
-    2.4956374675543165, 0.0, 0.0, 2.4956374675543165, 0.0, 0.0,
-    2.8502760859773328, 0.0, 0.0, 2.8502760859773328, 0.0, 0.0,
-    3.2044463115018504, 0.0, 0.0, 3.2044463115018504, 0.0, 0.0,
-    3.5581487627629982, 0.0, 0.0, 3.5581487627629982, 0.0, 0.0,
-    3.9113840575788359, 0.0, 0.0, 3.9113840575788359, 0.0, 0.0,
-    4.2641528129514326, 0.0, 0.0, 4.2641528129514326, 0.0, 0.0,
-    4.616455645067945, 0.0, 0.0, 4.616455645067945, 0.0, 0.0, 4.9682931693016954,
-    0.0, 0.0, 4.9682931693016954, 0.0, 0.0, 5.3196660002132425, 0.0, 0.0,
-    5.3196660002132425, 0.0, 0.0, 5.6705747515514595, 0.0, 0.0,
-    5.6705747515514595, 0.0, 0.0, 6.021020036254602, 0.0, 0.0, 6.021020036254602,
-    0.0, 0.0, 6.3710024664513822, 0.0, 0.0, 6.3710024664513822, 0.0, 0.0,
-    6.7205226534620355, 0.0, 0.0, 6.7205226534620355, 0.0, 0.0, 7.06958120779939,
-    0.0, 0.0, 7.06958120779939, 0.0, 0.0, -0.042560663779893933, 0.0, 0.0,
-    -0.042560663779893933, 0.0, 0.0, -0.0850651150898698, 0.0, 0.0,
-    -0.0850651150898698, 0.0, 0.0, -0.12751342817317227, 0.0, 0.0,
-    -0.12751342817317227, 0.0, 0.0, -0.16990567717498842, 0.0, 0.0,
-    -0.16990567717498842, 0.0, 0.0, -0.21224193614257725, 0.0, 0.0,
-    -0.21224193614257725, 0.0, 0.0, -0.254522279025399, 0.0, 0.0,
-    -0.254522279025399, 0.0, 0.0, -0.29674677967524432, 0.0, 0.0,
-    -0.29674677967524432, 0.0, 0.0, -0.33891551184636343, 0.0, 0.0,
-    -0.33891551184636343, 0.0, 0.0, -0.38102854919559465, 0.0, 0.0,
-    -0.38102854919559465, 0.0, 0.0, -0.4230859652824932, 0.0, 0.0,
-    -0.4230859652824932, 0.0, 0.0, -0.46508783356945982, 0.0, 0.0,
-    -0.46508783356945982, 0.0, 0.0, -0.50703422742186888, 0.0, 0.0,
-    -0.50703422742186888, 0.0, 0.0, -0.54892522010819667, 0.0, 0.0,
-    -0.54892522010819667, 0.0, 0.0, -0.59076088480014921, 0.0, 0.0,
-    -0.59076088480014921, 0.0, 0.0, -0.6325412945727904, 0.0, 0.0,
-    -0.6325412945727904, 0.0, 0.0, -0.67426652240466922, 0.0, 0.0,
-    -0.67426652240466922, 0.0, 0.0, -0.71593664117794742, 0.0, 0.0,
-    -0.71593664117794742, 0.0, 0.0, -0.757551723678527, 0.0, 0.0,
-    -0.757551723678527, 0.0, 0.0, -0.79911184259617707, 0.0, 0.0,
-    -0.79911184259617707, 0.0, 0.0, -0.840617070524661, 0.0, 0.0,
-    -0.840617070524661, 0.0, 0.0, -0.0099627081344734868, 0.0, 0.0,
-    -0.0099627081344734868, 0.0, 0.0, -0.01991225791140331, 0.0, 0.0,
-    -0.01991225791140331, 0.0, 0.0, -0.029848666709836498, 0.0, 0.0,
-    -0.029848666709836498, 0.0, 0.0, -0.039771951885866519, 0.0, 0.0,
-    -0.039771951885866519, 0.0, 0.0, -0.049682130772663577, 0.0, 0.0,
-    -0.049682130772663577, 0.0, 0.0, -0.059579220680504912, 0.0, 0.0,
-    -0.059579220680504912, 0.0, 0.0, -0.069463238896805016, 0.0, 0.0,
-    -0.069463238896805016, 0.0, 0.0, -0.079334202686145827, 0.0, 0.0,
-    -0.079334202686145827, 0.0, 0.0, -0.089192129290306912, 0.0, 0.0,
-    -0.089192129290306912, 0.0, 0.0, -0.099037035928295547, 0.0, 0.0,
-    -0.099037035928295547, 0.0, 0.0, -0.10886893979637684, 0.0, 0.0,
-    -0.10886893979637684, 0.0, 0.0, -0.11868785806810371, 0.0, 0.0,
-    -0.11868785806810371, 0.0, 0.0, -0.12849380789434692, 0.0, 0.0,
-    -0.12849380789434692, 0.0, 0.0, -0.13828680640332505, 0.0, 0.0,
-    -0.13828680640332505, 0.0, 0.0, -0.1480668707006344, 0.0, 0.0,
-    -0.1480668707006344, 0.0, 0.0, -0.15783401786927884, 0.0, 0.0,
-    -0.15783401786927884, 0.0, 0.0, -0.16758826496969964, 0.0, 0.0,
-    -0.16758826496969964, 0.0, 0.0, -0.17732962903980537, 0.0, 0.0,
-    -0.17732962903980537, 0.0, 0.0, -0.18705812709500158, 0.0, 0.0,
-    -0.18705812709500158, 0.0, 0.0, -0.1967737761282205, 0.0, 0.0,
-    -0.1967737761282205, 0.0, 0.0 };
+  static const real_T b_Linv[16]{ 0.3814279018377475, 0.63605654373970089,
+    0.14779715868369478, 0.0, 0.0, 5.3759165397104764, -0.017573999210518963,
+    0.0, 0.0, 0.0, 5.4115435075974867, 0.0, 0.0, 0.0, 0.0, 0.003162277660168379
+  };
 
-  static const real_T l_0[360]{ 0.0, -0.1888968412469153, -0.060492001339316988,
-    0.0, -0.1888968412469153, -0.060492001339316988, 0.0, -0.3773313347058973,
-    -0.1209347881183509, 0.0, -0.3773313347058973, -0.1209347881183509, 0.0,
-    -0.56530446924504474, -0.18132836030302127, 0.0, -0.56530446924504474,
-    -0.18132836030302127, 0.0, -0.75281723176956472, -0.24167271798767209, 0.0,
-    -0.75281723176956472, -0.24167271798767209, 0.0, -0.939870607225484,
-    -0.30196786139466048, 0.0, -0.939870607225484, -0.30196786139466048, 0.0,
-    -1.1264655786033526, -0.36221379087394617, 0.0, -1.1264655786033526,
-    -0.36221379087394617, 0.0, -1.3126031269419416, -0.42241050690268223, 0.0,
-    -1.3126031269419416, -0.42241050690268223, 0.0, -1.4982842313319336,
-    -0.48255801008480659, 0.0, -1.4982842313319336, -0.48255801008480659, 0.0,
-    -1.6835098689196064, -0.54265630115063446, 0.0, -1.6835098689196064,
-    -0.54265630115063446, 0.0, -1.8682810149105107, -0.6027053809564521, 0.0,
-    -1.8682810149105107, -0.6027053809564521, 0.0, -2.05259864257314,
-    -0.66270525048411089, 0.0, -2.05259864257314, -0.66270525048411089, 0.0,
-    -2.2364637232425952, -0.72265591084062319, 0.0, -2.2364637232425952,
-    -0.72265591084062319, 0.0, -2.41987722632424, -0.78255736325775849, 0.0,
-    -2.41987722632424, -0.78255736325775849, 0.0, -2.6028401192973529,
-    -0.842409609091641, 0.0, -2.6028401192973529, -0.842409609091641, 0.0,
-    -2.7853533677187707, -0.90221264982234783, 0.0, -2.7853533677187707,
-    -0.90221264982234783, 0.0, -2.9674179352265249, -0.96196648705350851, 0.0,
-    -2.9674179352265249, -0.96196648705350851, 0.0, -3.1490347835434722,
-    -1.0216711225119051, 0.0, -3.1490347835434722, -1.0216711225119051, 0.0,
-    -3.3302048724809192, -1.081326558047073, 0.0, -3.3302048724809192,
-    -1.081326558047073, 0.0, -3.5109291599422385, -1.1409327956309046, 0.0,
-    -3.5109291599422385, -1.1409327956309046, 0.0, -3.69120860192648,
-    -1.2004898373572503, 0.0, -3.69120860192648, -1.2004898373572503, 0.0,
-    0.1599184353223182, -0.089801925435736424, 0.0, 0.1599184353223182,
-    -0.089801925435736424, 0.0, 0.31964914489275253, -0.17947362197539324, 0.0,
-    0.31964914489275253, -0.17947362197539324, 0.0, 0.47919231323908462,
-    -0.26901527273781028, 0.0, 0.47919231323908462, -0.26901527273781028, 0.0,
-    0.63854812478731549, -0.35842706059465185, 0.0, 0.63854812478731549,
-    -0.35842706059465185, 0.0, 0.797716763861511, -0.44770916817072121, 0.0,
-    0.797716763861511, -0.44770916817072121, 0.0, 0.956698414683647,
-    -0.53686177784427469, 0.0, 0.956698414683647, -0.53686177784427469, 0.0,
-    1.1154932613734565, -0.62588507174733543, 0.0, 1.1154932613734565,
-    -0.62588507174733543, 0.0, 1.2741014879482764, -0.71477923176600711, 0.0,
-    1.2741014879482764, -0.71477923176600711, 0.0, 1.4325232783228956,
-    -0.80354443954078658, 0.0, 1.4325232783228956, -0.80354443954078658, 0.0,
-    1.5907588163094044, -0.89218087646687683, 0.0, 1.5907588163094044,
-    -0.89218087646687683, 0.0, 1.748808285617043, -0.98068872369449933, 0.0,
-    1.748808285617043, -0.98068872369449933, 0.0, 1.9066718698520528,
-    -1.069068162129206, 0.0, 1.9066718698520528, -1.069068162129206, 0.0,
-    2.0643497525175265, -1.1573193724321906, 0.0, 2.0643497525175265,
-    -1.1573193724321906, 0.0, 2.221842117013261, -1.2454425350206004, 0.0,
-    2.221842117013261, -1.2454425350206004, 0.0, 2.3791491466356085,
-    -1.3334378300678469, 0.0, 2.3791491466356085, -1.3334378300678469, 0.0,
-    2.536271024577331, -1.421305437503916, 0.0, 2.536271024577331,
-    -1.421305437503916, 0.0, 2.6932079339274537, -1.5090455370156788, 0.0,
-    2.6932079339274537, -1.5090455370156788, 0.0, 2.8499600576711197,
-    -1.596658308047201, 0.0, 2.8499600576711197, -1.596658308047201, 0.0,
-    3.0065275786894463, -1.6841439298000525, 0.0, 3.0065275786894463,
-    -1.6841439298000525, 0.0, 3.16291067975938, -1.7715025812336165, 0.0,
-    3.16291067975938, -1.7715025812336165, 0.0, -0.10536597514810161,
-    0.1119360731420971, 0.0, -0.10536597514810161, 0.1119360731420971, 0.0,
-    -0.21068448591173913, 0.22372201869524067, 0.0, -0.21068448591173913,
-    0.22372201869524067, 0.0, -0.31595540965099317, 0.3353580258245521, 0.0,
-    -0.31595540965099317, 0.3353580258245521, 0.0, -0.4211786242426373,
-    0.446844283480486, 0.0, -0.4211786242426373, 0.446844283480486, 0.0,
-    -0.52635400807880228, 0.55818098039902453, 0.0, -0.52635400807880228,
-    0.55818098039902453, 0.0, -0.63148144006564322, 0.6693683051018724, 0.0,
-    -0.63148144006564322, 0.6693683051018724, 0.0, -0.73656079962200982,
-    0.78040644589665065, 0.0, -0.73656079962200982, 0.78040644589665065, 0.0,
-    -0.84159196667811931, 0.89129559087709187, 0.0, -0.84159196667811931,
-    0.89129559087709187, 0.0, -0.94657482167423235, 1.0020359279232338, 0.0,
-    -0.94657482167423235, 1.0020359279232338, 0.0, -1.051509245559332,
-    1.1126276447016141, 0.0, -1.051509245559332, 1.1126276447016141, 0.0,
-    -1.1563951197898057, 1.2230709286654644, 0.0, -1.1563951197898057,
-    1.2230709286654644, 0.0, -1.2612323263281291, 1.3333659670549041, 0.0,
-    -1.2612323263281291, 1.3333659670549041, 0.0, -1.3660207476415547,
-    1.4435129468971351, 0.0, -1.3660207476415547, 1.4435129468971351, 0.0,
-    -1.4707602667008017, 1.5535120550066355, 0.0, -1.4707602667008017,
-    1.5535120550066355, 0.0, -1.5754507669787494, 1.6633634779853532, 0.0,
-    -1.5754507669787494, 1.6633634779853532, 0.0, -1.6800921324491334,
-    1.7730674022229005, 0.0, -1.6800921324491334, 1.7730674022229005, 0.0,
-    -1.7846842475852445, 1.8826240138967472, 0.0, -1.7846842475852445,
-    1.8826240138967472, 0.0, -1.8892269973586309, 1.9920334989724147, 0.0,
-    -1.8892269973586309, 1.9920334989724147, 0.0, -1.9937202672378032,
-    2.1012960432036696, 0.0, -1.9937202672378032, 2.1012960432036696, 0.0,
-    -2.098163943186941, 2.2104118321327175, 0.0, -2.098163943186941,
-    2.2104118321327175 };
+  static const real_T b_Kx[15]{ 1.4240674481793067, 0.21670582767793148,
+    1.365366098006928, 0.0, 0.0, -0.16933045555758583, -0.025767667514346206,
+    -0.16235050079544122, 0.0, 0.0, -0.0396373025505916, -0.0060317609725076748,
+    -0.038003417034926171, 0.0, 0.0 };
 
-  static const real_T l_1[360]{ 0.12647183082737606, -0.14396327290074137, 0.0,
-    0.12647183082737606, -0.14396327290074137, 0.0, 0.25266713091650589,
-    -0.28784633762178591, 0.0, 0.25266713091650589, -0.28784633762178591, 0.0,
-    0.37858657539014817, -0.43164948302538075, 0.0, 0.37858657539014817,
-    -0.43164948302538075, 0.0, 0.50423083775077449, -0.57537299731355918, 0.0,
-    0.50423083775077449, -0.57537299731355918, 0.0, 0.62960058988446832,
-    -0.71901716802974069, 0.0, 0.62960058988446832, -0.71901716802974069, 0.0,
-    0.75469650206481409, -0.862582282060328, 0.0, 0.75469650206481409,
-    -0.862582282060328, 0.0, 0.87951924295677675, -1.0060686256362998, 0.0,
-    0.87951924295677675, -1.0060686256362998, 0.0, 1.0040694796205727,
-    -1.1494764843347998, 0.0, 1.0040694796205727, -1.1494764843347998, 0.0,
-    1.1283478775155311, -1.2928061430807216, 0.0, 1.1283478775155311,
-    -1.2928061430807216, 0.0, 1.2523551005039453, -1.4360578861482902, 0.0,
-    1.2523551005039453, -1.4360578861482902, 0.0, 1.3760918108549158,
-    -1.57923199716264, 0.0, 1.3760918108549158, -1.57923199716264, 0.0,
-    1.4995586692481842, -1.7223287591013881, 0.0, 1.4995586692481842,
-    -1.7223287591013881, 0.0, 1.6227563347779563, -1.8653484542962038, 0.0,
-    1.6227563347779563, -1.8653484542962038, 0.0, 1.7456854649567182,
-    -2.0082913644343763, 0.0, 1.7456854649567182, -2.0082913644343763, 0.0,
-    1.8683467157190412, -2.1511577705603755, 0.0, 1.8683467157190412,
-    -2.1511577705603755, 0.0, 1.9907407414253795, -2.2939479530774123, 0.0,
-    1.9907407414253795, -2.2939479530774123, 0.0, 2.112868194865857,
-    -2.4366621917489919, 0.0, 2.112868194865857, -2.4366621917489919, 0.0,
-    2.2347297272640461, -2.5793007657004661, 0.0, 2.2347297272640461,
-    -2.5793007657004661, 0.0, 2.3563259882807368, -2.7218639534205811, 0.0,
-    2.3563259882807368, -2.7218639534205811, 0.0, 2.477657626017697,
-    -2.86435203276302, 0.0, 2.477657626017697, -2.86435203276302, 0.0,
-    -0.18891678043810189, 0.2603991729373682, 0.0, -0.18891678043810189,
-    0.2603991729373682, 0.0, -0.37743412338800142, 0.52070047841969547, 0.0,
-    -0.37743412338800142, 0.52070047841969547, 0.0, -0.56555300944331421,
-    0.78090434240065543, 0.0, -0.56555300944331421, 0.78090434240065543, 0.0,
-    -0.7532744168461627, 1.0410111898780745, 0.0, -0.7532744168461627,
-    1.0410111898780745, 0.0, -0.94059932149283521, 1.3010214448962558, 0.0,
-    -0.94059932149283521, 1.3010214448962558, 0.0, -1.1275286969394305,
-    1.560935530548297, 0.0, -1.1275286969394305, 1.560935530548297, 0.0,
-    -1.3140635144074895, 1.8207538689784042, 0.0, -1.3140635144074895,
-    1.8207538689784042, 0.0, -1.5002047427896132, 2.0804768813841976, 0.0,
-    -1.5002047427896132, 2.0804768813841976, 0.0, -1.6859533486550675,
-    2.3401049880190148, 0.0, -1.6859533486550675, 2.3401049880190148, 0.0,
-    -1.8713102962553732, 2.5996386081942049, 0.0, -1.8713102962553732,
-    2.5996386081942049, 0.0, -2.0562765475298841, 2.8590781602814213, 0.0,
-    -2.0562765475298841, 2.8590781602814213, 0.0, -2.2408530621113516,
-    3.1184240617149053, 0.0, -2.2408530621113516, 3.1184240617149053, 0.0,
-    -2.4250407973314743, 3.3776767289937664, 0.0, -2.4250407973314743,
-    3.3776767289937664, 0.0, -2.6088407082264355, 3.6368365776842562, 0.0,
-    -2.6088407082264355, 3.6368365776842562, 0.0, -2.7922537475424285,
-    3.8959040224220369, 0.0, -2.7922537475424285, 3.8959040224220369, 0.0,
-    -2.975280865741166, 4.154879476914445, 0.0, -2.975280865741166,
-    4.154879476914445, 0.0, -3.1579230110053778, 4.4137633539427483, 0.0,
-    -3.1579230110053778, 4.4137633539427483, 0.0, -3.3401811292442956,
-    4.6725560653643994, 0.0, -3.3401811292442956, 4.6725560653643994, 0.0,
-    -3.5220561640991237, 4.9312580221152817, 0.0, -3.5220561640991237,
-    4.9312580221152817, 0.0, -3.7035490569484968, 5.1898696342119521, 0.0,
-    -3.7035490569484968, 5.1898696342119521, 0.0, -0.13919179616088076,
-    -0.07490340326547, 0.0, -0.13919179616088076, -0.07490340326547, 0.0,
-    -0.27800912838762087, -0.15000797759616485, 0.0, -0.27800912838762087,
-    -0.15000797759616485, 0.0, -0.41645288308364015, -0.22531337660988532, 0.0,
-    -0.41645288308364015, -0.22531337660988532, 0.0, -0.55452394451511977,
-    -0.30081925480716887, 0.0, -0.55452394451511977, -0.30081925480716887, 0.0,
-    -0.69222319481614147, -0.37652526756918425, 0.0, -0.69222319481614147,
-    -0.37652526756918425, 0.0, -0.82955151399381344, -0.4524310711556313, 0.0,
-    -0.82955151399381344, -0.4524310711556313, 0.0, -0.96650977993338516,
-    -0.52853632270264572, 0.0, -0.96650977993338516, -0.52853632270264572, 0.0,
-    -1.1030988684033489, -0.60484068022070858, 0.0, -1.1030988684033489,
-    -0.60484068022070858, 0.0, -1.2393196530605293, -0.68134380259256155, 0.0,
-    -1.2393196530605293, -0.68134380259256155, 0.0, -1.375173005455161,
-    -0.75804534957112635, 0.0, -1.375173005455161, -0.75804534957112635, 0.0,
-    -1.5106597950359535, -0.83494498177742982, 0.0, -1.5106597950359535,
-    -0.83494498177742982, 0.0, -1.6457808891551446, -0.91204236069853384, 0.0,
-    -1.6457808891551446, -0.91204236069853384, 0.0, -1.7805371530735408,
-    -0.98933714868547, 0.0, -1.7805371530735408, -0.98933714868547, 0.0,
-    -1.914929449965546, -1.0668290089511794, 0.0, -1.914929449965546,
-    -1.0668290089511794, 0.0, -2.048958640924178, -1.1445176055684576, 0.0,
-    -2.048958640924178, -1.1445176055684576, 0.0, -2.1826255849660736,
-    -1.2224026034679043, 0.0, -2.1826255849660736, -1.2224026034679043, 0.0,
-    -2.315931139036481, -1.3004836684358778, 0.0, -2.315931139036481,
-    -1.3004836684358778, 0.0, -2.4488761580142389, -1.3787604671124549, 0.0,
-    -2.4488761580142389, -1.3787604671124549, 0.0, -2.5814614947167467,
-    -1.4572326669893951, 0.0, -2.5814614947167467, -1.4572326669893951, 0.0,
-    -2.7136879999049208, -1.53589993640811, 0.0, -2.7136879999049208,
-    -1.53589993640811, 0.0 };
+  static const real_T b_Ku1[9]{ 6.839333350683507, -0.813239171685363,
+    -0.19036508812275005, -0.813239171685363, 0.09669918345146912,
+    0.022635590143779853, -0.19036508812275008, 0.022635590143779853,
+    0.0052985963569623026 };
 
-  static const real_T c[246]{ 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0,
-    612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0,
-    612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0,
-    612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0,
-    612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0,
-    612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0,
-    612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0,
-    612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0,
-    612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0,
-    612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0,
-    612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0,
-    612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0,
-    612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0,
-    612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0,
-    612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0,
-    612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0,
-    612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0,
-    612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0,
-    612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0,
-    612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0,
-    612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0,
-    612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0, 612.0,
-    612.0, 612.0, 80.0, 80.0, 80.0, -0.0, -0.0, -0.0 };
+  static const uint8_T b_Mrows_0[166]{ 1U, 2U, 3U, 4U, 5U, 6U, 7U, 8U, 9U, 10U,
+    11U, 12U, 13U, 14U, 15U, 16U, 17U, 18U, 19U, 20U, 21U, 22U, 23U, 24U, 25U,
+    26U, 27U, 28U, 29U, 30U, 31U, 32U, 33U, 34U, 35U, 36U, 37U, 38U, 39U, 40U,
+    41U, 42U, 43U, 44U, 45U, 46U, 47U, 48U, 49U, 50U, 51U, 52U, 53U, 54U, 55U,
+    56U, 57U, 58U, 59U, 60U, 61U, 62U, 63U, 64U, 65U, 66U, 67U, 68U, 69U, 70U,
+    71U, 72U, 73U, 74U, 75U, 76U, 77U, 78U, 79U, 80U, 81U, 82U, 83U, 84U, 85U,
+    86U, 87U, 88U, 89U, 90U, 91U, 92U, 93U, 94U, 95U, 96U, 97U, 98U, 99U, 100U,
+    101U, 102U, 103U, 104U, 105U, 106U, 107U, 108U, 109U, 110U, 111U, 112U, 113U,
+    114U, 115U, 116U, 117U, 118U, 119U, 120U, 121U, 122U, 123U, 124U, 125U, 126U,
+    127U, 128U, 129U, 130U, 131U, 132U, 133U, 134U, 135U, 136U, 137U, 138U, 139U,
+    140U, 141U, 142U, 143U, 144U, 145U, 146U, 147U, 148U, 149U, 150U, 151U, 152U,
+    153U, 154U, 155U, 156U, 157U, 158U, 159U, 160U, 161U, 162U, 163U, 221U, 222U,
+    223U };
 
-  static const real_T h[180]{ 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0 };
-
-  static const real_T o[180]{ 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 1.0 };
-
-  static const real_T b_A_0[100]{ 0.99801496201563555, 0.00012982817451900192,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.001444494825713849,
-    0.99878101747798131, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.99801496201563555, 0.00012982817451900192, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, -0.001444494825713849, 0.99878101747798131, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0 };
-
-  static const real_T b_A_1[100]{ 0.99747143658641013, 0.0011849245467832059,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.00030050237926615431,
-    1.0004838136541614, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.99747143658641013, 0.0011849245467832059, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, -0.00030050237926615431, 1.0004838136541614, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 1.0 };
-
-  static const real_T b_A[64]{ 0.99867923888102927, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.99867923888102927, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0 };
-
-  static const real_T c_a_0[60]{ -1.3493010369352151E-16,
-    -1.1675558559895421E-15, 2.2450629369655467E-16, -9.2500152910841517E-16,
-    0.024689453048712479, -7.943777873772287E-16, 2.8823938352524109E-16,
-    3.5570950392137461E-16, 8.7943241351772457E-16, 1.9285310195954591E-15,
-    0.14580276217308596, -0.021598327103105264, 0.14580276217309096,
-    -0.021598327103112134, -1.0054774783728353E-15, 0.02222088852315177,
-    0.0031720277995458445, 1.5008670922687785E-16, -0.0024685645256298031,
-    0.003172027799553423, -0.015523318927034492, 0.085203655514006313,
-    -0.015523318927008747, 0.0852036555139457, -7.0589066818986132E-16,
-    -0.0029029803765247804, 0.023198516335863745, -3.1464216881124013E-16,
-    -0.0029029803765413028, -0.0014909367129008872, 1.7463654942675622E-15,
-    5.2715088122423186E-17, 2.3678313046590209E-16, 2.760023978062948E-15,
-    3.5851626435326736E-16, -1.5415647015806093E-15, -3.5518690565450184E-16,
-    0.02468945304871167, -4.6913613292291945E-16, -2.8471103718024361E-15,
-    0.14580276217267166, -0.021598327102856273, 0.14580276217266042,
-    -0.021598327102846406, 1.2378015318971689E-15, -0.0024685645252104874,
-    0.003172027799306045, -1.3815255191351443E-16, 0.022220888523571687,
-    0.0031720277992777178, -0.015523318926905885, 0.085203655513833534,
-    -0.015523318926929857, 0.085203655513889545, 8.926914482010702E-16,
-    -0.0029029803766526282, -0.0014909367127887497, -5.4423394757560848E-17,
-    -0.0029029803766385991, 0.023198516335942394 };
-
-  static const real_T c_a_1[60]{ 0.13063875476843981, -0.053690379918034888,
-    0.13010284540699737, -0.048537966075219825, 0.022672305893804586,
-    0.0024236170740209533, 3.10900862053873E-15, -0.0014887611813181533,
-    -0.0026564643729729276, 7.43199707040387E-16, -0.055206463682881686,
-    0.19733828508082932, -0.050054049837865343, 0.14780123586116181,
-    0.0039397008388678181, -0.022251681085583872, 5.6867795365447866E-17,
-    -0.0011403806103201641, 0.0019004869693013892, -4.7316906414455058E-16,
-    3.6351433545115045E-15, 1.4040431858075756E-14, -3.2789053806757555E-15,
-    1.4046092584410489E-14, -4.72902566177774E-16, -1.3774131006650049E-14,
-    0.024689453048711677, 1.2811698620675945E-16, -1.4277844130261156E-14,
-    -3.0407729517469778E-16, 0.13010284540701042, -0.048537966075151331,
-    0.13063875476844858, -0.053690379917926627, -0.0014887611813312498,
-    -0.0026564643730341941, -3.1420550328853386E-15, 0.022672305893797325,
-    0.0024236170739114441, -8.5716857860795223E-16, -0.050054049838186253,
-    0.14780123586192084, -0.055206463683200487, 0.19733828508159162,
-    -0.0011403806100064946, 0.0019004869685422226, -1.3321387737354083E-16,
-    0.0039397008391853314, -0.022251681086325373, 3.2521052678624355E-16,
-    7.8573329095329507E-16, 1.7729695040513638E-16, -3.1569984595464808E-15,
-    -1.6399356126597423E-15, 1.3442269461789139E-16, -4.8148531004784216E-16,
-    -3.0505811159304027E-16, 2.1140431622661049E-15, 1.6917293461581915E-15,
-    0.024689453048712246 };
-
-  static const real_T d_a_0[60]{ -1.3286135634905549E-15,
-    -5.2719344895617172E-16, -8.875729112587828E-16, -6.3371986351093964E-16,
-    0.024689453048712038, -2.8609304354609092E-16, 3.487319325503805E-16,
-    9.8894977402454656E-17, 9.55001448329591E-16, 7.161099874107621E-16,
-    0.14554453682362364, -0.021553069813391, 0.14554453682362928,
-    -0.021553069813398929, -1.0180638245063373E-15, 0.022220888523201865,
-    0.0031720277995270292, 1.3458197354116882E-16, -0.0024685645255787584,
-    0.0031720277995358984, -0.015615580788843781, 0.085097778382963646,
-    -0.015615580788818249, 0.085097778382903513, -7.03315603900164E-16,
-    -0.0029029803765225669, 0.023198516335863107, -3.1093226788899258E-16,
-    -0.0029029803765393014, -0.0014909367129007042, 1.4809047485715802E-15,
-    5.6341244474062862E-16, 1.1072821416542014E-15, 3.1356200306111844E-15,
-    1.0442222682848953E-16, 1.5578150588167511E-15, -2.1249548531906002E-16,
-    0.024689453048711903, -4.9179393494252262E-15, -7.4317177983426109E-16,
-    0.14554453682321053, -0.0215530698131427, 0.14554453682319984,
-    -0.02155306981313385, 1.2215716358558572E-15, -0.0024685645251605244,
-    0.0031720277992875533, -1.5444858114192032E-16, 0.022220888523622011,
-    0.003172027799260489, -0.01561558078871641, 0.085097778382792283,
-    -0.015615580788740587, 0.085097778382848141, 8.9228929914245286E-16,
-    -0.0029029803766484259, -0.0014909367127899484, -5.1559145272375194E-17,
-    -0.0029029803766346973, 0.023198516335941916 };
-
-  static const real_T d_a_1[60]{ 0.13032456047964627, -0.053561558989666934,
-    0.12978845788638857, -0.048407287350832322, 0.02267230589380282,
-    0.00242361707403653, 3.0965418352169834E-15, -0.0014887611813189075,
-    -0.0026564643729636412, 7.4307922647746408E-16, -0.055126171262810331,
-    0.19736834454368832, -0.04997189962178173, 0.14781343384486076,
-    0.003939700838866628, -0.022251681085588802, 4.964896767976845E-17,
-    -0.0011403806103175548, 0.0019004869692955454, -4.7569554365069832E-16,
-    1.9227121156520315E-15, 1.2072502537598143E-14, -1.501053003416049E-15,
-    8.23344142778545E-15, -1.0236402466968285E-15, -1.1446044762745138E-14,
-    0.024689453048712146, 8.9626519721957567E-16, -8.1482188373998946E-15,
-    4.9749100862038536E-17, 0.12978845788640161, -0.048407287350765014,
-    0.13032456047965524, -0.053561558989558521, -0.0014887611813321185,
-    -0.0026564643730245946, -3.1357416027813126E-15, 0.022672305893795569,
-    0.0024236170739276846, -8.5660274826988225E-16, -0.049971899622101336,
-    0.14781343384561868, -0.055126171263127528, 0.19736834454444707,
-    -0.0011403806100045892, 0.001900486968539325, -1.3682064082528937E-16,
-    0.0039397008391829306, -0.022251681086328183, 3.275458957324977E-16,
-    -1.2628574529309357E-17, 1.2008069891760323E-15, -1.9618966754900136E-15,
-    -2.3814872173872742E-15, -1.6953886056165856E-16, -1.3350979816451865E-15,
-    -2.7270192393292958E-17, 1.7396574001077273E-15, 2.704285886690011E-15,
-    0.024689453048712118 };
-
-  static const real_T c_a[48]{ 0.18830679432649863, 0.18830679432650269,
-    0.022059066214098054, 2.5230328845122769E-17, 8.9692687745952415E-17,
-    -0.0026303868346078179, -1.2571160900117593E-16, -5.71467306939525E-17,
-    -4.1204398628128764E-15, -2.816212382747728E-15, 4.1692819362639037E-15,
-    0.02468945304871217, -2.1028121777614864E-17, 2.7309599930514198E-15,
-    2.4125046479575912E-16, -1.0204125760738813E-16, -4.6450947826779657E-16,
-    -2.761872039395948E-15, 6.2425094920799318E-16, -1.976925546372601E-17,
-    0.024689453048712048, 2.9356060741096639E-15, 2.4332183317588693E-17,
-    5.7062545372552586E-17, 0.18830679432521083, 0.18830679432520178,
-    -0.0026303868333161242, 2.8773390387444934E-18, 2.0233643636645766E-16,
-    0.022059066215401157, -4.2901040066494445E-18, 2.8716963918091621E-17,
-    -2.0337178809473559E-15, -1.7540017816779046E-15, 2.02407570490301E-15,
-    2.4141424086370343E-16, 2.3030997484589184E-17, 1.5571067788478613E-15,
-    0.024689453048712475, -3.3566203160325031E-18, -1.136476839024345E-15,
-    3.0764737487189331E-15, 1.0347365692837263E-15, -1.0058861543012247E-16,
-    5.4361235871880759E-17, -3.0427365314654311E-15, -4.1801243508450244E-18,
-    0.024689453048711962 };
-
-  static const real_T d_a[48]{ 0.1880580860341125, 0.18805808603411617,
-    0.022059066214095539, 4.3831064811932122E-17, 6.7337364339229245E-17,
-    -0.0026303868346073834, -1.1320233898242198E-16, -4.3175671180392858E-17,
-    -2.8947889241124266E-15, -1.9732620600075495E-15, 3.9540462567412853E-15,
-    0.024689453048712139, -1.7582053102690953E-17, 1.2530704858616323E-15,
-    1.2935134781352392E-16, 1.7434853494517857E-17, -1.1846528643462433E-15,
-    -3.1504850347149165E-15, 5.1527402493887339E-16, -4.8432915240592263E-17,
-    0.024689453048712073, 2.0666863622775897E-15, -1.0939020792469785E-16,
-    3.0001112140270809E-17, 0.18805808603282764, 0.18805808603281798,
-    -0.0026303868333193889, 1.9821674517527381E-17, 1.7797214899950445E-16,
-    0.022059066215400495, 9.2515026921393948E-18, 4.29739330190316E-17,
-    -1.4701369148339633E-16, 1.6096813127316034E-16, 1.2236226095001052E-15,
-    -1.5956560300803347E-16, -3.1124234652486909E-16, 1.0258195202799193E-15,
-    0.024689453048712163, 1.595109096193717E-17, -5.4774339592263138E-16,
-    2.0496139574284967E-15, -1.0942770620180964E-16, 5.2962691312108752E-18,
-    1.6388199070448957E-17, -1.134213914809288E-15, -2.63722928475333E-17,
-    0.024689453048712107 };
-
-  static const real_T a_7[30]{ -0.1888968412469153, -0.060492001339316988,
-    -0.1888968412469153, -0.060492001339316988, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.1599184353223182, -0.089801925435736424, 0.1599184353223182,
-    -0.089801925435736424, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.10536597514810161,
-    0.1119360731420971, -0.10536597514810161, 0.1119360731420971, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0 };
-
-  static const real_T a_8[30]{ 0.12647183082737606, -0.14396327290074137,
-    0.12647183082737606, -0.14396327290074137, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    -0.18891678043810189, 0.2603991729373682, -0.18891678043810189,
-    0.2603991729373682, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.13919179616088076,
-    -0.07490340326547, -0.13919179616088076, -0.07490340326547, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0 };
-
-  static const real_T a_a[30]{ -0.1888968412469153, -0.060492001339316988,
-    -0.1888968412469153, -0.060492001339316988, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.1599184353223182, -0.089801925435736424, 0.1599184353223182,
-    -0.089801925435736424, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.10536597514810161,
-    0.1119360731420971, -0.10536597514810161, 0.1119360731420971, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0 };
-
-  static const real_T a_b[30]{ 0.12647183082737606, -0.14396327290074137,
-    0.12647183082737606, -0.14396327290074137, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    -0.18891678043810189, 0.2603991729373682, -0.18891678043810189,
-    0.2603991729373682, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.13919179616088076,
-    -0.07490340326547, -0.13919179616088076, -0.07490340326547, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0 };
-
-  static const real_T a_6[24]{ 0.3579347593572087, 0.3579347593572087, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, -0.042560663779893933, -0.042560663779893933, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, -0.0099627081344734868, -0.0099627081344734868, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0 };
-
-  static const real_T a_9[24]{ 0.3579347593572087, 0.3579347593572087, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, -0.042560663779893933, -0.042560663779893933, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, -0.0099627081344734868, -0.0099627081344734868, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0 };
-
-  static const real_T f[16]{ 0.034121465297356074, 0.0, 0.0, 0.0, 0.0,
-    0.034121465297356074, 0.0, 0.0, 0.0, 0.0, 0.034121465297356074, 0.0, 0.0,
-    0.0, 0.0, 100000.0 };
-
-  static const int32_T q[246]{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-    16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34,
-    35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53,
-    54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72,
-    73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91,
-    92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108,
-    109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123,
-    124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138,
-    139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153,
-    154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168,
-    169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183,
-    184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198,
-    199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213,
-    214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228,
-    229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243,
-    301, 302, 303 };
-
-  static const int8_T b_a_0[60]{ 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
-    1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
-    0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1 };
-
-  static const int8_T b_a_1[60]{ 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1,
-    0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
-    0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1 };
-
-  static const int8_T b_a[48]{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0,
-    0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0,
-    0, 0, 0, 0, 1 };
-
-  static const int8_T b[5]{ 0, 1, 2, 4, 5 };
-
+  real_T Bc[166];
+  real_T a__1[166];
   real_T Product1_j[144];
-  real_T rseq[120];
-  real_T rtb_useq_f[63];
-  real_T tmp[60];
-  real_T vseq[21];
-  real_T f_0[16];
+  real_T rseq[80];
+  real_T B_est[36];
+  real_T D_est[27];
+  real_T rtb_R_tmp[27];
+  real_T y[24];
+  real_T Abar[16];
+  real_T rtb_A[16];
+  real_T rtb_Q[16];
+  real_T rtb_Transpose2_0[16];
+  real_T rtb_Z[16];
+  real_T rtb_y_g[16];
+  real_T rtb_y_m[16];
   real_T Sum_h[12];
-  real_T xk_0[10];
-  real_T xk_2[10];
-  real_T xk_3[10];
-  real_T xk[8];
-  real_T xk_1[8];
-  real_T rtb_Gain2[6];
-  real_T rtb_Gain3[6];
+  real_T rtb_Add_e[12];
+  real_T rtb_C[12];
+  real_T rtb_N[12];
+  real_T rtb_Product2[12];
+  real_T rtb_Transpose2[12];
+  real_T rtb_Add1[9];
+  real_T rtb_N_0[9];
+  real_T rtb_R[9];
+  real_T tmp[9];
   real_T rtb_ywt[6];
-  real_T tmp_1[6];
-  real_T tmp_3[6];
-  real_T y_innov[6];
-  real_T y_innov_0[6];
-  real_T y_innov_1[6];
+  real_T rtb_ywtT[6];
+  real_T rtb_xest[5];
+  real_T rtb_Sum2[4];
+  real_T rtb_TmpSignalConversionAtSFun_p[4];
   real_T Sum2_c[3];
-  real_T ext_mv[3];
-  real_T rtb_Delay2[3];
-  real_T rtb_Gain1[3];
-  real_T rtb_u_l[3];
+  real_T Sum2_c_0[3];
+  real_T rtb_C_0[3];
+  real_T rtb_r_[3];
   real_T tmp_0[3];
-  real_T tmp_2[3];
-  real_T tmp_4[3];
-  real_T ext_mv_idx_2;
-  real_T rtb_sig;
-  real_T status;
+  int32_T k;
   uint16_T waypt;
+  int8_T b_I[16];
   int8_T P0_2_tmp[12];
-  boolean_T tmp_6[246];
-  boolean_T x[5];
-  boolean_T b_x[4];
+  boolean_T umax_incr_flag[3];
   boolean_T rstP1;
   boolean_T rstP2;
   boolean_T rstTheta1;
@@ -6538,17 +2998,17 @@ void SupervisoryController::step()
       if (rtDW.waypt == 1UL) {
         //  hold curr pos
         // '<S1>:520:5' traj(:, waypt) = y;
-        for (int32_T k{0}; k < 6; k++) {
+        for (int32_T ii{0}; ii < 6; ii++) {
           // Inport: '<Root>/y'
-          rtDW.traj[k] = rtU.y[k];
+          rtDW.traj[ii] = rtU.y[ii];
         }
       } else {
         // '<S1>:520:6' else
         //  hold last waypoint pos
         // '<S1>:520:7' traj(:,1) = traj(:, waypt);
-        for (int32_T k{0}; k < 6; k++) {
-          rtDW.traj[k] = rtDW.traj[(static_cast<int32_T>(rtDW.waypt) - 1) * 6 +
-            k];
+        for (int32_T ii{0}; ii < 6; ii++) {
+          rtDW.traj[ii] = rtDW.traj[(static_cast<int32_T>(rtDW.waypt) - 1) * 6 +
+            ii];
         }
 
         // '<S1>:520:8' waypt = 1;
@@ -6562,25 +3022,24 @@ void SupervisoryController::step()
       //  request new event
       // Entry 'ControlLaw': '<S1>:59'
     } else {
-      __m128d tmp_5;
-      real_T Sum2_c_0;
-      real_T ext_mv_idx_0;
-      real_T ext_mv_idx_1;
-      real_T rtb_Delay2_tmp;
+      __m128d tmp_1;
+      __m128d tmp_2;
+      __m128d tmp_3;
+      real_T Bc_0;
+      real_T dwt;
+      real_T rtb_Sum1_b_idx_2;
+      real_T umin_scale1_idx_0;
+      real_T umin_scale1_idx_1;
+      real_T umin_scale1_idx_2;
       int32_T i;
       int32_T i_0;
-      int32_T k;
+      int32_T i_2;
+      int32_T ii;
+      int32_T rtb_Q_tmp;
+      int32_T rtb_R_tmp_0;
       boolean_T c_y;
       boolean_T exitg1;
       boolean_T guard1{ false };
-
-      boolean_T guard2{ false };
-
-      boolean_T guard3{ false };
-
-      boolean_T guard4{ false };
-
-      boolean_T guard5{ false };
 
       // During 'Supervisor': '<S1>:1'
       // During 'EventHandler': '<S1>:519'
@@ -6599,17 +3058,17 @@ void SupervisoryController::step()
           if (rtDW.waypt == 1UL) {
             //  hold curr pos
             // '<S1>:520:5' traj(:, waypt) = y;
-            for (k = 0; k < 6; k++) {
+            for (ii = 0; ii < 6; ii++) {
               // Inport: '<Root>/y'
-              rtDW.traj[k] = rtU.y[k];
+              rtDW.traj[ii] = rtU.y[ii];
             }
           } else {
             // '<S1>:520:6' else
             //  hold last waypoint pos
             // '<S1>:520:7' traj(:,1) = traj(:, waypt);
-            for (k = 0; k < 6; k++) {
-              rtDW.traj[k] = rtDW.traj[(static_cast<int32_T>(rtDW.waypt) - 1) *
-                6 + k];
+            for (ii = 0; ii < 6; ii++) {
+              rtDW.traj[ii] = rtDW.traj[(static_cast<int32_T>(rtDW.waypt) - 1) *
+                6 + ii];
             }
 
             // '<S1>:520:8' waypt = 1;
@@ -6722,18 +3181,18 @@ void SupervisoryController::step()
           rtDW.enAdapt_[5] = false;
 
           // '<S1>:59:5' P0_2 = P(1:np*no, 1:np*no);
-          for (k = 0; k < 12; k++) {
-            P0_2_tmp[k] = static_cast<int8_T>(k + 1);
+          for (ii = 0; ii < 12; ii++) {
+            P0_2_tmp[ii] = static_cast<int8_T>(ii + 1);
           }
 
           // '<S1>:59:5' theta0_2 = theta(1:np*no);
-          for (i = 0; i < 12; i++) {
-            for (k = 0; k < 12; k++) {
-              rtDW.P0_2[k + 12 * i] = rtY.P_e[((P0_2_tmp[i] - 1) * 24 +
-                P0_2_tmp[k]) - 1];
+          for (k = 0; k < 12; k++) {
+            for (ii = 0; ii < 12; ii++) {
+              rtDW.P0_2[ii + 12 * k] = rtY.P_g[((P0_2_tmp[k] - 1) * 24 +
+                P0_2_tmp[ii]) - 1];
             }
 
-            rtDW.theta0_2[i] = rtY.theta[i];
+            rtDW.theta0_2[k] = rtY.theta[k];
           }
         } else {
           guard1 = true;
@@ -6783,18 +3242,18 @@ void SupervisoryController::step()
           rtDW.enAdapt_[2] = false;
 
           // '<S1>:59:11' P0_1 = P(np*no+1:2*np*no, np*no+1:2*np*no);
-          for (k = 0; k < 12; k++) {
-            P0_2_tmp[k] = static_cast<int8_T>(k + 13);
+          for (ii = 0; ii < 12; ii++) {
+            P0_2_tmp[ii] = static_cast<int8_T>(ii + 13);
           }
 
           // '<S1>:59:11' theta0_1 = theta(np*no+1:2*np*no);
-          for (i = 0; i < 12; i++) {
-            for (k = 0; k < 12; k++) {
-              rtDW.P0_1[k + 12 * i] = rtY.P_e[((P0_2_tmp[i] - 1) * 24 +
-                P0_2_tmp[k]) - 1];
+          for (k = 0; k < 12; k++) {
+            for (ii = 0; ii < 12; ii++) {
+              rtDW.P0_1[ii + 12 * k] = rtY.P_g[((P0_2_tmp[k] - 1) * 24 +
+                P0_2_tmp[ii]) - 1];
             }
 
-            rtDW.theta0_1[i] = rtY.theta[i + 12];
+            rtDW.theta0_1[k] = rtY.theta[k + 12];
           }
         } else {
           guard1 = true;
@@ -6833,8 +3292,8 @@ void SupervisoryController::step()
 
       if (!c_y) {
         // '<S1>:59:16' enAdapt_(:) = false;
-        for (i = 0; i < 6; i++) {
-          rtDW.enAdapt_[i] = false;
+        for (k = 0; k < 6; k++) {
+          rtDW.enAdapt_[k] = false;
         }
       }
 
@@ -6858,22 +3317,22 @@ void SupervisoryController::step()
                 &rtPrevZCX.paramEst1_o);
 
       // End of Outputs for SubSystem: '<S1>/paramEst1'
-      i = 0;
-      i_0 = 0;
-      for (k = 0; k < 12; k++) {
+      k = 0;
+      i_2 = 0;
+      for (i = 0; i < 12; i++) {
         // Outport: '<Root>/P' incorporates:
-        //   Product: '<S160>/Product1'
+        //   Product: '<S159>/Product1'
 
-        (void)std::memcpy(&rtY.P_e[i], &Product1_j[i_0], 12U * sizeof(real_T));
+        (void)std::memcpy(&rtY.P_g[k], &Product1_j[i_2], 12U * sizeof(real_T));
 
         // Outport: '<Root>/theta'
-        rtY.theta[k] = Sum_h[k];
-        i += 24;
-        i_0 += 12;
+        rtY.theta[i] = Sum_h[i];
+        k += 24;
+        i_2 += 12;
       }
 
       // Outport: '<Root>/prmErr' incorporates:
-      //   Sum: '<S160>/Sum2'
+      //   Sum: '<S159>/Sum2'
 
       rtY.prmErr[0] = Sum2_c[0];
       rtY.prmErr[1] = Sum2_c[1];
@@ -6899,387 +3358,254 @@ void SupervisoryController::step()
                 &rtPrevZCX.paramEst2);
 
       // End of Outputs for SubSystem: '<S1>/paramEst2'
-      i = 0;
-      i_0 = 0;
-      for (k = 0; k < 12; k++) {
+      k = 0;
+      i_2 = 0;
+      for (i = 0; i < 12; i++) {
         // Outport: '<Root>/P' incorporates:
-        //   Product: '<S164>/Product1'
+        //   Product: '<S163>/Product1'
 
-        (void)std::memcpy(&rtY.P_e[i + 300], &Product1_j[i_0], 12U * sizeof
+        (void)std::memcpy(&rtY.P_g[k + 300], &Product1_j[i_2], 12U * sizeof
                           (real_T));
 
         // Outport: '<Root>/theta'
-        rtY.theta[k + 12] = Sum_h[k];
-        i += 24;
-        i_0 += 12;
+        rtY.theta[i + 12] = Sum_h[i];
+        k += 24;
+        i_2 += 12;
       }
 
       // Outport: '<Root>/prmErr' incorporates:
-      //   Sum: '<S164>/Sum2'
+      //   Sum: '<S163>/Sum2'
 
       rtY.prmErr[3] = Sum2_c[0];
       rtY.prmErr[4] = Sum2_c[1];
       rtY.prmErr[5] = Sum2_c[2];
 
+      // Outputs for Function Call SubSystem: '<S1>/mpc1'
+      // MATLAB Function: '<S3>/MATLAB Function' incorporates:
+      //   Inport: '<Root>/k_2'
+
       // [u, ywt, yhat, currTraj] = ...
       // ampc(traj(:,waypt), currEv.r, y, ymax, y0, x0, u0, umax, uwt,...
       // excitation, theta, thetaSgn, k_2);
-      // '<S1>:59:31' [u, ywt, currTraj] = gmpc(traj(:,waypt), currEv.r, y, ymax, umax, uwt, k_2); 
-      // Simulink Function 'gmpc': '<S1>:863'
-      for (i = 0; i <= 4; i += 2) {
-        // Outputs for Function Call SubSystem: '<S1>/gmpc'
-        // Gain: '<S3>/Gain2' incorporates:
-        //   Inport: '<Root>/ymax'
+      // [u, ywt, currTraj] = gmpc(traj(:,waypt), currEv.r, y, ymax, umax, uwt, k_2); 
+      // '<S1>:59:32' [u, yhat(1:no), currTraj, ywt] = mpc1(traj(:,waypt), currEv.r, y, [0;0;0], 0, u0, umax, k_2, false); 
+      // Simulink Function 'mpc1': '<S1>:882'
+      // MATLAB Function 'SupervisoryController/mpc1/MATLAB Function': '<S86>:1' 
+      // '<S86>:1:2' [ywt, ywtT, uwt, uwtT] = wtMod_(y, yDest, ywtT, uwtT, dt, no, ni, k_2); 
+      // 'wtMod_:3' ywt = zeros(1,2*no);
+      // 'wtMod_:4' uwt = dt*ones(1,ni);
+      //  time-scaled sigmoid (around 0->1 in 0->k_2 seconds, k_2 being a time scale factor) 
+      // 'wtMod_:7' r = 0.2;
+      //  10% to 90% rise time
+      // 'wtMod_:8' dwt = dt/k_2;
+      dwt = rtP.dt / rtU.k_2;
 
-        (void)_mm_storeu_pd(&rtb_Gain2[i], _mm_mul_pd(_mm_set1_pd
-          (rtP.Gain2_Gain_b), _mm_loadu_pd(&rtU.ymax[i])));
+      // 'wtMod_:9' k_1 = 2.197/(r*k_2);
+      rtb_Sum1_b_idx_2 = 2.197 / (0.2 * rtU.k_2);
 
-        // End of Outputs for SubSystem: '<S1>/gmpc'
+      // 'wtMod_:10' x0 = 0.5*k_2;
+      umin_scale1_idx_0 = 0.5 * rtU.k_2;
+
+      //  midpoint
+      // 'wtMod_:11' sigmoid = @(x) 1/(1 + exp(-k_1*(x-x0)));
+      // 'wtMod_:13' for i = 1:2*no
+      for (k = 0; k < 6; k++) {
+        // Delay: '<S3>/Delay'
+        umin_scale1_idx_1 = rtDW.Delay_DSTATE[k];
+
+        // MATLAB Function: '<S3>/MATLAB Function' incorporates:
+        //   Inport: '<Root>/k_2'
+        //   Outport: '<Root>/currEv'
+
+        // 'wtMod_:14' if yDest(i) ~= 0
+        if (rtY.currEv.r[k] != 0.0) {
+          //  drive ywt to 1
+          // 'wtMod_:16' if (ywtT(i) <= 1)
+          if (umin_scale1_idx_1 <= 1.0) {
+            // 'wtMod_:17' ywtT(i) = ywtT(i) + dwt;
+            umin_scale1_idx_1 += dwt;
+          }
+
+          // 'wtMod_:19' else
+          //  drive ywt to 0
+          // 'wtMod_:21' if (ywtT(i) > 0)
+        } else if (umin_scale1_idx_1 > 0.0) {
+          // 'wtMod_:22' ywtT(i) = ywtT(i) - dwt;
+          umin_scale1_idx_1 -= dwt;
+        } else {
+          // no actions
+        }
+
+        // 'wtMod_:25' if ywtT(i) <= 0
+        if (umin_scale1_idx_1 <= 0.0) {
+          // 'wtMod_:26' ywt(i) = 0;
+          rtb_ywt[k] = 0.0;
+        } else {
+          // 'wtMod_:27' else
+          // 'wtMod_:28' ywt(i) = sigmoid(ywtT(i)*k_2);
+          // 'wtMod_:11' @(x) 1/(1 + exp(-k_1*(x-x0)))
+          rtb_ywt[k] = 1.0 / (std::exp((umin_scale1_idx_1 * rtU.k_2 -
+            umin_scale1_idx_0) * -rtb_Sum1_b_idx_2) + 1.0);
+        }
+
+        // Delay: '<S3>/Delay'
+        rtb_ywtT[k] = umin_scale1_idx_1;
       }
 
-      for (i = 0; i <= 4; i += 2) {
-        // Outputs for Function Call SubSystem: '<S1>/gmpc'
-        // Gain: '<S3>/Gain3' incorporates:
-        //   Inport: '<Root>/ymax'
-
-        (void)_mm_storeu_pd(&rtb_Gain3[i], _mm_mul_pd(_mm_set1_pd
-          (rtP.Gain3_Gain_d), _mm_loadu_pd(&rtU.ymax[i])));
-
-        // End of Outputs for SubSystem: '<S1>/gmpc'
-      }
-
-      // Outputs for Function Call SubSystem: '<S1>/gmpc'
-      // Update for Delay: '<S3>/Delay' incorporates:
-      //   Delay: '<S3>/Delay1'
-      //   Inport: '<Root>/k_2'
-      //   MATLAB Function: '<S3>/MATLAB Function'
+      // MATLAB Function: '<S3>/MATLAB Function' incorporates:
+      //   Inport: '<Root>/y'
       //   Outport: '<Root>/currEv'
 
-      MATLABFunction(rtY.currEv.r, rtU.k_2, rtDW.Delay_DSTATE, rtb_ywt, Sum2_c,
-                     &rtP);
-
-      // MATLAB Function: '<S3>/MATLAB Function1'
-      // MATLAB Function 'SupervisoryController/gmpc/MATLAB Function1': '<S87>:1' 
-      // '<S87>:1:2' sig = gainSchSig_(ywt);
-      // 'gainSchSig_:3' if isempty(sigPrev)
-      // 'gainSchSig_:7' if ( ywt(1) > 0.5 && all(ywt(2:end) < 0.5) )...
-      // 'gainSchSig_:8'         || ( ywt(4) > 0.5 && all(ywt([1:3,5:end]) < 0.5) ) 
-      guard1 = false;
-      guard2 = false;
-      guard3 = false;
-      guard4 = false;
-      guard5 = false;
-      if (rtb_ywt[0] > 0.5) {
-        for (k = 0; k < 5; k++) {
-          x[k] = (rtb_ywt[k + 1] < 0.5);
-        }
-
-        rstP2 = true;
-        k = 0;
-        exitg1 = false;
-        while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U))
-                == false) && (k <= 4)) {
-          if (!x[k]) {
-            rstP2 = false;
-            exitg1 = true;
-          } else {
-            k++;
-          }
-        }
-
-        if (rstP2) {
-          // 'gainSchSig_:9' sig = 1;
-          rtb_sig = 1.0;
-        } else {
-          guard5 = true;
-        }
+      //  for i = 1:ni
+      //      if yDest(i) ~= 0
+      //          % drive uwt to 0
+      //          if (uwtT(i) > 0)
+      //              uwtT(i) = uwtT(i) - dwt;
+      //          end
+      //      else
+      //          % drive uwt to 1
+      //          if (uwtT(i) <= 1)
+      //              uwtT(i) = uwtT(i) + dwt;
+      //          end
+      //      end
+      //      uwt(i) = sigmoid(uwtT(i)*k_2);
+      //  end
+      // '<S86>:1:3' r_ = zeros(no, 1);
+      // '<S86>:1:4' if any(yDest(1:no))
+      if (any(&rtY.currEv.r[0])) {
+        // '<S86>:1:5' r_ = r(1:no);
+        // '<S86>:1:6' y_ = y(1:no);
+        ii = (static_cast<int32_T>(rtDW.waypt) - 1) * 6;
+        rtb_r_[0] = rtDW.traj[ii];
+        Sum2_c[0] = rtU.y[0];
+        rtb_r_[1] = rtDW.traj[ii + 1];
+        Sum2_c[1] = rtU.y[1];
+        rtb_r_[2] = rtDW.traj[ii + 2];
+        Sum2_c[2] = rtU.y[2];
+      } else if (any(&rtY.currEv.r[3])) {
+        // '<S86>:1:7' elseif any(yDest(no+1:2*no))
+        // '<S86>:1:8' r_ = r(no+1:2*no);
+        // '<S86>:1:9' y_ = y(no+1:2*no);
+        ii = (static_cast<int32_T>(rtDW.waypt) - 1) * 6;
+        rtb_r_[0] = rtDW.traj[ii + 3];
+        Sum2_c[0] = rtU.y[3];
+        rtb_r_[1] = rtDW.traj[ii + 4];
+        Sum2_c[1] = rtU.y[4];
+        rtb_r_[2] = rtDW.traj[ii + 5];
+        Sum2_c[2] = rtU.y[5];
       } else {
-        guard5 = true;
+        // '<S86>:1:10' else
+        // '<S86>:1:11' r_ = zeros(no, 1);
+        // '<S86>:1:12' y_ = y(1:no);
+        rtb_r_[0] = 0.0;
+        Sum2_c[0] = rtU.y[0];
+        rtb_r_[1] = 0.0;
+        Sum2_c[1] = rtU.y[1];
+        rtb_r_[2] = 0.0;
+        Sum2_c[2] = rtU.y[2];
       }
 
-      if (guard5) {
-        if (rtb_ywt[3] > 0.5) {
-          for (k = 0; k < 5; k++) {
-            x[k] = (rtb_ywt[b[k]] < 0.5);
-          }
+      // Delay: '<S111>/MemoryX' incorporates:
+      //   Constant: '<S111>/X0'
+      //   DataTypeConversion: '<S111>/DataTypeConversionReset'
 
-          rstP1 = true;
-          k = 0;
-          exitg1 = false;
-          while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U))
-                  == false) && (k <= 4)) {
-            if (!x[k]) {
-              rstP1 = false;
-              exitg1 = true;
-            } else {
-              k++;
-            }
-          }
-
-          if (rstP1) {
-            // 'gainSchSig_:9' sig = 1;
-            rtb_sig = 1.0;
-          } else {
-            guard4 = true;
-          }
-        } else {
-          guard4 = true;
-        }
+      rtDW.icLoad = ((static_cast<uint32_T>(rtPrevZCX.MemoryX_Reset_ZCE) ==
+                      POS_ZCSIG) || rtDW.icLoad);
+      rtPrevZCX.MemoryX_Reset_ZCE = 0U;
+      if (rtDW.icLoad) {
+        rtDW.MemoryX_DSTATE[0] = rtP.X0_Value_f[0];
+        rtDW.MemoryX_DSTATE[1] = rtP.X0_Value_f[1];
+        rtDW.MemoryX_DSTATE[2] = rtP.X0_Value_f[2];
+        rtDW.MemoryX_DSTATE[3] = rtP.X0_Value_f[3];
       }
-
-      if (guard4) {
-        if ((rtb_ywt[1] > 0.5) && (rtb_ywt[2] > 0.5)) {
-          b_x[0] = (rtb_ywt[0] < 0.5);
-          b_x[1] = (rtb_ywt[3] < 0.5);
-          b_x[2] = (rtb_ywt[4] < 0.5);
-          b_x[3] = (rtb_ywt[5] < 0.5);
-          c_y = true;
-          k = 0;
-          exitg1 = false;
-          while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U))
-                  == false) && (k <= 3)) {
-            if (!b_x[k]) {
-              c_y = false;
-              exitg1 = true;
-            } else {
-              k++;
-            }
-          }
-
-          if (c_y) {
-            // 'gainSchSig_:10' elseif ( ywt(2) > 0.5 && ywt(3) > 0.5 && all(ywt([1,4:end]) < 0.5) )... 
-            // 'gainSchSig_:11'         || ( ywt(5) > 0.5 && ywt(6) > 0.5 && all(ywt([1:4]) < 0.5) ) 
-            // 'gainSchSig_:12' sig = 2;
-            rtb_sig = 2.0;
-          } else {
-            guard3 = true;
-          }
-        } else {
-          guard3 = true;
-        }
-      }
-
-      if (guard3) {
-        if ((rtb_ywt[4] > 0.5) && (rtb_ywt[5] > 0.5)) {
-          b_x[0] = (rtb_ywt[0] < 0.5);
-          b_x[1] = (rtb_ywt[1] < 0.5);
-          b_x[2] = (rtb_ywt[2] < 0.5);
-          b_x[3] = (rtb_ywt[3] < 0.5);
-          rstP2 = true;
-          k = 0;
-          exitg1 = false;
-          while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U))
-                  == false) && (k <= 3)) {
-            if (!b_x[k]) {
-              rstP2 = false;
-              exitg1 = true;
-            } else {
-              k++;
-            }
-          }
-
-          if (rstP2) {
-            // 'gainSchSig_:10' elseif ( ywt(2) > 0.5 && ywt(3) > 0.5 && all(ywt([1,4:end]) < 0.5) )... 
-            // 'gainSchSig_:11'         || ( ywt(5) > 0.5 && ywt(6) > 0.5 && all(ywt([1:4]) < 0.5) ) 
-            // 'gainSchSig_:12' sig = 2;
-            rtb_sig = 2.0;
-          } else {
-            guard2 = true;
-          }
-        } else {
-          guard2 = true;
-        }
-      }
-
-      if (guard2) {
-        if ((rtb_ywt[0] > 0.5) && (rtb_ywt[2] > 0.5)) {
-          b_x[0] = (rtb_ywt[1] < 0.5);
-          b_x[1] = (rtb_ywt[3] < 0.5);
-          b_x[2] = (rtb_ywt[4] < 0.5);
-          b_x[3] = (rtb_ywt[5] < 0.5);
-          rstP2 = true;
-          k = 0;
-          exitg1 = false;
-          while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>(0U))
-                  == false) && (k <= 3)) {
-            if (!b_x[k]) {
-              rstP2 = false;
-              exitg1 = true;
-            } else {
-              k++;
-            }
-          }
-
-          if (rstP2) {
-            // 'gainSchSig_:13' elseif ( ywt(1) > 0.5 && ywt(3) > 0.5 && all(ywt([2,4:end]) < 0.5) )... 
-            // 'gainSchSig_:14'         || ( ywt(4) > 0.5 && ywt(6) > 0.5 && all(ywt([1:3,5]) < 0.5) ) 
-            // 'gainSchSig_:15' sig = 3;
-            rtb_sig = 3.0;
-          } else {
-            guard1 = true;
-          }
-        } else {
-          guard1 = true;
-        }
-      }
-
-      if (guard1) {
-        if (rtb_ywt[3] > 0.5) {
-          if (rtb_ywt[5] > 0.5) {
-            b_x[0] = (rtb_ywt[0] < 0.5);
-            b_x[1] = (rtb_ywt[1] < 0.5);
-            b_x[2] = (rtb_ywt[2] < 0.5);
-            b_x[3] = (rtb_ywt[4] < 0.5);
-            rstP2 = true;
-            k = 0;
-            exitg1 = false;
-            while (((exitg1 ? static_cast<uint32_T>(1U) : static_cast<uint32_T>
-                     (0U)) == false) && (k <= 3)) {
-              if (!b_x[k]) {
-                rstP2 = false;
-                exitg1 = true;
-              } else {
-                k++;
-              }
-            }
-
-            if (rstP2) {
-              // 'gainSchSig_:13' elseif ( ywt(1) > 0.5 && ywt(3) > 0.5 && all(ywt([2,4:end]) < 0.5) )... 
-              // 'gainSchSig_:14'         || ( ywt(4) > 0.5 && ywt(6) > 0.5 && all(ywt([1:3,5]) < 0.5) ) 
-              // 'gainSchSig_:15' sig = 3;
-              rtb_sig = 3.0;
-            } else {
-              // 'gainSchSig_:16' else
-              // 'gainSchSig_:17' sig = sigPrev;
-              rtb_sig = rtDW.sigPrev;
-            }
-          } else {
-            // 'gainSchSig_:16' else
-            // 'gainSchSig_:17' sig = sigPrev;
-            rtb_sig = rtDW.sigPrev;
-          }
-        } else {
-          // 'gainSchSig_:16' else
-          // 'gainSchSig_:17' sig = sigPrev;
-          rtb_sig = rtDW.sigPrev;
-        }
-      }
-
-      // 'gainSchSig_:19' sigPrev = sig;
-      rtDW.sigPrev = rtb_sig;
-
-      // End of MATLAB Function: '<S3>/MATLAB Function1'
-      // End of Outputs for SubSystem: '<S1>/gmpc'
-      for (k = 0; k <= 4; k += 2) {
-        // Outputs for Function Call SubSystem: '<S1>/gmpc'
-        // Gain: '<S3>/Gain'
-        tmp_5 = _mm_loadu_pd(&rtb_ywt[k]);
-
-        // Gain: '<S3>/Gain'
-        (void)_mm_storeu_pd(&rtb_ywt[k], _mm_mul_pd(_mm_set1_pd(rtP.beta), tmp_5));
-
-        // End of Outputs for SubSystem: '<S1>/gmpc'
-      }
-
-      // Outputs for Function Call SubSystem: '<S1>/gmpc'
-      // Gain: '<S3>/Gain1' incorporates:
-      //   Inport: '<Root>/uwt'
-
-      rtb_Gain1[0] = rtP.beta * rtU.uwt[0];
-      rtb_Gain1[1] = rtP.beta * rtU.uwt[1];
-      rtb_Gain1[2] = rtP.beta * rtU.uwt[2];
 
       // Delay: '<S3>/Delay2'
-      rtb_Delay2[0] = rtDW.Delay2_DSTATE[0];
-      rtb_Delay2[1] = rtDW.Delay2_DSTATE[1];
-      rtb_Delay2[2] = rtDW.Delay2_DSTATE[2];
+      rtPrevZCX.Delay2_Reset_ZCE = 0U;
 
-      // MATLAB Function 'MPC Controller/MPC/optimizer/optimizer': '<S113>:1'
-      // '<S113>:1:17' coder.extrinsic('mpcblock_optimizer_double_mex');
-      // '<S113>:1:18' coder.extrinsic('mpcblock_optimizer_single_mex');
-      // '<S113>:1:19' coder.extrinsic('mpcblock_refmd_double_mex');
-      // '<S113>:1:20' coder.extrinsic('mpcblock_refmd_single_mex');
+      // Sum: '<S3>/Sum1' incorporates:
+      //   Delay: '<S3>/Delay2'
+      //   Sum: '<S3>/Sum'
+
+      dwt = (Sum2_c[0] - rtb_r_[0]) + rtDW.Delay2_DSTATE;
+
+      // SignalConversion generated from: '<S110>/ SFunction ' incorporates:
+      //   MATLAB Function: '<S109>/optimizer'
+
+      rtb_TmpSignalConversionAtSFun_p[0] = rtb_r_[0];
+      rtb_TmpSignalConversionAtSFun_p[1] = rtb_r_[1];
+      rtb_TmpSignalConversionAtSFun_p[2] = rtb_r_[2];
+
+      // MATLAB Function: '<S109>/optimizer' incorporates:
+      //   Constant: '<S3>/Constant'
+      //   Constant: '<S88>/Constant1'
+      //   Delay: '<S111>/MemoryX'
+      //   Inport: '<Root>/umax'
+      //   SignalConversion generated from: '<S110>/ SFunction '
+      //   Sum: '<S88>/Sum2'
+      //   UnitDelay: '<S89>/last_mv'
+      //
+      // MATLAB Function 'MPC Controller/MPC/optimizer/optimizer': '<S110>:1'
+      // '<S110>:1:17' coder.extrinsic('mpcblock_optimizer_double_mex');
+      // '<S110>:1:18' coder.extrinsic('mpcblock_optimizer_single_mex');
+      // '<S110>:1:19' coder.extrinsic('mpcblock_refmd_double_mex');
+      // '<S110>:1:20' coder.extrinsic('mpcblock_refmd_single_mex');
       //  Inputs (in BlockDataType except iA)
       //    xk:         current state (either x[k|k-1] from built-in KF or external x[k|k]) 
-      // '<S113>:1:24' xk = convertDataType(xk0,isDouble);
-      // '<S113>:1:250' if isDouble
+      // '<S110>:1:24' xk = convertDataType(xk0,isDouble);
+      // '<S110>:1:250' if isDouble
       //  convert an input signal to double precision when necessary
-      // '<S113>:1:252' if isa(u,'double')
-      // '<S113>:1:253' y = u;
+      // '<S110>:1:252' if isa(u,'double')
+      // '<S110>:1:253' y = u;
       //    old_u:      last mv (calculated by MPC)
-      // '<S113>:1:26' old_u = convertDataType(old_u0,isDouble);
-      // '<S113>:1:250' if isDouble
+      // '<S110>:1:26' old_u = convertDataType(old_u0,isDouble);
+      // '<S110>:1:250' if isDouble
       //  convert an input signal to double precision when necessary
-      // '<S113>:1:252' if isa(u,'double')
-      // '<S113>:1:253' y = u;
+      // '<S110>:1:252' if isa(u,'double')
+      // '<S110>:1:253' y = u;
       //    ym:         current measured output (used only with built-in KF)
-      // '<S113>:1:28' ym = convertDataType(ym0,isDouble);
-      // '<S113>:1:250' if isDouble
-      //  convert an input signal to double precision when necessary
-      // '<S113>:1:252' if isa(u,'double')
-      // '<S113>:1:253' y = u;
+      // '<S110>:1:28' ym = convertDataType(ym0,isDouble);
       //    ref:        output reference
-      // '<S113>:1:30' ref = convertDataType(ref0,isDouble);
-      // '<S113>:1:250' if isDouble
+      // '<S110>:1:30' ref = convertDataType(ref0,isDouble);
+      // '<S110>:1:250' if isDouble
       //  convert an input signal to double precision when necessary
-      // '<S113>:1:252' if isa(u,'double')
-      // '<S113>:1:253' y = u;
+      // '<S110>:1:252' if isa(u,'double')
+      // '<S110>:1:253' y = u;
       //    md:         measured disturbance
-      // '<S113>:1:32' md = convertDataType(md0,isDouble);
+      // '<S110>:1:32' md = convertDataType(md0,isDouble);
       //    umin:       run-time MV bound
-      // '<S113>:1:34' umin = convertDataType(umin0,isDouble);
+      // '<S110>:1:34' umin = convertDataType(umin0,isDouble);
       //    umax:       run-time MV bound
-      // '<S113>:1:36' umax = convertDataType(umax0,isDouble);
-      // '<S113>:1:250' if isDouble
+      // '<S110>:1:36' umax = convertDataType(umax0,isDouble);
+      // '<S110>:1:250' if isDouble
       //  convert an input signal to double precision when necessary
-      // '<S113>:1:252' if isa(u,'double')
-      // '<S113>:1:253' y = u;
+      // '<S110>:1:252' if isa(u,'double')
+      // '<S110>:1:253' y = u;
       //    ymin:       run-time OV bound
-      // '<S113>:1:38' ymin = convertDataType(ymin0,isDouble);
-      // '<S113>:1:250' if isDouble
-      //  convert an input signal to double precision when necessary
-      // '<S113>:1:252' if isa(u,'double')
-      // '<S113>:1:253' y = u;
+      // '<S110>:1:38' ymin = convertDataType(ymin0,isDouble);
       //    ymax:       run-time OV bound
-      // '<S113>:1:40' ymax = convertDataType(ymax0,isDouble);
-      // '<S113>:1:250' if isDouble
-      //  convert an input signal to double precision when necessary
-      // '<S113>:1:252' if isa(u,'double')
-      // '<S113>:1:253' y = u;
+      // '<S110>:1:40' ymax = convertDataType(ymax0,isDouble);
       //    E:          run-time mixed constraints
-      // '<S113>:1:42' E = convertDataType(E0,isDouble);
+      // '<S110>:1:42' E = convertDataType(E0,isDouble);
       //    F:          run-time mixed constraints
-      // '<S113>:1:44' F = convertDataType(F0,isDouble);
+      // '<S110>:1:44' F = convertDataType(F0,isDouble);
       //    G:          run-time mixed constraints
-      // '<S113>:1:46' G = convertDataType(G0,isDouble);
+      // '<S110>:1:46' G = convertDataType(G0,isDouble);
       //    S:          run-time mixed constraints
-      // '<S113>:1:48' S = convertDataType(S0,isDouble);
+      // '<S110>:1:48' S = convertDataType(S0,isDouble);
       //    switch_in:  if it matches "enable_value", MPC is active in control
-      // '<S113>:1:50' switch_in = int32(switch_in0);
+      // '<S110>:1:50' switch_in = int32(switch_in0);
       //    ext_mv:     external last mv (actual)
-      // '<S113>:1:52' ext_mv = convertDataType(ext_mv0,isDouble);
-      // '<S113>:1:250' if isDouble
-      //  convert an input signal to double precision when necessary
-      // '<S113>:1:252' if isa(u,'double')
-      // '<S113>:1:253' y = u;
+      // '<S110>:1:52' ext_mv = convertDataType(ext_mv0,isDouble);
       //    MVtarget:   MV reference
-      // '<S113>:1:54' MVtarget = convertDataType(MVtarget0,isDouble);
+      // '<S110>:1:54' MVtarget = convertDataType(MVtarget0,isDouble);
       //    ywt:        run-time OV weights
-      // '<S113>:1:56' ywt = convertDataType(ywt0,isDouble);
-      // '<S113>:1:250' if isDouble
-      //  convert an input signal to double precision when necessary
-      // '<S113>:1:252' if isa(u,'double')
-      // '<S113>:1:253' y = u;
+      // '<S110>:1:56' ywt = convertDataType(ywt0,isDouble);
       //    uwt:        run-time MV weights
-      // '<S113>:1:58' uwt = convertDataType(uwt0,isDouble);
-      // '<S113>:1:250' if isDouble
-      //  convert an input signal to double precision when necessary
-      // '<S113>:1:252' if isa(u,'double')
-      // '<S113>:1:253' y = u;
+      // '<S110>:1:58' uwt = convertDataType(uwt0,isDouble);
       //    duwt:       run-time DMV weights
-      // '<S113>:1:60' duwt = convertDataType(duwt0,isDouble);
+      // '<S110>:1:60' duwt = convertDataType(duwt0,isDouble);
       //    ewt:     run-time Slack weights
-      // '<S113>:1:62' ewt = convertDataType(ewt0,isDouble);
+      // '<S110>:1:62' ewt = convertDataType(ewt0,isDouble);
       //    iA:         logical previous active set (for warm start)
       //  Outputs (in BlockDataType except iAout)
       //    xk1:        x[k+1|k] from built-in KF
@@ -7311,1081 +3637,1126 @@ void SupervisoryController::step()
       //    IPOptions
       //    MIQPOptions
       //  Parameters
-      // '<S113>:1:95' isSimulation = coder.target('Sfun') && ~coder.target('RtwForRapid') && ~coder.target('RtwForSim'); 
-      // '<S113>:1:96' isAdaptive = false;
-      // '<S113>:1:97' isLTV = false;
-      // '<S113>:1:98' ZERO = zeros('like',ref);
-      // '<S113>:1:99' ONE = ones('like',ref);
-      // '<S113>:1:100' hasMD = nv>int32(1);
+      // '<S110>:1:95' isSimulation = coder.target('Sfun') && ~coder.target('RtwForRapid') && ~coder.target('RtwForSim'); 
+      // '<S110>:1:96' isAdaptive = false;
+      // '<S110>:1:97' isLTV = false;
+      // '<S110>:1:98' ZERO = zeros('like',ref);
+      // '<S110>:1:99' ONE = ones('like',ref);
+      // '<S110>:1:100' hasMD = nv>int32(1);
       //  Pre-allocate all the MEX block outputs for the simulation mode
-      // '<S113>:1:105' if isSimulation
+      // '<S110>:1:105' if isSimulation
       //  Get reference and MD signals -- accounting for previewing
-      // '<S113>:1:119' if isSimulation
-      // '<S113>:1:126' else
+      // '<S110>:1:119' if isSimulation
+      // '<S110>:1:126' else
       //  When doing code generation, use M code directly
-      // '<S113>:1:128' [rseq, vseq, v] = mpcblock_refmd(ref,md,nv,ny,p,yoff,voff,no_md,no_ref,openloopflag, RYscale, RMDscale); 
-      for (k = 0; k < 21; k++) {
-        // MATLAB Function: '<S112>/optimizer'
-        vseq[k] = 1.0;
-      }
-
+      // '<S110>:1:128' [rseq, vseq, v] = mpcblock_refmd(ref,md,nv,ny,p,yoff,voff,no_md,no_ref,openloopflag, RYscale, RMDscale); 
+      ii = 0;
       for (k = 0; k < 20; k++) {
-        for (i = 0; i < 6; i++) {
-          // MATLAB Function: '<S112>/optimizer'
-          rseq[i + k * static_cast<int32_T>(ny)] = rtDW.traj
-            [(static_cast<int32_T>(rtDW.waypt) - 1) * 6 + i];
-        }
+        rseq[ii] = rtb_TmpSignalConversionAtSFun_p[0];
+        rseq[ii + 1] = rtb_TmpSignalConversionAtSFun_p[1];
+        rseq[ii + 2] = rtb_TmpSignalConversionAtSFun_p[2];
+        rseq[ii + 3] = rtP.Constant_Value;
+        ii += 4;
       }
-
-      // MATLAB Function: '<S112>/optimizer' incorporates:
-      //   Gain: '<S92>/ext.mv_scale'
-      //   UnitDelay: '<S92>/last_mv'
 
       //  External MV override.
       //  NOTE: old_u and ext_mv input signals are dimensionless but include offset 
-      // '<S113>:1:133' old_u = old_u - uoff;
-      // '<S113>:1:134' if no_mv
-      // '<S113>:1:136' else
-      // '<S113>:1:137' ext_mv = ext_mv - uoff;
-      ext_mv[0] = rtP.extmv_scale_Gain_g[0] * rtb_Delay2[0];
-      ext_mv[1] = rtP.extmv_scale_Gain_g[1] * rtb_Delay2[1];
-      ext_mv[2] = rtP.extmv_scale_Gain_g[2] * rtb_Delay2[2];
-
-      //  Bias correction
-      // '<S113>:1:138' delmv = ext_mv - old_u;
-      // '<S113>:1:139' old_u = ext_mv;
+      // '<S110>:1:133' old_u = old_u - uoff;
+      // '<S110>:1:134' if no_mv
+      // '<S110>:1:135' delmv = zeros(nu,1,'like',ref);
       //  Obtain x[k|k]
-      // '<S113>:1:143' xk = xk - xoff;
+      // '<S110>:1:143' xk = xk - xoff;
+      rtb_xest[0] = rtDW.MemoryX_DSTATE[0];
+      rtb_xest[1] = dwt;
+      umin_scale1_idx_0 = rtDW.last_mv_DSTATE[0];
+      rtb_xest[2] = rtP.Constant1_Value_j[0] + rtDW.MemoryX_DSTATE[1];
+      umin_scale1_idx_1 = rtDW.last_mv_DSTATE[1];
+      rtb_xest[3] = rtP.Constant1_Value_j[1] + rtDW.MemoryX_DSTATE[2];
+      umin_scale1_idx_2 = rtDW.last_mv_DSTATE[2];
+      rtb_xest[4] = rtP.Constant1_Value_j[2] + rtDW.MemoryX_DSTATE[3];
+
       //  Remove offset
-      // '<S113>:1:144' if CustomEstimation
-      // '<S113>:1:147' else
-      //  Default state estimation.
-      //  Scale measured output and remove offset.
-      // '<S113>:1:150' ym = ym.*RYscale(myindex) - myoff;
-      //  Correct x(k|k-1) for possible external mv override.
-      //  NOTE:  Offset was removed from x[k|k-1] at k=0.
-      // '<S113>:1:153' xk = xk + Bu*delmv;
-      ext_mv_idx_0 = ext_mv[0] - rtDW.last_mv_DSTATE[0];
-      ext_mv_idx_1 = ext_mv[1] - rtDW.last_mv_DSTATE[1];
-      ext_mv_idx_2 = ext_mv[2] - rtDW.last_mv_DSTATE[2];
-
-      // End of Outputs for SubSystem: '<S1>/gmpc'
-      for (k = 0; k <= 6; k += 2) {
-        // Outputs for Function Call SubSystem: '<S1>/gmpc'
-        // Memory: '<S92>/last_x' incorporates:
-        //   MATLAB Function: '<S112>/optimizer'
-
-        tmp_5 = _mm_loadu_pd(&rtDW.last_x_PreviousInput[k]);
-
-        // MATLAB Function: '<S112>/optimizer'
-        (void)_mm_storeu_pd(&xk[k], _mm_add_pd(_mm_add_pd(_mm_add_pd(_mm_mul_pd
-          (_mm_loadu_pd(&a_6[k + 8]), _mm_set1_pd(ext_mv_idx_1)), _mm_mul_pd
-          (_mm_loadu_pd(&a_6[k]), _mm_set1_pd(ext_mv_idx_0))), _mm_mul_pd
-          (_mm_loadu_pd(&a_6[k + 16]), _mm_set1_pd(ext_mv_idx_2))), tmp_5));
-
-        // End of Outputs for SubSystem: '<S1>/gmpc'
-      }
-
-      // Outputs for Function Call SubSystem: '<S1>/gmpc'
-      //  Measurement upate to x(k|k)
-      // '<S113>:1:155' ym_est = C(myindex,:)*xk + Dv(myindex,:)*v;
-      // '<S113>:1:156' y_innov = ym - ym_est;
-      for (k = 0; k < 6; k++) {
-        // MATLAB Function: '<S112>/optimizer' incorporates:
-        //   Inport: '<Root>/y'
-
-        ext_mv_idx_2 = 0.0;
-        i = 0;
-        for (i_0 = 0; i_0 < 8; i_0++) {
-          ext_mv_idx_2 += static_cast<real_T>(b_a[i + k]) * xk[i_0];
-          i += 6;
-        }
-
-        y_innov[k] = rtU.y[k] - ext_mv_idx_2;
-      }
-
-      // '<S113>:1:157' xest = xk + M*y_innov;
+      // '<S110>:1:144' if CustomEstimation
+      //  Input state is x(k|k)
+      // '<S110>:1:146' xest = xk;
       //  Real-time MV target override
       //  Note: utargetValue is a vector length p*nu.
-      // '<S113>:1:162' if no_uref
+      // '<S110>:1:162' if no_uref
       //  no external utarget
-      // '<S113>:1:164' utargetValue = utarget;
+      // '<S110>:1:164' utargetValue = utarget;
       //  Real-time custom constraint override (scaled E/F/S)
-      // '<S113>:1:173' if ~no_cc
-      // '<S113>:1:182' return_sequence = return_mvseq || return_xseq || return_ovseq; 
-      // '<S113>:1:183' if isSimulation
-      // '<S113>:1:214' else
+      // '<S110>:1:173' if ~no_cc
+      // '<S110>:1:182' return_sequence = return_mvseq || return_xseq || return_ovseq; 
+      // '<S110>:1:183' if isSimulation
+      // '<S110>:1:214' else
       //  When doing code generation, use M code directly
-      // '<S113>:1:216' [u, cost, useq, status, iAout] = mpcblock_optimizer(...
-      // '<S113>:1:217'             rseq, vseq, umin, umax, ymin, ymax, switch_in, xest, old_u, iA, ... 
-      // '<S113>:1:218'             isQP, nu, ny, degrees, Hinv, Kx, Ku1, Kut, Kr, Kv, Mlim, ... 
-      // '<S113>:1:219'             Mx, Mu1, Mv, utargetValue, p, uoff, voff, yoff, ... 
-      // '<S113>:1:220'             false, CustomSolverCodeGen, UseSuboptimalSolution, ... 
-      // '<S113>:1:221'             UseActiveSetSolver, ASOptions, IPOptions, MIQPOptions, nxQP, openloopflag, ... 
-      // '<S113>:1:222'             no_umin, no_umax, no_ymin, no_ymax, no_cc, switch_inport, ... 
-      // '<S113>:1:223'             no_switch, enable_value, return_cost, H, return_sequence, Linv, Ac, ... 
-      // '<S113>:1:224'             ywt, uwt, duwt, ewt, no_ywt, no_uwt, no_duwt, no_rhoeps,... 
-      // '<S113>:1:225'             Wy, Wdu, Jm, SuJm, Su1, Sx, Hv, Wu, I1, ...
-      // '<S113>:1:226'             isAdaptive, isLTV, A, Bu, Bv, C, Dv, ...
-      // '<S113>:1:227'             Mrows, nCC, Ecc, Fcc, Scc, Gcc, RYscale, RMVscale, m, ... 
-      // '<S113>:1:228'             isHyb, Mdis, Ndis, Vdis, numdis, maxdis);
-      for (k = 0; k < 8; k++) {
-        // MATLAB Function: '<S112>/optimizer'
-        ext_mv_idx_2 = 0.0;
-        i = 0;
-        for (i_0 = 0; i_0 < 6; i_0++) {
-          ext_mv_idx_2 += c_a[i + k] * y_innov[i_0];
-          i += 8;
+      // '<S110>:1:216' [u, cost, useq, status, iAout] = mpcblock_optimizer(...
+      // '<S110>:1:217'             rseq, vseq, umin, umax, ymin, ymax, switch_in, xest, old_u, iA, ... 
+      // '<S110>:1:218'             isQP, nu, ny, degrees, Hinv, Kx, Ku1, Kut, Kr, Kv, Mlim, ... 
+      // '<S110>:1:219'             Mx, Mu1, Mv, utargetValue, p, uoff, voff, yoff, ... 
+      // '<S110>:1:220'             false, CustomSolverCodeGen, UseSuboptimalSolution, ... 
+      // '<S110>:1:221'             UseActiveSetSolver, ASOptions, IPOptions, MIQPOptions, nxQP, openloopflag, ... 
+      // '<S110>:1:222'             no_umin, no_umax, no_ymin, no_ymax, no_cc, switch_inport, ... 
+      // '<S110>:1:223'             no_switch, enable_value, return_cost, H, return_sequence, Linv, Ac, ... 
+      // '<S110>:1:224'             ywt, uwt, duwt, ewt, no_ywt, no_uwt, no_duwt, no_rhoeps,... 
+      // '<S110>:1:225'             Wy, Wdu, Jm, SuJm, Su1, Sx, Hv, Wu, I1, ...
+      // '<S110>:1:226'             isAdaptive, isLTV, A, Bu, Bv, C, Dv, ...
+      // '<S110>:1:227'             Mrows, nCC, Ecc, Fcc, Scc, Gcc, RYscale, RMVscale, m, ... 
+      // '<S110>:1:228'             isHyb, Mdis, Ndis, Vdis, numdis, maxdis);
+      umax_incr_flag[0] = false;
+      rtb_r_[0] = 0.0;
+      umax_incr_flag[1] = false;
+      rtb_r_[1] = 0.0;
+      umax_incr_flag[2] = false;
+      rtb_r_[2] = 0.0;
+      for (k = 0; k < 166; k++) {
+        uint8_T b_Mrows;
+        rtb_Sum1_b_idx_2 = b_Mlim[k];
+        Bc_0 = 0.0;
+        for (ii = 0; ii < 5; ii++) {
+          Bc_0 += b_a[166 * ii + k] * rtb_xest[ii];
         }
 
-        xk_1[k] = xk[k] + ext_mv_idx_2;
+        Bc_0 = -(((a[k + 166] * umin_scale1_idx_1 + a[k] * umin_scale1_idx_0) +
+                  a[k + 332] * umin_scale1_idx_2) + (rtb_Sum1_b_idx_2 + Bc_0));
+        b_Mrows = b_Mrows_0[k];
+        if ((b_Mrows > 80UL) && (b_Mrows > 160UL) && (b_Mrows <= 220UL)) {
+          ii = (static_cast<int32_T>(b_Mrows) - div_nde_s32_floor
+                (static_cast<int32_T>(b_Mrows) - 161, static_cast<int32_T>(nu)) *
+                static_cast<int32_T>(nu)) - 161;
+          rstP2 = umax_incr_flag[ii];
+          if (!umax_incr_flag[ii]) {
+            rtb_Sum1_b_idx_2 = -rtU.umax[ii] - (-rtb_Sum1_b_idx_2);
+            rstP2 = true;
+          } else {
+            rtb_Sum1_b_idx_2 = rtb_r_[ii];
+          }
+
+          rtb_r_[ii] = rtb_Sum1_b_idx_2;
+          umax_incr_flag[ii] = rstP2;
+          Bc_0 += rtb_Sum1_b_idx_2;
+        }
+
+        Bc[k] = Bc_0;
       }
 
-      // MATLAB Function: '<S112>/optimizer'
-      (void)std::memset(&rtDW.dv[0], 0, 5166U * sizeof(real_T));
-      (void)std::memset(&tmp[0], 0, 60U * sizeof(real_T));
-      tmp_0[0] = 0.0;
-      tmp_0[1] = 0.0;
-      tmp_0[2] = 0.0;
-      for (k = 0; k < 6; k++) {
-        tmp_1[k] = 0.0;
+      rtb_Sum2[0] = 0.0;
+      rtb_Sum2[1] = 0.0;
+      rtb_Sum2[2] = 0.0;
+      rtb_Sum2[3] = 0.0;
+      for (k = 0; k < 3; k++) {
+        rtb_Sum1_b_idx_2 = 0.0;
+        for (ii = 0; ii < 5; ii++) {
+          rtb_Sum1_b_idx_2 += b_Kx[5 * k + ii] * rtb_xest[ii];
+        }
+
+        Bc_0 = 0.0;
+        for (ii = 0; ii < 80; ii++) {
+          Bc_0 += b_Kr[80 * k + ii] * rseq[ii];
+        }
+
+        rtb_Sum2[k] = ((b_Ku1[3 * k + 1] * umin_scale1_idx_1 + b_Ku1[3 * k] *
+                        umin_scale1_idx_0) + b_Ku1[3 * k + 2] *
+                       umin_scale1_idx_2) + (rtb_Sum1_b_idx_2 + Bc_0);
       }
 
-      tmp_2[0] = 0.034121465297356074;
-      tmp_2[1] = 0.034121465297356074;
-      tmp_2[2] = 0.034121465297356074;
-      (void)std::memset(&rtDW.dv1[0], 0, 2520U * sizeof(real_T));
-      for (k = 0; k < 6; k++) {
-        tmp_3[k] = 1.0;
+      // Update for Memory: '<S89>/Memory' incorporates:
+      //   MATLAB Function: '<S109>/optimizer'
+
+      qpkwik(b_Linv, b_Hinv, rtb_Sum2, b_Ac, Bc, rtDW.Memory_PreviousInput, 680,
+             1.0E-6, rtb_TmpSignalConversionAtSFun_p, a__1, &k);
+
+      // MATLAB Function: '<S109>/optimizer' incorporates:
+      //   UnitDelay: '<S89>/last_mv'
+
+      if ((k < 0) || (k == 0)) {
+        rtb_TmpSignalConversionAtSFun_p[0] = 0.0;
+        rtb_TmpSignalConversionAtSFun_p[1] = 0.0;
+        rtb_TmpSignalConversionAtSFun_p[2] = 0.0;
       }
 
-      tmp_4[0] = 1.0;
-      tmp_4[1] = 1.0;
-      tmp_4[2] = 1.0;
+      rtb_r_[0] = rtDW.last_mv_DSTATE[0] + rtb_TmpSignalConversionAtSFun_p[0];
+      rtb_r_[1] = rtDW.last_mv_DSTATE[1] + rtb_TmpSignalConversionAtSFun_p[1];
+      rtb_r_[2] = rtDW.last_mv_DSTATE[2] + rtb_TmpSignalConversionAtSFun_p[2];
 
-      // Memory: '<S92>/Memory'
-      (void)std::memcpy(&tmp_6[0], &rtDW.Memory_PreviousInput[0], 246U * sizeof
-                        (boolean_T));
+      // Delay: '<S111>/MemoryP' incorporates:
+      //   Constant: '<S111>/P0'
+      //   DataTypeConversion: '<S111>/DataTypeConversionReset'
 
-      // MATLAB Function: '<S112>/optimizer'
-      (void)std::memcpy(&f_0[0], &f[0], sizeof(real_T) << 4UL);
-
-      // Update for Memory: '<S92>/Memory' incorporates:
-      //   Gain: '<S3>/Gain'
-      //   Gain: '<S3>/Gain1'
-      //   Gain: '<S3>/Gain2'
-      //   Gain: '<S3>/Gain3'
-      //   Inport: '<Root>/umax'
-      //   MATLAB Function: '<S112>/optimizer'
-      //   Math: '<S92>/Math Function'
-      //   Math: '<S92>/Math Function1'
-
-      mpcblock_optimizer(rseq, vseq, rtU.umax, rtb_Gain2, rtb_Gain3,
-                         static_cast<int32_T>(std::round(rtb_sig)), xk_1, ext_mv,
-                         tmp_6, c, d, e, rtDW.dv, tmp, tmp_0, tmp_1, 1, f_0, g,
-                         rtb_ywt, rtb_Gain1, tmp_2, h, l, l, n, rtDW.dv1, o, q,
-                         tmp_3, tmp_4, Sum2_c, &ext_mv_idx_2, rtb_useq_f,
-                         &status, rtDW.Memory_PreviousInput);
-
-      // '<S113>:1:231' if return_xseq || return_ovseq
-      // '<S113>:1:232' [yseq, xseq] = mpc_computeSequence(isLTV, xest, useq, vseq, uoff, yoff, xoff, p, ny, nxQP, nv, A, Bu, Bv, C, Dv); 
-      // '<S113>:1:238' if CustomEstimation
-      // '<S113>:1:240' else
-      //  update x[k+1|k], assuming that above u and v will be applied.
-      // '<S113>:1:242' xk1 = A*xk + Bu*(u - uoff) + Bv*v + L*y_innov;
-      // '<S113>:1:244' xk1 = xk1 + xoff;
+      // '<S110>:1:231' if return_xseq || return_ovseq
+      // '<S110>:1:233' else
+      // '<S110>:1:234' yseq = zeros(p+1,ny,'like',rseq);
+      // '<S110>:1:235' xseq = zeros(p+1,nxQP,'like',rseq);
+      // '<S110>:1:238' if CustomEstimation
+      // '<S110>:1:239' xk1 = xk;
+      // '<S110>:1:244' xk1 = xk1 + xoff;
       //  Updated state must include offset
       //  return xest in original value
-      // '<S113>:1:247' xest = xest + xoff;
-      // MATLAB Function 'MPC Controller/MPC/optimizer/optimizer': '<S135>:1'
-      // '<S135>:1:17' coder.extrinsic('mpcblock_optimizer_double_mex');
-      // '<S135>:1:18' coder.extrinsic('mpcblock_optimizer_single_mex');
-      // '<S135>:1:19' coder.extrinsic('mpcblock_refmd_double_mex');
-      // '<S135>:1:20' coder.extrinsic('mpcblock_refmd_single_mex');
-      //  Inputs (in BlockDataType except iA)
-      //    xk:         current state (either x[k|k-1] from built-in KF or external x[k|k]) 
-      // '<S135>:1:24' xk = convertDataType(xk0,isDouble);
-      // '<S135>:1:250' if isDouble
-      //  convert an input signal to double precision when necessary
-      // '<S135>:1:252' if isa(u,'double')
-      // '<S135>:1:253' y = u;
-      //    old_u:      last mv (calculated by MPC)
-      // '<S135>:1:26' old_u = convertDataType(old_u0,isDouble);
-      // '<S135>:1:250' if isDouble
-      //  convert an input signal to double precision when necessary
-      // '<S135>:1:252' if isa(u,'double')
-      // '<S135>:1:253' y = u;
-      //    ym:         current measured output (used only with built-in KF)
-      // '<S135>:1:28' ym = convertDataType(ym0,isDouble);
-      // '<S135>:1:250' if isDouble
-      //  convert an input signal to double precision when necessary
-      // '<S135>:1:252' if isa(u,'double')
-      // '<S135>:1:253' y = u;
-      //    ref:        output reference
-      // '<S135>:1:30' ref = convertDataType(ref0,isDouble);
-      // '<S135>:1:250' if isDouble
-      //  convert an input signal to double precision when necessary
-      // '<S135>:1:252' if isa(u,'double')
-      // '<S135>:1:253' y = u;
-      //    md:         measured disturbance
-      // '<S135>:1:32' md = convertDataType(md0,isDouble);
-      //    umin:       run-time MV bound
-      // '<S135>:1:34' umin = convertDataType(umin0,isDouble);
-      //    umax:       run-time MV bound
-      // '<S135>:1:36' umax = convertDataType(umax0,isDouble);
-      // '<S135>:1:250' if isDouble
-      //  convert an input signal to double precision when necessary
-      // '<S135>:1:252' if isa(u,'double')
-      // '<S135>:1:253' y = u;
-      //    ymin:       run-time OV bound
-      // '<S135>:1:38' ymin = convertDataType(ymin0,isDouble);
-      // '<S135>:1:250' if isDouble
-      //  convert an input signal to double precision when necessary
-      // '<S135>:1:252' if isa(u,'double')
-      // '<S135>:1:253' y = u;
-      //    ymax:       run-time OV bound
-      // '<S135>:1:40' ymax = convertDataType(ymax0,isDouble);
-      // '<S135>:1:250' if isDouble
-      //  convert an input signal to double precision when necessary
-      // '<S135>:1:252' if isa(u,'double')
-      // '<S135>:1:253' y = u;
-      //    E:          run-time mixed constraints
-      // '<S135>:1:42' E = convertDataType(E0,isDouble);
-      //    F:          run-time mixed constraints
-      // '<S135>:1:44' F = convertDataType(F0,isDouble);
-      //    G:          run-time mixed constraints
-      // '<S135>:1:46' G = convertDataType(G0,isDouble);
-      //    S:          run-time mixed constraints
-      // '<S135>:1:48' S = convertDataType(S0,isDouble);
-      //    switch_in:  if it matches "enable_value", MPC is active in control
-      // '<S135>:1:50' switch_in = int32(switch_in0);
-      //    ext_mv:     external last mv (actual)
-      // '<S135>:1:52' ext_mv = convertDataType(ext_mv0,isDouble);
-      // '<S135>:1:250' if isDouble
-      //  convert an input signal to double precision when necessary
-      // '<S135>:1:252' if isa(u,'double')
-      // '<S135>:1:253' y = u;
-      //    MVtarget:   MV reference
-      // '<S135>:1:54' MVtarget = convertDataType(MVtarget0,isDouble);
-      //    ywt:        run-time OV weights
-      // '<S135>:1:56' ywt = convertDataType(ywt0,isDouble);
-      // '<S135>:1:250' if isDouble
-      //  convert an input signal to double precision when necessary
-      // '<S135>:1:252' if isa(u,'double')
-      // '<S135>:1:253' y = u;
-      //    uwt:        run-time MV weights
-      // '<S135>:1:58' uwt = convertDataType(uwt0,isDouble);
-      // '<S135>:1:250' if isDouble
-      //  convert an input signal to double precision when necessary
-      // '<S135>:1:252' if isa(u,'double')
-      // '<S135>:1:253' y = u;
-      //    duwt:       run-time DMV weights
-      // '<S135>:1:60' duwt = convertDataType(duwt0,isDouble);
-      //    ewt:     run-time Slack weights
-      // '<S135>:1:62' ewt = convertDataType(ewt0,isDouble);
-      //    iA:         logical previous active set (for warm start)
-      //  Outputs (in BlockDataType except iAout)
-      //    xk1:        x[k+1|k] from built-in KF
-      //    u:          optimal MV
-      //    cost:       optimal cost
-      //    useq:       optimal MV sequence
-      //    xseq:       optimal state sequence
-      //    yseq:       optimal OV sequence
-      //    status:     QP exit flag
-      //    xest:       x[k|k] from built-in KF
-      //    iAout:      logical current active set
-      //  Parameters (constant)
-      //    dimensions (int32):
-      //        nx, nxp, nup, nu, ny, degrees, p, nxQP, enable_value, Mrows, nCC, nv 
-      //        myindex, mvindex, mdindex, unindex, nxid, m, Ndis, numdis, maxdis 
-      //    MPC constants (BlockDataType):
-      //        Hinv, Kx, Ku1, Kut, Kr, Kv, Mlim, Mx, Mu1, Mv, utarget
-      //        H, Linv, Ac, Wy, Wdu, Jm, SuJm, Su1, Sx, Hv, Wu, I1
-      //        A, C, B, D, Cid, Did, Ecc, Fcc, Scc, Gcc
-      //        RYscale, RMDscale, xoff, Uscale, Yscale
-      //        uoff, voff, yoff, myoff, RMVscale, Mdis, Vdis
-      //    configurations (logical):
-      //        isQP, CustomSolver, CustomSolverCodeGen, UseSuboptimalSolution, UseActiveSetSolver 
-      //        openloopflag, no_umin, no_umax, no_ymin, no_ymax, switch_inport, no_switch 
-      //        return_cost, return_mvseq, return_xseq, return_ovseq, isLTV
-      //        no_ywt, no_uwt, no_duwt, no_rhoeps, no_md, no_ref, no_uref, no_mv 
-      //        CustomEstimation, no_cc, isHyb, isDouble
-      //    ASOptions
-      //    IPOptions
-      //    MIQPOptions
-      //  Parameters
-      // '<S135>:1:95' isSimulation = coder.target('Sfun') && ~coder.target('RtwForRapid') && ~coder.target('RtwForSim'); 
-      // '<S135>:1:96' isAdaptive = false;
-      // '<S135>:1:97' isLTV = false;
-      // '<S135>:1:98' ZERO = zeros('like',ref);
-      // '<S135>:1:99' ONE = ones('like',ref);
-      // '<S135>:1:100' hasMD = nv>int32(1);
-      //  Pre-allocate all the MEX block outputs for the simulation mode
-      // '<S135>:1:105' if isSimulation
-      //  Get reference and MD signals -- accounting for previewing
-      // '<S135>:1:119' if isSimulation
-      // '<S135>:1:126' else
-      //  When doing code generation, use M code directly
-      // '<S135>:1:128' [rseq, vseq, v] = mpcblock_refmd(ref,md,nv,ny,p,yoff,voff,no_md,no_ref,openloopflag, RYscale, RMDscale); 
-      for (k = 0; k < 21; k++) {
-        // MATLAB Function: '<S134>/optimizer'
-        vseq[k] = 1.0;
+      // '<S110>:1:247' xest = xest + xoff;
+      rtDW.icLoad_h = ((static_cast<uint32_T>(rtPrevZCX.MemoryP_Reset_ZCE) ==
+                        POS_ZCSIG) || rtDW.icLoad_h);
+      rtPrevZCX.MemoryP_Reset_ZCE = 0U;
+      if (rtDW.icLoad_h) {
+        (void)std::memcpy(&rtDW.MemoryP_DSTATE[0], &rtP.P0_Value_a[0], sizeof
+                          (real_T) << 4UL);
       }
 
-      for (k = 0; k < 20; k++) {
-        for (i = 0; i < 6; i++) {
-          // MATLAB Function: '<S134>/optimizer'
-          rseq[i + k * static_cast<int32_T>(ny)] = rtDW.traj
-            [(static_cast<int32_T>(rtDW.waypt) - 1) * 6 + i];
+      // MATLAB Function: '<S88>/MATLAB Function' incorporates:
+      //   BusCreator: '<S3>/Bus Creator1'
+      //   Constant: '<S3>/Constant12'
+      //   Constant: '<S3>/Constant13'
+      //   Constant: '<S3>/Constant3'
+      //   Constant: '<S3>/Constant4'
+      //   MATLAB Function: '<S133>/ScalarExpansion'
+
+      // MATLAB Function 'SupervisoryController/mpc1/State Estimator OD (KF)/MATLAB Function': '<S112>:1' 
+      // '<S112>:1:2' [A, B, C, D, Q, R, N] = stateEst_(Ap, Bp, Cp, Dp, Aod1, Bod1, Cod1, Dod1, Dmn1, 3, 3, 1); 
+      // 'stateEst_:3' nsp = ns_;
+      //  n_plant_states
+      // 'stateEst_:4' nsod = size(Aod,1);
+      //  n_od_states
+      // 'stateEst_:5' ns = nsp + nsod;
+      //  n_states = n_plant_states + n_od_states
+      // 'stateEst_:7' A = zeros(ns);
+      //  n_states x n_states
+      // 'stateEst_:8' B = zeros(ns,ni);
+      (void)std::memset(&Sum_h[0], 0, 12U * sizeof(real_T));
+
+      //  n_states  x n_inputs
+      // 'stateEst_:9' C = zeros(no,ns);
+      //  n_outputs x n_states
+      // 'stateEst_:10' D = zeros(no,ni);
+      //  n_outputs x n_inputs
+      // 'stateEst_:11' Q = zeros(ns,ns);
+      //  n_states  x n_states
+      // 'stateEst_:12' G = eye(ns);
+      //  n_states  x n_states
+      // 'stateEst_:13' R = zeros(no,no);
+      //  n_outputs x n_outputs
+      // 'stateEst_:14' N = zeros(ns,no);
+      //  n_states  x n_outputs
+      // 'stateEst_:15' H = zeros(no,ns);
+      //  n_outputs x n_states
+      //  combine plant and output disturbance model
+      //  (force the outputs to fit in preallocated memory)
+      // 'stateEst_:19' A(1:ns, 1:ns) = blkdiag(Ap, Aod);
+      (void)std::memset(&rtb_A[0], 0, sizeof(real_T) << 4UL);
+      rtb_A[0] = rtP.Constant3_Value;
+
+      // 'stateEst_:20' B(1:nsp, 1:ni) = Bp;
+      // 'stateEst_:21' C(1:no, 1:ns) = [Cp Cod];
+      k = 0;
+      i_2 = 0;
+      for (i = 0; i < 3; i++) {
+        rtb_A[k + 5] = rtP.Aod1[i_2];
+        rtb_A[k + 6] = rtP.Aod1[i_2 + 1];
+        rtb_A[k + 7] = rtP.Aod1[i_2 + 2];
+        Sum_h[k] = rtP.Constant4_Value[i];
+        rtb_C[i] = rtP.Constant12_Value_e[i];
+        k += 4;
+        i_2 += 3;
+      }
+
+      (void)std::memcpy(&rtb_C[3], &rtP.Cod1[0], 9U * sizeof(real_T));
+
+      // 'stateEst_:22' D(1:no, 1:ni) = Dp;
+      // 'stateEst_:24' B_est = zeros(ns, ni + no + no);
+      (void)std::memset(&B_est[0], 0, 36U * sizeof(real_T));
+
+      // 'stateEst_:25' B_est(1:ns, 1:ni+no) = blkdiag(Bp, Bod);
+      (void)std::memset(&y[0], 0, 24U * sizeof(real_T));
+      ii = 0;
+      k = 0;
+      for (i_2 = 0; i_2 < 3; i_2++) {
+        y[ii] = rtP.Constant4_Value[i_2];
+        y[ii + 13] = rtP.Bod1[k];
+        y[ii + 14] = rtP.Bod1[k + 1];
+        y[ii + 15] = rtP.Bod1[k + 2];
+        ii += 4;
+        k += 3;
+      }
+
+      ii = 0;
+      for (k = 0; k < 6; k++) {
+        B_est[ii] = y[ii];
+        B_est[ii + 1] = y[ii + 1];
+        B_est[ii + 2] = y[ii + 2];
+        B_est[ii + 3] = y[ii + 3];
+        ii += 4;
+      }
+
+      // 'stateEst_:26' D_est = [Dp Dod Dn];
+      for (ii = 0; ii < 9; ii++) {
+        D_est[ii] = rtP.Constant13_Value_c[ii];
+        D_est[ii + 9] = rtP.Dod1[ii];
+        D_est[ii + 18] = rtP.Dmn1[ii];
+      }
+
+      // 'stateEst_:27' Q = B_est * B_est';
+      for (ii = 0; ii < 4; ii++) {
+        k = 0;
+        for (i_2 = 0; i_2 < 4; i_2++) {
+          rtb_Q_tmp = k + ii;
+          rtb_Q[rtb_Q_tmp] = 0.0;
+          i = 0;
+          for (i_0 = 0; i_0 < 9; i_0++) {
+            rtb_Q[rtb_Q_tmp] += B_est[i + ii] * B_est[i + i_2];
+            i += 4;
+          }
+
+          k += 4;
         }
       }
 
-      // MATLAB Function: '<S134>/optimizer' incorporates:
-      //   Gain: '<S114>/ext.mv_scale'
-      //   UnitDelay: '<S114>/last_mv'
-
-      //  External MV override.
-      //  NOTE: old_u and ext_mv input signals are dimensionless but include offset 
-      // '<S135>:1:133' old_u = old_u - uoff;
-      // '<S135>:1:134' if no_mv
-      // '<S135>:1:136' else
-      // '<S135>:1:137' ext_mv = ext_mv - uoff;
-      ext_mv[0] = rtP.extmv_scale_Gain_o[0] * rtb_Delay2[0];
-      ext_mv[1] = rtP.extmv_scale_Gain_o[1] * rtb_Delay2[1];
-      ext_mv[2] = rtP.extmv_scale_Gain_o[2] * rtb_Delay2[2];
-
-      //  Bias correction
-      // '<S135>:1:138' delmv = ext_mv - old_u;
-      // '<S135>:1:139' old_u = ext_mv;
-      //  Obtain x[k|k]
-      // '<S135>:1:143' xk = xk - xoff;
-      //  Remove offset
-      // '<S135>:1:144' if CustomEstimation
-      // '<S135>:1:147' else
-      //  Default state estimation.
-      //  Scale measured output and remove offset.
-      // '<S135>:1:150' ym = ym.*RYscale(myindex) - myoff;
-      //  Correct x(k|k-1) for possible external mv override.
-      //  NOTE:  Offset was removed from x[k|k-1] at k=0.
-      // '<S135>:1:153' xk = xk + Bu*delmv;
-      ext_mv_idx_0 = ext_mv[0] - rtDW.last_mv_DSTATE_i[0];
-      ext_mv_idx_1 = ext_mv[1] - rtDW.last_mv_DSTATE_i[1];
-      ext_mv_idx_2 = ext_mv[2] - rtDW.last_mv_DSTATE_i[2];
-
-      // End of Outputs for SubSystem: '<S1>/gmpc'
-      for (k = 0; k <= 8; k += 2) {
-        // Outputs for Function Call SubSystem: '<S1>/gmpc'
-        // Memory: '<S114>/last_x' incorporates:
-        //   MATLAB Function: '<S134>/optimizer'
-
-        tmp_5 = _mm_loadu_pd(&rtDW.last_x_PreviousInput_h[k]);
-
-        // MATLAB Function: '<S134>/optimizer'
-        (void)_mm_storeu_pd(&xk_0[k], _mm_add_pd(_mm_add_pd(_mm_add_pd
-          (_mm_mul_pd(_mm_loadu_pd(&a_7[k + 10]), _mm_set1_pd(ext_mv_idx_1)),
-           _mm_mul_pd(_mm_loadu_pd(&a_7[k]), _mm_set1_pd(ext_mv_idx_0))),
-          _mm_mul_pd(_mm_loadu_pd(&a_7[k + 20]), _mm_set1_pd(ext_mv_idx_2))),
-          tmp_5));
-
-        // End of Outputs for SubSystem: '<S1>/gmpc'
+      // 'stateEst_:28' R = D_est * D_est';
+      ii = 0;
+      for (k = 0; k < 9; k++) {
+        rtb_R_tmp[k] = D_est[ii];
+        rtb_R_tmp[k + 9] = D_est[ii + 1];
+        rtb_R_tmp[k + 18] = D_est[ii + 2];
+        ii += 3;
       }
 
-      // Outputs for Function Call SubSystem: '<S1>/gmpc'
-      //  Measurement upate to x(k|k)
-      // '<S135>:1:155' ym_est = C(myindex,:)*xk + Dv(myindex,:)*v;
-      // '<S135>:1:156' y_innov = ym - ym_est;
-      for (k = 0; k < 6; k++) {
-        // MATLAB Function: '<S134>/optimizer' incorporates:
-        //   Inport: '<Root>/y'
+      ii = 0;
+      k = 0;
+      for (i_2 = 0; i_2 < 3; i_2++) {
+        for (i = 0; i < 3; i++) {
+          rtb_R_tmp_0 = i + ii;
+          rtb_R[rtb_R_tmp_0] = 0.0;
+          i_0 = 0;
+          for (rtb_Q_tmp = 0; rtb_Q_tmp < 9; rtb_Q_tmp++) {
+            rtb_R[rtb_R_tmp_0] += D_est[i_0 + i] * rtb_R_tmp[rtb_Q_tmp + k];
+            i_0 += 3;
+          }
+        }
 
-        ext_mv_idx_2 = 0.0;
+        ii += 3;
+        k += 9;
+      }
+
+      // Outputs for Atomic SubSystem: '<S111>/ScalarExpansionQ'
+      // 'stateEst_:29' N = B_est * D_est';
+      //  [k,L,~,Mx,~,My] = kalman(ss(A,[B G],C,[D H],dt), Q, R, N);
+      //  [k,L,~,Mx,~,My] = kalman(ss(A,B_est,C,D_est,dt), Q, R, N);
+      //  xhat = A*xhat_prev + B*u + L*(y - C*xhat_prev);
+      //  yhat = C*xhat + D*u;
+      //  ctrlScalarExpansion Helper function for scalar expansion.
+      //
+      //  	y  = ctrlScalarExpansion(u,n)
+      //
+      //    An n-ny-n matrix y is created based on u. If u is a scalar, y has u  
+      //    on its diagonals. If u is a vector, y has the elements of u on its
+      //    diagonals. If u is a matrix y = (u+u.')/2.
+      //
+      //    When u is scalar or vector, we enforce symmetric positive-definiteness. 
+      //    When u is a matrix, we enly enforce symmetry.
+      // MATLAB Function 'Utilities/ScalarExpansion/ScalarExpansion': '<S156>:1' 
+      //    Copyright 2014-2015 The MathWorks, Inc.
+      // '<S156>:1:16' y = ctrlScalarExpansion(u,n,IsStrictPositiveDefinite,OutputSquareRootY); 
+      //  ctrlScalarExpansion Helper function for scalar expansion.
+      //
+      //  	y  = ctrlScalarExpansion(u,n)
+      //
+      //    An n-ny-n matrix y is created based on u. If u is a scalar, y has u  
+      //    on its diagonals. If u is a vector, y has the elements of u on its
+      //    diagonals. If u is a matrix y = (u+u.')/2.
+      //
+      //    When u is scalar or vector, we enforce symmetric positive-definiteness. 
+      //    When u is a matrix, we enly enforce symmetry.
+      // MATLAB Function 'Utilities/ScalarExpansion/ScalarExpansion': '<S155>:1' 
+      //    Copyright 2014-2015 The MathWorks, Inc.
+      // '<S155>:1:16' y = ctrlScalarExpansion(u,n,IsStrictPositiveDefinite,OutputSquareRootY); 
+      ii = 0;
+      for (k = 0; k < 4; k++) {
+        i_2 = 0;
         i = 0;
-        for (i_0 = 0; i_0 < 10; i_0++) {
-          ext_mv_idx_2 += static_cast<real_T>(b_a_0[i + k]) * xk_0[i_0];
-          i += 6;
+        for (i_0 = 0; i_0 < 3; i_0++) {
+          rtb_R_tmp_0 = i_2 + k;
+          rtb_N[rtb_R_tmp_0] = 0.0;
+          rtb_Q_tmp = 0;
+          for (int32_T i_1{0}; i_1 < 9; i_1++) {
+            rtb_N[rtb_R_tmp_0] += B_est[rtb_Q_tmp + k] * rtb_R_tmp[i_1 + i];
+            rtb_Q_tmp += 4;
+          }
+
+          i_2 += 4;
+          i += 9;
         }
 
-        y_innov_0[k] = rtU.y[k] - ext_mv_idx_2;
+        rtb_y_g[ii] = (rtb_Q[ii] + rtb_Q[k]) / 2.0;
+        rtb_y_g[ii + 1] = (rtb_Q[ii + 1] + rtb_Q[k + 4]) / 2.0;
+        rtb_y_g[ii + 2] = (rtb_Q[ii + 2] + rtb_Q[k + 8]) / 2.0;
+        rtb_y_g[ii + 3] = (rtb_Q[ii + 3] + rtb_Q[k + 12]) / 2.0;
+        ii += 4;
       }
 
-      // '<S135>:1:157' xest = xk + M*y_innov;
-      //  Real-time MV target override
-      //  Note: utargetValue is a vector length p*nu.
-      // '<S135>:1:162' if no_uref
-      //  no external utarget
-      // '<S135>:1:164' utargetValue = utarget;
-      //  Real-time custom constraint override (scaled E/F/S)
-      // '<S135>:1:173' if ~no_cc
-      // '<S135>:1:182' return_sequence = return_mvseq || return_xseq || return_ovseq; 
-      // '<S135>:1:183' if isSimulation
-      // '<S135>:1:214' else
-      //  When doing code generation, use M code directly
-      // '<S135>:1:216' [u, cost, useq, status, iAout] = mpcblock_optimizer(...
-      // '<S135>:1:217'             rseq, vseq, umin, umax, ymin, ymax, switch_in, xest, old_u, iA, ... 
-      // '<S135>:1:218'             isQP, nu, ny, degrees, Hinv, Kx, Ku1, Kut, Kr, Kv, Mlim, ... 
-      // '<S135>:1:219'             Mx, Mu1, Mv, utargetValue, p, uoff, voff, yoff, ... 
-      // '<S135>:1:220'             false, CustomSolverCodeGen, UseSuboptimalSolution, ... 
-      // '<S135>:1:221'             UseActiveSetSolver, ASOptions, IPOptions, MIQPOptions, nxQP, openloopflag, ... 
-      // '<S135>:1:222'             no_umin, no_umax, no_ymin, no_ymax, no_cc, switch_inport, ... 
-      // '<S135>:1:223'             no_switch, enable_value, return_cost, H, return_sequence, Linv, Ac, ... 
-      // '<S135>:1:224'             ywt, uwt, duwt, ewt, no_ywt, no_uwt, no_duwt, no_rhoeps,... 
-      // '<S135>:1:225'             Wy, Wdu, Jm, SuJm, Su1, Sx, Hv, Wu, I1, ...
-      // '<S135>:1:226'             isAdaptive, isLTV, A, Bu, Bv, C, Dv, ...
-      // '<S135>:1:227'             Mrows, nCC, Ecc, Fcc, Scc, Gcc, RYscale, RMVscale, m, ... 
-      // '<S135>:1:228'             isHyb, Mdis, Ndis, Vdis, numdis, maxdis);
-      for (k = 0; k < 10; k++) {
-        // MATLAB Function: '<S134>/optimizer'
-        ext_mv_idx_2 = 0.0;
-        i = 0;
-        for (i_0 = 0; i_0 < 6; i_0++) {
-          ext_mv_idx_2 += c_a_0[i + k] * y_innov_0[i_0];
-          i += 10;
-        }
+      // End of MATLAB Function: '<S88>/MATLAB Function'
+      // End of Outputs for SubSystem: '<S111>/ScalarExpansionQ'
 
-        xk_2[k] = xk_0[k] + ext_mv_idx_2;
-      }
+      // Outputs for Atomic SubSystem: '<S111>/ReducedQRN'
+      for (ii = 0; ii < 4; ii++) {
+        // Product: '<S131>/Product' incorporates:
+        //   Constant: '<S111>/G'
+        //   Math: '<S131>/Transpose1'
 
-      // MATLAB Function: '<S134>/optimizer'
-      (void)std::memset(&rtDW.dv[0], 0, 5166U * sizeof(real_T));
-      (void)std::memset(&tmp[0], 0, 60U * sizeof(real_T));
-      tmp_0[0] = 0.0;
-      tmp_0[1] = 0.0;
-      tmp_0[2] = 0.0;
-      for (k = 0; k < 6; k++) {
-        tmp_1[k] = 0.0;
-      }
-
-      tmp_2[0] = 0.034121465297356074;
-      tmp_2[1] = 0.034121465297356074;
-      tmp_2[2] = 0.034121465297356074;
-      (void)std::memset(&rtDW.dv1[0], 0, 2520U * sizeof(real_T));
-      for (k = 0; k < 6; k++) {
-        tmp_3[k] = 1.0;
-      }
-
-      tmp_4[0] = 1.0;
-      tmp_4[1] = 1.0;
-      tmp_4[2] = 1.0;
-
-      // Memory: '<S114>/Memory'
-      (void)std::memcpy(&tmp_6[0], &rtDW.Memory_PreviousInput_g[0], 246U *
-                        sizeof(boolean_T));
-
-      // MATLAB Function: '<S134>/optimizer'
-      (void)std::memcpy(&f_0[0], &f[0], sizeof(real_T) << 4UL);
-
-      // Update for Memory: '<S114>/Memory' incorporates:
-      //   Gain: '<S3>/Gain'
-      //   Gain: '<S3>/Gain1'
-      //   Gain: '<S3>/Gain2'
-      //   Gain: '<S3>/Gain3'
-      //   Inport: '<Root>/umax'
-      //   MATLAB Function: '<S134>/optimizer'
-      //   Math: '<S114>/Math Function'
-      //   Math: '<S114>/Math Function1'
-
-      mpcblock_optimizer_h(rseq, vseq, rtU.umax, rtb_Gain2, rtb_Gain3,
-                           static_cast<int32_T>(std::round(rtb_sig)), xk_2,
-                           ext_mv, tmp_6, c, d_0, e_0, rtDW.dv, tmp, tmp_0,
-                           tmp_1, 2, f_0, g_0, rtb_ywt, rtb_Gain1, tmp_2, h, l_0,
-                           l_0, n_0, rtDW.dv1, o, q, tmp_3, tmp_4, rtb_u_l,
-                           &ext_mv_idx_2, rtb_useq_f, &status,
-                           rtDW.Memory_PreviousInput_g);
-
-      // '<S135>:1:231' if return_xseq || return_ovseq
-      // '<S135>:1:232' [yseq, xseq] = mpc_computeSequence(isLTV, xest, useq, vseq, uoff, yoff, xoff, p, ny, nxQP, nv, A, Bu, Bv, C, Dv); 
-      // '<S135>:1:238' if CustomEstimation
-      // '<S135>:1:240' else
-      //  update x[k+1|k], assuming that above u and v will be applied.
-      // '<S135>:1:242' xk1 = A*xk + Bu*(u - uoff) + Bv*v + L*y_innov;
-      // '<S135>:1:244' xk1 = xk1 + xoff;
-      //  Updated state must include offset
-      //  return xest in original value
-      // '<S135>:1:247' xest = xest + xoff;
-      // MATLAB Function 'MPC Controller/MPC/optimizer/optimizer': '<S157>:1'
-      // '<S157>:1:17' coder.extrinsic('mpcblock_optimizer_double_mex');
-      // '<S157>:1:18' coder.extrinsic('mpcblock_optimizer_single_mex');
-      // '<S157>:1:19' coder.extrinsic('mpcblock_refmd_double_mex');
-      // '<S157>:1:20' coder.extrinsic('mpcblock_refmd_single_mex');
-      //  Inputs (in BlockDataType except iA)
-      //    xk:         current state (either x[k|k-1] from built-in KF or external x[k|k]) 
-      // '<S157>:1:24' xk = convertDataType(xk0,isDouble);
-      // '<S157>:1:250' if isDouble
-      //  convert an input signal to double precision when necessary
-      // '<S157>:1:252' if isa(u,'double')
-      // '<S157>:1:253' y = u;
-      //    old_u:      last mv (calculated by MPC)
-      // '<S157>:1:26' old_u = convertDataType(old_u0,isDouble);
-      // '<S157>:1:250' if isDouble
-      //  convert an input signal to double precision when necessary
-      // '<S157>:1:252' if isa(u,'double')
-      // '<S157>:1:253' y = u;
-      //    ym:         current measured output (used only with built-in KF)
-      // '<S157>:1:28' ym = convertDataType(ym0,isDouble);
-      // '<S157>:1:250' if isDouble
-      //  convert an input signal to double precision when necessary
-      // '<S157>:1:252' if isa(u,'double')
-      // '<S157>:1:253' y = u;
-      //    ref:        output reference
-      // '<S157>:1:30' ref = convertDataType(ref0,isDouble);
-      // '<S157>:1:250' if isDouble
-      //  convert an input signal to double precision when necessary
-      // '<S157>:1:252' if isa(u,'double')
-      // '<S157>:1:253' y = u;
-      //    md:         measured disturbance
-      // '<S157>:1:32' md = convertDataType(md0,isDouble);
-      //    umin:       run-time MV bound
-      // '<S157>:1:34' umin = convertDataType(umin0,isDouble);
-      //    umax:       run-time MV bound
-      // '<S157>:1:36' umax = convertDataType(umax0,isDouble);
-      // '<S157>:1:250' if isDouble
-      //  convert an input signal to double precision when necessary
-      // '<S157>:1:252' if isa(u,'double')
-      // '<S157>:1:253' y = u;
-      //    ymin:       run-time OV bound
-      // '<S157>:1:38' ymin = convertDataType(ymin0,isDouble);
-      // '<S157>:1:250' if isDouble
-      //  convert an input signal to double precision when necessary
-      // '<S157>:1:252' if isa(u,'double')
-      // '<S157>:1:253' y = u;
-      //    ymax:       run-time OV bound
-      // '<S157>:1:40' ymax = convertDataType(ymax0,isDouble);
-      // '<S157>:1:250' if isDouble
-      //  convert an input signal to double precision when necessary
-      // '<S157>:1:252' if isa(u,'double')
-      // '<S157>:1:253' y = u;
-      //    E:          run-time mixed constraints
-      // '<S157>:1:42' E = convertDataType(E0,isDouble);
-      //    F:          run-time mixed constraints
-      // '<S157>:1:44' F = convertDataType(F0,isDouble);
-      //    G:          run-time mixed constraints
-      // '<S157>:1:46' G = convertDataType(G0,isDouble);
-      //    S:          run-time mixed constraints
-      // '<S157>:1:48' S = convertDataType(S0,isDouble);
-      //    switch_in:  if it matches "enable_value", MPC is active in control
-      // '<S157>:1:50' switch_in = int32(switch_in0);
-      //    ext_mv:     external last mv (actual)
-      // '<S157>:1:52' ext_mv = convertDataType(ext_mv0,isDouble);
-      // '<S157>:1:250' if isDouble
-      //  convert an input signal to double precision when necessary
-      // '<S157>:1:252' if isa(u,'double')
-      // '<S157>:1:253' y = u;
-      //    MVtarget:   MV reference
-      // '<S157>:1:54' MVtarget = convertDataType(MVtarget0,isDouble);
-      //    ywt:        run-time OV weights
-      // '<S157>:1:56' ywt = convertDataType(ywt0,isDouble);
-      // '<S157>:1:250' if isDouble
-      //  convert an input signal to double precision when necessary
-      // '<S157>:1:252' if isa(u,'double')
-      // '<S157>:1:253' y = u;
-      //    uwt:        run-time MV weights
-      // '<S157>:1:58' uwt = convertDataType(uwt0,isDouble);
-      // '<S157>:1:250' if isDouble
-      //  convert an input signal to double precision when necessary
-      // '<S157>:1:252' if isa(u,'double')
-      // '<S157>:1:253' y = u;
-      //    duwt:       run-time DMV weights
-      // '<S157>:1:60' duwt = convertDataType(duwt0,isDouble);
-      //    ewt:     run-time Slack weights
-      // '<S157>:1:62' ewt = convertDataType(ewt0,isDouble);
-      //    iA:         logical previous active set (for warm start)
-      //  Outputs (in BlockDataType except iAout)
-      //    xk1:        x[k+1|k] from built-in KF
-      //    u:          optimal MV
-      //    cost:       optimal cost
-      //    useq:       optimal MV sequence
-      //    xseq:       optimal state sequence
-      //    yseq:       optimal OV sequence
-      //    status:     QP exit flag
-      //    xest:       x[k|k] from built-in KF
-      //    iAout:      logical current active set
-      //  Parameters (constant)
-      //    dimensions (int32):
-      //        nx, nxp, nup, nu, ny, degrees, p, nxQP, enable_value, Mrows, nCC, nv 
-      //        myindex, mvindex, mdindex, unindex, nxid, m, Ndis, numdis, maxdis 
-      //    MPC constants (BlockDataType):
-      //        Hinv, Kx, Ku1, Kut, Kr, Kv, Mlim, Mx, Mu1, Mv, utarget
-      //        H, Linv, Ac, Wy, Wdu, Jm, SuJm, Su1, Sx, Hv, Wu, I1
-      //        A, C, B, D, Cid, Did, Ecc, Fcc, Scc, Gcc
-      //        RYscale, RMDscale, xoff, Uscale, Yscale
-      //        uoff, voff, yoff, myoff, RMVscale, Mdis, Vdis
-      //    configurations (logical):
-      //        isQP, CustomSolver, CustomSolverCodeGen, UseSuboptimalSolution, UseActiveSetSolver 
-      //        openloopflag, no_umin, no_umax, no_ymin, no_ymax, switch_inport, no_switch 
-      //        return_cost, return_mvseq, return_xseq, return_ovseq, isLTV
-      //        no_ywt, no_uwt, no_duwt, no_rhoeps, no_md, no_ref, no_uref, no_mv 
-      //        CustomEstimation, no_cc, isHyb, isDouble
-      //    ASOptions
-      //    IPOptions
-      //    MIQPOptions
-      //  Parameters
-      // '<S157>:1:95' isSimulation = coder.target('Sfun') && ~coder.target('RtwForRapid') && ~coder.target('RtwForSim'); 
-      // '<S157>:1:96' isAdaptive = false;
-      // '<S157>:1:97' isLTV = false;
-      // '<S157>:1:98' ZERO = zeros('like',ref);
-      // '<S157>:1:99' ONE = ones('like',ref);
-      // '<S157>:1:100' hasMD = nv>int32(1);
-      //  Pre-allocate all the MEX block outputs for the simulation mode
-      // '<S157>:1:105' if isSimulation
-      //  Get reference and MD signals -- accounting for previewing
-      // '<S157>:1:119' if isSimulation
-      // '<S157>:1:126' else
-      //  When doing code generation, use M code directly
-      // '<S157>:1:128' [rseq, vseq, v] = mpcblock_refmd(ref,md,nv,ny,p,yoff,voff,no_md,no_ref,openloopflag, RYscale, RMDscale); 
-      for (k = 0; k < 21; k++) {
-        // MATLAB Function: '<S156>/optimizer'
-        vseq[k] = 1.0;
-      }
-
-      for (k = 0; k < 20; k++) {
-        for (i = 0; i < 6; i++) {
-          // MATLAB Function: '<S156>/optimizer'
-          rseq[i + k * static_cast<int32_T>(ny)] = rtDW.traj
-            [(static_cast<int32_T>(rtDW.waypt) - 1) * 6 + i];
+        k = 0;
+        for (i_2 = 0; i_2 < 4; i_2++) {
+          i = k + ii;
+          rtb_y_m[i] = 0.0;
+          rtb_y_m[i] += rtb_y_g[ii] * rtP.G_Value_a[i_2];
+          rtb_y_m[i] += rtb_y_g[ii + 4] * rtP.G_Value_a[i_2 + 4];
+          rtb_y_m[i] += rtb_y_g[ii + 8] * rtP.G_Value_a[i_2 + 8];
+          rtb_y_m[i] += rtb_y_g[ii + 12] * rtP.G_Value_a[i_2 + 12];
+          k += 4;
         }
       }
 
-      // Gain: '<S136>/ext.mv_scale'
-      //  External MV override.
-      //  NOTE: old_u and ext_mv input signals are dimensionless but include offset 
-      // '<S157>:1:133' old_u = old_u - uoff;
-      // '<S157>:1:134' if no_mv
-      // '<S157>:1:136' else
-      // '<S157>:1:137' ext_mv = ext_mv - uoff;
-      status = rtP.extmv_scale_Gain_a[0] * rtb_Delay2[0];
+      // Product: '<S131>/Product' incorporates:
+      //   Constant: '<S111>/G'
 
-      // MATLAB Function: '<S156>/optimizer' incorporates:
-      //   Gain: '<S136>/ext.mv_scale'
-
-      rtb_Delay2[0] = status;
-
-      // Gain: '<S136>/ext.mv_scale'
-      rtb_Delay2_tmp = rtP.extmv_scale_Gain_a[1] * rtb_Delay2[1];
-
-      // MATLAB Function: '<S156>/optimizer' incorporates:
-      //   Gain: '<S136>/ext.mv_scale'
-
-      rtb_Delay2[1] = rtb_Delay2_tmp;
-
-      // Gain: '<S136>/ext.mv_scale'
-      ext_mv_idx_2 = rtP.extmv_scale_Gain_a[2] * rtb_Delay2[2];
-
-      // MATLAB Function: '<S156>/optimizer' incorporates:
-      //   Gain: '<S136>/ext.mv_scale'
-      //   UnitDelay: '<S136>/last_mv'
-
-      rtb_Delay2[2] = ext_mv_idx_2;
-
-      //  Bias correction
-      // '<S157>:1:138' delmv = ext_mv - old_u;
-      // '<S157>:1:139' old_u = ext_mv;
-      //  Obtain x[k|k]
-      // '<S157>:1:143' xk = xk - xoff;
-      //  Remove offset
-      // '<S157>:1:144' if CustomEstimation
-      // '<S157>:1:147' else
-      //  Default state estimation.
-      //  Scale measured output and remove offset.
-      // '<S157>:1:150' ym = ym.*RYscale(myindex) - myoff;
-      //  Correct x(k|k-1) for possible external mv override.
-      //  NOTE:  Offset was removed from x[k|k-1] at k=0.
-      // '<S157>:1:153' xk = xk + Bu*delmv;
-      status -= rtDW.last_mv_DSTATE_g[0];
-      rtb_Delay2_tmp -= rtDW.last_mv_DSTATE_g[1];
-      ext_mv_idx_2 -= rtDW.last_mv_DSTATE_g[2];
-
-      // End of Outputs for SubSystem: '<S1>/gmpc'
-      for (k = 0; k <= 8; k += 2) {
-        // Outputs for Function Call SubSystem: '<S1>/gmpc'
-        // Memory: '<S136>/last_x' incorporates:
-        //   MATLAB Function: '<S156>/optimizer'
-
-        tmp_5 = _mm_loadu_pd(&rtDW.last_x_PreviousInput_c[k]);
-
-        // MATLAB Function: '<S156>/optimizer'
-        (void)_mm_storeu_pd(&xk_2[k], _mm_add_pd(_mm_add_pd(_mm_add_pd
-          (_mm_mul_pd(_mm_loadu_pd(&a_8[k + 10]), _mm_set1_pd(rtb_Delay2_tmp)),
-           _mm_mul_pd(_mm_loadu_pd(&a_8[k]), _mm_set1_pd(status))), _mm_mul_pd
-          (_mm_loadu_pd(&a_8[k + 20]), _mm_set1_pd(ext_mv_idx_2))), tmp_5));
-
-        // End of Outputs for SubSystem: '<S1>/gmpc'
-      }
-
-      // Outputs for Function Call SubSystem: '<S1>/gmpc'
-      //  Measurement upate to x(k|k)
-      // '<S157>:1:155' ym_est = C(myindex,:)*xk + Dv(myindex,:)*v;
-      // '<S157>:1:156' y_innov = ym - ym_est;
-      for (k = 0; k < 6; k++) {
-        // MATLAB Function: '<S156>/optimizer' incorporates:
-        //   Inport: '<Root>/y'
-
-        ext_mv_idx_2 = 0.0;
-        i = 0;
-        for (i_0 = 0; i_0 < 10; i_0++) {
-          ext_mv_idx_2 += static_cast<real_T>(b_a_1[i + k]) * xk_2[i_0];
-          i += 6;
+      ii = 0;
+      for (k = 0; k < 4; k++) {
+        for (i_2 = 0; i_2 <= 2; i_2 += 2) {
+          i = i_2 + ii;
+          (void)_mm_storeu_pd(&rtb_Q[i], _mm_set1_pd(0.0));
+          tmp_3 = _mm_loadu_pd(&rtb_Q[i]);
+          (void)_mm_storeu_pd(&rtb_Q[i], _mm_add_pd(tmp_3, _mm_mul_pd
+            (_mm_set1_pd(rtb_y_m[ii]), _mm_loadu_pd(&rtP.G_Value_a[i_2]))));
+          tmp_3 = _mm_loadu_pd(&rtb_Q[i]);
+          (void)_mm_storeu_pd(&rtb_Q[i], _mm_add_pd(_mm_mul_pd(_mm_set1_pd
+            (rtb_y_m[ii + 1]), _mm_loadu_pd(&rtP.G_Value_a[i_2 + 4])), tmp_3));
+          tmp_3 = _mm_loadu_pd(&rtb_Q[i]);
+          (void)_mm_storeu_pd(&rtb_Q[i], _mm_add_pd(_mm_mul_pd(_mm_set1_pd
+            (rtb_y_m[ii + 2]), _mm_loadu_pd(&rtP.G_Value_a[i_2 + 8])), tmp_3));
+          tmp_3 = _mm_loadu_pd(&rtb_Q[i]);
+          (void)_mm_storeu_pd(&rtb_Q[i], _mm_add_pd(_mm_mul_pd(_mm_set1_pd
+            (rtb_y_m[ii + 3]), _mm_loadu_pd(&rtP.G_Value_a[i_2 + 12])), tmp_3));
         }
 
-        y_innov_1[k] = rtU.y[k] - ext_mv_idx_2;
+        ii += 4;
       }
 
-      // '<S157>:1:157' xest = xk + M*y_innov;
-      //  Real-time MV target override
-      //  Note: utargetValue is a vector length p*nu.
-      // '<S157>:1:162' if no_uref
-      //  no external utarget
-      // '<S157>:1:164' utargetValue = utarget;
-      //  Real-time custom constraint override (scaled E/F/S)
-      // '<S157>:1:173' if ~no_cc
-      // '<S157>:1:182' return_sequence = return_mvseq || return_xseq || return_ovseq; 
-      // '<S157>:1:183' if isSimulation
-      // '<S157>:1:214' else
-      //  When doing code generation, use M code directly
-      // '<S157>:1:216' [u, cost, useq, status, iAout] = mpcblock_optimizer(...
-      // '<S157>:1:217'             rseq, vseq, umin, umax, ymin, ymax, switch_in, xest, old_u, iA, ... 
-      // '<S157>:1:218'             isQP, nu, ny, degrees, Hinv, Kx, Ku1, Kut, Kr, Kv, Mlim, ... 
-      // '<S157>:1:219'             Mx, Mu1, Mv, utargetValue, p, uoff, voff, yoff, ... 
-      // '<S157>:1:220'             false, CustomSolverCodeGen, UseSuboptimalSolution, ... 
-      // '<S157>:1:221'             UseActiveSetSolver, ASOptions, IPOptions, MIQPOptions, nxQP, openloopflag, ... 
-      // '<S157>:1:222'             no_umin, no_umax, no_ymin, no_ymax, no_cc, switch_inport, ... 
-      // '<S157>:1:223'             no_switch, enable_value, return_cost, H, return_sequence, Linv, Ac, ... 
-      // '<S157>:1:224'             ywt, uwt, duwt, ewt, no_ywt, no_uwt, no_duwt, no_rhoeps,... 
-      // '<S157>:1:225'             Wy, Wdu, Jm, SuJm, Su1, Sx, Hv, Wu, I1, ...
-      // '<S157>:1:226'             isAdaptive, isLTV, A, Bu, Bv, C, Dv, ...
-      // '<S157>:1:227'             Mrows, nCC, Ecc, Fcc, Scc, Gcc, RYscale, RMVscale, m, ... 
-      // '<S157>:1:228'             isHyb, Mdis, Ndis, Vdis, numdis, maxdis);
-      for (k = 0; k < 10; k++) {
-        // MATLAB Function: '<S156>/optimizer'
-        ext_mv_idx_2 = 0.0;
-        i = 0;
-        for (i_0 = 0; i_0 < 6; i_0++) {
-          ext_mv_idx_2 += c_a_1[i + k] * y_innov_1[i_0];
-          i += 10;
+      // Math: '<S131>/Transpose2' incorporates:
+      //   Constant: '<S111>/H'
+
+      ii = 0;
+      for (k = 0; k < 3; k++) {
+        rtb_Transpose2[ii] = rtP.H_Value_o[k];
+        rtb_Transpose2[ii + 1] = rtP.H_Value_o[k + 3];
+        rtb_Transpose2[ii + 2] = rtP.H_Value_o[k + 6];
+        rtb_Transpose2[ii + 3] = rtP.H_Value_o[k + 9];
+        ii += 4;
+      }
+
+      // End of Math: '<S131>/Transpose2'
+      for (ii = 0; ii < 4; ii++) {
+        // Sum: '<S131>/Add' incorporates:
+        //   Math: '<S131>/Transpose2'
+        //   Product: '<S131>/Product1'
+
+        k = 0;
+        for (i_2 = 0; i_2 < 3; i_2++) {
+          i = k + ii;
+          rtb_Add_e[i] = (((rtb_Transpose2[k + 1] * rtb_y_g[ii + 4] +
+                            rtb_Transpose2[k] * rtb_y_g[ii]) + rtb_Transpose2[k
+                           + 2] * rtb_y_g[ii + 8]) + rtb_Transpose2[k + 3] *
+                          rtb_y_g[ii + 12]) + rtb_N[i];
+          k += 4;
         }
 
-        xk_3[k] = xk_2[k] + ext_mv_idx_2;
+        // End of Sum: '<S131>/Add'
       }
 
-      // MATLAB Function: '<S156>/optimizer'
-      (void)std::memset(&rtDW.dv[0], 0, 5166U * sizeof(real_T));
-      (void)std::memset(&tmp[0], 0, 60U * sizeof(real_T));
-      tmp_0[0] = 0.0;
-      tmp_0[1] = 0.0;
-      tmp_0[2] = 0.0;
-      for (k = 0; k < 6; k++) {
-        tmp_1[k] = 0.0;
+      // Product: '<S131>/Product2' incorporates:
+      //   Constant: '<S111>/G'
+      //   Product: '<S131>/Product3'
+      //   Product: '<S131>/Product4'
+      //   Sum: '<S131>/Add'
+
+      ii = 0;
+      for (k = 0; k < 3; k++) {
+        for (i_2 = 0; i_2 <= 2; i_2 += 2) {
+          i = i_2 + ii;
+          (void)_mm_storeu_pd(&rtb_Product2[i], _mm_set1_pd(0.0));
+          tmp_3 = _mm_loadu_pd(&rtb_Product2[i]);
+          (void)_mm_storeu_pd(&rtb_Product2[i], _mm_add_pd(tmp_3, _mm_mul_pd
+            (_mm_set1_pd(rtb_Add_e[ii]), _mm_loadu_pd(&rtP.G_Value_a[i_2]))));
+          tmp_3 = _mm_loadu_pd(&rtb_Product2[i]);
+          (void)_mm_storeu_pd(&rtb_Product2[i], _mm_add_pd(_mm_mul_pd
+            (_mm_set1_pd(rtb_Add_e[ii + 1]), _mm_loadu_pd(&rtP.G_Value_a[i_2 + 4])),
+            tmp_3));
+          tmp_3 = _mm_loadu_pd(&rtb_Product2[i]);
+          (void)_mm_storeu_pd(&rtb_Product2[i], _mm_add_pd(_mm_mul_pd
+            (_mm_set1_pd(rtb_Add_e[ii + 2]), _mm_loadu_pd(&rtP.G_Value_a[i_2 + 8])),
+            tmp_3));
+          tmp_3 = _mm_loadu_pd(&rtb_Product2[i]);
+          (void)_mm_storeu_pd(&rtb_Product2[i], _mm_add_pd(_mm_mul_pd
+            (_mm_set1_pd(rtb_Add_e[ii + 3]), _mm_loadu_pd(&rtP.G_Value_a[i_2 +
+            12])), tmp_3));
+        }
+
+        ii += 4;
       }
 
-      tmp_2[0] = 0.034121465297356074;
-      tmp_2[1] = 0.034121465297356074;
-      tmp_2[2] = 0.034121465297356074;
-      (void)std::memset(&rtDW.dv1[0], 0, 2520U * sizeof(real_T));
-      for (k = 0; k < 6; k++) {
-        tmp_3[k] = 1.0;
+      // Product: '<S131>/Product3' incorporates:
+      //   Product: '<S131>/Product4'
+
+      ii = 0;
+      i_2 = 0;
+      for (i = 0; i < 3; i++) {
+        // Product: '<S131>/Product2' incorporates:
+        //   Product: '<S131>/Product3'
+        //   Product: '<S131>/Product4'
+
+        i_0 = 0;
+        for (k = 0; k < 3; k++) {
+          // Product: '<S131>/Product3' incorporates:
+          //   Product: '<S131>/Product2'
+
+          rtb_Q_tmp = k + ii;
+          tmp[rtb_Q_tmp] = 0.0;
+
+          // Product: '<S131>/Product4'
+          rtb_N_0[rtb_Q_tmp] = 0.0;
+
+          // Product: '<S131>/Product3' incorporates:
+          //   Constant: '<S111>/H'
+          //   Product: '<S131>/Product2'
+          //   Sum: '<S131>/Add'
+
+          tmp[rtb_Q_tmp] += rtb_Add_e[i_2] * rtP.H_Value_o[k];
+
+          // Product: '<S131>/Product4' incorporates:
+          //   Math: '<S131>/Transpose'
+          //   Math: '<S131>/Transpose2'
+          //   Product: '<S131>/Product2'
+          //   Product: '<S131>/Product3'
+
+          rtb_N_0[rtb_Q_tmp] += rtb_N[i_0] * rtb_Transpose2[i_2];
+
+          // Product: '<S131>/Product3' incorporates:
+          //   Constant: '<S111>/H'
+          //   Product: '<S131>/Product2'
+          //   Sum: '<S131>/Add'
+
+          tmp[rtb_Q_tmp] += rtb_Add_e[i_2 + 1] * rtP.H_Value_o[k + 3];
+
+          // Product: '<S131>/Product4' incorporates:
+          //   Math: '<S131>/Transpose'
+          //   Math: '<S131>/Transpose2'
+          //   Product: '<S131>/Product2'
+          //   Product: '<S131>/Product3'
+
+          rtb_N_0[rtb_Q_tmp] += rtb_N[i_0 + 1] * rtb_Transpose2[i_2 + 1];
+
+          // Product: '<S131>/Product3' incorporates:
+          //   Constant: '<S111>/H'
+          //   Product: '<S131>/Product2'
+          //   Sum: '<S131>/Add'
+
+          tmp[rtb_Q_tmp] += rtb_Add_e[i_2 + 2] * rtP.H_Value_o[k + 6];
+
+          // Product: '<S131>/Product4' incorporates:
+          //   Math: '<S131>/Transpose'
+          //   Math: '<S131>/Transpose2'
+          //   Product: '<S131>/Product2'
+          //   Product: '<S131>/Product3'
+
+          rtb_N_0[rtb_Q_tmp] += rtb_N[i_0 + 2] * rtb_Transpose2[i_2 + 2];
+
+          // Product: '<S131>/Product3' incorporates:
+          //   Constant: '<S111>/H'
+          //   Product: '<S131>/Product2'
+          //   Sum: '<S131>/Add'
+
+          tmp[rtb_Q_tmp] += rtb_Add_e[i_2 + 3] * rtP.H_Value_o[k + 9];
+
+          // Product: '<S131>/Product4' incorporates:
+          //   Math: '<S131>/Transpose'
+          //   Math: '<S131>/Transpose2'
+          //   Product: '<S131>/Product2'
+          //   Product: '<S131>/Product3'
+
+          rtb_N_0[rtb_Q_tmp] += rtb_N[i_0 + 3] * rtb_Transpose2[i_2 + 3];
+
+          // Product: '<S131>/Product3' incorporates:
+          //   Product: '<S131>/Product2'
+          //   Product: '<S131>/Product4'
+
+          i_0 += 4;
+        }
+
+        // Product: '<S131>/Product2' incorporates:
+        //   Product: '<S131>/Product3'
+        //   Product: '<S131>/Product4'
+
+        ii += 3;
+        i_2 += 4;
       }
 
-      tmp_4[0] = 1.0;
-      tmp_4[1] = 1.0;
-      tmp_4[2] = 1.0;
+      // Sum: '<S131>/Add1' incorporates:
+      //   MATLAB Function: '<S134>/ScalarExpansion'
 
-      // Memory: '<S136>/Memory'
-      (void)std::memcpy(&tmp_6[0], &rtDW.Memory_PreviousInput_m[0], 246U *
-                        sizeof(boolean_T));
+      ii = 0;
+      for (k = 0; k < 3; k++) {
+        // Outputs for Atomic SubSystem: '<S111>/ScalarExpansionR'
+        rtb_Add1[ii] = (rtb_R[ii] + rtb_R[k]) / 2.0 + (tmp[ii] + rtb_N_0[ii]);
+        rtb_Add1[ii + 1] = (rtb_R[ii + 1] + rtb_R[k + 3]) / 2.0 + (tmp[ii + 1] +
+          rtb_N_0[ii + 1]);
+        rtb_Add1[ii + 2] = (rtb_R[ii + 2] + rtb_R[k + 6]) / 2.0 + (tmp[ii + 2] +
+          rtb_N_0[ii + 2]);
 
-      // MATLAB Function: '<S156>/optimizer'
-      (void)std::memcpy(&f_0[0], &f[0], sizeof(real_T) << 4UL);
-
-      // Update for Memory: '<S136>/Memory' incorporates:
-      //   Gain: '<S3>/Gain'
-      //   Gain: '<S3>/Gain1'
-      //   Gain: '<S3>/Gain2'
-      //   Gain: '<S3>/Gain3'
-      //   Inport: '<Root>/umax'
-      //   MATLAB Function: '<S156>/optimizer'
-      //   Math: '<S136>/Math Function'
-      //   Math: '<S136>/Math Function1'
-
-      mpcblock_optimizer_h(rseq, vseq, rtU.umax, rtb_Gain2, rtb_Gain3,
-                           static_cast<int32_T>(std::round(rtb_sig)), xk_3,
-                           rtb_Delay2, tmp_6, c, d_1, e_1, rtDW.dv, tmp, tmp_0,
-                           tmp_1, 3, f_0, g_1, rtb_ywt, rtb_Gain1, tmp_2, h, l_1,
-                           l_1, n_1, rtDW.dv1, o, q, tmp_3, tmp_4, ext_mv,
-                           &ext_mv_idx_2, rtb_useq_f, &status,
-                           rtDW.Memory_PreviousInput_m);
-
-      // MultiPortSwitch: '<S88>/u0_switch' incorporates:
-      //   Constant: '<S114>/constant'
-      //   Constant: '<S136>/constant'
-      //   Constant: '<S88>/u0_zero'
-      //   Constant: '<S92>/constant'
-      //   Gain: '<S114>/umin_scale2'
-      //   Gain: '<S136>/umin_scale2'
-      //   Gain: '<S92>/umin_scale2'
-
-      // '<S157>:1:231' if return_xseq || return_ovseq
-      // '<S157>:1:232' [yseq, xseq] = mpc_computeSequence(isLTV, xest, useq, vseq, uoff, yoff, xoff, p, ny, nxQP, nv, A, Bu, Bv, C, Dv); 
-      // '<S157>:1:238' if CustomEstimation
-      // '<S157>:1:240' else
-      //  update x[k+1|k], assuming that above u and v will be applied.
-      // '<S157>:1:242' xk1 = A*xk + Bu*(u - uoff) + Bv*v + L*y_innov;
-      // '<S157>:1:244' xk1 = xk1 + xoff;
-      //  Updated state must include offset
-      //  return xest in original value
-      // '<S157>:1:247' xest = xest + xoff;
-      switch (static_cast<int32_T>(rtb_sig)) {
-       case 1:
-        rtb_Gain1[0] = rtP.umin_scale2_Gain[0] * rtP.constant_Value[0];
-        rtb_Gain1[1] = rtP.umin_scale2_Gain[1] * rtP.constant_Value[1];
-        rtb_Gain1[2] = rtP.umin_scale2_Gain[2] * rtP.constant_Value[2];
-        break;
-
-       case 2:
-        rtb_Gain1[0] = rtP.umin_scale2_Gain_m[0] * rtP.constant_Value_l[0];
-        rtb_Gain1[1] = rtP.umin_scale2_Gain_m[1] * rtP.constant_Value_l[1];
-        rtb_Gain1[2] = rtP.umin_scale2_Gain_m[2] * rtP.constant_Value_l[2];
-        break;
-
-       case 3:
-        rtb_Gain1[0] = rtP.umin_scale2_Gain_l[0] * rtP.constant_Value_e[0];
-        rtb_Gain1[1] = rtP.umin_scale2_Gain_l[1] * rtP.constant_Value_e[1];
-        rtb_Gain1[2] = rtP.umin_scale2_Gain_l[2] * rtP.constant_Value_e[2];
-        break;
-
-       default:
-        rtb_Gain1[0] = rtP.u0_zero_Value[0];
-        rtb_Gain1[1] = rtP.u0_zero_Value[1];
-        rtb_Gain1[2] = rtP.u0_zero_Value[2];
-        break;
+        // End of Outputs for SubSystem: '<S111>/ScalarExpansionR'
+        ii += 3;
       }
 
-      // End of MultiPortSwitch: '<S88>/u0_switch'
+      // End of Sum: '<S131>/Add1'
+      // End of Outputs for SubSystem: '<S111>/ReducedQRN'
 
-      // Delay: '<S88>/u[k-1]'
-      if (rtDW.icLoad) {
-        rtDW.uk1_DSTATE[0] = rtb_Gain1[0];
-        rtDW.uk1_DSTATE[1] = rtb_Gain1[1];
-        rtDW.uk1_DSTATE[2] = rtb_Gain1[2];
-      }
+      // Gain: '<S89>/umin_scale1'
+      //  See help of ctrlKalmanFilterDTCalculatePL.m
+      // MATLAB Function 'KalmanFilterUtilities/DTCalculatePL/Discrete-Time KF - Calculate PLMZ': '<S151>:1' 
+      //    Copyright 2014 The MathWorks, Inc.
+      // '<S151>:1:7' [L,M,Z,PNew] = ctrlKalmanFilterDTCalculatePL(A,C,Q,R,N,P,isEnabled); 
+      //  Determine if the Square-Root algorithm was used
+      // MATLAB Function 'Kalman Filter/CovarianceOutputConfigurator/decideOutput/SqrtUsedFcn': '<S153>:1' 
+      // '<S153>:1:4' if isSqrtUsed
+      umin_scale1_idx_0 = rtP.umin_scale1_Gain[0] * rtb_r_[0];
 
-      // MultiPortSwitch: '<S88>/mv_switch' incorporates:
-      //   Delay: '<S88>/u[k-1]'
-      //   Gain: '<S114>/umin_scale1'
-      //   Gain: '<S136>/umin_scale1'
-      //   Gain: '<S92>/umin_scale1'
+      // Sum: '<S88>/Sum1' incorporates:
+      //   Inport: '<Root>/u0'
 
-      switch (static_cast<int32_T>(rtb_sig)) {
-       case 1:
-        rtb_Gain1[0] = rtP.umin_scale1_Gain[0] * Sum2_c[0];
-        rtb_Gain1[1] = rtP.umin_scale1_Gain[1] * Sum2_c[1];
-        rtb_Gain1[2] = rtP.umin_scale1_Gain[2] * Sum2_c[2];
-        break;
+      umin_scale1_idx_1 = umin_scale1_idx_0 - rtU.u0[0];
 
-       case 2:
-        rtb_Gain1[0] = rtP.umin_scale1_Gain_l[0] * rtb_u_l[0];
-        rtb_Gain1[1] = rtP.umin_scale1_Gain_l[1] * rtb_u_l[1];
-        rtb_Gain1[2] = rtP.umin_scale1_Gain_l[2] * rtb_u_l[2];
-        break;
+      // End of Outputs for SubSystem: '<S1>/mpc1'
 
-       case 3:
-        rtb_Gain1[0] = rtP.umin_scale1_Gain_f[0] * ext_mv[0];
-        rtb_Gain1[1] = rtP.umin_scale1_Gain_f[1] * ext_mv[1];
-        rtb_Gain1[2] = rtP.umin_scale1_Gain_f[2] * ext_mv[2];
-        break;
+      // Outport: '<Root>/u'
+      rtY.u[0] = umin_scale1_idx_0;
 
-       default:
-        rtb_Gain1[0] = rtDW.uk1_DSTATE[0];
-        rtb_Gain1[1] = rtDW.uk1_DSTATE[1];
-        rtb_Gain1[2] = rtDW.uk1_DSTATE[2];
-        break;
-      }
+      // Outputs for Function Call SubSystem: '<S1>/mpc1'
+      // Gain: '<S89>/umin_scale1'
+      umin_scale1_idx_0 = rtP.umin_scale1_Gain[1] * rtb_r_[1];
 
-      // End of MultiPortSwitch: '<S88>/mv_switch'
+      // Sum: '<S88>/Sum1' incorporates:
+      //   Inport: '<Root>/u0'
 
-      // Saturate: '<S3>/Saturation'
-      if (rtb_Gain1[0] > rtP.Saturation_UpperSat_d) {
-        rtb_sig = rtP.Saturation_UpperSat_d;
-      } else if (rtb_Gain1[0] < rtP.Saturation_LowerSat_k) {
-        rtb_sig = rtP.Saturation_LowerSat_k;
+      umin_scale1_idx_2 = umin_scale1_idx_0 - rtU.u0[1];
+
+      // End of Outputs for SubSystem: '<S1>/mpc1'
+
+      // Outport: '<Root>/u'
+      rtY.u[1] = umin_scale1_idx_0;
+
+      // Outputs for Function Call SubSystem: '<S1>/mpc1'
+      // Gain: '<S89>/umin_scale1'
+      umin_scale1_idx_0 = rtP.umin_scale1_Gain[2] * rtb_r_[2];
+
+      // Sum: '<S88>/Sum1' incorporates:
+      //   Inport: '<Root>/u0'
+
+      rtb_Sum1_b_idx_2 = umin_scale1_idx_0 - rtU.u0[2];
+
+      // Outputs for Enabled SubSystem: '<S130>/MeasurementUpdate' incorporates:
+      //   EnablePort: '<S154>/Enable'
+
+      // Outputs for Atomic SubSystem: '<S111>/CalculatePL'
+      // MATLAB Function: '<S113>/Discrete-Time KF - Calculate PLMZ' incorporates:
+      //   Constant: '<S3>/Constant1'
+      //   Constant: '<S3>/Constant13'
+      //   DataTypeConversion: '<S111>/DataTypeConversionEnable'
+      //   Delay: '<S111>/MemoryP'
+      //   Delay: '<S111>/MemoryX'
+      //   Product: '<S131>/Product'
+      //   Product: '<S131>/Product2'
+      //   Product: '<S154>/C[k]*xhat[k|k-1]'
+      //   Product: '<S154>/D[k]*u[k]'
+      //   Product: '<S154>/Product3'
+      //   Sum: '<S131>/Add1'
+      //   Sum: '<S154>/Add1'
+      //   Sum: '<S154>/Sum'
+      //   Sum: '<S88>/Sum6'
+
+      if (rtP.Constant1_Value_e != 0.0) {
+        ii = 0;
+        for (k = 0; k < 3; k++) {
+          i_2 = 0;
+          i = 0;
+          for (i_0 = 0; i_0 < 4; i_0++) {
+            rtb_Q_tmp = i_2 + k;
+            rtb_Transpose2[i_0 + ii] = rtb_C[rtb_Q_tmp];
+            rtb_N[rtb_Q_tmp] = 0.0;
+            rtb_N[rtb_Q_tmp] += rtDW.MemoryP_DSTATE[i] * rtb_C[k];
+            rtb_N[rtb_Q_tmp] += rtDW.MemoryP_DSTATE[i + 1] * rtb_C[k + 3];
+            rtb_N[rtb_Q_tmp] += rtDW.MemoryP_DSTATE[i + 2] * rtb_C[k + 6];
+            rtb_N[rtb_Q_tmp] += rtDW.MemoryP_DSTATE[i + 3] * rtb_C[k + 9];
+            i_2 += 3;
+            i += 4;
+          }
+
+          ii += 4;
+        }
+
+        for (ii = 0; ii < 3; ii++) {
+          k = 0;
+          i_2 = 0;
+          for (i = 0; i < 3; i++) {
+            rtb_R_tmp_0 = k + ii;
+            rtb_R[rtb_R_tmp_0] = (((rtb_Transpose2[i_2 + 1] * rtb_N[ii + 3] +
+              rtb_Transpose2[i_2] * rtb_N[ii]) + rtb_Transpose2[i_2 + 2] *
+              rtb_N[ii + 6]) + rtb_Transpose2[i_2 + 3] * rtb_N[ii + 9]) +
+              rtb_Add1[rtb_R_tmp_0];
+            k += 3;
+            i_2 += 4;
+          }
+        }
+
+        for (ii = 0; ii < 4; ii++) {
+          for (k = 0; k < 4; k++) {
+            i = k << 2UL;
+            i_2 = ii + i;
+            rtb_y_m[i_2] = 0.0;
+            rtb_y_m[i_2] += rtDW.MemoryP_DSTATE[i] * rtb_A[ii];
+            rtb_y_m[i_2] += rtDW.MemoryP_DSTATE[i + 1] * rtb_A[ii + 4];
+            rtb_y_m[i_2] += rtDW.MemoryP_DSTATE[i + 2] * rtb_A[ii + 8];
+            rtb_y_m[i_2] += rtDW.MemoryP_DSTATE[i + 3] * rtb_A[ii + 12];
+          }
+
+          for (k = 0; k < 3; k++) {
+            i_2 = k << 2UL;
+            i = i_2 + ii;
+            rtb_Add_e[i] = (((rtb_Transpose2[i_2 + 1] * rtb_y_m[ii + 4] +
+                              rtb_Transpose2[i_2] * rtb_y_m[ii]) +
+                             rtb_Transpose2[i_2 + 2] * rtb_y_m[ii + 8]) +
+                            rtb_Transpose2[i_2 + 3] * rtb_y_m[ii + 12]) +
+              rtb_Product2[i];
+          }
+        }
+
+        mrdiv(rtb_Add_e, rtb_R, rtb_N);
+        ii = 0;
+        for (k = 0; k < 3; k++) {
+          for (i_2 = 0; i_2 <= 2; i_2 += 2) {
+            i = i_2 + ii;
+            (void)_mm_storeu_pd(&rtb_Add_e[i], _mm_set1_pd(0.0));
+            tmp_3 = _mm_loadu_pd(&rtDW.MemoryP_DSTATE[i_2]);
+            tmp_2 = _mm_loadu_pd(&rtb_Add_e[i]);
+            (void)_mm_storeu_pd(&rtb_Add_e[i], _mm_add_pd(tmp_2, _mm_mul_pd
+              (_mm_set1_pd(rtb_Transpose2[ii]), tmp_3)));
+            tmp_3 = _mm_loadu_pd(&rtDW.MemoryP_DSTATE[i_2 + 4]);
+            tmp_2 = _mm_loadu_pd(&rtb_Add_e[i]);
+            (void)_mm_storeu_pd(&rtb_Add_e[i], _mm_add_pd(_mm_mul_pd(_mm_set1_pd
+              (rtb_Transpose2[ii + 1]), tmp_3), tmp_2));
+            tmp_3 = _mm_loadu_pd(&rtDW.MemoryP_DSTATE[i_2 + 8]);
+            tmp_2 = _mm_loadu_pd(&rtb_Add_e[i]);
+            (void)_mm_storeu_pd(&rtb_Add_e[i], _mm_add_pd(_mm_mul_pd(_mm_set1_pd
+              (rtb_Transpose2[ii + 2]), tmp_3), tmp_2));
+            tmp_3 = _mm_loadu_pd(&rtDW.MemoryP_DSTATE[i_2 + 12]);
+            tmp_2 = _mm_loadu_pd(&rtb_Add_e[i]);
+            (void)_mm_storeu_pd(&rtb_Add_e[i], _mm_add_pd(_mm_mul_pd(_mm_set1_pd
+              (rtb_Transpose2[ii + 3]), tmp_3), tmp_2));
+          }
+
+          ii += 4;
+        }
+
+        mrdiv(rtb_Add_e, rtb_R, rtb_Transpose2);
+        for (ii = 0; ii < 16; ii++) {
+          b_I[ii] = 0;
+        }
+
+        b_I[0] = 1;
+        b_I[5] = 1;
+        b_I[10] = 1;
+        b_I[15] = 1;
+        for (ii = 0; ii < 4; ii++) {
+          for (k = 0; k < 4; k++) {
+            i = (k << 2UL) + ii;
+            rtb_y_g[i] = static_cast<real_T>(b_I[i]) - ((rtb_C[3 * k + 1] *
+              rtb_Transpose2[ii + 4] + rtb_C[3 * k] * rtb_Transpose2[ii]) +
+              rtb_C[3 * k + 2] * rtb_Transpose2[ii + 8]);
+          }
+
+          for (k = 0; k < 4; k++) {
+            i_2 = k << 2UL;
+            i = ii + i_2;
+            Abar[i] = 0.0;
+            Abar[i] += rtDW.MemoryP_DSTATE[i_2] * rtb_y_g[ii];
+            Abar[i] += rtDW.MemoryP_DSTATE[i_2 + 1] * rtb_y_g[ii + 4];
+            Abar[i] += rtDW.MemoryP_DSTATE[i_2 + 2] * rtb_y_g[ii + 8];
+            Abar[i] += rtDW.MemoryP_DSTATE[i_2 + 3] * rtb_y_g[ii + 12];
+          }
+
+          for (k = 0; k < 3; k++) {
+            rtb_Q_tmp = (k << 2UL) + ii;
+            rtb_Add_e[rtb_Q_tmp] = 0.0;
+            rtb_Add_e[rtb_Q_tmp] += rtb_Add1[3 * k] * rtb_Transpose2[ii];
+            rtb_Add_e[rtb_Q_tmp] += rtb_Add1[3 * k + 1] * rtb_Transpose2[ii + 4];
+            rtb_Add_e[rtb_Q_tmp] += rtb_Add1[3 * k + 2] * rtb_Transpose2[ii + 8];
+          }
+        }
+
+        for (ii = 0; ii < 4; ii++) {
+          k = 0;
+          for (i_2 = 0; i_2 < 4; i_2++) {
+            i = k + ii;
+            rtb_y_m[i] = 0.0;
+            rtb_y_m[i] += Abar[ii] * rtb_y_g[i_2];
+            rtb_y_m[i] += Abar[ii + 4] * rtb_y_g[i_2 + 4];
+            rtb_y_m[i] += Abar[ii + 8] * rtb_y_g[i_2 + 8];
+            rtb_y_m[i] += Abar[ii + 12] * rtb_y_g[i_2 + 12];
+            rtb_Transpose2_0[i] = 0.0;
+            rtb_Transpose2_0[i] += rtb_Add_e[ii] * rtb_Transpose2[i_2];
+            rtb_Transpose2_0[i] += rtb_Add_e[ii + 4] * rtb_Transpose2[i_2 + 4];
+            rtb_Transpose2_0[i] += rtb_Add_e[ii + 8] * rtb_Transpose2[i_2 + 8];
+            k += 4;
+          }
+        }
+
+        for (ii = 0; ii <= 14; ii += 2) {
+          tmp_3 = _mm_loadu_pd(&rtb_y_m[ii]);
+          tmp_2 = _mm_loadu_pd(&rtb_Transpose2_0[ii]);
+          (void)_mm_storeu_pd(&rtb_Z[ii], _mm_add_pd(tmp_3, tmp_2));
+        }
+
+        mrdiv(rtb_Product2, rtb_Add1, rtb_Transpose2);
+        for (ii = 0; ii < 4; ii++) {
+          for (k = 0; k < 4; k++) {
+            i = (k << 2UL) + ii;
+            rtb_y_g[i] = rtb_A[i] - ((rtb_C[3 * k + 1] * rtb_Transpose2[ii + 4]
+              + rtb_C[3 * k] * rtb_Transpose2[ii]) + rtb_C[3 * k + 2] *
+              rtb_Transpose2[ii + 8]);
+          }
+
+          for (k = 0; k < 4; k++) {
+            i_2 = k << 2UL;
+            i = ii + i_2;
+            Abar[i] = 0.0;
+            Abar[i] += rtb_Z[i_2] * rtb_y_g[ii];
+            Abar[i] += rtb_Z[i_2 + 1] * rtb_y_g[ii + 4];
+            Abar[i] += rtb_Z[i_2 + 2] * rtb_y_g[ii + 8];
+            Abar[i] += rtb_Z[i_2 + 3] * rtb_y_g[ii + 12];
+          }
+        }
+
+        for (ii = 0; ii < 4; ii++) {
+          k = 0;
+          for (i_2 = 0; i_2 < 4; i_2++) {
+            i = k + ii;
+            rtb_y_m[i] = (((Abar[ii + 4] * rtb_y_g[i_2 + 4] + Abar[ii] *
+                            rtb_y_g[i_2]) + Abar[ii + 8] * rtb_y_g[i_2 + 8]) +
+                          Abar[ii + 12] * rtb_y_g[i_2 + 12]) + rtb_Q[i];
+            rtb_Transpose2_0[i] = 0.0;
+            rtb_Transpose2_0[i] += rtb_Transpose2[ii] * rtb_Product2[i_2];
+            rtb_Transpose2_0[i] += rtb_Transpose2[ii + 4] * rtb_Product2[i_2 + 4];
+            rtb_Transpose2_0[i] += rtb_Transpose2[ii + 8] * rtb_Product2[i_2 + 8];
+            k += 4;
+          }
+        }
+
+        for (ii = 0; ii <= 14; ii += 2) {
+          tmp_3 = _mm_loadu_pd(&rtb_y_m[ii]);
+          tmp_2 = _mm_loadu_pd(&rtb_Transpose2_0[ii]);
+          (void)_mm_storeu_pd(&rtb_y_g[ii], _mm_sub_pd(tmp_3, tmp_2));
+        }
+
+        rtDW.MeasurementUpdate_MODE = true;
+        for (ii = 0; ii <= 0; ii += 2) {
+          tmp_3 = _mm_set1_pd(0.0);
+          (void)_mm_storeu_pd(&rtb_C_0[ii], tmp_3);
+          tmp_2 = _mm_loadu_pd(&rtb_C[ii]);
+          tmp_1 = _mm_loadu_pd(&rtb_C_0[ii]);
+          (void)_mm_storeu_pd(&rtb_C_0[ii], _mm_add_pd(_mm_mul_pd(tmp_2,
+            _mm_set1_pd(rtDW.MemoryX_DSTATE[0])), tmp_1));
+          tmp_2 = _mm_loadu_pd(&rtb_C[ii + 3]);
+          tmp_1 = _mm_loadu_pd(&rtb_C_0[ii]);
+          (void)_mm_storeu_pd(&rtb_C_0[ii], _mm_add_pd(_mm_mul_pd(tmp_2,
+            _mm_set1_pd(rtDW.MemoryX_DSTATE[1])), tmp_1));
+          tmp_2 = _mm_loadu_pd(&rtb_C[ii + 6]);
+          tmp_1 = _mm_loadu_pd(&rtb_C_0[ii]);
+          (void)_mm_storeu_pd(&rtb_C_0[ii], _mm_add_pd(_mm_mul_pd(tmp_2,
+            _mm_set1_pd(rtDW.MemoryX_DSTATE[2])), tmp_1));
+          tmp_2 = _mm_loadu_pd(&rtb_C[ii + 9]);
+          tmp_1 = _mm_loadu_pd(&rtb_C_0[ii]);
+          (void)_mm_storeu_pd(&rtb_C_0[ii], _mm_add_pd(_mm_mul_pd(tmp_2,
+            _mm_set1_pd(rtDW.MemoryX_DSTATE[3])), tmp_1));
+          (void)_mm_storeu_pd(&tmp_0[ii], tmp_3);
+          tmp_3 = _mm_loadu_pd(&tmp_0[ii]);
+          (void)_mm_storeu_pd(&tmp_0[ii], _mm_add_pd(_mm_mul_pd(_mm_loadu_pd
+            (&rtP.Constant13_Value_c[ii]), _mm_set1_pd(umin_scale1_idx_1)),
+            tmp_3));
+          tmp_3 = _mm_loadu_pd(&tmp_0[ii]);
+          (void)_mm_storeu_pd(&tmp_0[ii], _mm_add_pd(_mm_mul_pd(_mm_loadu_pd
+            (&rtP.Constant13_Value_c[ii + 3]), _mm_set1_pd(umin_scale1_idx_2)),
+            tmp_3));
+          tmp_3 = _mm_loadu_pd(&tmp_0[ii]);
+          (void)_mm_storeu_pd(&tmp_0[ii], _mm_add_pd(_mm_mul_pd(_mm_loadu_pd
+            (&rtP.Constant13_Value_c[ii + 6]), _mm_set1_pd(rtb_Sum1_b_idx_2)),
+            tmp_3));
+          tmp_3 = _mm_loadu_pd(&rtb_C_0[ii]);
+          tmp_2 = _mm_loadu_pd(&tmp_0[ii]);
+          tmp_1 = _mm_loadu_pd(&Sum2_c[ii]);
+          (void)_mm_storeu_pd(&Sum2_c_0[ii], _mm_sub_pd(tmp_1, _mm_add_pd(tmp_3,
+            tmp_2)));
+        }
+
+        for (ii = 2; ii < 3; ii++) {
+          rtb_C_0[ii] = 0.0;
+          rtb_C_0[ii] += rtb_C[ii] * rtDW.MemoryX_DSTATE[0];
+          rtb_C_0[ii] += rtb_C[ii + 3] * rtDW.MemoryX_DSTATE[1];
+          rtb_C_0[ii] += rtb_C[ii + 6] * rtDW.MemoryX_DSTATE[2];
+          rtb_C_0[ii] += rtb_C[ii + 9] * rtDW.MemoryX_DSTATE[3];
+          tmp_0[ii] = 0.0;
+          tmp_0[ii] += rtP.Constant13_Value_c[ii] * umin_scale1_idx_1;
+          tmp_0[ii] += rtP.Constant13_Value_c[ii + 3] * umin_scale1_idx_2;
+          tmp_0[ii] += rtP.Constant13_Value_c[ii + 6] * rtb_Sum1_b_idx_2;
+          Sum2_c_0[ii] = Sum2_c[ii] - (rtb_C_0[ii] + tmp_0[ii]);
+        }
+
+        for (ii = 0; ii <= 2; ii += 2) {
+          (void)_mm_storeu_pd(&rtDW.Product3[ii], _mm_set1_pd(0.0));
+          tmp_3 = _mm_loadu_pd(&rtb_N[ii]);
+          tmp_2 = _mm_loadu_pd(&rtDW.Product3[ii]);
+          (void)_mm_storeu_pd(&rtDW.Product3[ii], _mm_add_pd(_mm_mul_pd(tmp_3,
+            _mm_set1_pd(Sum2_c_0[0])), tmp_2));
+          tmp_3 = _mm_loadu_pd(&rtb_N[ii + 4]);
+          tmp_2 = _mm_loadu_pd(&rtDW.Product3[ii]);
+          (void)_mm_storeu_pd(&rtDW.Product3[ii], _mm_add_pd(_mm_mul_pd(tmp_3,
+            _mm_set1_pd(Sum2_c_0[1])), tmp_2));
+          tmp_3 = _mm_loadu_pd(&rtb_N[ii + 8]);
+          tmp_2 = _mm_loadu_pd(&rtDW.Product3[ii]);
+          (void)_mm_storeu_pd(&rtDW.Product3[ii], _mm_add_pd(_mm_mul_pd(tmp_3,
+            _mm_set1_pd(Sum2_c_0[2])), tmp_2));
+        }
       } else {
-        rtb_sig = rtb_Gain1[0];
-      }
+        for (ii = 0; ii < 4; ii++) {
+          for (k = 0; k < 4; k++) {
+            i = k << 2UL;
+            i_2 = ii + i;
+            rtb_y_m[i_2] = 0.0;
+            rtb_y_m[i_2] += rtDW.MemoryP_DSTATE[i] * rtb_A[ii];
+            rtb_y_m[i_2] += rtDW.MemoryP_DSTATE[i + 1] * rtb_A[ii + 4];
+            rtb_y_m[i_2] += rtDW.MemoryP_DSTATE[i + 2] * rtb_A[ii + 8];
+            rtb_y_m[i_2] += rtDW.MemoryP_DSTATE[i + 3] * rtb_A[ii + 12];
+          }
 
-      if (rtb_Gain1[1] > rtP.Saturation_UpperSat_d) {
-        status = rtP.Saturation_UpperSat_d;
-      } else if (rtb_Gain1[1] < rtP.Saturation_LowerSat_k) {
-        status = rtP.Saturation_LowerSat_k;
-      } else {
-        status = rtb_Gain1[1];
-      }
-
-      if (rtb_Gain1[2] > rtP.Saturation_UpperSat_d) {
-        rtb_Delay2_tmp = rtP.Saturation_UpperSat_d;
-      } else if (rtb_Gain1[2] < rtP.Saturation_LowerSat_k) {
-        rtb_Delay2_tmp = rtP.Saturation_LowerSat_k;
-      } else {
-        rtb_Delay2_tmp = rtb_Gain1[2];
-      }
-
-      // Update for Delay: '<S3>/Delay2' incorporates:
-      //   Saturate: '<S3>/Saturation'
-
-      rtDW.Delay2_DSTATE[0] = rtb_sig;
-
-      // Update for UnitDelay: '<S92>/last_mv'
-      rtDW.last_mv_DSTATE[0] = Sum2_c[0];
-
-      // MATLAB Function: '<S112>/optimizer' incorporates:
-      //   UnitDelay: '<S92>/last_mv'
-
-      ext_mv_idx_0 = Sum2_c[0];
-
-      // Update for Delay: '<S3>/Delay2' incorporates:
-      //   Saturate: '<S3>/Saturation'
-
-      rtDW.Delay2_DSTATE[1] = status;
-
-      // Update for UnitDelay: '<S92>/last_mv'
-      rtDW.last_mv_DSTATE[1] = Sum2_c[1];
-
-      // MATLAB Function: '<S112>/optimizer' incorporates:
-      //   UnitDelay: '<S92>/last_mv'
-
-      ext_mv_idx_1 = Sum2_c[1];
-
-      // Update for UnitDelay: '<S92>/last_mv'
-      Sum2_c_0 = Sum2_c[2];
-
-      // Update for Delay: '<S3>/Delay2' incorporates:
-      //   Saturate: '<S3>/Saturation'
-
-      rtDW.Delay2_DSTATE[2] = rtb_Delay2_tmp;
-
-      // Update for UnitDelay: '<S92>/last_mv'
-      rtDW.last_mv_DSTATE[2] = Sum2_c[2];
-      for (k = 0; k < 8; k++) {
-        // MATLAB Function: '<S112>/optimizer'
-        xk_1[k] = 0.0;
-        for (i = 0; i < 8; i++) {
-          xk_1[k] += b_A[(i << 3UL) + k] * xk[i];
+          for (k = 0; k < 4; k++) {
+            i = (k << 2UL) + ii;
+            rtb_y_g[i] = (((rtb_y_m[ii + 4] * rtb_A[k + 4] + rtb_y_m[ii] *
+                            rtb_A[k]) + rtb_y_m[ii + 8] * rtb_A[k + 8]) +
+                          rtb_y_m[ii + 12] * rtb_A[k + 12]) + rtb_Q[i];
+          }
         }
 
-        // Update for Memory: '<S92>/last_x' incorporates:
-        //   MATLAB Function: '<S112>/optimizer'
-
-        ext_mv_idx_2 = 0.0;
-        for (i = 0; i < 6; i++) {
-          ext_mv_idx_2 += d_a[(i << 3UL) + k] * y_innov[i];
+        if (rtDW.MeasurementUpdate_MODE) {
+          // Disable for Product: '<S154>/Product3' incorporates:
+          //   Outport: '<S154>/L*(y[k]-yhat[k|k-1])'
+          //
+          rtDW.Product3[0] = rtP.Lykyhatkk1_Y0_c;
+          rtDW.Product3[1] = rtP.Lykyhatkk1_Y0_c;
+          rtDW.Product3[2] = rtP.Lykyhatkk1_Y0_c;
+          rtDW.Product3[3] = rtP.Lykyhatkk1_Y0_c;
+          rtDW.MeasurementUpdate_MODE = false;
         }
-
-        rtDW.last_x_PreviousInput[k] = (((a_9[k + 8] * ext_mv_idx_1 + a_9[k] *
-          ext_mv_idx_0) + a_9[k + 16] * Sum2_c_0) + xk_1[k]) + ext_mv_idx_2;
-
-        // End of Update for Memory: '<S92>/last_x'
       }
 
-      // Update for UnitDelay: '<S114>/last_mv'
-      rtDW.last_mv_DSTATE_i[0] = rtb_u_l[0];
+      // End of MATLAB Function: '<S113>/Discrete-Time KF - Calculate PLMZ'
+      // End of Outputs for SubSystem: '<S111>/CalculatePL'
+      // End of Outputs for SubSystem: '<S130>/MeasurementUpdate'
+      // End of Outputs for SubSystem: '<S1>/mpc1'
+      for (ii = 0; ii <= 0; ii += 2) {
+        // Outputs for Function Call SubSystem: '<S1>/mpc1'
+        // Product: '<S114>/Product' incorporates:
+        //   Delay: '<S111>/MemoryX'
 
-      // MATLAB Function: '<S134>/optimizer' incorporates:
-      //   UnitDelay: '<S114>/last_mv'
+        tmp_3 = _mm_set1_pd(0.0);
+        (void)_mm_storeu_pd(&rtb_C_0[ii], tmp_3);
+        tmp_2 = _mm_loadu_pd(&rtb_C[ii]);
+        tmp_1 = _mm_loadu_pd(&rtb_C_0[ii]);
+        (void)_mm_storeu_pd(&rtb_C_0[ii], _mm_add_pd(_mm_mul_pd(tmp_2,
+          _mm_set1_pd(rtDW.MemoryX_DSTATE[0])), tmp_1));
+        tmp_2 = _mm_loadu_pd(&rtb_C[ii + 3]);
+        tmp_1 = _mm_loadu_pd(&rtb_C_0[ii]);
+        (void)_mm_storeu_pd(&rtb_C_0[ii], _mm_add_pd(_mm_mul_pd(tmp_2,
+          _mm_set1_pd(rtDW.MemoryX_DSTATE[1])), tmp_1));
+        tmp_2 = _mm_loadu_pd(&rtb_C[ii + 6]);
+        tmp_1 = _mm_loadu_pd(&rtb_C_0[ii]);
+        (void)_mm_storeu_pd(&rtb_C_0[ii], _mm_add_pd(_mm_mul_pd(tmp_2,
+          _mm_set1_pd(rtDW.MemoryX_DSTATE[2])), tmp_1));
+        tmp_2 = _mm_loadu_pd(&rtb_C[ii + 9]);
+        tmp_1 = _mm_loadu_pd(&rtb_C_0[ii]);
+        (void)_mm_storeu_pd(&rtb_C_0[ii], _mm_add_pd(_mm_mul_pd(tmp_2,
+          _mm_set1_pd(rtDW.MemoryX_DSTATE[3])), tmp_1));
 
-      ext_mv_idx_0 = rtb_u_l[0];
+        // Product: '<S114>/Product1' incorporates:
+        //   Constant: '<S3>/Constant13'
+        //   Product: '<S114>/Product'
 
-      // Update for UnitDelay: '<S114>/last_mv'
-      rtDW.last_mv_DSTATE_i[1] = rtb_u_l[1];
+        (void)_mm_storeu_pd(&tmp_0[ii], tmp_3);
+        tmp_3 = _mm_loadu_pd(&tmp_0[ii]);
+        (void)_mm_storeu_pd(&tmp_0[ii], _mm_add_pd(_mm_mul_pd(_mm_loadu_pd
+          (&rtP.Constant13_Value_c[ii]), _mm_set1_pd(umin_scale1_idx_1)), tmp_3));
+        tmp_3 = _mm_loadu_pd(&tmp_0[ii]);
+        (void)_mm_storeu_pd(&tmp_0[ii], _mm_add_pd(_mm_mul_pd(_mm_loadu_pd
+          (&rtP.Constant13_Value_c[ii + 3]), _mm_set1_pd(umin_scale1_idx_2)),
+          tmp_3));
+        tmp_3 = _mm_loadu_pd(&tmp_0[ii]);
+        (void)_mm_storeu_pd(&tmp_0[ii], _mm_add_pd(_mm_mul_pd(_mm_loadu_pd
+          (&rtP.Constant13_Value_c[ii + 6]), _mm_set1_pd(rtb_Sum1_b_idx_2)),
+          tmp_3));
 
-      // MATLAB Function: '<S134>/optimizer' incorporates:
-      //   UnitDelay: '<S114>/last_mv'
+        // Product: '<S114>/Product'
+        tmp_3 = _mm_loadu_pd(&rtb_C_0[ii]);
 
-      ext_mv_idx_1 = rtb_u_l[1];
+        // Product: '<S114>/Product1' incorporates:
+        //   Product: '<S114>/Product'
 
-      // Update for UnitDelay: '<S114>/last_mv'
-      Sum2_c_0 = rtb_u_l[2];
-      rtDW.last_mv_DSTATE_i[2] = rtb_u_l[2];
-      for (k = 0; k < 10; k++) {
-        // MATLAB Function: '<S134>/optimizer'
-        xk_3[k] = 0.0;
-        for (i = 0; i < 10; i++) {
-          xk_3[k] += b_A_0[10 * i + k] * xk_0[i];
-        }
+        tmp_2 = _mm_loadu_pd(&tmp_0[ii]);
 
-        // Update for Memory: '<S114>/last_x' incorporates:
-        //   MATLAB Function: '<S134>/optimizer'
+        // Sum: '<S114>/Add1' incorporates:
+        //   Product: '<S114>/Product'
 
-        ext_mv_idx_2 = 0.0;
-        for (i = 0; i < 6; i++) {
-          ext_mv_idx_2 += d_a_0[10 * i + k] * y_innov_0[i];
-        }
+        (void)_mm_storeu_pd(&Sum2_c[ii], _mm_add_pd(tmp_3, tmp_2));
 
-        rtDW.last_x_PreviousInput_h[k] = (((a_a[k + 10] * ext_mv_idx_1 + a_a[k] *
-          ext_mv_idx_0) + a_a[k + 20] * Sum2_c_0) + xk_3[k]) + ext_mv_idx_2;
-
-        // End of Update for Memory: '<S114>/last_x'
+        // End of Outputs for SubSystem: '<S1>/mpc1'
       }
 
-      // Update for UnitDelay: '<S136>/last_mv'
-      rtDW.last_mv_DSTATE_g[0] = ext_mv[0];
+      // Outputs for Function Call SubSystem: '<S1>/mpc1'
+      for (ii = 2; ii < 3; ii++) {
+        // Product: '<S114>/Product' incorporates:
+        //   Delay: '<S111>/MemoryX'
 
-      // MATLAB Function: '<S156>/optimizer' incorporates:
-      //   UnitDelay: '<S136>/last_mv'
+        rtb_C_0[ii] = 0.0;
+        rtb_C_0[ii] += rtb_C[ii] * rtDW.MemoryX_DSTATE[0];
+        rtb_C_0[ii] += rtb_C[ii + 3] * rtDW.MemoryX_DSTATE[1];
+        rtb_C_0[ii] += rtb_C[ii + 6] * rtDW.MemoryX_DSTATE[2];
+        rtb_C_0[ii] += rtb_C[ii + 9] * rtDW.MemoryX_DSTATE[3];
 
-      ext_mv_idx_0 = ext_mv[0];
+        // Product: '<S114>/Product1' incorporates:
+        //   Constant: '<S3>/Constant13'
+        //   Product: '<S114>/Product'
 
-      // Update for UnitDelay: '<S136>/last_mv'
-      rtDW.last_mv_DSTATE_g[1] = ext_mv[1];
+        tmp_0[ii] = 0.0;
+        tmp_0[ii] += rtP.Constant13_Value_c[ii] * umin_scale1_idx_1;
+        tmp_0[ii] += rtP.Constant13_Value_c[ii + 3] * umin_scale1_idx_2;
+        tmp_0[ii] += rtP.Constant13_Value_c[ii + 6] * rtb_Sum1_b_idx_2;
 
-      // MATLAB Function: '<S156>/optimizer' incorporates:
-      //   UnitDelay: '<S136>/last_mv'
+        // Sum: '<S114>/Add1' incorporates:
+        //   Product: '<S114>/Product'
 
-      ext_mv_idx_1 = ext_mv[1];
-
-      // Update for UnitDelay: '<S136>/last_mv'
-      Sum2_c_0 = ext_mv[2];
-      rtDW.last_mv_DSTATE_g[2] = ext_mv[2];
-      for (k = 0; k < 10; k++) {
-        // MATLAB Function: '<S156>/optimizer'
-        xk_3[k] = 0.0;
-        for (i = 0; i < 10; i++) {
-          xk_3[k] += b_A_1[10 * i + k] * xk_2[i];
-        }
-
-        // Update for Memory: '<S136>/last_x' incorporates:
-        //   MATLAB Function: '<S156>/optimizer'
-
-        ext_mv_idx_2 = 0.0;
-        for (i = 0; i < 6; i++) {
-          ext_mv_idx_2 += d_a_1[10 * i + k] * y_innov_1[i];
-        }
-
-        rtDW.last_x_PreviousInput_c[k] = (((a_b[k + 10] * ext_mv_idx_1 + a_b[k] *
-          ext_mv_idx_0) + a_b[k + 20] * Sum2_c_0) + xk_3[k]) + ext_mv_idx_2;
-
-        // End of Update for Memory: '<S136>/last_x'
+        Sum2_c[ii] = rtb_C_0[ii] + tmp_0[ii];
       }
 
-      // Update for Delay: '<S88>/u[k-1]'
+      for (k = 0; k < 6; k++) {
+        // Update for Delay: '<S3>/Delay'
+        rtDW.Delay_DSTATE[k] = rtb_ywtT[k];
+      }
+
+      // Update for UnitDelay: '<S89>/last_mv'
+      rtDW.last_mv_DSTATE[0] = rtb_r_[0];
+      rtDW.last_mv_DSTATE[1] = rtb_r_[1];
+      rtDW.last_mv_DSTATE[2] = rtb_r_[2];
+
+      // Update for Delay: '<S111>/MemoryX'
       rtDW.icLoad = false;
-      rtDW.uk1_DSTATE[0] = rtb_Gain1[0];
-      rtDW.uk1_DSTATE[1] = rtb_Gain1[1];
-      rtDW.uk1_DSTATE[2] = rtb_Gain1[2];
 
-      // Outport: '<Root>/u' incorporates:
-      //   Saturate: '<S3>/Saturation'
+      // End of Outputs for SubSystem: '<S1>/mpc1'
+      for (ii = 0; ii <= 2; ii += 2) {
+        // Outputs for Function Call SubSystem: '<S1>/mpc1'
+        // Product: '<S130>/B[k]*u[k]'
+        tmp_3 = _mm_set1_pd(0.0);
+        (void)_mm_storeu_pd(&rtb_TmpSignalConversionAtSFun_p[ii], tmp_3);
+        tmp_2 = _mm_loadu_pd(&Sum_h[ii]);
+        tmp_1 = _mm_loadu_pd(&rtb_TmpSignalConversionAtSFun_p[ii]);
+        (void)_mm_storeu_pd(&rtb_TmpSignalConversionAtSFun_p[ii], _mm_add_pd
+                            (_mm_mul_pd(tmp_2, _mm_set1_pd(umin_scale1_idx_1)),
+                             tmp_1));
+        tmp_2 = _mm_loadu_pd(&Sum_h[ii + 4]);
+        tmp_1 = _mm_loadu_pd(&rtb_TmpSignalConversionAtSFun_p[ii]);
+        (void)_mm_storeu_pd(&rtb_TmpSignalConversionAtSFun_p[ii], _mm_add_pd
+                            (_mm_mul_pd(tmp_2, _mm_set1_pd(umin_scale1_idx_2)),
+                             tmp_1));
+        tmp_2 = _mm_loadu_pd(&Sum_h[ii + 8]);
+        tmp_1 = _mm_loadu_pd(&rtb_TmpSignalConversionAtSFun_p[ii]);
+        (void)_mm_storeu_pd(&rtb_TmpSignalConversionAtSFun_p[ii], _mm_add_pd
+                            (_mm_mul_pd(tmp_2, _mm_set1_pd(rtb_Sum1_b_idx_2)),
+                             tmp_1));
 
-      rtY.u[0] = rtb_sig;
-      rtY.u[1] = status;
-      rtY.u[2] = rtb_Delay2_tmp;
+        // Product: '<S130>/A[k]*xhat[k|k-1]' incorporates:
+        //   Delay: '<S111>/MemoryX'
+        //   Product: '<S130>/B[k]*u[k]'
 
-      // End of Outputs for SubSystem: '<S1>/gmpc'
-      for (i = 0; i < 6; i++) {
+        (void)_mm_storeu_pd(&rtb_Sum2[ii], tmp_3);
+        tmp_3 = _mm_loadu_pd(&rtb_A[ii]);
+        tmp_2 = _mm_loadu_pd(&rtb_Sum2[ii]);
+        (void)_mm_storeu_pd(&rtb_Sum2[ii], _mm_add_pd(_mm_mul_pd(tmp_3,
+          _mm_set1_pd(rtDW.MemoryX_DSTATE[0])), tmp_2));
+        tmp_3 = _mm_loadu_pd(&rtb_A[ii + 4]);
+        tmp_2 = _mm_loadu_pd(&rtb_Sum2[ii]);
+        (void)_mm_storeu_pd(&rtb_Sum2[ii], _mm_add_pd(_mm_mul_pd(tmp_3,
+          _mm_set1_pd(rtDW.MemoryX_DSTATE[1])), tmp_2));
+        tmp_3 = _mm_loadu_pd(&rtb_A[ii + 8]);
+        tmp_2 = _mm_loadu_pd(&rtb_Sum2[ii]);
+        (void)_mm_storeu_pd(&rtb_Sum2[ii], _mm_add_pd(_mm_mul_pd(tmp_3,
+          _mm_set1_pd(rtDW.MemoryX_DSTATE[2])), tmp_2));
+        tmp_3 = _mm_loadu_pd(&rtb_A[ii + 12]);
+        tmp_2 = _mm_loadu_pd(&rtb_Sum2[ii]);
+        (void)_mm_storeu_pd(&rtb_Sum2[ii], _mm_add_pd(_mm_mul_pd(tmp_3,
+          _mm_set1_pd(rtDW.MemoryX_DSTATE[3])), tmp_2));
+
+        // End of Outputs for SubSystem: '<S1>/mpc1'
+      }
+
+      // Outputs for Function Call SubSystem: '<S1>/mpc1'
+      // Update for Delay: '<S111>/MemoryX' incorporates:
+      //   Sum: '<S130>/Add'
+
+      rtDW.MemoryX_DSTATE[0] = (rtb_TmpSignalConversionAtSFun_p[0] + rtb_Sum2[0])
+        + rtDW.Product3[0];
+      rtDW.MemoryX_DSTATE[1] = (rtb_TmpSignalConversionAtSFun_p[1] + rtb_Sum2[1])
+        + rtDW.Product3[1];
+      rtDW.MemoryX_DSTATE[2] = (rtb_TmpSignalConversionAtSFun_p[2] + rtb_Sum2[2])
+        + rtDW.Product3[2];
+      rtDW.MemoryX_DSTATE[3] = (rtb_TmpSignalConversionAtSFun_p[3] + rtb_Sum2[3])
+        + rtDW.Product3[3];
+
+      // Update for Delay: '<S3>/Delay2'
+      rtDW.Delay2_DSTATE = dwt;
+
+      // Update for Delay: '<S111>/MemoryP'
+      rtDW.icLoad_h = false;
+      (void)std::memcpy(&rtDW.MemoryP_DSTATE[0], &rtb_y_g[0], sizeof(real_T) <<
+                        4UL);
+
+      // Outport: '<Root>/yhat' incorporates:
+      //   Sum: '<S88>/Sum3'
+
+      rtY.yhat[0] = Sum2_c[0];
+      rtY.yhat[1] = Sum2_c[1];
+
+      // End of Outputs for SubSystem: '<S1>/mpc1'
+
+      // Outport: '<Root>/u'
+      rtY.u[2] = umin_scale1_idx_0;
+
+      // Outputs for Function Call SubSystem: '<S1>/mpc1'
+      // Outport: '<Root>/yhat' incorporates:
+      //   Sum: '<S88>/Sum3'
+
+      rtY.yhat[2] = Sum2_c[2];
+
+      // End of Outputs for SubSystem: '<S1>/mpc1'
+      for (k = 0; k < 6; k++) {
+        // Outputs for Function Call SubSystem: '<S1>/mpc1'
         // Outport: '<Root>/ywt' incorporates:
         //   Gain: '<S3>/Gain'
 
-        rtY.ywt[i] = rtb_ywt[i];
+        rtY.ywt[k] = rtP.beta * rtb_ywt[k];
+
+        // End of Outputs for SubSystem: '<S1>/mpc1'
 
         // Outport: '<Root>/currTraj'
-        rtY.currTraj[i] = rtDW.traj[(static_cast<int32_T>(rtDW.waypt) - 1) * 6 +
-          i];
+        rtY.currTraj[k] = rtDW.traj[(static_cast<int32_T>(rtDW.waypt) - 1) * 6 +
+          k];
       }
     }
   }
@@ -8458,7 +4829,10 @@ void SupervisoryController::initialize()
     int32_T i;
     int32_T t;
     uint32_T tseed;
+    rtPrevZCX.MemoryX_Reset_ZCE_o = UNINITIALIZED_ZCSIG;
+    rtPrevZCX.MemoryP_Reset_ZCE_b = UNINITIALIZED_ZCSIG;
     rtPrevZCX.MemoryX_Reset_ZCE = UNINITIALIZED_ZCSIG;
+    rtPrevZCX.Delay2_Reset_ZCE = POS_ZCSIG;
     rtPrevZCX.MemoryP_Reset_ZCE = UNINITIALIZED_ZCSIG;
     rtPrevZCX.SupervisoryController_Trig_ZCE = UNINITIALIZED_ZCSIG;
     rtPrevZCX.paramEst2.Delay1_Reset_ZCE = POS_ZCSIG;
@@ -8479,7 +4853,7 @@ void SupervisoryController::initialize()
 
     for (i = 0; i < 576; i++) {
       // SystemInitialize for Outport: '<Root>/P'
-      rtY.P_e[i] = static_cast<real_T>(tmp_3[i]);
+      rtY.P_g[i] = static_cast<real_T>(tmp_3[i]);
     }
 
     rtDW.waypt = 1U;
@@ -8565,76 +4939,40 @@ void SupervisoryController::initialize()
     // End of InitializeConditions for RandomNumber: '<S2>/excitation'
 
     // SystemInitialize for Chart: '<Root>/SupervisoryController' incorporates:
-    //   SubSystem: '<S1>/gmpc'
+    //   SubSystem: '<S1>/mpc1'
 
-    // InitializeConditions for Memory: '<S92>/Memory'
+    // InitializeConditions for Memory: '<S89>/Memory'
     (void)std::memcpy(&rtDW.Memory_PreviousInput[0],
-                      &rtP.Memory_InitialCondition_c[0], 246U * sizeof(boolean_T));
-
-    // InitializeConditions for Delay: '<S3>/Delay1'
-    rtDW.Delay1_DSTATE[0] = rtP.uwt0[0];
-    rtDW.Delay1_DSTATE[1] = rtP.uwt0[1];
-    rtDW.Delay1_DSTATE[2] = rtP.uwt0[2];
+                      &rtP.Memory_InitialCondition_f[0], 166U * sizeof(boolean_T));
     for (i = 0; i < 6; i++) {
       // InitializeConditions for Delay: '<S3>/Delay'
       rtDW.Delay_DSTATE[i] = rtP.ywt0[i];
     }
 
-    // InitializeConditions for Delay: '<S3>/Delay2'
-    rtDW.Delay2_DSTATE[0] = rtP.Delay2_InitialCondition;
+    // InitializeConditions for UnitDelay: '<S89>/last_mv'
+    rtDW.last_mv_DSTATE[0] = rtP.last_mv_InitialCondition_f[0];
+    rtDW.last_mv_DSTATE[1] = rtP.last_mv_InitialCondition_f[1];
+    rtDW.last_mv_DSTATE[2] = rtP.last_mv_InitialCondition_f[2];
 
-    // InitializeConditions for UnitDelay: '<S92>/last_mv'
-    rtDW.last_mv_DSTATE[0] = rtP.last_mv_InitialCondition_n[0];
-
-    // InitializeConditions for Delay: '<S3>/Delay2'
-    rtDW.Delay2_DSTATE[1] = rtP.Delay2_InitialCondition;
-
-    // InitializeConditions for UnitDelay: '<S92>/last_mv'
-    rtDW.last_mv_DSTATE[1] = rtP.last_mv_InitialCondition_n[1];
-
-    // InitializeConditions for Delay: '<S3>/Delay2'
-    rtDW.Delay2_DSTATE[2] = rtP.Delay2_InitialCondition;
-
-    // InitializeConditions for UnitDelay: '<S92>/last_mv'
-    rtDW.last_mv_DSTATE[2] = rtP.last_mv_InitialCondition_n[2];
-
-    // InitializeConditions for Memory: '<S92>/last_x'
-    (void)std::memcpy(&rtDW.last_x_PreviousInput[0],
-                      &rtP.last_x_InitialCondition[0], sizeof(real_T) << 3UL);
-
-    // InitializeConditions for UnitDelay: '<S114>/last_mv'
-    rtDW.last_mv_DSTATE_i[0] = rtP.last_mv_InitialCondition_l[0];
-    rtDW.last_mv_DSTATE_i[1] = rtP.last_mv_InitialCondition_l[1];
-    rtDW.last_mv_DSTATE_i[2] = rtP.last_mv_InitialCondition_l[2];
-
-    // InitializeConditions for Memory: '<S114>/last_x'
-    (void)std::memcpy(&rtDW.last_x_PreviousInput_h[0],
-                      &rtP.last_x_InitialCondition_k[0], 10U * sizeof(real_T));
-
-    // InitializeConditions for Memory: '<S114>/Memory'
-    (void)std::memcpy(&rtDW.Memory_PreviousInput_g[0],
-                      &rtP.Memory_InitialCondition_cu[0], 246U * sizeof
-                      (boolean_T));
-
-    // InitializeConditions for UnitDelay: '<S136>/last_mv'
-    rtDW.last_mv_DSTATE_g[0] = rtP.last_mv_InitialCondition_g[0];
-    rtDW.last_mv_DSTATE_g[1] = rtP.last_mv_InitialCondition_g[1];
-    rtDW.last_mv_DSTATE_g[2] = rtP.last_mv_InitialCondition_g[2];
-
-    // InitializeConditions for Memory: '<S136>/last_x'
-    (void)std::memcpy(&rtDW.last_x_PreviousInput_c[0],
-                      &rtP.last_x_InitialCondition_p[0], 10U * sizeof(real_T));
-
-    // InitializeConditions for Memory: '<S136>/Memory'
-    (void)std::memcpy(&rtDW.Memory_PreviousInput_m[0],
-                      &rtP.Memory_InitialCondition_f[0], 246U * sizeof(boolean_T));
-
-    // InitializeConditions for Delay: '<S88>/u[k-1]'
+    // InitializeConditions for Delay: '<S111>/MemoryX'
     rtDW.icLoad = true;
 
-    // SystemInitialize for MATLAB Function: '<S3>/MATLAB Function1'
-    // 'gainSchSig_:4' sigPrev = 1;
-    rtDW.sigPrev = 1.0;
+    // InitializeConditions for Delay: '<S3>/Delay2'
+    rtDW.Delay2_DSTATE = rtP.Delay2_InitialCondition;
+
+    // InitializeConditions for Delay: '<S111>/MemoryP'
+    rtDW.icLoad_h = true;
+
+    // SystemInitialize for Enabled SubSystem: '<S130>/MeasurementUpdate'
+    // SystemInitialize for Product: '<S154>/Product3' incorporates:
+    //   Outport: '<S154>/L*(y[k]-yhat[k|k-1])'
+
+    rtDW.Product3[0] = rtP.Lykyhatkk1_Y0_c;
+    rtDW.Product3[1] = rtP.Lykyhatkk1_Y0_c;
+    rtDW.Product3[2] = rtP.Lykyhatkk1_Y0_c;
+    rtDW.Product3[3] = rtP.Lykyhatkk1_Y0_c;
+
+    // End of SystemInitialize for SubSystem: '<S130>/MeasurementUpdate'
   }
 }
 
