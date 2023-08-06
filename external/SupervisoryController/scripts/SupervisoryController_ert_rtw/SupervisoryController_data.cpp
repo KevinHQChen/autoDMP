@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2402
+// Model version                  : 1.2406
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Sun Aug  6 00:34:47 2023
+// C/C++ source code generated on : Sun Aug  6 01:03:01 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -119,6 +119,7 @@ SupervisoryController::P SupervisoryController::rtP{
   //    '<S2>/MATLAB Function'
   //    '<S2>/MATLAB Function2'
   //    '<S3>/MATLAB Function'
+  //    '<S3>/Gain2'
   //    '<S157>/MATLAB Function1'
   //    '<S161>/MATLAB Function1'
 
@@ -489,6 +490,16 @@ SupervisoryController::P SupervisoryController::rtP{
 
   0.0,
 
+  // Computed Parameter: DiscreteTimeIntegrator_gainval
+  //  Referenced by: '<S3>/Discrete-Time Integrator'
+
+  1.0,
+
+  // Expression: 0
+  //  Referenced by: '<S3>/Discrete-Time Integrator'
+
+  0.0,
+
   // Expression: zeros(1,1)
   //  Referenced by: '<S87>/G_zero'
 
@@ -568,11 +579,6 @@ SupervisoryController::P SupervisoryController::rtP{
   //  Referenced by: '<S111>/X0'
 
   { 0.0, 0.0, 0.0, 0.0 },
-
-  // Expression: 0.0
-  //  Referenced by: '<S3>/Delay2'
-
-  0.0,
 
   // Expression: zeros(nym,1)
   //  Referenced by: '<S89>/ym_zero'

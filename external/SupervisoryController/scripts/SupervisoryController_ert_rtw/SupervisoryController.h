@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2402
+// Model version                  : 1.2406
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Sun Aug  6 00:34:47 2023
+// C/C++ source code generated on : Sun Aug  6 01:03:01 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -267,7 +267,7 @@ class SupervisoryController final
     real_T SFunction_o54;              // '<Root>/SupervisoryController'
     real_T SFunction_o55;              // '<Root>/SupervisoryController'
     real_T SFunction_o56;              // '<Root>/SupervisoryController'
-    real_T Delay2_DSTATE;              // '<S3>/Delay2'
+    real_T DiscreteTimeIntegrator_DSTATE;// '<S3>/Discrete-Time Integrator'
     uint16_T waypt;                    // '<Root>/SupervisoryController'
     uint16_T trajSize;                 // '<Root>/SupervisoryController'
     uint8_T is_EventHandler;           // '<Root>/SupervisoryController'
@@ -285,7 +285,6 @@ class SupervisoryController final
   struct PrevZCX {
     ZCSigState SupervisoryController_Trig_ZCE;// '<Root>/SupervisoryController'
     ZCSigState MemoryX_Reset_ZCE;      // '<S111>/MemoryX'
-    ZCSigState Delay2_Reset_ZCE;       // '<S3>/Delay2'
     ZCSigState MemoryP_Reset_ZCE;      // '<S111>/MemoryP'
     ZCSigState MemoryX_Reset_ZCE_o;    // '<S40>/MemoryX'
     ZCSigState MemoryP_Reset_ZCE_b;    // '<S40>/MemoryP'
@@ -389,6 +388,7 @@ class SupervisoryController final
                                           //    '<S2>/MATLAB Function'
                                           //    '<S2>/MATLAB Function2'
                                           //    '<S3>/MATLAB Function'
+                                          //    '<S3>/Gain2'
                                           //    '<S157>/MATLAB Function1'
                                           //    '<S161>/MATLAB Function1'
 
@@ -558,6 +558,13 @@ class SupervisoryController final
     real_T Constant_Value;             // Expression: 0
                                           //  Referenced by: '<S3>/Constant'
 
+    real_T DiscreteTimeIntegrator_gainval;
+                           // Computed Parameter: DiscreteTimeIntegrator_gainval
+                              //  Referenced by: '<S3>/Discrete-Time Integrator'
+
+    real_T DiscreteTimeIntegrator_IC;  // Expression: 0
+                                          //  Referenced by: '<S3>/Discrete-Time Integrator'
+
     real_T G_zero_Value_m;             // Expression: zeros(1,1)
                                           //  Referenced by: '<S87>/G_zero'
 
@@ -605,9 +612,6 @@ class SupervisoryController final
 
     real_T X0_Value_f[4];              // Expression: pInitialization.X0
                                           //  Referenced by: '<S111>/X0'
-
-    real_T Delay2_InitialCondition;    // Expression: 0.0
-                                          //  Referenced by: '<S3>/Delay2'
 
     real_T ym_zero_Value_c[4];         // Expression: zeros(nym,1)
                                           //  Referenced by: '<S89>/ym_zero'
@@ -691,9 +695,9 @@ class SupervisoryController final
 
     struct {
       rtwCAPI_ModelMappingInfo mmi;
-      void* dataAddress[114];
-      int32_T* vardimsAddress[114];
-      RTWLoggingFcnPtr loggingPtrs[114];
+      void* dataAddress[115];
+      int32_T* vardimsAddress[115];
+      RTWLoggingFcnPtr loggingPtrs[115];
     } DataMapInfo;
   };
 
