@@ -5,21 +5,22 @@ samplingRate = 40;
 clockPeriod = 4;
 dt = 1/samplingRate;
 
-trainPath = "~/thesis/data/state2trainFlu.csv";
+trainPath = "~/thesis/data/state0trainFlu.csv";
 % trainPath = "~/autoDMP/ctrl/scripts/simSysID/train/ctrlDataQueue.txt";
-trainStart = 40; % remove 1s for state0, state1
+trainStart = 1; % state0
+% trainStart = 40; % remove 1s for state0, state1
 % trainStart = 240; % remove 6s for state2
 trainEnd = clockPeriod*2^10-3-1-1; % 102.3/dt
 
-valPath = "~/thesis/data/state2valFlu.csv";
+valPath = "~/thesis/data/state0valFlu.csv";
 % valPath = "~/autoDMP/ctrl/scripts/simSysID/val/ctrlDataQueue.txt";
-valStart = 40;
+valStart = 1;
 % valStart = 240;
 valEnd = clockPeriod*2^10-3-1-1; % 102.3/dt
 
 col = dictionary(["t", "y0", "y1", "y2", "u0", "u1", "u2"], 1:7);
 
-idMdlName = 'G2'; % [G0 | G1 | G2]
+idMdlName = 'G0'; % [G0 | G1 | G2]
 inputs = col(["u0" "u1" "u2"]);
 inputNames = {'Pump1', 'Pump2', 'Pump3'};
 
@@ -42,8 +43,8 @@ data_train = data_train(1:end,:);
 t_train = (0:dt:(size(data_train,1) - 1)*dt)'; % assume uniform sampling
 u_train = data_train(:, inputs);
 y_train = data_train(:, outputs);
-u_train_ts = timeseries(u_train, t_train);
-y_train_ts = timeseries(y_train, t_train);
+% u_train_ts = timeseries(u_train, t_train);
+% y_train_ts = timeseries(y_train, t_train);
 
 % val
 data_val = readmatrix(valPath);
@@ -51,8 +52,8 @@ data_val = data_val(1:end,:);
 t_val = (0:dt:(size(data_val,1) - 1)*dt)'; % assume uniform sampling
 u_val = data_val(:, inputs);
 y_val = data_val(:, outputs);
-u_val_ts = timeseries(u_val, t_val);
-y_val_ts = timeseries(y_val, t_val);
+% u_val_ts = timeseries(u_val, t_val);
+% y_val_ts = timeseries(y_val, t_val);
 
 figure
 plot(t_train, y_train, t_val, y_val);
@@ -61,6 +62,10 @@ print(rootPath + "plots/raw", "-dpng");
 rootPath + "plots/raw" + ".png";
 
 %% preprocess data
+% remove outliers
+y_train = filloutliers(y_train, 'linear');
+y_val = filloutliers(y_val, 'linear');
+
 sys_train = iddata(y_train(trainStart:trainEnd,:), u_train(trainStart:trainEnd,:), dt);
 sys_val = iddata(y_val(valStart:valEnd,:), u_val(valStart:valEnd,:), dt);
 sys_train.InputName  = inputNames;
@@ -184,7 +189,7 @@ Options = ssestOptions;
 Options.WeightingFilter = [0 31.4159];
 Options.EnforceStability = false;
 
-ss_est = ssest(sys_vald, 1, 'Form', 'canonical', 'DisturbanceModel', 'none', 'Ts', 0.025, Options)
+ss_est = ssest(sys_traind, 1, 'Form', 'canonical', 'DisturbanceModel', 'none', 'Ts', 0.025, Options)
 
 %% State space model estimation - 2 states
 Options = ssestOptions;

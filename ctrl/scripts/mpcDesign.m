@@ -94,7 +94,7 @@ beta = 0.13534; % maximize robustness in closed-loop performance
 %% specify weights
 mpc1.Weights.MV = uwt0*beta;
 mpc1.Weights.MVRate = duwt0/beta;
-mpc1.Weights.OV = [1, 0, 0, 1]*beta;
+mpc1.Weights.OV = [1, 0, 0, 0]*beta;
 mpc1.Weights.ECR = 100000;
 
 %% use custom state estimator implementation
