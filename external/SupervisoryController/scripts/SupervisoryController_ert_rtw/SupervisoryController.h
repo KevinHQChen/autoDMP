@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2406
+// Model version                  : 1.2410
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Sun Aug  6 01:50:56 2023
+// C/C++ source code generated on : Sun Aug  6 15:42:02 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -270,6 +270,7 @@ class SupervisoryController final
     real_T DiscreteTimeIntegrator_DSTATE;// '<S3>/Discrete-Time Integrator'
     uint16_T waypt;                    // '<Root>/SupervisoryController'
     uint16_T trajSize;                 // '<Root>/SupervisoryController'
+    int8_T DiscreteTimeIntegrator_PrevRese;// '<S3>/Discrete-Time Integrator'
     uint8_T is_EventHandler;           // '<Root>/SupervisoryController'
     uint8_T is_active_c6_SupervisoryControl;// '<Root>/SupervisoryController'
     boolean_T enAdapt_[6];             // '<Root>/SupervisoryController'
@@ -309,6 +310,7 @@ class SupervisoryController final
     real_T lambda;                     // '<Root>/lambda'
     real_T k_2;                        // '<Root>/k_2'
     event_bus nextEv;                  // '<Root>/nextEv'
+    boolean_T iRST;                    // '<Root>/iRST'
     real_T measAvail;                  // '<Root>/measAvail'
   };
 
@@ -321,7 +323,7 @@ class SupervisoryController final
     event_bus currEv;                  // '<Root>/currEv'
     real_T theta[24];                  // '<Root>/theta'
     real_T prmErr[6];                  // '<Root>/prmErr'
-    real_T P_g[576];                   // '<Root>/P'
+    real_T P_o[576];                   // '<Root>/P'
     boolean_T requestEvent;            // '<Root>/requestEvent'
   };
 

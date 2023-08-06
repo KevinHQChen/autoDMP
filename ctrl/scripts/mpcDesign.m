@@ -94,7 +94,7 @@ beta = 0.13534; % maximize robustness in closed-loop performance
 %% specify weights
 mpc1.Weights.MV = uwt0*beta;
 mpc1.Weights.MVRate = duwt0/beta;
-mpc1.Weights.OV = [1, 0, 0, 0]*beta;
+mpc1.Weights.OV = [1, 0, 0, 1]*beta;
 mpc1.Weights.ECR = 100000;
 
 %% use custom state estimator implementation
@@ -145,7 +145,7 @@ beta = 0.13534; % maximize robustness in closed-loop performance
 %% specify weights
 mpc2.Weights.MV = uwt0*beta;
 mpc2.Weights.MVRate = duwt0/beta;
-mpc2.Weights.OV = [0, 1, 1, 1, 1]*beta;
+mpc2.Weights.OV = [0, 1, 1, 0, 0]*beta;
 mpc2.Weights.ECR = 100000;
 
 %% use custom state estimator implementation
@@ -293,6 +293,9 @@ eventQueue = [...
     struct('r', [-0.5; 0;  0; 0;     0; 0],      'preT', Tpre, 'moveT', tsl_*5, 'postT', tsl_*5);
     struct('r', [-Wch/2; 0;  0; 0;     0; 0],      'preT', Tpre, 'moveT', tsl_*5, 'postT', tsl_*5);
     struct('r', [Wch/2; 0;  0; 0;     0; 0],      'preT', Tpre, 'moveT', tsl_*5, 'postT', tsl_*5);
+    struct('r', [-0.5; 0;  0; 0;     0; 0],      'preT', Tpre, 'moveT', tsl_*5, 'postT', tsl_*5);
+    struct('r', [-0.75; 0;  0; 0;     0; 0],      'preT', Tpre, 'moveT', tsl_*5, 'postT', tsl_*5);
+    struct('r', [-0.5; 0;  0; 0;     0; 0],      'preT', Tpre, 'moveT', tsl_*5, 'postT', tsl_*5);
              ]
 
 % eventQueue = [...

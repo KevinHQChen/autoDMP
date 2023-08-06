@@ -184,12 +184,20 @@ Options.N4Horizon = [15 15 15];
 ss_ = n4sid(sys_traindf, 2, 'Form', 'canonical', Options)
 ss_est = minreal(ss(ss_));
 
-%% State space model estimation - 2 states
+%% State space model estimation - state0: 1 state PEM (time domain)
 Options = ssestOptions;
 Options.WeightingFilter = [0 31.4159];
 Options.EnforceStability = false;
 
 ss_est = ssest(sys_traind, 1, 'Form', 'canonical', 'DisturbanceModel', 'none', 'Ts', 0.025, Options)
+
+%% State space model estimation - state0: 1 state PEM (freq domain)
+Options = ssestOptions;
+Options.Focus = 'simulation';
+Options.OutputWeight = 1;
+Options.N4Horizon = [15 15 15];
+
+ss_est = ssest(sys_traindf, 1, 'Form', 'canonical', 'Ts', 0.025, Options)
 
 %% State space model estimation - 2 states
 Options = ssestOptions;
