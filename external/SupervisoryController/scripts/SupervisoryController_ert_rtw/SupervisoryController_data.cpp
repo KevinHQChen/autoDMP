@@ -9,7 +9,7 @@
 //
 // Model version                  : 1.2465
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon Aug  7 14:53:17 2023
+// C/C++ source code generated on : Mon Aug  7 18:55:26 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -568,7 +568,7 @@ SupervisoryController::P SupervisoryController::rtP{
   // Expression: G0.B
   //  Referenced by: '<S3>/Constant4'
 
-  { 0.15174572794446253, -0.11684975113608537, -0.11684975113608537 },
+  { 0.22599754912864506, -0.087367622049086546, -0.087367622049086546 },
 
   // Expression: G0.C
   //  Referenced by: '<S3>/Constant12'
@@ -583,7 +583,7 @@ SupervisoryController::P SupervisoryController::rtP{
   // Expression: G0.A
   //  Referenced by: '<S3>/Constant3'
 
-  0.99766763933898683,
+  0.9977021834978721,
 
   // Expression: zeros(size(G0.A, 1), 1)
   //  Referenced by: '<S3>/Constant2'
@@ -765,14 +765,14 @@ SupervisoryController::P SupervisoryController::rtP{
   // Expression: G1.A
   //  Referenced by: '<S4>/Constant3'
 
-  { 0.99801496201563555, 0.00012982817451900192, -0.001444494825713849,
-    0.99878101747798131 },
+  { 1.000123044028135, -0.001682699844730462, -6.49697774177671E-5,
+    0.99940308269490341 },
 
   // Expression: G1.B
   //  Referenced by: '<S4>/Constant4'
 
-  { -0.1888968412469153, -0.060492001339316988, 0.1599184353223182,
-    -0.089801925435736424, -0.10536597514810161, 0.1119360731420971 },
+  { -0.0071454079009399124, -0.012419918116162658, 0.1366053836325051,
+    -0.063503294600298188, -0.045889078768541328, 0.10450881360411277 },
 
   // Expression: G1.C
   //  Referenced by: '<S4>/Constant12'
@@ -979,14 +979,14 @@ SupervisoryController::P SupervisoryController::rtP{
   // Expression: G2.A
   //  Referenced by: '<S5>/Constant3'
 
-  { 0.99747143658641013, 0.0011849245467832059, -0.00030050237926615431,
-    1.0004838136541614 },
+  { 0.98979340248168846, -0.036210018833518431, 0.00030104618687214896,
+    1.0007224384072255 },
 
   // Expression: G2.B
   //  Referenced by: '<S5>/Constant4'
 
-  { 0.12647183082737606, -0.14396327290074137, -0.18891678043810189,
-    0.2603991729373682, -0.13919179616088076, -0.07490340326547 },
+  { 0.025118718490858984, 0.016819265413734148, -0.0189087824026894,
+    0.066906613140151408, 0.032190816623613963, -0.026334884546125613 },
 
   // Expression: G2.C
   //  Referenced by: '<S5>/Constant12'

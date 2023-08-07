@@ -5,22 +5,20 @@ samplingRate = 40;
 clockPeriod = 4;
 dt = 1/samplingRate;
 
-trainPath = "~/thesis/data/state0trainFlu.csv";
+trainPath = "~/thesis/data/state2trainFlu.csv";
 % trainPath = "~/autoDMP/ctrl/scripts/simSysID/train/ctrlDataQueue.txt";
 trainStart = 1; % state0
-% trainStart = 40; % remove 1s for state0, state1
-% trainStart = 240; % remove 6s for state2
 trainEnd = clockPeriod*2^10-3-1-1; % 102.3/dt
 
-valPath = "~/thesis/data/state0valFlu.csv";
+valPath = "~/thesis/data/state2valFlu.csv";
 % valPath = "~/autoDMP/ctrl/scripts/simSysID/val/ctrlDataQueue.txt";
 valStart = 1;
-% valStart = 240;
 valEnd = clockPeriod*2^10-3-1-1; % 102.3/dt
+% valEnd = clockPeriod*2^10-3-1-1 - 12.3/dt; % 102.3/dt (for state1)
 
 col = dictionary(["t", "y0", "y1", "y2", "u0", "u1", "u2"], 1:7);
 
-idMdlName = 'G0'; % [G0 | G1 | G2]
+idMdlName = 'G2'; % [G0 | G1 | G2]
 inputs = col(["u0" "u1" "u2"]);
 inputNames = {'Pump1', 'Pump2', 'Pump3'};
 
@@ -63,8 +61,8 @@ rootPath + "plots/raw" + ".png";
 
 %% preprocess data
 % remove outliers
-y_train = filloutliers(y_train, 'linear');
-y_val = filloutliers(y_val, 'linear');
+% y_train = filloutliers(y_train, 'linear');
+% y_val = filloutliers(y_val, 'linear');
 
 sys_train = iddata(y_train(trainStart:trainEnd,:), u_train(trainStart:trainEnd,:), dt);
 sys_val = iddata(y_val(valStart:valEnd,:), u_val(valStart:valEnd,:), dt);
