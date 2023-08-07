@@ -64,7 +64,7 @@ void Supervisor::startThread() {
         supOut.yhat[no + ch] = 0;
         // input
         supIn.u0[ch] = pump->outputs[ch];
-        supIn.umax[ch] = 10;
+        supIn.umax[ch] = 20;
         supIn.uwt[ch] = 0.025;
         // zero-cross flag
         supIn.yo[ch] = false;
@@ -126,6 +126,8 @@ void Supervisor::start() {
 
         supIn.measAvail = !supIn.measAvail;
 
+        supIn.iRST = iRST;
+
         sup->rtU = supIn;
         sup->step();
         supOut = sup->rtY;
@@ -143,18 +145,18 @@ void Supervisor::start() {
                               << (double)supOut.yhat[3] << ", " << (double)supOut.yhat[4] << ", "
                               << (double)supOut.yhat[5] << ", u: " << (double)supOut.u[0] << ", "
                               << (double)supOut.u[1] << ", " << (double)supOut.u[2] << "\n";
-        ctrlDataQueuePtr->out << "params: " << supOut.theta[0] << ", " << supOut.theta[1] << ", "
-                              << supOut.theta[2] << ", " << supOut.theta[3] << ", "
-                              << supOut.theta[4] << ", " << supOut.theta[5] << ", "
-                              << supOut.theta[6] << ", " << supOut.theta[7] << ", "
-                              << supOut.theta[8] << ", " << supOut.theta[9] << ", "
-                              << supOut.theta[10] << ", " << supOut.theta[11] << ", "
-                              << supOut.theta[12] << ", " << supOut.theta[13] << ", "
-                              << supOut.theta[14] << ", " << supOut.theta[15] << ", "
-                              << supOut.theta[16] << ", " << supOut.theta[17] << ", "
-                              << supOut.theta[18] << ", " << supOut.theta[19] << ", "
-                              << supOut.theta[20] << ", " << supOut.theta[21] << ", "
-                              << supOut.theta[22] << ", " << supOut.theta[23] << "\n";
+        // ctrlDataQueuePtr->out << "params: " << supOut.theta[0] << ", " << supOut.theta[1] << ", "
+        //                       << supOut.theta[2] << ", " << supOut.theta[3] << ", "
+        //                       << supOut.theta[4] << ", " << supOut.theta[5] << ", "
+        //                       << supOut.theta[6] << ", " << supOut.theta[7] << ", "
+        //                       << supOut.theta[8] << ", " << supOut.theta[9] << ", "
+        //                       << supOut.theta[10] << ", " << supOut.theta[11] << ", "
+        //                       << supOut.theta[12] << ", " << supOut.theta[13] << ", "
+        //                       << supOut.theta[14] << ", " << supOut.theta[15] << ", "
+        //                       << supOut.theta[16] << ", " << supOut.theta[17] << ", "
+        //                       << supOut.theta[18] << ", " << supOut.theta[19] << ", "
+        //                       << supOut.theta[20] << ", " << supOut.theta[21] << ", "
+        //                       << supOut.theta[22] << ", " << supOut.theta[23] << "\n";
       } else {
         y = imProc->procData->get();
 
