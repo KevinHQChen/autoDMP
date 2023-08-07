@@ -5,22 +5,22 @@ samplingRate = 40;
 clockPeriod = 4;
 dt = 1/samplingRate;
 
-trainPath = "~/thesis/data/state0trainFlu.csv";
-% trainPath = "~/autoDMP/ctrl/scripts/simSysID/train/ctrlDataQueue.txt";
+% trainPath = "~/thesis/data/state0trainFlu.csv";
+trainPath = "~/autoDMP/ctrl/scripts/simSysID/train/ctrlDataQueue.txt";
 trainStart = 1; % state0
 % trainStart = 40; % remove 1s for state0, state1
 % trainStart = 240; % remove 6s for state2
 trainEnd = clockPeriod*2^10-3-1-1; % 102.3/dt
 
-valPath = "~/thesis/data/state0valFlu.csv";
-% valPath = "~/autoDMP/ctrl/scripts/simSysID/val/ctrlDataQueue.txt";
+% valPath = "~/thesis/data/state0valFlu.csv";
+valPath = "~/autoDMP/ctrl/scripts/simSysID/val/ctrlDataQueue.txt";
 valStart = 1;
 % valStart = 240;
 valEnd = clockPeriod*2^10-3-1-1; % 102.3/dt
 
 col = dictionary(["t", "y0", "y1", "y2", "u0", "u1", "u2"], 1:7);
 
-idMdlName = 'G0'; % [G0 | G1 | G2]
+idMdlName = 'G2'; % [G0 | G1 | G2]
 inputs = col(["u0" "u1" "u2"]);
 inputNames = {'Pump1', 'Pump2', 'Pump3'};
 
@@ -63,8 +63,8 @@ rootPath + "plots/raw" + ".png";
 
 %% preprocess data
 % remove outliers
-y_train = filloutliers(y_train, 'linear');
-y_val = filloutliers(y_val, 'linear');
+% y_train = filloutliers(y_train, 'linear');
+% y_val = filloutliers(y_val, 'linear');
 
 sys_train = iddata(y_train(trainStart:trainEnd,:), u_train(trainStart:trainEnd,:), dt);
 sys_val = iddata(y_val(valStart:valEnd,:), u_val(valStart:valEnd,:), dt);
@@ -174,15 +174,14 @@ tf_est = tf_est_;
 
 tf_est
 
-%% State space model estimation - 2 states
+%% State space model estimation - sim state1/state2: 2 state N4SID
 Options = n4sidOptions;
 Options.WeightingFilter = [0 31.4159];
 Options.Focus = 'simulation';                            
 Options.OutputWeight = [1 0 0;0 1 0;0 0 1];              
 Options.N4Horizon = [15 15 15];
 
-ss_ = n4sid(sys_traindf, 2, 'Form', 'canonical', Options)
-ss_est = minreal(ss(ss_));
+ss_est = n4sid(sys_traindf, 2, 'Form', 'canonical', Options)
 
 %% State space model estimation - state0: 1 state PEM (time domain)
 Options = ssestOptions;
