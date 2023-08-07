@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2465
+// Model version                  : 1.2467
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon Aug  7 18:55:26 2023
+// C/C++ source code generated on : Mon Aug  7 19:31:29 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -6626,10 +6626,10 @@ void SupervisoryController::step()
       // Entry 'ControlLaw': '<S1>:59'
     } else {
       __m128d tmp_3;
+      real_T Saturation_idx_0;
+      real_T Saturation_idx_1;
+      real_T Saturation_idx_2;
       real_T dwt;
-      real_T umin_scale1_idx_0;
-      real_T umin_scale1_idx_1;
-      real_T umin_scale1_idx_2;
       int32_T i;
       int32_T ii;
       int32_T k_0;
@@ -7006,17 +7006,17 @@ void SupervisoryController::step()
       dwt = rtP.dt / rtU.k_2;
 
       // 'wtMod_:9' k_1 = 2.197/(r*k_2);
-      umin_scale1_idx_0 = 2.197 / (0.2 * rtU.k_2);
+      Saturation_idx_0 = 2.197 / (0.2 * rtU.k_2);
 
       // 'wtMod_:10' x0 = 0.5*k_2;
-      umin_scale1_idx_1 = 0.5 * rtU.k_2;
+      Saturation_idx_1 = 0.5 * rtU.k_2;
 
       //  midpoint
       // 'wtMod_:11' sigmoid = @(x) 1/(1 + exp(-k_1*(x-x0)));
       // 'wtMod_:13' for i = 1:2*no
       for (k = 0; k < 6; k++) {
         // Delay: '<S8>/Delay'
-        umin_scale1_idx_2 = rtDW.Delay_DSTATE[k];
+        Saturation_idx_2 = rtDW.Delay_DSTATE[k];
 
         // MATLAB Function: '<S8>/MATLAB Function' incorporates:
         //   Inport: '<Root>/k_2'
@@ -7026,35 +7026,35 @@ void SupervisoryController::step()
         if (rtY.currEv.r[k] != 0.0) {
           //  drive ywt to 1
           // 'wtMod_:16' if (ywtT(i) <= 1)
-          if (umin_scale1_idx_2 <= 1.0) {
+          if (Saturation_idx_2 <= 1.0) {
             // 'wtMod_:17' ywtT(i) = ywtT(i) + dwt;
-            umin_scale1_idx_2 += dwt;
+            Saturation_idx_2 += dwt;
           }
 
           // 'wtMod_:19' else
           //  drive ywt to 0
           // 'wtMod_:21' if (ywtT(i) > 0)
-        } else if (umin_scale1_idx_2 > 0.0) {
+        } else if (Saturation_idx_2 > 0.0) {
           // 'wtMod_:22' ywtT(i) = ywtT(i) - dwt;
-          umin_scale1_idx_2 -= dwt;
+          Saturation_idx_2 -= dwt;
         } else {
           // no actions
         }
 
         // 'wtMod_:25' if ywtT(i) <= 0
-        if (umin_scale1_idx_2 <= 0.0) {
+        if (Saturation_idx_2 <= 0.0) {
           // 'wtMod_:26' ywt(i) = 0;
           rtb_ywt[k] = 0.0;
         } else {
           // 'wtMod_:27' else
           // 'wtMod_:28' ywt(i) = sigmoid(ywtT(i)*k_2);
           // 'wtMod_:11' @(x) 1/(1 + exp(-k_1*(x-x0)))
-          rtb_ywt[k] = 1.0 / (std::exp((umin_scale1_idx_2 * rtU.k_2 -
-            umin_scale1_idx_1) * -umin_scale1_idx_0) + 1.0);
+          rtb_ywt[k] = 1.0 / (std::exp((Saturation_idx_2 * rtU.k_2 -
+            Saturation_idx_1) * -Saturation_idx_0) + 1.0);
         }
 
         // Delay: '<S8>/Delay'
-        rtb_ywtT[k] = umin_scale1_idx_2;
+        rtb_ywtT[k] = Saturation_idx_2;
       }
 
       // MATLAB Function: '<S8>/MATLAB Function' incorporates:
@@ -7135,21 +7135,29 @@ void SupervisoryController::step()
       //   Constant: '<S182>/H'
       //   Constant: '<S252>/G'
       //   Constant: '<S252>/H'
+      //   Constant: '<S3>/Constant1'
+      //   Constant: '<S3>/Constant13'
       //   Constant: '<S4>/Constant1'
       //   Constant: '<S4>/Constant13'
       //   Constant: '<S5>/Constant1'
       //   Constant: '<S5>/Constant13'
+      //   DataTypeConversion: '<S112>/DataTypeConversionEnable'
       //   DataTypeConversion: '<S182>/DataTypeConversionEnable'
       //   DataTypeConversion: '<S252>/DataTypeConversionEnable'
+      //   Delay: '<S112>/MemoryX'
       //   Delay: '<S182>/MemoryP'
       //   Delay: '<S182>/MemoryX'
       //   Delay: '<S252>/MemoryP'
       //   Delay: '<S252>/MemoryX'
       //   Outport: '<Root>/yhat'
+      //   Product: '<S155>/C[k]*xhat[k|k-1]'
+      //   Product: '<S155>/D[k]*u[k]'
+      //   Product: '<S155>/Product3'
       //   Product: '<S185>/Product'
       //   Product: '<S185>/Product1'
       //   Product: '<S255>/Product'
       //   Product: '<S255>/Product1'
+      //   Sum: '<S155>/Sum'
       //   Sum: '<S159>/Sum3'
       //   Sum: '<S229>/Sum3'
       //   Sum: '<S89>/Sum3'
@@ -7331,13 +7339,13 @@ void SupervisoryController::step()
         rtb_TmpSignalConversionAtSFu_o4[0] = rtDW.MemoryX_DSTATE_l[0];
         rtb_TmpSignalConversionAtSFu_o4[1] = rtP.dt *
           rtDW.DiscreteTimeIntegrator_DSTATE_j;
-        umin_scale1_idx_0 = rtDW.last_mv_DSTATE_n[0];
+        Saturation_idx_0 = rtDW.last_mv_DSTATE_n[0];
         rtb_TmpSignalConversionAtSFu_o4[2] = rtP.Constant1_Value_j[0] +
           rtDW.MemoryX_DSTATE_l[1];
-        umin_scale1_idx_1 = rtDW.last_mv_DSTATE_n[1];
+        Saturation_idx_1 = rtDW.last_mv_DSTATE_n[1];
         rtb_TmpSignalConversionAtSFu_o4[3] = rtP.Constant1_Value_j[1] +
           rtDW.MemoryX_DSTATE_l[2];
-        umin_scale1_idx_2 = rtDW.last_mv_DSTATE_n[2];
+        Saturation_idx_2 = rtDW.last_mv_DSTATE_n[2];
         rtb_TmpSignalConversionAtSFu_o4[4] = rtP.Constant1_Value_j[2] +
           rtDW.MemoryX_DSTATE_l[3];
 
@@ -7383,8 +7391,8 @@ void SupervisoryController::step()
             Bc_2 += b_a[166 * k_0 + k] * rtb_TmpSignalConversionAtSFu_o4[k_0];
           }
 
-          Bc_2 = -(((a[k + 166] * umin_scale1_idx_1 + a[k] * umin_scale1_idx_0)
-                    + a[k + 332] * umin_scale1_idx_2) + (dwt + Bc_2));
+          Bc_2 = -(((a[k + 166] * Saturation_idx_1 + a[k] * Saturation_idx_0) +
+                    a[k + 332] * Saturation_idx_2) + (dwt + Bc_2));
           b_Mrows = b_Mrows_1[k];
           if ((b_Mrows > 80UL) && (b_Mrows > 160UL) && (b_Mrows <= 220UL)) {
             ii = (static_cast<int32_T>(b_Mrows) - div_nde_s32_floor(static_cast<
@@ -7421,9 +7429,9 @@ void SupervisoryController::step()
             Bc_2 += b_Kr[80 * k + k_0] * rseq[k_0];
           }
 
-          rtb_Sum2_f[k] = ((b_Ku1[3 * k + 1] * umin_scale1_idx_1 + b_Ku1[3 * k] *
-                            umin_scale1_idx_0) + b_Ku1[3 * k + 2] *
-                           umin_scale1_idx_2) + (dwt + Bc_2);
+          rtb_Sum2_f[k] = ((b_Ku1[3 * k + 1] * Saturation_idx_1 + b_Ku1[3 * k] *
+                            Saturation_idx_0) + b_Ku1[3 * k + 2] *
+                           Saturation_idx_2) + (dwt + Bc_2);
         }
 
         // Update for Memory: '<S90>/Memory' incorporates:
@@ -7825,70 +7833,19 @@ void SupervisoryController::step()
 
         // End of Outputs for SubSystem: '<S112>/ReducedQRN'
 
-        // Gain: '<S90>/umin_scale1' incorporates:
+        // Outputs for Atomic SubSystem: '<S112>/CalculatePL'
+        // MATLAB Function: '<S114>/Discrete-Time KF - Calculate PLMZ' incorporates:
+        //   Constant: '<S3>/Constant1'
+        //   DataTypeConversion: '<S112>/DataTypeConversionEnable'
+        //   Delay: '<S112>/MemoryP'
+        //   Product: '<S132>/Product'
+        //   Product: '<S132>/Product2'
         //   Sum: '<S132>/Add1'
 
         //  See help of ctrlKalmanFilterDTCalculatePL.m
         // MATLAB Function 'KalmanFilterUtilities/DTCalculatePL/Discrete-Time KF - Calculate PLMZ': '<S152>:1' 
         //    Copyright 2014 The MathWorks, Inc.
         // '<S152>:1:7' [L,M,Z,PNew] = ctrlKalmanFilterDTCalculatePL(A,C,Q,R,N,P,isEnabled); 
-        //  Determine if the Square-Root algorithm was used
-        // MATLAB Function 'Kalman Filter/CovarianceOutputConfigurator/decideOutput/SqrtUsedFcn': '<S154>:1' 
-        // '<S154>:1:4' if isSqrtUsed
-        umin_scale1_idx_0 = rtP.umin_scale1_Gain[0] * umax_incr[0];
-
-        // Sum: '<S89>/Sum1' incorporates:
-        //   Inport: '<Root>/u0'
-
-        rtb_Sum1[0] = umin_scale1_idx_0 - rtU.u0[0];
-
-        // End of Outputs for SubSystem: '<S1>/mpc1'
-
-        // Outport: '<Root>/u'
-        rtY.u[0] = umin_scale1_idx_0;
-
-        // Outputs for Function Call SubSystem: '<S1>/mpc1'
-        // Gain: '<S90>/umin_scale1'
-        umin_scale1_idx_0 = rtP.umin_scale1_Gain[1] * umax_incr[1];
-
-        // Sum: '<S89>/Sum1' incorporates:
-        //   Inport: '<Root>/u0'
-
-        rtb_Sum1[1] = umin_scale1_idx_0 - rtU.u0[1];
-
-        // End of Outputs for SubSystem: '<S1>/mpc1'
-
-        // Outport: '<Root>/u'
-        rtY.u[1] = umin_scale1_idx_0;
-
-        // Outputs for Function Call SubSystem: '<S1>/mpc1'
-        // Gain: '<S90>/umin_scale1'
-        umin_scale1_idx_0 = rtP.umin_scale1_Gain[2] * umax_incr[2];
-
-        // Sum: '<S89>/Sum1' incorporates:
-        //   Inport: '<Root>/u0'
-
-        rtb_Sum1[2] = umin_scale1_idx_0 - rtU.u0[2];
-
-        // Outputs for Enabled SubSystem: '<S131>/MeasurementUpdate' incorporates:
-        //   EnablePort: '<S155>/Enable'
-
-        // Outputs for Atomic SubSystem: '<S112>/CalculatePL'
-        // MATLAB Function: '<S114>/Discrete-Time KF - Calculate PLMZ' incorporates:
-        //   Constant: '<S3>/Constant1'
-        //   Constant: '<S3>/Constant13'
-        //   DataTypeConversion: '<S112>/DataTypeConversionEnable'
-        //   Delay: '<S112>/MemoryP'
-        //   Delay: '<S112>/MemoryX'
-        //   Product: '<S132>/Product'
-        //   Product: '<S132>/Product2'
-        //   Product: '<S155>/C[k]*xhat[k|k-1]'
-        //   Product: '<S155>/D[k]*u[k]'
-        //   Product: '<S155>/Product3'
-        //   Sum: '<S132>/Add1'
-        //   Sum: '<S155>/Add1'
-        //   Sum: '<S155>/Sum'
-
         if (rtP.Constant1_Value_e != 0.0) {
           k_0 = 0;
           for (k = 0; k < 3; k++) {
@@ -8074,7 +8031,107 @@ void SupervisoryController::step()
             tmp_1 = _mm_loadu_pd(&rtb_Transpose2_0[k_0]);
             (void)_mm_storeu_pd(&rtb_y_g[k_0], _mm_sub_pd(tmp_3, tmp_1));
           }
+        } else {
+          (void)std::memset(&rtb_N_f[0], 0, 12U * sizeof(real_T));
+          for (k_0 = 0; k_0 < 4; k_0++) {
+            for (k = 0; k < 4; k++) {
+              i = k << 2UL;
+              ii = k_0 + i;
+              rtb_y_m[ii] = 0.0;
+              rtb_y_m[ii] += rtDW.MemoryP_DSTATE_e[i] * rtb_A_e[k_0];
+              rtb_y_m[ii] += rtDW.MemoryP_DSTATE_e[i + 1] * rtb_A_e[k_0 + 4];
+              rtb_y_m[ii] += rtDW.MemoryP_DSTATE_e[i + 2] * rtb_A_e[k_0 + 8];
+              rtb_y_m[ii] += rtDW.MemoryP_DSTATE_e[i + 3] * rtb_A_e[k_0 + 12];
+            }
 
+            for (k = 0; k < 4; k++) {
+              i = (k << 2UL) + k_0;
+              rtb_y_g[i] = (((rtb_y_m[k_0 + 4] * rtb_A_e[k + 4] + rtb_y_m[k_0] *
+                              rtb_A_e[k]) + rtb_y_m[k_0 + 8] * rtb_A_e[k + 8]) +
+                            rtb_y_m[k_0 + 12] * rtb_A_e[k + 12]) + rtb_Q_j[i];
+            }
+          }
+        }
+
+        // End of MATLAB Function: '<S114>/Discrete-Time KF - Calculate PLMZ'
+        // End of Outputs for SubSystem: '<S112>/CalculatePL'
+
+        // Saturate: '<S3>/Saturation' incorporates:
+        //   Gain: '<S90>/umin_scale1'
+
+        //  Determine if the Square-Root algorithm was used
+        // MATLAB Function 'Kalman Filter/CovarianceOutputConfigurator/decideOutput/SqrtUsedFcn': '<S154>:1' 
+        // '<S154>:1:4' if isSqrtUsed
+        Saturation_idx_0 = rtP.umin_scale1_Gain[0] * umax_incr[0];
+        if (Saturation_idx_0 > rtP.Saturation_UpperSat_k) {
+          // Saturate: '<S3>/Saturation'
+          Saturation_idx_0 = rtP.Saturation_UpperSat_k;
+        } else if (Saturation_idx_0 < rtP.Saturation_LowerSat_h) {
+          // Saturate: '<S3>/Saturation'
+          Saturation_idx_0 = rtP.Saturation_LowerSat_h;
+        } else {
+          // no actions
+        }
+
+        // Sum: '<S89>/Sum1' incorporates:
+        //   Inport: '<Root>/u0'
+
+        rtb_Sum1[0] = Saturation_idx_0 - rtU.u0[0];
+
+        // End of Outputs for SubSystem: '<S1>/mpc1'
+
+        // Outport: '<Root>/u'
+        rtY.u[0] = Saturation_idx_0;
+
+        // Outputs for Function Call SubSystem: '<S1>/mpc1'
+        // Saturate: '<S3>/Saturation' incorporates:
+        //   Gain: '<S90>/umin_scale1'
+
+        Saturation_idx_0 = rtP.umin_scale1_Gain[1] * umax_incr[1];
+        if (Saturation_idx_0 > rtP.Saturation_UpperSat_k) {
+          // Saturate: '<S3>/Saturation'
+          Saturation_idx_0 = rtP.Saturation_UpperSat_k;
+        } else if (Saturation_idx_0 < rtP.Saturation_LowerSat_h) {
+          // Saturate: '<S3>/Saturation'
+          Saturation_idx_0 = rtP.Saturation_LowerSat_h;
+        } else {
+          // no actions
+        }
+
+        // Sum: '<S89>/Sum1' incorporates:
+        //   Inport: '<Root>/u0'
+
+        rtb_Sum1[1] = Saturation_idx_0 - rtU.u0[1];
+
+        // End of Outputs for SubSystem: '<S1>/mpc1'
+
+        // Outport: '<Root>/u'
+        rtY.u[1] = Saturation_idx_0;
+
+        // Outputs for Function Call SubSystem: '<S1>/mpc1'
+        // Saturate: '<S3>/Saturation' incorporates:
+        //   Gain: '<S90>/umin_scale1'
+
+        Saturation_idx_0 = rtP.umin_scale1_Gain[2] * umax_incr[2];
+        if (Saturation_idx_0 > rtP.Saturation_UpperSat_k) {
+          // Saturate: '<S3>/Saturation'
+          Saturation_idx_0 = rtP.Saturation_UpperSat_k;
+        } else if (Saturation_idx_0 < rtP.Saturation_LowerSat_h) {
+          // Saturate: '<S3>/Saturation'
+          Saturation_idx_0 = rtP.Saturation_LowerSat_h;
+        } else {
+          // no actions
+        }
+
+        // Sum: '<S89>/Sum1' incorporates:
+        //   Inport: '<Root>/u0'
+
+        rtb_Sum1[2] = Saturation_idx_0 - rtU.u0[2];
+
+        // Outputs for Enabled SubSystem: '<S131>/MeasurementUpdate' incorporates:
+        //   EnablePort: '<S155>/Enable'
+
+        if (rtP.Constant1_Value_e != 0.0) {
           rtDW.MeasurementUpdate_MODE = true;
           for (k_0 = 0; k_0 <= 0; k_0 += 2) {
             tmp_3 = _mm_set1_pd(0.0);
@@ -8115,15 +8172,28 @@ void SupervisoryController::step()
           }
 
           for (k_0 = 2; k_0 < 3; k_0++) {
+            // Product: '<S155>/C[k]*xhat[k|k-1]'
             rtb_C_0[k_0] = 0.0;
             rtb_C_0[k_0] += rtb_C_c[k_0] * rtDW.MemoryX_DSTATE_l[0];
             rtb_C_0[k_0] += rtb_C_c[k_0 + 3] * rtDW.MemoryX_DSTATE_l[1];
             rtb_C_0[k_0] += rtb_C_c[k_0 + 6] * rtDW.MemoryX_DSTATE_l[2];
             rtb_C_0[k_0] += rtb_C_c[k_0 + 9] * rtDW.MemoryX_DSTATE_l[3];
+
+            // Product: '<S155>/D[k]*u[k]' incorporates:
+            //   Delay: '<S112>/MemoryX'
+            //   Product: '<S155>/C[k]*xhat[k|k-1]'
+
             tmp[k_0] = 0.0;
             tmp[k_0] += rtP.Constant13_Value_c[k_0] * rtb_Sum1[0];
             tmp[k_0] += rtP.Constant13_Value_c[k_0 + 3] * rtb_Sum1[1];
             tmp[k_0] += rtP.Constant13_Value_c[k_0 + 6] * rtb_Sum1[2];
+
+            // Sum: '<S155>/Sum' incorporates:
+            //   Constant: '<S3>/Constant13'
+            //   Product: '<S155>/C[k]*xhat[k|k-1]'
+            //   Product: '<S155>/D[k]*u[k]'
+            //   Sum: '<S155>/Add1'
+
             rtb_Sum6[k_0] = y__m[k_0] - (rtb_C_0[k_0] + tmp[k_0]);
           }
 
@@ -8142,44 +8212,31 @@ void SupervisoryController::step()
             (void)_mm_storeu_pd(&rtDW.Product3_c[k_0], _mm_add_pd(_mm_mul_pd
               (tmp_3, _mm_set1_pd(rtb_Sum6[2])), tmp_1));
           }
+        } else if (rtDW.MeasurementUpdate_MODE) {
+          // Disable for Product: '<S155>/Product3' incorporates:
+          //   Outport: '<S155>/L*(y[k]-yhat[k|k-1])'
+          //
+          rtDW.Product3_c[0] = rtP.Lykyhatkk1_Y0_c;
+          rtDW.Product3_c[1] = rtP.Lykyhatkk1_Y0_c;
+          rtDW.Product3_c[2] = rtP.Lykyhatkk1_Y0_c;
+          rtDW.Product3_c[3] = rtP.Lykyhatkk1_Y0_c;
+          rtDW.MeasurementUpdate_MODE = false;
         } else {
-          for (k_0 = 0; k_0 < 4; k_0++) {
-            for (k = 0; k < 4; k++) {
-              i = k << 2UL;
-              ii = k_0 + i;
-              rtb_y_m[ii] = 0.0;
-              rtb_y_m[ii] += rtDW.MemoryP_DSTATE_e[i] * rtb_A_e[k_0];
-              rtb_y_m[ii] += rtDW.MemoryP_DSTATE_e[i + 1] * rtb_A_e[k_0 + 4];
-              rtb_y_m[ii] += rtDW.MemoryP_DSTATE_e[i + 2] * rtb_A_e[k_0 + 8];
-              rtb_y_m[ii] += rtDW.MemoryP_DSTATE_e[i + 3] * rtb_A_e[k_0 + 12];
-            }
-
-            for (k = 0; k < 4; k++) {
-              i = (k << 2UL) + k_0;
-              rtb_y_g[i] = (((rtb_y_m[k_0 + 4] * rtb_A_e[k + 4] + rtb_y_m[k_0] *
-                              rtb_A_e[k]) + rtb_y_m[k_0 + 8] * rtb_A_e[k + 8]) +
-                            rtb_y_m[k_0 + 12] * rtb_A_e[k + 12]) + rtb_Q_j[i];
-            }
-          }
-
-          if (rtDW.MeasurementUpdate_MODE) {
-            // Disable for Product: '<S155>/Product3' incorporates:
-            //   Outport: '<S155>/L*(y[k]-yhat[k|k-1])'
-            //
-            rtDW.Product3_c[0] = rtP.Lykyhatkk1_Y0_c;
-            rtDW.Product3_c[1] = rtP.Lykyhatkk1_Y0_c;
-            rtDW.Product3_c[2] = rtP.Lykyhatkk1_Y0_c;
-            rtDW.Product3_c[3] = rtP.Lykyhatkk1_Y0_c;
-            rtDW.MeasurementUpdate_MODE = false;
-          }
+          // no actions
         }
 
-        // End of MATLAB Function: '<S114>/Discrete-Time KF - Calculate PLMZ'
-        // End of Outputs for SubSystem: '<S112>/CalculatePL'
         // End of Outputs for SubSystem: '<S131>/MeasurementUpdate'
 
         // Update for DiscreteIntegrator: '<S3>/Discrete-Time Integrator' incorporates:
+        //   Constant: '<S3>/Constant1'
+        //   Constant: '<S3>/Constant13'
+        //   DataTypeConversion: '<S112>/DataTypeConversionEnable'
+        //   Delay: '<S112>/MemoryX'
         //   Inport: '<Root>/iRST'
+        //   Product: '<S155>/C[k]*xhat[k|k-1]'
+        //   Product: '<S155>/D[k]*u[k]'
+        //   Product: '<S155>/Product3'
+        //   Sum: '<S155>/Sum'
         //   Sum: '<S3>/Sum'
 
         rtDW.DiscreteTimeIntegrator_DSTATE_j += (y__m[0] - Sum2_c[0]) *
@@ -8337,7 +8394,7 @@ void SupervisoryController::step()
         //   Outport: '<Root>/yhat'
         //   Sum: '<S89>/Sum3'
 
-        rtY.u[2] = umin_scale1_idx_0;
+        rtY.u[2] = Saturation_idx_0;
 
         // Outputs for Function Call SubSystem: '<S1>/mpc1'
         rtY.yhat[2] = rtb_Sum6[2];
@@ -8511,9 +8568,9 @@ void SupervisoryController::step()
         //  External MV override.
         //  NOTE: old_u and ext_mv input signals are dimensionless but include offset 
         // '<S181>:1:133' old_u = old_u - uoff;
-        umin_scale1_idx_0 = rtDW.last_mv_DSTATE_i[0];
-        umin_scale1_idx_1 = rtDW.last_mv_DSTATE_i[1];
-        umin_scale1_idx_2 = rtDW.last_mv_DSTATE_i[2];
+        Saturation_idx_0 = rtDW.last_mv_DSTATE_i[0];
+        Saturation_idx_1 = rtDW.last_mv_DSTATE_i[1];
+        Saturation_idx_2 = rtDW.last_mv_DSTATE_i[2];
 
         // '<S181>:1:134' if no_mv
         // '<S181>:1:135' delmv = zeros(nu,1,'like',ref);
@@ -8569,9 +8626,8 @@ void SupervisoryController::step()
             Bc_2 += b_a_0[206 * k_0 + k] * rtb_xest[k_0];
           }
 
-          Bc_2 = -(((a_0[k + 206] * umin_scale1_idx_1 + a_0[k] *
-                     umin_scale1_idx_0) + a_0[k + 412] * umin_scale1_idx_2) +
-                   (dwt + Bc_2));
+          Bc_2 = -(((a_0[k + 206] * Saturation_idx_1 + a_0[k] * Saturation_idx_0)
+                    + a_0[k + 412] * Saturation_idx_2) + (dwt + Bc_2));
           b_Mrows_0 = b_Mrows_2[k];
           if ((b_Mrows_0 > 100) && (b_Mrows_0 > 200) && (b_Mrows_0 <= 260)) {
             ii = (static_cast<int32_T>(b_Mrows_0) - div_nde_s32_floor(
@@ -8608,9 +8664,9 @@ void SupervisoryController::step()
             Bc_2 += b_Kr_0[100 * k + k_0] * rseq_0[k_0];
           }
 
-          rtb_Sum2_f[k] = ((b_Ku1_0[3 * k + 1] * umin_scale1_idx_1 + b_Ku1_0[3 *
-                            k] * umin_scale1_idx_0) + b_Ku1_0[3 * k + 2] *
-                           umin_scale1_idx_2) + (dwt + Bc_2);
+          rtb_Sum2_f[k] = ((b_Ku1_0[3 * k + 1] * Saturation_idx_1 + b_Ku1_0[3 *
+                            k] * Saturation_idx_0) + b_Ku1_0[3 * k + 2] *
+                           Saturation_idx_2) + (dwt + Bc_2);
         }
 
         // Update for Memory: '<S160>/Memory' incorporates:
@@ -8837,13 +8893,24 @@ void SupervisoryController::step()
 
         SqrtUsedFcn(rtb_Z_e, rtP.isSqrtUsed_Value_a, rtb_Product);
 
-        // Gain: '<S160>/umin_scale1'
-        umin_scale1_idx_0 = rtP.umin_scale1_Gain_p[0] * umax_incr[0];
+        // Saturate: '<S4>/Saturation' incorporates:
+        //   Gain: '<S160>/umin_scale1'
+
+        Saturation_idx_0 = rtP.umin_scale1_Gain_p[0] * umax_incr[0];
+        if (Saturation_idx_0 > rtP.Saturation_UpperSat_h) {
+          // Saturate: '<S4>/Saturation'
+          Saturation_idx_0 = rtP.Saturation_UpperSat_h;
+        } else if (Saturation_idx_0 < rtP.Saturation_LowerSat_o) {
+          // Saturate: '<S4>/Saturation'
+          Saturation_idx_0 = rtP.Saturation_LowerSat_o;
+        } else {
+          // no actions
+        }
 
         // Sum: '<S159>/Sum1' incorporates:
         //   Inport: '<Root>/u0'
 
-        rtb_Sum1[0] = umin_scale1_idx_0 - rtU.u0[0];
+        rtb_Sum1[0] = Saturation_idx_0 - rtU.u0[0];
 
         // Sum: '<S159>/Sum6'
         rtb_Sum6[0] = y__m[0];
@@ -8851,16 +8918,27 @@ void SupervisoryController::step()
         // End of Outputs for SubSystem: '<S1>/mpc2'
 
         // Outport: '<Root>/u'
-        rtY.u[0] = umin_scale1_idx_0;
+        rtY.u[0] = Saturation_idx_0;
 
         // Outputs for Function Call SubSystem: '<S1>/mpc2'
-        // Gain: '<S160>/umin_scale1'
-        umin_scale1_idx_0 = rtP.umin_scale1_Gain_p[1] * umax_incr[1];
+        // Saturate: '<S4>/Saturation' incorporates:
+        //   Gain: '<S160>/umin_scale1'
+
+        Saturation_idx_0 = rtP.umin_scale1_Gain_p[1] * umax_incr[1];
+        if (Saturation_idx_0 > rtP.Saturation_UpperSat_h) {
+          // Saturate: '<S4>/Saturation'
+          Saturation_idx_0 = rtP.Saturation_UpperSat_h;
+        } else if (Saturation_idx_0 < rtP.Saturation_LowerSat_o) {
+          // Saturate: '<S4>/Saturation'
+          Saturation_idx_0 = rtP.Saturation_LowerSat_o;
+        } else {
+          // no actions
+        }
 
         // Sum: '<S159>/Sum1' incorporates:
         //   Inport: '<Root>/u0'
 
-        rtb_Sum1[1] = umin_scale1_idx_0 - rtU.u0[1];
+        rtb_Sum1[1] = Saturation_idx_0 - rtU.u0[1];
 
         // Sum: '<S159>/Sum6'
         rtb_Sum6[1] = y__m[1];
@@ -8868,16 +8946,27 @@ void SupervisoryController::step()
         // End of Outputs for SubSystem: '<S1>/mpc2'
 
         // Outport: '<Root>/u'
-        rtY.u[1] = umin_scale1_idx_0;
+        rtY.u[1] = Saturation_idx_0;
 
         // Outputs for Function Call SubSystem: '<S1>/mpc2'
-        // Gain: '<S160>/umin_scale1'
-        umin_scale1_idx_0 = rtP.umin_scale1_Gain_p[2] * umax_incr[2];
+        // Saturate: '<S4>/Saturation' incorporates:
+        //   Gain: '<S160>/umin_scale1'
+
+        Saturation_idx_0 = rtP.umin_scale1_Gain_p[2] * umax_incr[2];
+        if (Saturation_idx_0 > rtP.Saturation_UpperSat_h) {
+          // Saturate: '<S4>/Saturation'
+          Saturation_idx_0 = rtP.Saturation_UpperSat_h;
+        } else if (Saturation_idx_0 < rtP.Saturation_LowerSat_o) {
+          // Saturate: '<S4>/Saturation'
+          Saturation_idx_0 = rtP.Saturation_LowerSat_o;
+        } else {
+          // no actions
+        }
 
         // Sum: '<S159>/Sum1' incorporates:
         //   Inport: '<Root>/u0'
 
-        rtb_Sum1[2] = umin_scale1_idx_0 - rtU.u0[2];
+        rtb_Sum1[2] = Saturation_idx_0 - rtU.u0[2];
 
         // Sum: '<S159>/Sum6'
         rtb_Sum6[2] = y__m[2];
@@ -8999,7 +9088,7 @@ void SupervisoryController::step()
         //   Outport: '<Root>/yhat'
         //   Sum: '<S159>/Sum3'
 
-        rtY.u[2] = umin_scale1_idx_0;
+        rtY.u[2] = Saturation_idx_0;
 
         // Outputs for Function Call SubSystem: '<S1>/mpc2'
         rtY.yhat[2] = rtb_Sum6[2];
@@ -9173,9 +9262,9 @@ void SupervisoryController::step()
         //  External MV override.
         //  NOTE: old_u and ext_mv input signals are dimensionless but include offset 
         // '<S251>:1:133' old_u = old_u - uoff;
-        umin_scale1_idx_0 = rtDW.last_mv_DSTATE[0];
-        umin_scale1_idx_1 = rtDW.last_mv_DSTATE[1];
-        umin_scale1_idx_2 = rtDW.last_mv_DSTATE[2];
+        Saturation_idx_0 = rtDW.last_mv_DSTATE[0];
+        Saturation_idx_1 = rtDW.last_mv_DSTATE[1];
+        Saturation_idx_2 = rtDW.last_mv_DSTATE[2];
 
         // '<S251>:1:134' if no_mv
         // '<S251>:1:135' delmv = zeros(nu,1,'like',ref);
@@ -9232,9 +9321,9 @@ void SupervisoryController::step()
             Bc_2 += b_a_1[126 * k_0 + k] * rtb_xest[k_0];
           }
 
-          Bc_2 = -(((a_1[k + 126] * umin_scale1_idx_1 + a_1[k] *
-                     umin_scale1_idx_0) + a_1[k + 252] * umin_scale1_idx_2) + (
-                    static_cast<real_T>(b_Mlim) + Bc_2));
+          Bc_2 = -(((a_1[k + 126] * Saturation_idx_1 + a_1[k] * Saturation_idx_0)
+                    + a_1[k + 252] * Saturation_idx_2) + (static_cast<real_T>
+                    (b_Mlim) + Bc_2));
           b_Mrows_0 = b_Mrows_3[k];
           if ((b_Mrows_0 > 100) && (b_Mrows_0 > 200) && (b_Mrows_0 <= 260)) {
             ii = (static_cast<int32_T>(b_Mrows_0) - div_nde_s32_floor(
@@ -9271,9 +9360,9 @@ void SupervisoryController::step()
             Bc_2 += b_Kr_1[100 * k + k_0] * rseq_0[k_0];
           }
 
-          rtb_Sum2_f[k] = ((b_Ku1_1[3 * k + 1] * umin_scale1_idx_1 + b_Ku1_1[3 *
-                            k] * umin_scale1_idx_0) + b_Ku1_1[3 * k + 2] *
-                           umin_scale1_idx_2) + (dwt + Bc_2);
+          rtb_Sum2_f[k] = ((b_Ku1_1[3 * k + 1] * Saturation_idx_1 + b_Ku1_1[3 *
+                            k] * Saturation_idx_0) + b_Ku1_1[3 * k + 2] *
+                           Saturation_idx_2) + (dwt + Bc_2);
         }
 
         // Update for Memory: '<S230>/Memory' incorporates:
@@ -9500,13 +9589,24 @@ void SupervisoryController::step()
 
         SqrtUsedFcn(rtb_Z_e, rtP.isSqrtUsed_Value_p, rtb_Product);
 
-        // Gain: '<S230>/umin_scale1'
-        umin_scale1_idx_0 = rtP.umin_scale1_Gain_g[0] * umax_incr[0];
+        // Saturate: '<S5>/Saturation' incorporates:
+        //   Gain: '<S230>/umin_scale1'
+
+        Saturation_idx_0 = rtP.umin_scale1_Gain_g[0] * umax_incr[0];
+        if (Saturation_idx_0 > rtP.Saturation_UpperSat_c) {
+          // Saturate: '<S5>/Saturation'
+          Saturation_idx_0 = rtP.Saturation_UpperSat_c;
+        } else if (Saturation_idx_0 < rtP.Saturation_LowerSat_b) {
+          // Saturate: '<S5>/Saturation'
+          Saturation_idx_0 = rtP.Saturation_LowerSat_b;
+        } else {
+          // no actions
+        }
 
         // Sum: '<S229>/Sum1' incorporates:
         //   Inport: '<Root>/u0'
 
-        rtb_Sum1[0] = umin_scale1_idx_0 - rtU.u0[0];
+        rtb_Sum1[0] = Saturation_idx_0 - rtU.u0[0];
 
         // Sum: '<S229>/Sum6'
         rtb_Sum6[0] = y__m[0];
@@ -9514,16 +9614,27 @@ void SupervisoryController::step()
         // End of Outputs for SubSystem: '<S1>/mpc3'
 
         // Outport: '<Root>/u'
-        rtY.u[0] = umin_scale1_idx_0;
+        rtY.u[0] = Saturation_idx_0;
 
         // Outputs for Function Call SubSystem: '<S1>/mpc3'
-        // Gain: '<S230>/umin_scale1'
-        umin_scale1_idx_0 = rtP.umin_scale1_Gain_g[1] * umax_incr[1];
+        // Saturate: '<S5>/Saturation' incorporates:
+        //   Gain: '<S230>/umin_scale1'
+
+        Saturation_idx_0 = rtP.umin_scale1_Gain_g[1] * umax_incr[1];
+        if (Saturation_idx_0 > rtP.Saturation_UpperSat_c) {
+          // Saturate: '<S5>/Saturation'
+          Saturation_idx_0 = rtP.Saturation_UpperSat_c;
+        } else if (Saturation_idx_0 < rtP.Saturation_LowerSat_b) {
+          // Saturate: '<S5>/Saturation'
+          Saturation_idx_0 = rtP.Saturation_LowerSat_b;
+        } else {
+          // no actions
+        }
 
         // Sum: '<S229>/Sum1' incorporates:
         //   Inport: '<Root>/u0'
 
-        rtb_Sum1[1] = umin_scale1_idx_0 - rtU.u0[1];
+        rtb_Sum1[1] = Saturation_idx_0 - rtU.u0[1];
 
         // Sum: '<S229>/Sum6'
         rtb_Sum6[1] = y__m[1];
@@ -9531,16 +9642,27 @@ void SupervisoryController::step()
         // End of Outputs for SubSystem: '<S1>/mpc3'
 
         // Outport: '<Root>/u'
-        rtY.u[1] = umin_scale1_idx_0;
+        rtY.u[1] = Saturation_idx_0;
 
         // Outputs for Function Call SubSystem: '<S1>/mpc3'
-        // Gain: '<S230>/umin_scale1'
-        umin_scale1_idx_0 = rtP.umin_scale1_Gain_g[2] * umax_incr[2];
+        // Saturate: '<S5>/Saturation' incorporates:
+        //   Gain: '<S230>/umin_scale1'
+
+        Saturation_idx_0 = rtP.umin_scale1_Gain_g[2] * umax_incr[2];
+        if (Saturation_idx_0 > rtP.Saturation_UpperSat_c) {
+          // Saturate: '<S5>/Saturation'
+          Saturation_idx_0 = rtP.Saturation_UpperSat_c;
+        } else if (Saturation_idx_0 < rtP.Saturation_LowerSat_b) {
+          // Saturate: '<S5>/Saturation'
+          Saturation_idx_0 = rtP.Saturation_LowerSat_b;
+        } else {
+          // no actions
+        }
 
         // Sum: '<S229>/Sum1' incorporates:
         //   Inport: '<Root>/u0'
 
-        rtb_Sum1[2] = umin_scale1_idx_0 - rtU.u0[2];
+        rtb_Sum1[2] = Saturation_idx_0 - rtU.u0[2];
 
         // Sum: '<S229>/Sum6'
         rtb_Sum6[2] = y__m[2];
@@ -9662,7 +9784,7 @@ void SupervisoryController::step()
         //   Outport: '<Root>/yhat'
         //   Sum: '<S229>/Sum3'
 
-        rtY.u[2] = umin_scale1_idx_0;
+        rtY.u[2] = Saturation_idx_0;
 
         // Outputs for Function Call SubSystem: '<S1>/mpc3'
         rtY.yhat[2] = rtb_Sum6[2];

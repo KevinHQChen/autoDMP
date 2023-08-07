@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2465
+// Model version                  : 1.2467
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon Aug  7 18:55:26 2023
+// C/C++ source code generated on : Mon Aug  7 19:31:29 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -692,6 +692,16 @@ SupervisoryController::P SupervisoryController::rtP{
 
   { 1.0, 1.0, 1.0 },
 
+  // Expression: 1000
+  //  Referenced by: '<S3>/Saturation'
+
+  1000.0,
+
+  // Expression: 0
+  //  Referenced by: '<S3>/Saturation'
+
+  0.0,
+
   // Computed Parameter: u_Y0_n
   //  Referenced by: '<S4>/u'
 
@@ -890,6 +900,16 @@ SupervisoryController::P SupervisoryController::rtP{
   //  Referenced by: '<S160>/umin_scale1'
 
   { 1.0, 1.0, 1.0 },
+
+  // Expression: 1000
+  //  Referenced by: '<S4>/Saturation'
+
+  1000.0,
+
+  // Expression: 0
+  //  Referenced by: '<S4>/Saturation'
+
+  0.0,
 
   // Computed Parameter: ywt_Y0
   //  Referenced by: '<S8>/ywt'
@@ -1104,6 +1124,16 @@ SupervisoryController::P SupervisoryController::rtP{
   //  Referenced by: '<S230>/umin_scale1'
 
   { 1.0, 1.0, 1.0 },
+
+  // Expression: 1000
+  //  Referenced by: '<S5>/Saturation'
+
+  1000.0,
+
+  // Expression: 0
+  //  Referenced by: '<S5>/Saturation'
+
+  0.0,
 
   // Expression: Ndis
   //  Referenced by: '<S40>/FixedHorizonOptimizer'

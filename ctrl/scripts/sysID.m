@@ -5,20 +5,21 @@ samplingRate = 40;
 clockPeriod = 4;
 dt = 1/samplingRate;
 
-trainPath = "~/thesis/data/state2trainFlu.csv";
+trainPath = "~/thesis/data/state0trainFlu.csv";
 % trainPath = "~/autoDMP/ctrl/scripts/simSysID/train/ctrlDataQueue.txt";
 trainStart = 1; % state0
-trainEnd = clockPeriod*2^10-3-1-1; % 102.3/dt
+% trainEnd = clockPeriod*2^10-3-1-1; % 102.3/dt
+trainEnd = clockPeriod*2^10-3-1-1 - 12.3/dt; % 102.3/dt (for state1)
 
-valPath = "~/thesis/data/state2valFlu.csv";
+valPath = "~/thesis/data/state0valFlu.csv";
 % valPath = "~/autoDMP/ctrl/scripts/simSysID/val/ctrlDataQueue.txt";
 valStart = 1;
-valEnd = clockPeriod*2^10-3-1-1; % 102.3/dt
-% valEnd = clockPeriod*2^10-3-1-1 - 12.3/dt; % 102.3/dt (for state1)
+% valEnd = clockPeriod*2^10-3-1-1; % 102.3/dt
+valEnd = clockPeriod*2^10-3-1-1 - 12.3/dt; % 102.3/dt (for state1)
 
 col = dictionary(["t", "y0", "y1", "y2", "u0", "u1", "u2"], 1:7);
 
-idMdlName = 'G2'; % [G0 | G1 | G2]
+idMdlName = 'G0'; % [G0 | G1 | G2]
 inputs = col(["u0" "u1" "u2"]);
 inputNames = {'Pump1', 'Pump2', 'Pump3'};
 

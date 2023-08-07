@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2465
+// Model version                  : 1.2467
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon Aug  7 18:55:26 2023
+// C/C++ source code generated on : Mon Aug  7 19:31:29 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -752,6 +752,12 @@ class SupervisoryController final
     real_T umin_scale1_Gain[3];        // Expression: MVscale
                                           //  Referenced by: '<S90>/umin_scale1'
 
+    real_T Saturation_UpperSat_k;      // Expression: 1000
+                                          //  Referenced by: '<S3>/Saturation'
+
+    real_T Saturation_LowerSat_h;      // Expression: 0
+                                          //  Referenced by: '<S3>/Saturation'
+
     real_T u_Y0_n;                     // Computed Parameter: u_Y0_n
                                           //  Referenced by: '<S4>/u'
 
@@ -869,6 +875,12 @@ class SupervisoryController final
 
     real_T umin_scale1_Gain_p[3];      // Expression: MVscale
                                           //  Referenced by: '<S160>/umin_scale1'
+
+    real_T Saturation_UpperSat_h;      // Expression: 1000
+                                          //  Referenced by: '<S4>/Saturation'
+
+    real_T Saturation_LowerSat_o;      // Expression: 0
+                                          //  Referenced by: '<S4>/Saturation'
 
     real_T ywt_Y0;                     // Computed Parameter: ywt_Y0
                                           //  Referenced by: '<S8>/ywt'
@@ -997,6 +1009,12 @@ class SupervisoryController final
     real_T umin_scale1_Gain_g[3];      // Expression: MVscale
                                           //  Referenced by: '<S230>/umin_scale1'
 
+    real_T Saturation_UpperSat_c;      // Expression: 1000
+                                          //  Referenced by: '<S5>/Saturation'
+
+    real_T Saturation_LowerSat_b;      // Expression: 0
+                                          //  Referenced by: '<S5>/Saturation'
+
     int32_T FixedHorizonOptimizer_Ndis;// Expression: Ndis
                                           //  Referenced by: '<S40>/FixedHorizonOptimizer'
 
@@ -1039,9 +1057,9 @@ class SupervisoryController final
 
     struct {
       rtwCAPI_ModelMappingInfo mmi;
-      void* dataAddress[206];
-      int32_T* vardimsAddress[206];
-      RTWLoggingFcnPtr loggingPtrs[206];
+      void* dataAddress[212];
+      int32_T* vardimsAddress[212];
+      RTWLoggingFcnPtr loggingPtrs[212];
     } DataMapInfo;
   };
 
