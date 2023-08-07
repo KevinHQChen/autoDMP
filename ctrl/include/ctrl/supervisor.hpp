@@ -24,6 +24,7 @@ public:
 
   event_bus nullEv;
   double mdlNum;
+  bool iRST{false};
 
   void startThread();
   void stopThread();

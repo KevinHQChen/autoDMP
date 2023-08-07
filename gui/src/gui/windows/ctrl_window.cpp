@@ -277,6 +277,13 @@ void CtrlWindow::renderControllerTuningDialog() {
       if (ImGui::Button("Stop Controller"))
         ctrlVisible_ = false;
 
+    if (!sv_->iRST)
+      if (ImGui::Button("Reset and disable integrator"))
+        sv_->iRST = true;
+    if (sv_->iRST)
+      if (ImGui::Button("Enable integrator"))
+        sv_->iRST = false;
+
     if (!sv_->supIn.enAdapt[0]) {
       if (ImGui::Button(("Start Online Param Est")))
         for (int ch = 0; ch < 2 * no; ++ch)
