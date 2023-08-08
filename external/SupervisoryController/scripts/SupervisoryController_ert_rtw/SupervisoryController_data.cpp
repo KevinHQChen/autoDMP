@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2474
+// Model version                  : 1.2480
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Tue Aug  8 00:41:47 2023
+// C/C++ source code generated on : Tue Aug  8 01:21:19 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -169,6 +169,9 @@ SupervisoryController::P SupervisoryController::rtP{
   //  Referenced by:
   //    '<Root>/SupervisoryController'
   //    '<S2>/Gain1'
+  //    '<S3>/Gain1'
+  //    '<S4>/Gain1'
+  //    '<S5>/Gain1'
   //    '<S8>/Gain'
 
   0.13534,
@@ -548,11 +551,6 @@ SupervisoryController::P SupervisoryController::rtP{
   { 0.0, 0.0, 0.0, 0.0 },
 
   // Expression: zeros(3,1)
-  //  Referenced by: '<S88>/u.wt_zero'
-
-  { 0.0, 0.0, 0.0 },
-
-  // Expression: zeros(3,1)
   //  Referenced by: '<S88>/du.wt_zero'
 
   { 0.0, 0.0, 0.0 },
@@ -758,11 +756,6 @@ SupervisoryController::P SupervisoryController::rtP{
   //  Referenced by: '<S158>/y.wt_zero'
 
   { 0.0, 0.0, 0.0, 0.0, 0.0 },
-
-  // Expression: zeros(3,1)
-  //  Referenced by: '<S158>/u.wt_zero'
-
-  { 0.0, 0.0, 0.0 },
 
   // Expression: zeros(3,1)
   //  Referenced by: '<S158>/du.wt_zero'
@@ -974,11 +967,6 @@ SupervisoryController::P SupervisoryController::rtP{
   //  Referenced by: '<S228>/y.wt_zero'
 
   { 0.0, 0.0, 0.0, 0.0, 0.0 },
-
-  // Expression: zeros(3,1)
-  //  Referenced by: '<S228>/u.wt_zero'
-
-  { 0.0, 0.0, 0.0 },
 
   // Expression: zeros(3,1)
   //  Referenced by: '<S228>/du.wt_zero'

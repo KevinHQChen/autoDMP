@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2474
+// Model version                  : 1.2480
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Tue Aug  8 00:41:47 2023
+// C/C++ source code generated on : Tue Aug  8 01:21:19 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -480,6 +480,9 @@ class SupervisoryController final
                                           //  Referenced by:
                                           //    '<Root>/SupervisoryController'
                                           //    '<S2>/Gain1'
+                                          //    '<S3>/Gain1'
+                                          //    '<S4>/Gain1'
+                                          //    '<S5>/Gain1'
                                           //    '<S8>/Gain'
 
     real_T dt;                         // Variable: dt
@@ -656,9 +659,6 @@ class SupervisoryController final
     real_T ywt_zero_Value[4];          // Expression: zeros(4,1)
                                           //  Referenced by: '<S88>/y.wt_zero'
 
-    real_T uwt_zero_Value[3];          // Expression: zeros(3,1)
-                                          //  Referenced by: '<S88>/u.wt_zero'
-
     real_T duwt_zero_Value_p[3];       // Expression: zeros(3,1)
                                           //  Referenced by: '<S88>/du.wt_zero'
 
@@ -780,9 +780,6 @@ class SupervisoryController final
     real_T ywt_zero_Value_n[5];        // Expression: zeros(5,1)
                                           //  Referenced by: '<S158>/y.wt_zero'
 
-    real_T uwt_zero_Value_h[3];        // Expression: zeros(3,1)
-                                          //  Referenced by: '<S158>/u.wt_zero'
-
     real_T duwt_zero_Value_l[3];       // Expression: zeros(3,1)
                                           //  Referenced by: '<S158>/du.wt_zero'
 
@@ -903,9 +900,6 @@ class SupervisoryController final
 
     real_T ywt_zero_Value_g[5];        // Expression: zeros(5,1)
                                           //  Referenced by: '<S228>/y.wt_zero'
-
-    real_T uwt_zero_Value_o[3];        // Expression: zeros(3,1)
-                                          //  Referenced by: '<S228>/u.wt_zero'
 
     real_T duwt_zero_Value_a[3];       // Expression: zeros(3,1)
                                           //  Referenced by: '<S228>/du.wt_zero'
@@ -1057,9 +1051,9 @@ class SupervisoryController final
 
     struct {
       rtwCAPI_ModelMappingInfo mmi;
-      void* dataAddress[212];
-      int32_T* vardimsAddress[212];
-      RTWLoggingFcnPtr loggingPtrs[212];
+      void* dataAddress[209];
+      int32_T* vardimsAddress[209];
+      RTWLoggingFcnPtr loggingPtrs[209];
     } DataMapInfo;
   };
 
@@ -1168,6 +1162,9 @@ class SupervisoryController final
   void handleEvent(real_T *holdT, boolean_T *eventDone, uint16_T *waypt_) const;
   boolean_T any(const real_T x[3]);
   real_T gainSchSig(const real_T ywt_[6]);
+  int32_T xpotrf(real_T b_A[16]);
+  real_T minimum(const real_T x[4]);
+  void trisolve(const real_T b_A[16], real_T B_1[16]);
   real_T norm(const real_T x[4]);
   real_T maximum(const real_T x[4]);
   real_T xnrm2(int32_T n, const real_T x[16], int32_T ix0);
@@ -1202,7 +1199,7 @@ class SupervisoryController final
               const real_T b_Ac[664], const real_T b[166], boolean_T iA[166],
               int32_T maxiter, real_T FeasTol, real_T x[4], real_T lambda[166],
               int32_T *status);
-  void mrdiv_c(const real_T A[21], const real_T B_1[9], real_T Y[21]);
+  void mrdiv_c(const real_T A[21], const real_T B_2[9], real_T Y[21]);
 
   // Real-Time Model
   RT_MODEL rtM;
