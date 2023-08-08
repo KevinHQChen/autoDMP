@@ -7,13 +7,13 @@ dt = 1/samplingRate;
 
 trainPath = "~/thesis/data/state1trainFlu.csv";
 % trainPath = "~/autoDMP/ctrl/scripts/simSysID/train/ctrlDataQueue.txt";
-trainStart = 40; % state0
+trainStart = 1; % state0
 % trainEnd = clockPeriod*2^10-3-1-1; % 102.3/dt
 trainEnd = clockPeriod*2^10-3-1-1 - 12.3/dt; % 102.3/dt (for state1)
 
 valPath = "~/thesis/data/state1valFlu.csv";
 % valPath = "~/autoDMP/ctrl/scripts/simSysID/val/ctrlDataQueue.txt";
-valStart = 40;
+valStart = 1;
 % valEnd = clockPeriod*2^10-3-1-1; % 102.3/dt
 valEnd = clockPeriod*2^10-3-1-1 - 12.3/dt; % 102.3/dt (for state1)
 
@@ -217,13 +217,14 @@ ss_est.B(3) = ss_est.B(2);
 % ss_est = ssest(sys_valdf, 2, 'Form', 'canonical', 'Ts', 0.025, Options)
 
 Options = ssestOptions;
+Options.WeightingFilter = [0 31.4159];
 Options.Focus = 'simulation';
-Options.InitialState = 'estimate';
+Options.Regularization.Lambda = 1;
 Options.OutputWeight = [1 0;0 1];
-Options.SearchOptions.Tolerance = 0;
-Options.SearchOptions.MaxIterations = 0;
+Options.SearchOptions.MaxIterations = 50;
+Options.N4Horizon = [15 15 15];
 
-ss_est = ssest(sys_traindf, 2, 'Form', 'canonical', 'Ts', 0.025, Options)
+ss_est = ssest(sys_valdf, 2, 'Form', 'canonical', 'Ts', 0.025, Options)
 
 %% State space model estimation - 2 states
 Options = ssestOptions;
@@ -238,13 +239,13 @@ idMdl = ss_est;
 
 %% model validation (prediction error)
 figure
-compare(idMdl, sys_vald)
+compare(idMdl, sys_traind)
 print(rootPath + "plots/compare", "-dpng");
 rootPath + "plots/compare" + ".png";
 
 %% model validation (residual analysis)
 figure
-resid(idMdl, sys_vald)
+resid(idMdl, sys_traind)
 print(rootPath + "plots/resid", "-dpng");
 rootPath + "plots/resid" + ".png";
 
@@ -255,7 +256,7 @@ if strcmp(idMdlName, 'G0')
     C = [G.C; zeros(2, 1)];
     D = [G.D; zeros(2, 3)];
 elseif strcmp(idMdlName, 'G1')
-    C = [zeros(1, 2); G.C];
+    C = [zeros(1, size(G.C, 2)); G.C];
     D = [zeros(1, 3); G.D];
 elseif strcmp(idMdlName, 'G2')
     C = [G.C; zeros(1, 2)];
