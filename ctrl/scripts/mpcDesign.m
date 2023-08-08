@@ -152,8 +152,9 @@ mpc2.Weights.OV = [0, 1, 1, 0, 0]*beta;
 mpc2.Weights.ECR = 100000;
 
 %% use custom state estimator implementation
-God2 = c2d(ss(1/s * eye(3)), dt);
-% God2 = getoutdist(mpc2);
+tfOD = [1/s^2 * (eye(3) - (eye(no) ~= 1)); zeros(2, 3)];
+setoutdist(mpc2, 'model', tfOD);
+God2 = getoutdist(mpc2);
 Aod2 = God2.A;
 Bod2 = God2.B;
 Cod2 = God2.C;
@@ -202,8 +203,9 @@ mpc3.Weights.OV = [1, 1, 0, 1, 1]*beta;
 mpc3.Weights.ECR = 100000;
 
 %% use custom state estimator implementation
-God3 = c2d(ss(1/s * eye(3)), dt);
-% God3 = getoutdist(mpc3);
+tfOD = [1/s^2 * (eye(3) - (eye(no) ~= 1)); zeros(2, 3)];
+setoutdist(mpc3, 'model', tfOD);
+God3 = getoutdist(mpc3);
 Aod3 = God3.A;
 Bod3 = God3.B;
 Cod3 = God3.C;

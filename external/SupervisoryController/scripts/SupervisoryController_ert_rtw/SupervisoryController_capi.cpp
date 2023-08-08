@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2467
+// Model version                  : 1.2471
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon Aug  7 23:00:45 2023
+// C/C++ source code generated on : Mon Aug  7 23:52:10 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -367,7 +367,7 @@ static rtwCAPI_BlockParameters rtBlockParameters[]{
     TARGET_STRING("Value"), 0, 16, 0 },
 
   { 105, TARGET_STRING("SupervisoryController/SupervisoryController/mpc2/State Estimator OD (KF)/Constant1"),
-    TARGET_STRING("Value"), 0, 5, 0 },
+    TARGET_STRING("Value"), 0, 3, 0 },
 
   { 106, TARGET_STRING("SupervisoryController/SupervisoryController/mpc3/MPC Controller1/E_zero"),
     TARGET_STRING("Value"), 0, 4, 0 },
@@ -415,7 +415,7 @@ static rtwCAPI_BlockParameters rtBlockParameters[]{
     TARGET_STRING("Value"), 0, 16, 0 },
 
   { 121, TARGET_STRING("SupervisoryController/SupervisoryController/mpc3/State Estimator OD (KF)/Constant1"),
-    TARGET_STRING("Value"), 0, 5, 0 },
+    TARGET_STRING("Value"), 0, 3, 0 },
 
   { 122, TARGET_STRING("SupervisoryController/SupervisoryController/paramEst1/Param Estimator (RLS)/Unit Delay3"),
     TARGET_STRING("InitialCondition"), 0, 0, 0 },
@@ -541,7 +541,7 @@ static rtwCAPI_BlockParameters rtBlockParameters[]{
     TARGET_STRING("Value"), 0, 25, 0 },
 
   { 163, TARGET_STRING("SupervisoryController/SupervisoryController/mpc2/State Estimator OD (KF)/Kalman Filter2/X0"),
-    TARGET_STRING("Value"), 0, 16, 0 },
+    TARGET_STRING("Value"), 0, 27, 0 },
 
   { 164, TARGET_STRING("SupervisoryController/SupervisoryController/mpc3/MPC Controller1/MPC/ym_zero"),
     TARGET_STRING("Value"), 0, 16, 0 },
@@ -565,7 +565,7 @@ static rtwCAPI_BlockParameters rtBlockParameters[]{
     TARGET_STRING("Gain"), 0, 0, 0 },
 
   { 171, TARGET_STRING("SupervisoryController/SupervisoryController/mpc3/MPC Controller1/MPC/Memory"),
-    TARGET_STRING("InitialCondition"), 1, 27, 0 },
+    TARGET_STRING("InitialCondition"), 1, 28, 0 },
 
   { 172, TARGET_STRING("SupervisoryController/SupervisoryController/mpc3/MPC Controller1/MPC/last_mv"),
     TARGET_STRING("InitialCondition"), 0, 5, 0 },
@@ -580,7 +580,7 @@ static rtwCAPI_BlockParameters rtBlockParameters[]{
     TARGET_STRING("Value"), 0, 25, 0 },
 
   { 176, TARGET_STRING("SupervisoryController/SupervisoryController/mpc3/State Estimator OD (KF)/Kalman Filter2/X0"),
-    TARGET_STRING("Value"), 0, 16, 0 },
+    TARGET_STRING("Value"), 0, 27, 0 },
 
   { 177, TARGET_STRING("SupervisoryController/SupervisoryController/ampc/Adaptive MPC Controller/MPC/optimizer/FixedHorizonOptimizer"),
     TARGET_STRING("Ndis"), 2, 0, 0 },
@@ -619,29 +619,29 @@ static rtwCAPI_ModelParameters rtModelParameters[]{
   // addrMapIndex, varName, dataTypeIndex, dimIndex, fixPtIndex
   { 186, TARGET_STRING("nullEv"), 3, 0, 0 },
 
-  { 187, TARGET_STRING("Aod"), 0, 30, 0 },
+  { 187, TARGET_STRING("Aod"), 0, 31, 0 },
 
   { 188, TARGET_STRING("Aod1"), 0, 6, 0 },
 
-  { 189, TARGET_STRING("Aod2"), 0, 6, 0 },
+  { 189, TARGET_STRING("Aod2"), 0, 1, 0 },
 
-  { 190, TARGET_STRING("Aod3"), 0, 6, 0 },
+  { 190, TARGET_STRING("Aod3"), 0, 1, 0 },
 
-  { 191, TARGET_STRING("Bod"), 0, 31, 0 },
+  { 191, TARGET_STRING("Bod"), 0, 32, 0 },
 
   { 192, TARGET_STRING("Bod1"), 0, 6, 0 },
 
-  { 193, TARGET_STRING("Bod2"), 0, 6, 0 },
+  { 193, TARGET_STRING("Bod2"), 0, 2, 0 },
 
-  { 194, TARGET_STRING("Bod3"), 0, 6, 0 },
+  { 194, TARGET_STRING("Bod3"), 0, 2, 0 },
 
-  { 195, TARGET_STRING("Cod"), 0, 32, 0 },
+  { 195, TARGET_STRING("Cod"), 0, 33, 0 },
 
   { 196, TARGET_STRING("Cod1"), 0, 6, 0 },
 
-  { 197, TARGET_STRING("Cod2"), 0, 6, 0 },
+  { 197, TARGET_STRING("Cod2"), 0, 34, 0 },
 
-  { 198, TARGET_STRING("Cod3"), 0, 6, 0 },
+  { 198, TARGET_STRING("Cod3"), 0, 34, 0 },
 
   { 199, TARGET_STRING("Dmn"), 0, 1, 0 },
 
@@ -651,9 +651,9 @@ static rtwCAPI_ModelParameters rtModelParameters[]{
 
   { 202, TARGET_STRING("Dod1"), 0, 6, 0 },
 
-  { 203, TARGET_STRING("Dod2"), 0, 6, 0 },
+  { 203, TARGET_STRING("Dod2"), 0, 35, 0 },
 
-  { 204, TARGET_STRING("Dod3"), 0, 6, 0 },
+  { 204, TARGET_STRING("Dod3"), 0, 35, 0 },
 
   { 205, TARGET_STRING("beta"), 0, 0, 0 },
 
@@ -661,7 +661,7 @@ static rtwCAPI_ModelParameters rtModelParameters[]{
 
   { 207, TARGET_STRING("lpfDen"), 0, 0, 0 },
 
-  { 208, TARGET_STRING("lpfNum"), 0, 33, 0 },
+  { 208, TARGET_STRING("lpfNum"), 0, 36, 0 },
 
   { 209, TARGET_STRING("mdlNum"), 0, 0, 0 },
 
@@ -1148,13 +1148,13 @@ static TARGET_CONST rtwCAPI_ElementMap rtElementMap[]{
   // elementName, elementOffset, dataTypeIndex, dimIndex, fxpIndex
   { (nullptr), 0, 0, 0, 0 },
 
-  { "r", rt_offsetof(event_bus, r), 0, 28, 0 },
+  { "r", rt_offsetof(event_bus, r), 0, 29, 0 },
 
-  { "preT", rt_offsetof(event_bus, preT), 0, 29, 0 },
+  { "preT", rt_offsetof(event_bus, preT), 0, 30, 0 },
 
-  { "moveT", rt_offsetof(event_bus, moveT), 0, 29, 0 },
+  { "moveT", rt_offsetof(event_bus, moveT), 0, 30, 0 },
 
-  { "postT", rt_offsetof(event_bus, postT), 0, 29, 0 }
+  { "postT", rt_offsetof(event_bus, postT), 0, 30, 0 }
 };
 
 // Dimension Map - use dimensionMapIndex to access elements of ths structure
@@ -1216,17 +1216,23 @@ static rtwCAPI_DimensionMap rtDimensionMap[]{
 
   { rtwCAPI_VECTOR, 54, 2, 0 },
 
+  { rtwCAPI_VECTOR, 56, 2, 0 },
+
   { rtwCAPI_MATRIX_COL_MAJOR, 6, 2, 0 },
 
   { rtwCAPI_MATRIX_COL_MAJOR, 0, 2, 0 },
-
-  { rtwCAPI_MATRIX_COL_MAJOR, 56, 2, 0 },
 
   { rtwCAPI_MATRIX_COL_MAJOR, 58, 2, 0 },
 
   { rtwCAPI_MATRIX_COL_MAJOR, 60, 2, 0 },
 
-  { rtwCAPI_VECTOR, 62, 2, 0 }
+  { rtwCAPI_MATRIX_COL_MAJOR, 62, 2, 0 },
+
+  { rtwCAPI_MATRIX_COL_MAJOR, 64, 2, 0 },
+
+  { rtwCAPI_MATRIX_COL_MAJOR, 66, 2, 0 },
+
+  { rtwCAPI_VECTOR, 68, 2, 0 }
 };
 
 // Dimension Array- use dimArrayIndex to access elements of this array
@@ -1281,20 +1287,26 @@ static uint_T rtDimensionArray[]{
   4,                                   // 47
   206,                                 // 48
   1,                                   // 49
-  5,                                   // 50
-  5,                                   // 51
+  8,                                   // 50
+  8,                                   // 51
   3,                                   // 52
-  5,                                   // 53
-  126,                                 // 54
+  8,                                   // 53
+  8,                                   // 54
   1,                                   // 55
-  12,                                  // 56
-  12,                                  // 57
+  126,                                 // 56
+  1,                                   // 57
   12,                                  // 58
-  6,                                   // 59
-  6,                                   // 60
-  12,                                  // 61
-  1,                                   // 62
-  60                                   // 63
+  12,                                  // 59
+  12,                                  // 60
+  6,                                   // 61
+  6,                                   // 62
+  12,                                  // 63
+  5,                                   // 64
+  6,                                   // 65
+  5,                                   // 66
+  3,                                   // 67
+  1,                                   // 68
+  60                                   // 69
 };
 
 // Fixed Point Map
@@ -1335,10 +1347,10 @@ static rtwCAPI_ModelMappingStaticInfo mmiStatic{
     rtElementMap, rtSampleTimeMap, rtDimensionArray },
   "float",
 
-  { 1754215341U,
-    940106352U,
-    401249715U,
-    2514260821U },
+  { 3696062946U,
+    2323460847U,
+    211773676U,
+    1432836722U },
   (nullptr), 0,
   (boolean_T)0
 };

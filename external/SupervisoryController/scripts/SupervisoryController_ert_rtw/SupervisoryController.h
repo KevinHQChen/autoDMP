@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2467
+// Model version                  : 1.2471
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon Aug  7 23:00:45 2023
+// C/C++ source code generated on : Mon Aug  7 23:52:10 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -282,18 +282,18 @@ class SupervisoryController final
     real_T uwt[3];                     // '<Root>/SupervisoryController'
     real_T theta_m[24];                // '<Root>/SupervisoryController'
     real_T thetaSgn_k[24];             // '<Root>/SupervisoryController'
-    real_T Product3[5];                // '<S295>/Product3'
-    real_T Product3_a[5];              // '<S225>/Product3'
+    real_T Product3[8];                // '<S295>/Product3'
+    real_T Product3_a[8];              // '<S225>/Product3'
     real_T Product3_c[4];              // '<S155>/Product3'
     real_T Delay_DSTATE[6];            // '<S8>/Delay'
     real_T DiscreteTimeIntegrator_DSTATE[2];// '<S5>/Discrete-Time Integrator'
     real_T last_mv_DSTATE[3];          // '<S230>/last_mv'
-    real_T MemoryX_DSTATE[5];          // '<S252>/MemoryX'
-    real_T MemoryP_DSTATE[25];         // '<S252>/MemoryP'
+    real_T MemoryX_DSTATE[8];          // '<S252>/MemoryX'
+    real_T MemoryP_DSTATE[64];         // '<S252>/MemoryP'
     real_T DiscreteTimeIntegrator_DSTATE_m[2];// '<S4>/Discrete-Time Integrator' 
     real_T last_mv_DSTATE_i[3];        // '<S160>/last_mv'
-    real_T MemoryX_DSTATE_c[5];        // '<S182>/MemoryX'
-    real_T MemoryP_DSTATE_h[25];       // '<S182>/MemoryP'
+    real_T MemoryX_DSTATE_c[8];        // '<S182>/MemoryX'
+    real_T MemoryP_DSTATE_h[64];       // '<S182>/MemoryP'
     real_T last_mv_DSTATE_n[3];        // '<S90>/last_mv'
     real_T MemoryX_DSTATE_l[4];        // '<S112>/MemoryX'
     real_T MemoryP_DSTATE_e[16];       // '<S112>/MemoryP'
@@ -425,10 +425,10 @@ class SupervisoryController final
     real_T Aod1[9];                    // Variable: Aod1
                                           //  Referenced by: '<S89>/MATLAB Function'
 
-    real_T Aod2[9];                    // Variable: Aod2
+    real_T Aod2[36];                   // Variable: Aod2
                                           //  Referenced by: '<S159>/MATLAB Function'
 
-    real_T Aod3[9];                    // Variable: Aod3
+    real_T Aod3[36];                   // Variable: Aod3
                                           //  Referenced by: '<S229>/MATLAB Function'
 
     real_T Bod[72];                    // Variable: Bod
@@ -437,10 +437,10 @@ class SupervisoryController final
     real_T Bod1[9];                    // Variable: Bod1
                                           //  Referenced by: '<S89>/MATLAB Function'
 
-    real_T Bod2[9];                    // Variable: Bod2
+    real_T Bod2[18];                   // Variable: Bod2
                                           //  Referenced by: '<S159>/MATLAB Function'
 
-    real_T Bod3[9];                    // Variable: Bod3
+    real_T Bod3[18];                   // Variable: Bod3
                                           //  Referenced by: '<S229>/MATLAB Function'
 
     real_T Cod[72];                    // Variable: Cod
@@ -449,10 +449,10 @@ class SupervisoryController final
     real_T Cod1[9];                    // Variable: Cod1
                                           //  Referenced by: '<S89>/MATLAB Function'
 
-    real_T Cod2[9];                    // Variable: Cod2
+    real_T Cod2[30];                   // Variable: Cod2
                                           //  Referenced by: '<S159>/MATLAB Function'
 
-    real_T Cod3[9];                    // Variable: Cod3
+    real_T Cod3[30];                   // Variable: Cod3
                                           //  Referenced by: '<S229>/MATLAB Function'
 
     real_T Dmn[36];                    // Variable: Dmn
@@ -470,10 +470,10 @@ class SupervisoryController final
     real_T Dod1[9];                    // Variable: Dod1
                                           //  Referenced by: '<S89>/MATLAB Function'
 
-    real_T Dod2[9];                    // Variable: Dod2
+    real_T Dod2[15];                   // Variable: Dod2
                                           //  Referenced by: '<S159>/MATLAB Function'
 
-    real_T Dod3[9];                    // Variable: Dod3
+    real_T Dod3[15];                   // Variable: Dod3
                                           //  Referenced by: '<S229>/MATLAB Function'
 
     real_T beta;                       // Variable: beta
@@ -816,10 +816,10 @@ class SupervisoryController final
     real_T Constant2_Value_c[2];       // Expression: zeros(size(G1.A, 1), 1)
                                           //  Referenced by: '<S4>/Constant2'
 
-    real_T Constant1_Value_p[3];       // Expression: zeros(size(God2.A,1),1)
+    real_T Constant1_Value_p[6];       // Expression: zeros(size(God2.A,1),1)
                                           //  Referenced by: '<S159>/Constant1'
 
-    real_T X0_Value_k[5];              // Expression: pInitialization.X0
+    real_T X0_Value_k[8];              // Expression: pInitialization.X0
                                           //  Referenced by: '<S182>/X0'
 
     real_T ym_zero_Value_l[5];         // Expression: zeros(nym,1)
@@ -861,16 +861,16 @@ class SupervisoryController final
     real_T ecrwt_zero_Value_e;         // Expression: zeros(1,1)
                                           //  Referenced by: '<S158>/ecr.wt_zero'
 
-    real_T P0_Value_c[25];             // Expression: pInitialization.P0
+    real_T P0_Value_c[64];             // Expression: pInitialization.P0
                                           //  Referenced by: '<S182>/P0'
 
     real_T Constant1_Value_pe;         // Expression: 1
                                           //  Referenced by: '<S4>/Constant1'
 
-    real_T H_Value_k[15];              // Expression: pInitialization.H
+    real_T H_Value_k[24];              // Expression: pInitialization.H
                                           //  Referenced by: '<S182>/H'
 
-    real_T G_Value_g[25];              // Expression: pInitialization.G
+    real_T G_Value_g[64];              // Expression: pInitialization.G
                                           //  Referenced by: '<S182>/G'
 
     real_T umin_scale1_Gain_p[3];      // Expression: MVscale
@@ -940,10 +940,10 @@ class SupervisoryController final
     real_T Constant2_Value_m[2];       // Expression: zeros(size(G2.A, 1), 1)
                                           //  Referenced by: '<S5>/Constant2'
 
-    real_T Constant1_Value_h[3];       // Expression: zeros(size(God3.A,1),1)
+    real_T Constant1_Value_h[6];       // Expression: zeros(size(God3.A,1),1)
                                           //  Referenced by: '<S229>/Constant1'
 
-    real_T X0_Value_a[5];              // Expression: pInitialization.X0
+    real_T X0_Value_a[8];              // Expression: pInitialization.X0
                                           //  Referenced by: '<S252>/X0'
 
     real_T ym_zero_Value_d[5];         // Expression: zeros(nym,1)
@@ -985,16 +985,16 @@ class SupervisoryController final
     real_T ecrwt_zero_Value_j;         // Expression: zeros(1,1)
                                           //  Referenced by: '<S228>/ecr.wt_zero'
 
-    real_T P0_Value_m[25];             // Expression: pInitialization.P0
+    real_T P0_Value_m[64];             // Expression: pInitialization.P0
                                           //  Referenced by: '<S252>/P0'
 
     real_T Constant1_Value_n;          // Expression: 1
                                           //  Referenced by: '<S5>/Constant1'
 
-    real_T H_Value_oa[15];             // Expression: pInitialization.H
+    real_T H_Value_oa[24];             // Expression: pInitialization.H
                                           //  Referenced by: '<S252>/H'
 
-    real_T G_Value_h[25];              // Expression: pInitialization.G
+    real_T G_Value_h[64];              // Expression: pInitialization.G
                                           //  Referenced by: '<S252>/G'
 
     real_T umin_scale1_Gain_g[3];      // Expression: MVscale
@@ -1128,34 +1128,34 @@ class SupervisoryController final
   static void ScalarExpansionR(const real_T rtu_u[9], real_T rty_y[9]);
 
   // private member function(s) for subsystem '<S182>/CalculatePL'
-  void CalculatePL(const real_T rtu_Ak[25], const real_T rtu_Ck[15], const
-                   real_T rtu_Qbark[25], const real_T rtu_Rbark[9], const real_T
-                   rtu_Nbark[15], boolean_T rtu_Enablek, const real_T rtu_Pk[25],
-                   real_T rty_Mk[15], real_T rty_Lk[15], real_T rty_Zk[25],
-                   real_T rty_Pk1[25]);
-  void mrdiv(const real_T A[15], const real_T B_0[9], real_T Y[15]);
+  void CalculatePL(const real_T rtu_Ak[64], const real_T rtu_Ck[24], const
+                   real_T rtu_Qbark[64], const real_T rtu_Rbark[9], const real_T
+                   rtu_Nbark[24], boolean_T rtu_Enablek, const real_T rtu_Pk[64],
+                   real_T rty_Mk[24], real_T rty_Lk[24], real_T rty_Zk[64],
+                   real_T rty_Pk1[64]);
+  void mrdiv(const real_T A[24], const real_T B_0[9], real_T Y[24]);
 
   // private member function(s) for subsystem '<S223>/SqrtUsedFcn'
-  static void SqrtUsedFcn(const real_T rtu_u[25], boolean_T rtu_isSqrtUsed,
-    real_T rty_P[25]);
+  static void SqrtUsedFcn(const real_T rtu_u[64], boolean_T rtu_isSqrtUsed,
+    real_T rty_P[64]);
 
   // private member function(s) for subsystem '<S201>/MeasurementUpdate'
-  static void MeasurementUpdate_Init(real_T rty_Lykyhatkk1[5],
+  static void MeasurementUpdate_Init(real_T rty_Lykyhatkk1[8],
     P_MeasurementUpdate *localP);
-  static void MeasurementUpdate_Disable(real_T rty_Lykyhatkk1[5],
+  static void MeasurementUpdate_Disable(real_T rty_Lykyhatkk1[8],
     DW_MeasurementUpdate *localDW, P_MeasurementUpdate *localP);
-  void MeasurementUpdate(boolean_T rtu_Enable, const real_T rtu_Lk[15], const
-    real_T rtu_yk[3], const real_T rtu_Ck[15], const real_T rtu_xhatkk1[5],
-    const real_T rtu_Dk[9], const real_T rtu_uk[3], real_T rty_Lykyhatkk1[5],
+  void MeasurementUpdate(boolean_T rtu_Enable, const real_T rtu_Lk[24], const
+    real_T rtu_yk[3], const real_T rtu_Ck[24], const real_T rtu_xhatkk1[8],
+    const real_T rtu_Dk[9], const real_T rtu_uk[3], real_T rty_Lykyhatkk1[8],
     DW_MeasurementUpdate *localDW, P_MeasurementUpdate *localP);
 
   // private member function(s) for subsystem '<S182>/ReducedQRN'
-  static void ReducedQRN(const real_T rtu_G[25], const real_T rtu_H[15], const
-    real_T rtu_Q[25], const real_T rtu_R[9], const real_T rtu_N[15], real_T
-    rty_Qbar[25], real_T rty_Rbar[9], real_T rty_Nbar[15]);
+  static void ReducedQRN(const real_T rtu_G[64], const real_T rtu_H[24], const
+    real_T rtu_Q[64], const real_T rtu_R[9], const real_T rtu_N[24], real_T
+    rty_Qbar[64], real_T rty_Rbar[9], real_T rty_Nbar[24]);
 
   // private member function(s) for subsystem '<S182>/ScalarExpansionQ'
-  static void ScalarExpansionQ(const real_T rtu_u[25], real_T rty_y[25]);
+  static void ScalarExpansionQ(const real_T rtu_u[64], real_T rty_y[64]);
 
   // private member function(s) for subsystem '<Root>'
   void do_vectors(const real_T b_data[], const int32_T *b_size, real_T c_data[],

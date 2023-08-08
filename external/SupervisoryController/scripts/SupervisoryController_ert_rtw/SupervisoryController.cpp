@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2467
+// Model version                  : 1.2471
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon Aug  7 23:00:45 2023
+// C/C++ source code generated on : Mon Aug  7 23:52:10 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -900,8 +900,8 @@ void SupervisoryController::ScalarExpansionR(const real_T rtu_u[9], real_T
 }
 
 // Function for MATLAB Function: '<S184>/Discrete-Time KF - Calculate PLMZ'
-void SupervisoryController::mrdiv(const real_T A[15], const real_T B_0[9],
-  real_T Y[15])
+void SupervisoryController::mrdiv(const real_T A[24], const real_T B_0[9],
+  real_T Y[24])
 {
   real_T b_A[9];
   real_T a21;
@@ -942,16 +942,16 @@ void SupervisoryController::mrdiv(const real_T A[15], const real_T B_0[9],
 
   b_A[r3 + 3] /= b_A[r2 + 3];
   b_A[r3 + 6] -= b_A[r3 + 3] * b_A[r2 + 6];
-  for (rtemp = 0; rtemp < 5; rtemp++) {
+  for (rtemp = 0; rtemp < 8; rtemp++) {
     int32_T Y_tmp;
     int32_T Y_tmp_0;
     int32_T Y_tmp_1;
-    Y_tmp = 5 * r1 + rtemp;
+    Y_tmp = (r1 << 3UL) + rtemp;
     Y[Y_tmp] = A[rtemp] / b_A[r1];
-    Y_tmp_0 = 5 * r2 + rtemp;
-    Y[Y_tmp_0] = A[rtemp + 5] - b_A[r1 + 3] * Y[Y_tmp];
-    Y_tmp_1 = 5 * r3 + rtemp;
-    Y[Y_tmp_1] = A[rtemp + 10] - b_A[r1 + 6] * Y[Y_tmp];
+    Y_tmp_0 = (r2 << 3UL) + rtemp;
+    Y[Y_tmp_0] = A[rtemp + 8] - b_A[r1 + 3] * Y[Y_tmp];
+    Y_tmp_1 = (r3 << 3UL) + rtemp;
+    Y[Y_tmp_1] = A[rtemp + 16] - b_A[r1 + 6] * Y[Y_tmp];
     Y[Y_tmp_0] /= b_A[r2 + 3];
     Y[Y_tmp_1] -= b_A[r2 + 6] * Y[Y_tmp_0];
     Y[Y_tmp_1] /= b_A[r3 + 6];
@@ -966,19 +966,19 @@ void SupervisoryController::mrdiv(const real_T A[15], const real_T B_0[9],
 //    '<S182>/CalculatePL'
 //    '<S252>/CalculatePL'
 //
-void SupervisoryController::CalculatePL(const real_T rtu_Ak[25], const real_T
-  rtu_Ck[15], const real_T rtu_Qbark[25], const real_T rtu_Rbark[9], const
-  real_T rtu_Nbark[15], boolean_T rtu_Enablek, const real_T rtu_Pk[25], real_T
-  rty_Mk[15], real_T rty_Lk[15], real_T rty_Zk[25], real_T rty_Pk1[25])
+void SupervisoryController::CalculatePL(const real_T rtu_Ak[64], const real_T
+  rtu_Ck[24], const real_T rtu_Qbark[64], const real_T rtu_Rbark[9], const
+  real_T rtu_Nbark[24], boolean_T rtu_Enablek, const real_T rtu_Pk[64], real_T
+  rty_Mk[24], real_T rty_Lk[24], real_T rty_Zk[64], real_T rty_Pk1[64])
 {
-  real_T Abar[25];
-  real_T Abar_0[25];
-  real_T Abar_1[25];
-  real_T rty_Mk_0[25];
-  real_T NRinv[15];
-  real_T rtu_Ck_0[15];
+  real_T Abar[64];
+  real_T Abar_0[64];
+  real_T Abar_1[64];
+  real_T rty_Mk_0[64];
+  real_T NRinv[24];
+  real_T rtu_Ck_0[24];
   real_T yCov[9];
-  int8_T b_I[25];
+  int8_T b_I[64];
 
   // MATLAB Function: '<S184>/Discrete-Time KF - Calculate PLMZ'
   //  See help of ctrlKalmanFilterDTCalculatePL.m
@@ -992,30 +992,30 @@ void SupervisoryController::CalculatePL(const real_T rtu_Ak[25], const real_T
     int32_T i;
     int32_T k;
     int32_T rtu_Ak_tmp;
+    int32_T rtu_Ak_tmp_0;
     int32_T rtu_Pk_tmp;
     int32_T rty_Mk_tmp;
-    int32_T yCov_tmp;
     i = 0;
     for (k = 0; k < 3; k++) {
       rty_Mk_tmp = 0;
       rtu_Ak_tmp = 0;
-      for (yCov_tmp = 0; yCov_tmp < 5; yCov_tmp++) {
+      for (rtu_Ak_tmp_0 = 0; rtu_Ak_tmp_0 < 8; rtu_Ak_tmp_0++) {
         int32_T NRinv_tmp;
         NRinv_tmp = rty_Mk_tmp + k;
-        NRinv[yCov_tmp + i] = rtu_Ck[NRinv_tmp];
+        NRinv[rtu_Ak_tmp_0 + i] = rtu_Ck[NRinv_tmp];
         rtu_Ck_0[NRinv_tmp] = 0.0;
         rtu_Pk_tmp = 0;
-        for (int32_T i_0{0}; i_0 < 5; i_0++) {
+        for (int32_T i_0{0}; i_0 < 8; i_0++) {
           rtu_Ck_0[NRinv_tmp] += rtu_Ck[rtu_Pk_tmp + k] * rtu_Pk[i_0 +
             rtu_Ak_tmp];
           rtu_Pk_tmp += 3;
         }
 
         rty_Mk_tmp += 3;
-        rtu_Ak_tmp += 5;
+        rtu_Ak_tmp += 8;
       }
 
-      i += 5;
+      i += 8;
     }
 
     for (i = 0; i < 3; i++) {
@@ -1023,36 +1023,37 @@ void SupervisoryController::CalculatePL(const real_T rtu_Ak[25], const real_T
       rty_Mk_tmp = 0;
       for (rtu_Ak_tmp = 0; rtu_Ak_tmp < 3; rtu_Ak_tmp++) {
         tmp = 0.0;
-        yCov_tmp = 0;
-        for (rtu_Pk_tmp = 0; rtu_Pk_tmp < 5; rtu_Pk_tmp++) {
-          tmp += rtu_Ck_0[yCov_tmp + i] * NRinv[rtu_Pk_tmp + rty_Mk_tmp];
-          yCov_tmp += 3;
+        rtu_Ak_tmp_0 = 0;
+        for (rtu_Pk_tmp = 0; rtu_Pk_tmp < 8; rtu_Pk_tmp++) {
+          tmp += rtu_Ck_0[rtu_Ak_tmp_0 + i] * NRinv[rtu_Pk_tmp + rty_Mk_tmp];
+          rtu_Ak_tmp_0 += 3;
         }
 
-        yCov_tmp = k + i;
-        yCov[yCov_tmp] = rtu_Rbark[yCov_tmp] + tmp;
+        rtu_Ak_tmp_0 = k + i;
+        yCov[rtu_Ak_tmp_0] = rtu_Rbark[rtu_Ak_tmp_0] + tmp;
         k += 3;
-        rty_Mk_tmp += 5;
+        rty_Mk_tmp += 8;
       }
     }
 
-    for (i = 0; i < 5; i++) {
-      for (k = 0; k < 5; k++) {
-        rtu_Ak_tmp = 5 * k + i;
-        Abar[rtu_Ak_tmp] = 0.0;
-        for (rty_Mk_tmp = 0; rty_Mk_tmp < 5; rty_Mk_tmp++) {
-          Abar[rtu_Ak_tmp] += rtu_Ak[5 * rty_Mk_tmp + i] * rtu_Pk[5 * k +
-            rty_Mk_tmp];
+    for (i = 0; i < 8; i++) {
+      for (k = 0; k < 8; k++) {
+        rtu_Ak_tmp = k << 3UL;
+        rtu_Ak_tmp_0 = i + rtu_Ak_tmp;
+        Abar[rtu_Ak_tmp_0] = 0.0;
+        for (rty_Mk_tmp = 0; rty_Mk_tmp < 8; rty_Mk_tmp++) {
+          Abar[rtu_Ak_tmp_0] += rtu_Ak[(rty_Mk_tmp << 3UL) + i] *
+            rtu_Pk[rtu_Ak_tmp + rty_Mk_tmp];
         }
       }
 
       for (k = 0; k < 3; k++) {
         tmp = 0.0;
-        for (rty_Mk_tmp = 0; rty_Mk_tmp < 5; rty_Mk_tmp++) {
-          tmp += Abar[5 * rty_Mk_tmp + i] * NRinv[5 * k + rty_Mk_tmp];
+        for (rty_Mk_tmp = 0; rty_Mk_tmp < 8; rty_Mk_tmp++) {
+          tmp += Abar[(rty_Mk_tmp << 3UL) + i] * NRinv[(k << 3UL) + rty_Mk_tmp];
         }
 
-        rtu_Ak_tmp = 5 * k + i;
+        rtu_Ak_tmp = (k << 3UL) + i;
         rtu_Ck_0[rtu_Ak_tmp] = rtu_Nbark[rtu_Ak_tmp] + tmp;
       }
     }
@@ -1060,158 +1061,152 @@ void SupervisoryController::CalculatePL(const real_T rtu_Ak[25], const real_T
     mrdiv(rtu_Ck_0, yCov, rty_Lk);
     i = 0;
     for (k = 0; k < 3; k++) {
-      for (rty_Mk_tmp = 0; rty_Mk_tmp < 5; rty_Mk_tmp++) {
+      for (rty_Mk_tmp = 0; rty_Mk_tmp < 8; rty_Mk_tmp++) {
         rtu_Pk_tmp = rty_Mk_tmp + i;
         rtu_Ck_0[rtu_Pk_tmp] = 0.0;
         rtu_Ak_tmp = 0;
-        for (yCov_tmp = 0; yCov_tmp < 5; yCov_tmp++) {
+        for (rtu_Ak_tmp_0 = 0; rtu_Ak_tmp_0 < 8; rtu_Ak_tmp_0++) {
           rtu_Ck_0[rtu_Pk_tmp] += rtu_Pk[rtu_Ak_tmp + rty_Mk_tmp] *
-            NRinv[yCov_tmp + i];
-          rtu_Ak_tmp += 5;
+            NRinv[rtu_Ak_tmp_0 + i];
+          rtu_Ak_tmp += 8;
         }
       }
 
-      i += 5;
+      i += 8;
     }
 
     mrdiv(rtu_Ck_0, yCov, rty_Mk);
-    for (i = 0; i < 25; i++) {
-      b_I[i] = 0;
-    }
-
+    (void)std::memset(&b_I[0], 0, sizeof(int8_T) << 6UL);
     k = 0;
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < 8; i++) {
       b_I[k] = 1;
-      k += 6;
+      k += 9;
     }
 
-    for (i = 0; i < 5; i++) {
-      for (k = 0; k < 5; k++) {
-        rtu_Pk_tmp = 5 * k + i;
+    for (i = 0; i < 8; i++) {
+      for (k = 0; k < 8; k++) {
+        rtu_Pk_tmp = (k << 3UL) + i;
         Abar[rtu_Pk_tmp] = static_cast<real_T>(b_I[rtu_Pk_tmp]) - ((rtu_Ck[3 * k
-          + 1] * rty_Mk[i + 5] + rtu_Ck[3 * k] * rty_Mk[i]) + rtu_Ck[3 * k + 2] *
-          rty_Mk[i + 10]);
+          + 1] * rty_Mk[i + 8] + rtu_Ck[3 * k] * rty_Mk[i]) + rtu_Ck[3 * k + 2] *
+          rty_Mk[i + 16]);
       }
 
-      for (k = 0; k < 5; k++) {
-        rtu_Pk_tmp = 5 * k + i;
-        Abar_0[rtu_Pk_tmp] = 0.0;
-        for (rty_Mk_tmp = 0; rty_Mk_tmp < 5; rty_Mk_tmp++) {
-          Abar_0[rtu_Pk_tmp] += Abar[5 * rty_Mk_tmp + i] * rtu_Pk[5 * k +
-            rty_Mk_tmp];
+      for (k = 0; k < 8; k++) {
+        rtu_Pk_tmp = k << 3UL;
+        rtu_Ak_tmp = i + rtu_Pk_tmp;
+        Abar_0[rtu_Ak_tmp] = 0.0;
+        for (rty_Mk_tmp = 0; rty_Mk_tmp < 8; rty_Mk_tmp++) {
+          Abar_0[rtu_Ak_tmp] += Abar[(rty_Mk_tmp << 3UL) + i] *
+            rtu_Pk[rtu_Pk_tmp + rty_Mk_tmp];
         }
       }
 
       for (k = 0; k < 3; k++) {
-        rty_Mk_tmp = 5 * k + i;
+        rty_Mk_tmp = (k << 3UL) + i;
         NRinv[rty_Mk_tmp] = 0.0;
         NRinv[rty_Mk_tmp] += rtu_Rbark[3 * k] * rty_Mk[i];
-        NRinv[rty_Mk_tmp] += rtu_Rbark[3 * k + 1] * rty_Mk[i + 5];
-        NRinv[rty_Mk_tmp] += rtu_Rbark[3 * k + 2] * rty_Mk[i + 10];
+        NRinv[rty_Mk_tmp] += rtu_Rbark[3 * k + 1] * rty_Mk[i + 8];
+        NRinv[rty_Mk_tmp] += rtu_Rbark[3 * k + 2] * rty_Mk[i + 16];
       }
     }
 
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < 8; i++) {
       k = 0;
-      for (rty_Mk_tmp = 0; rty_Mk_tmp < 5; rty_Mk_tmp++) {
+      for (rty_Mk_tmp = 0; rty_Mk_tmp < 8; rty_Mk_tmp++) {
         rtu_Pk_tmp = k + i;
         Abar_1[rtu_Pk_tmp] = 0.0;
         rtu_Ak_tmp = 0;
-        for (yCov_tmp = 0; yCov_tmp < 5; yCov_tmp++) {
+        for (rtu_Ak_tmp_0 = 0; rtu_Ak_tmp_0 < 8; rtu_Ak_tmp_0++) {
           Abar_1[rtu_Pk_tmp] += Abar_0[rtu_Ak_tmp + i] * Abar[rtu_Ak_tmp +
             rty_Mk_tmp];
-          rtu_Ak_tmp += 5;
+          rtu_Ak_tmp += 8;
         }
 
         rty_Mk_0[rtu_Pk_tmp] = 0.0;
         rty_Mk_0[rtu_Pk_tmp] += NRinv[i] * rty_Mk[rty_Mk_tmp];
-        rty_Mk_0[rtu_Pk_tmp] += NRinv[i + 5] * rty_Mk[rty_Mk_tmp + 5];
-        rty_Mk_0[rtu_Pk_tmp] += NRinv[i + 10] * rty_Mk[rty_Mk_tmp + 10];
-        k += 5;
+        rty_Mk_0[rtu_Pk_tmp] += NRinv[i + 8] * rty_Mk[rty_Mk_tmp + 8];
+        rty_Mk_0[rtu_Pk_tmp] += NRinv[i + 16] * rty_Mk[rty_Mk_tmp + 16];
+        k += 8;
       }
     }
 
-    for (i = 0; i <= 22; i += 2) {
+    for (i = 0; i <= 62; i += 2) {
       tmp_0 = _mm_loadu_pd(&Abar_1[i]);
       tmp_1 = _mm_loadu_pd(&rty_Mk_0[i]);
       (void)_mm_storeu_pd(&rty_Zk[i], _mm_add_pd(tmp_0, tmp_1));
     }
 
-    for (i = 24; i < 25; i++) {
-      rty_Zk[i] = Abar_1[i] + rty_Mk_0[i];
-    }
-
     mrdiv(rtu_Nbark, rtu_Rbark, NRinv);
-    for (i = 0; i < 5; i++) {
-      for (k = 0; k < 5; k++) {
-        rtu_Pk_tmp = 5 * k + i;
+    for (i = 0; i < 8; i++) {
+      for (k = 0; k < 8; k++) {
+        rtu_Pk_tmp = (k << 3UL) + i;
         Abar[rtu_Pk_tmp] = rtu_Ak[rtu_Pk_tmp] - ((rtu_Ck[3 * k + 1] * NRinv[i +
-          5] + rtu_Ck[3 * k] * NRinv[i]) + rtu_Ck[3 * k + 2] * NRinv[i + 10]);
+          8] + rtu_Ck[3 * k] * NRinv[i]) + rtu_Ck[3 * k + 2] * NRinv[i + 16]);
       }
 
-      for (k = 0; k < 5; k++) {
-        rtu_Pk_tmp = 5 * k + i;
-        Abar_0[rtu_Pk_tmp] = 0.0;
-        for (rty_Mk_tmp = 0; rty_Mk_tmp < 5; rty_Mk_tmp++) {
-          Abar_0[rtu_Pk_tmp] += Abar[5 * rty_Mk_tmp + i] * rty_Zk[5 * k +
-            rty_Mk_tmp];
+      for (k = 0; k < 8; k++) {
+        rtu_Pk_tmp = k << 3UL;
+        rtu_Ak_tmp = i + rtu_Pk_tmp;
+        Abar_0[rtu_Ak_tmp] = 0.0;
+        for (rty_Mk_tmp = 0; rty_Mk_tmp < 8; rty_Mk_tmp++) {
+          Abar_0[rtu_Ak_tmp] += Abar[(rty_Mk_tmp << 3UL) + i] *
+            rty_Zk[rtu_Pk_tmp + rty_Mk_tmp];
         }
       }
     }
 
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < 8; i++) {
       k = 0;
-      for (rty_Mk_tmp = 0; rty_Mk_tmp < 5; rty_Mk_tmp++) {
+      for (rty_Mk_tmp = 0; rty_Mk_tmp < 8; rty_Mk_tmp++) {
         tmp = 0.0;
         rtu_Ak_tmp = 0;
-        for (yCov_tmp = 0; yCov_tmp < 5; yCov_tmp++) {
+        for (rtu_Ak_tmp_0 = 0; rtu_Ak_tmp_0 < 8; rtu_Ak_tmp_0++) {
           tmp += Abar_0[rtu_Ak_tmp + i] * Abar[rtu_Ak_tmp + rty_Mk_tmp];
-          rtu_Ak_tmp += 5;
+          rtu_Ak_tmp += 8;
         }
 
         rtu_Pk_tmp = k + i;
         Abar_1[rtu_Pk_tmp] = rtu_Qbark[rtu_Pk_tmp] + tmp;
         rty_Mk_0[rtu_Pk_tmp] = 0.0;
         rty_Mk_0[rtu_Pk_tmp] += NRinv[i] * rtu_Nbark[rty_Mk_tmp];
-        rty_Mk_0[rtu_Pk_tmp] += NRinv[i + 5] * rtu_Nbark[rty_Mk_tmp + 5];
-        rty_Mk_0[rtu_Pk_tmp] += NRinv[i + 10] * rtu_Nbark[rty_Mk_tmp + 10];
-        k += 5;
+        rty_Mk_0[rtu_Pk_tmp] += NRinv[i + 8] * rtu_Nbark[rty_Mk_tmp + 8];
+        rty_Mk_0[rtu_Pk_tmp] += NRinv[i + 16] * rtu_Nbark[rty_Mk_tmp + 16];
+        k += 8;
       }
     }
 
-    for (i = 0; i <= 22; i += 2) {
+    for (i = 0; i <= 62; i += 2) {
       tmp_0 = _mm_loadu_pd(&Abar_1[i]);
       tmp_1 = _mm_loadu_pd(&rty_Mk_0[i]);
       (void)_mm_storeu_pd(&rty_Pk1[i], _mm_sub_pd(tmp_0, tmp_1));
     }
-
-    for (i = 24; i < 25; i++) {
-      rty_Pk1[i] = Abar_1[i] - rty_Mk_0[i];
-    }
   } else {
-    (void)std::memset(&rty_Lk[0], 0, 15U * sizeof(real_T));
-    (void)std::memset(&rty_Mk[0], 0, 15U * sizeof(real_T));
-    (void)std::memcpy(&rty_Zk[0], &rtu_Pk[0], 25U * sizeof(real_T));
-    for (int32_T i{0}; i < 5; i++) {
+    (void)std::memset(&rty_Lk[0], 0, 24U * sizeof(real_T));
+    (void)std::memset(&rty_Mk[0], 0, 24U * sizeof(real_T));
+    (void)std::memcpy(&rty_Zk[0], &rtu_Pk[0], sizeof(real_T) << 6UL);
+    for (int32_T i{0}; i < 8; i++) {
+      int32_T rtu_Ak_tmp;
       int32_T rty_Mk_tmp;
-      for (int32_T k{0}; k < 5; k++) {
-        int32_T rtu_Ak_tmp;
-        rtu_Ak_tmp = 5 * k + i;
-        Abar[rtu_Ak_tmp] = 0.0;
-        for (rty_Mk_tmp = 0; rty_Mk_tmp < 5; rty_Mk_tmp++) {
-          Abar[rtu_Ak_tmp] += rtu_Ak[5 * rty_Mk_tmp + i] * rtu_Pk[5 * k +
-            rty_Mk_tmp];
+      for (int32_T k{0}; k < 8; k++) {
+        int32_T rtu_Ak_tmp_0;
+        rtu_Ak_tmp = k << 3UL;
+        rtu_Ak_tmp_0 = i + rtu_Ak_tmp;
+        Abar[rtu_Ak_tmp_0] = 0.0;
+        for (rty_Mk_tmp = 0; rty_Mk_tmp < 8; rty_Mk_tmp++) {
+          Abar[rtu_Ak_tmp_0] += rtu_Ak[(rty_Mk_tmp << 3UL) + i] *
+            rtu_Pk[rtu_Ak_tmp + rty_Mk_tmp];
         }
       }
 
-      for (int32_T k{0}; k < 5; k++) {
+      for (int32_T k{0}; k < 8; k++) {
         real_T tmp;
         tmp = 0.0;
-        for (rty_Mk_tmp = 0; rty_Mk_tmp < 5; rty_Mk_tmp++) {
-          tmp += Abar[5 * rty_Mk_tmp + i] * rtu_Ak[5 * rty_Mk_tmp + k];
+        for (rty_Mk_tmp = 0; rty_Mk_tmp < 8; rty_Mk_tmp++) {
+          rtu_Ak_tmp = rty_Mk_tmp << 3UL;
+          tmp += Abar[rtu_Ak_tmp + i] * rtu_Ak[rtu_Ak_tmp + k];
         }
 
-        rty_Mk_tmp = 5 * k + i;
+        rty_Mk_tmp = (k << 3UL) + i;
         rty_Pk1[rty_Mk_tmp] = rtu_Qbark[rty_Mk_tmp] + tmp;
       }
     }
@@ -1225,35 +1220,35 @@ void SupervisoryController::CalculatePL(const real_T rtu_Ak[25], const real_T
 //    '<S223>/SqrtUsedFcn'
 //    '<S293>/SqrtUsedFcn'
 //
-void SupervisoryController::SqrtUsedFcn(const real_T rtu_u[25], boolean_T
-  rtu_isSqrtUsed, real_T rty_P[25])
+void SupervisoryController::SqrtUsedFcn(const real_T rtu_u[64], boolean_T
+  rtu_isSqrtUsed, real_T rty_P[64])
 {
   //  Determine if the Square-Root algorithm was used
   // MATLAB Function 'Kalman Filter/CovarianceOutputConfigurator/decideOutput/SqrtUsedFcn': '<S224>:1' 
   // '<S224>:1:4' if isSqrtUsed
   if (rtu_isSqrtUsed) {
     // '<S224>:1:5' P = u*u.';
-    for (int32_T i{0}; i < 5; i++) {
+    for (int32_T i{0}; i < 8; i++) {
       int32_T tmp;
       tmp = 0;
-      for (int32_T i_0{0}; i_0 < 5; i_0++) {
+      for (int32_T i_0{0}; i_0 < 8; i_0++) {
         int32_T tmp_0;
         int32_T tmp_1;
         tmp_1 = tmp + i;
         rty_P[tmp_1] = 0.0;
         tmp_0 = 0;
-        for (int32_T i_1{0}; i_1 < 5; i_1++) {
+        for (int32_T i_1{0}; i_1 < 8; i_1++) {
           rty_P[tmp_1] += rtu_u[tmp_0 + i] * rtu_u[tmp_0 + i_0];
-          tmp_0 += 5;
+          tmp_0 += 8;
         }
 
-        tmp += 5;
+        tmp += 8;
       }
     }
   } else {
     // '<S224>:1:6' else
     // '<S224>:1:7' P = u;
-    (void)std::memcpy(&rty_P[0], &rtu_u[0], 25U * sizeof(real_T));
+    (void)std::memcpy(&rty_P[0], &rtu_u[0], sizeof(real_T) << 6UL);
   }
 }
 
@@ -1262,11 +1257,11 @@ void SupervisoryController::SqrtUsedFcn(const real_T rtu_u[25], boolean_T
 //    '<S201>/MeasurementUpdate'
 //    '<S271>/MeasurementUpdate'
 //
-void SupervisoryController::MeasurementUpdate_Init(real_T rty_Lykyhatkk1[5],
+void SupervisoryController::MeasurementUpdate_Init(real_T rty_Lykyhatkk1[8],
   P_MeasurementUpdate *localP)
 {
   // SystemInitialize for Outport: '<S225>/L*(y[k]-yhat[k|k-1])'
-  for (int32_T i{0}; i < 5; i++) {
+  for (int32_T i{0}; i < 8; i++) {
     rty_Lykyhatkk1[i] = localP->Lykyhatkk1_Y0;
   }
 
@@ -1278,11 +1273,11 @@ void SupervisoryController::MeasurementUpdate_Init(real_T rty_Lykyhatkk1[5],
 //    '<S201>/MeasurementUpdate'
 //    '<S271>/MeasurementUpdate'
 //
-void SupervisoryController::MeasurementUpdate_Disable(real_T rty_Lykyhatkk1[5],
+void SupervisoryController::MeasurementUpdate_Disable(real_T rty_Lykyhatkk1[8],
   DW_MeasurementUpdate *localDW, P_MeasurementUpdate *localP)
 {
   // Disable for Outport: '<S225>/L*(y[k]-yhat[k|k-1])'
-  for (int32_T i{0}; i < 5; i++) {
+  for (int32_T i{0}; i < 8; i++) {
     // Outputs for Enabled SubSystem: '<S201>/MeasurementUpdate' incorporates:
     //   EnablePort: '<S225>/Enable'
 
@@ -1301,9 +1296,9 @@ void SupervisoryController::MeasurementUpdate_Disable(real_T rty_Lykyhatkk1[5],
 //    '<S271>/MeasurementUpdate'
 //
 void SupervisoryController::MeasurementUpdate(boolean_T rtu_Enable, const real_T
-  rtu_Lk[15], const real_T rtu_yk[3], const real_T rtu_Ck[15], const real_T
-  rtu_xhatkk1[5], const real_T rtu_Dk[9], const real_T rtu_uk[3], real_T
-  rty_Lykyhatkk1[5], DW_MeasurementUpdate *localDW, P_MeasurementUpdate *localP)
+  rtu_Lk[24], const real_T rtu_yk[3], const real_T rtu_Ck[24], const real_T
+  rtu_xhatkk1[8], const real_T rtu_Dk[9], const real_T rtu_uk[3], real_T
+  rty_Lykyhatkk1[8], DW_MeasurementUpdate *localDW, P_MeasurementUpdate *localP)
 {
   real_T rtu_Ck_0[3];
   real_T rtu_Dk_0[3];
@@ -1320,7 +1315,7 @@ void SupervisoryController::MeasurementUpdate(boolean_T rtu_Enable, const real_T
       // Product: '<S225>/C[k]*xhat[k|k-1]'
       rtu_Ck_0[i] = 0.0;
       tmp = 0;
-      for (int32_T i_0{0}; i_0 < 5; i_0++) {
+      for (int32_T i_0{0}; i_0 < 8; i_0++) {
         rtu_Ck_0[i] += rtu_Ck[tmp + i] * rtu_xhatkk1[i_0];
         tmp += 3;
       }
@@ -1340,7 +1335,7 @@ void SupervisoryController::MeasurementUpdate(boolean_T rtu_Enable, const real_T
       rtu_yk_0[i] = rtu_yk[i] - (rtu_Ck_0[i] + rtu_Dk_0[i]);
     }
 
-    for (int32_T i{0}; i <= 2; i += 2) {
+    for (int32_T i{0}; i <= 6; i += 2) {
       __m128d tmp_0;
       __m128d tmp_1;
 
@@ -1350,22 +1345,14 @@ void SupervisoryController::MeasurementUpdate(boolean_T rtu_Enable, const real_T
       tmp_1 = _mm_loadu_pd(&rty_Lykyhatkk1[i]);
       (void)_mm_storeu_pd(&rty_Lykyhatkk1[i], _mm_add_pd(_mm_mul_pd(tmp_0,
         _mm_set1_pd(rtu_yk_0[0])), tmp_1));
-      tmp_0 = _mm_loadu_pd(&rtu_Lk[i + 5]);
+      tmp_0 = _mm_loadu_pd(&rtu_Lk[i + 8]);
       tmp_1 = _mm_loadu_pd(&rty_Lykyhatkk1[i]);
       (void)_mm_storeu_pd(&rty_Lykyhatkk1[i], _mm_add_pd(_mm_mul_pd(tmp_0,
         _mm_set1_pd(rtu_yk_0[1])), tmp_1));
-      tmp_0 = _mm_loadu_pd(&rtu_Lk[i + 10]);
+      tmp_0 = _mm_loadu_pd(&rtu_Lk[i + 16]);
       tmp_1 = _mm_loadu_pd(&rty_Lykyhatkk1[i]);
       (void)_mm_storeu_pd(&rty_Lykyhatkk1[i], _mm_add_pd(_mm_mul_pd(tmp_0,
         _mm_set1_pd(rtu_yk_0[2])), tmp_1));
-    }
-
-    // Product: '<S225>/Product3'
-    for (int32_T i{4}; i < 5; i++) {
-      rty_Lykyhatkk1[i] = 0.0;
-      rty_Lykyhatkk1[i] += rtu_Lk[i] * rtu_yk_0[0];
-      rty_Lykyhatkk1[i] += rtu_Lk[i + 5] * rtu_yk_0[1];
-      rty_Lykyhatkk1[i] += rtu_Lk[i + 10] * rtu_yk_0[2];
     }
   } else if (localDW->MeasurementUpdate_MODE) {
     MeasurementUpdate_Disable(rty_Lykyhatkk1, localDW, localP);
@@ -1381,13 +1368,13 @@ void SupervisoryController::MeasurementUpdate(boolean_T rtu_Enable, const real_T
 //    '<S182>/ReducedQRN'
 //    '<S252>/ReducedQRN'
 //
-void SupervisoryController::ReducedQRN(const real_T rtu_G[25], const real_T
-  rtu_H[15], const real_T rtu_Q[25], const real_T rtu_R[9], const real_T rtu_N
-  [15], real_T rty_Qbar[25], real_T rty_Rbar[9], real_T rty_Nbar[15])
+void SupervisoryController::ReducedQRN(const real_T rtu_G[64], const real_T
+  rtu_H[24], const real_T rtu_Q[64], const real_T rtu_R[9], const real_T rtu_N
+  [24], real_T rty_Qbar[64], real_T rty_Rbar[9], real_T rty_Nbar[24])
 {
-  real_T rtu_Q_0[25];
-  real_T rtb_Add_a[15];
-  real_T rtb_Transpose2_k[15];
+  real_T rtu_Q_0[64];
+  real_T rtb_Add_a[24];
+  real_T rtb_Transpose2_k[24];
   real_T rtu_H_0[9];
   real_T rtu_N_0[9];
   int32_T i;
@@ -1400,36 +1387,36 @@ void SupervisoryController::ReducedQRN(const real_T rtu_G[25], const real_T
   // Product: '<S202>/Product' incorporates:
   //   Math: '<S202>/Transpose1'
 
-  for (i = 0; i < 5; i++) {
+  for (i = 0; i < 8; i++) {
     i_1 = 0;
-    for (i_0 = 0; i_0 < 5; i_0++) {
+    for (i_0 = 0; i_0 < 8; i_0++) {
       rtu_Q_tmp = i_1 + i;
       rtu_Q_0[rtu_Q_tmp] = 0.0;
       rtb_Add_ih_tmp = 0;
-      for (rtu_H_tmp = 0; rtu_H_tmp < 5; rtu_H_tmp++) {
+      for (rtu_H_tmp = 0; rtu_H_tmp < 8; rtu_H_tmp++) {
         rtu_Q_0[rtu_Q_tmp] += rtu_Q[rtb_Add_ih_tmp + i] * rtu_G[rtb_Add_ih_tmp +
           i_0];
-        rtb_Add_ih_tmp += 5;
+        rtb_Add_ih_tmp += 8;
       }
 
-      i_1 += 5;
+      i_1 += 8;
     }
   }
 
   i = 0;
-  for (i_1 = 0; i_1 < 5; i_1++) {
-    for (i_0 = 0; i_0 < 5; i_0++) {
+  for (i_1 = 0; i_1 < 8; i_1++) {
+    for (i_0 = 0; i_0 < 8; i_0++) {
       rtb_Add_ih_tmp = i_0 + i;
       rty_Qbar[rtb_Add_ih_tmp] = 0.0;
       rtu_H_tmp = 0;
-      for (rtu_Q_tmp = 0; rtu_Q_tmp < 5; rtu_Q_tmp++) {
+      for (rtu_Q_tmp = 0; rtu_Q_tmp < 8; rtu_Q_tmp++) {
         rty_Qbar[rtb_Add_ih_tmp] += rtu_G[rtu_H_tmp + i_0] * rtu_Q_0[rtu_Q_tmp +
           i];
-        rtu_H_tmp += 5;
+        rtu_H_tmp += 8;
       }
     }
 
-    i += 5;
+    i += 8;
   }
 
   // End of Product: '<S202>/Product'
@@ -1438,12 +1425,12 @@ void SupervisoryController::ReducedQRN(const real_T rtu_G[25], const real_T
   i = 0;
   for (i_1 = 0; i_1 < 3; i_1++) {
     i_0 = 0;
-    for (rtb_Add_ih_tmp = 0; rtb_Add_ih_tmp < 5; rtb_Add_ih_tmp++) {
+    for (rtb_Add_ih_tmp = 0; rtb_Add_ih_tmp < 8; rtb_Add_ih_tmp++) {
       rtb_Transpose2_k[rtb_Add_ih_tmp + i] = rtu_H[i_0 + i_1];
       i_0 += 3;
     }
 
-    i += 5;
+    i += 8;
   }
 
   // End of Math: '<S202>/Transpose2'
@@ -1452,20 +1439,20 @@ void SupervisoryController::ReducedQRN(const real_T rtu_G[25], const real_T
   //   Math: '<S202>/Transpose2'
   //   Product: '<S202>/Product1'
 
-  for (i = 0; i < 5; i++) {
+  for (i = 0; i < 8; i++) {
     i_1 = 0;
     for (i_0 = 0; i_0 < 3; i_0++) {
       real_T tmp;
       tmp = 0.0;
       rtb_Add_ih_tmp = 0;
-      for (rtu_H_tmp = 0; rtu_H_tmp < 5; rtu_H_tmp++) {
+      for (rtu_H_tmp = 0; rtu_H_tmp < 8; rtu_H_tmp++) {
         tmp += rtu_Q[rtb_Add_ih_tmp + i] * rtb_Transpose2_k[rtu_H_tmp + i_1];
-        rtb_Add_ih_tmp += 5;
+        rtb_Add_ih_tmp += 8;
       }
 
       rtb_Add_ih_tmp = i_1 + i;
       rtb_Add_a[rtb_Add_ih_tmp] = rtu_N[rtb_Add_ih_tmp] + tmp;
-      i_1 += 5;
+      i_1 += 8;
     }
   }
 
@@ -1474,12 +1461,13 @@ void SupervisoryController::ReducedQRN(const real_T rtu_G[25], const real_T
     // Product: '<S202>/Product2' incorporates:
     //   Sum: '<S202>/Add'
 
-    for (i_1 = 0; i_1 < 5; i_1++) {
-      i_0 = 5 * i + i_1;
-      rty_Nbar[i_0] = 0.0;
-      for (rtb_Add_ih_tmp = 0; rtb_Add_ih_tmp < 5; rtb_Add_ih_tmp++) {
-        rty_Nbar[i_0] += rtu_G[5 * rtb_Add_ih_tmp + i_1] * rtb_Add_a[5 * i +
-          rtb_Add_ih_tmp];
+    for (i_1 = 0; i_1 < 8; i_1++) {
+      i_0 = i << 3UL;
+      rtb_Add_ih_tmp = i_1 + i_0;
+      rty_Nbar[rtb_Add_ih_tmp] = 0.0;
+      for (rtu_H_tmp = 0; rtu_H_tmp < 8; rtu_H_tmp++) {
+        rty_Nbar[rtb_Add_ih_tmp] += rtu_G[(rtu_H_tmp << 3UL) + i_1] *
+          rtb_Add_a[i_0 + rtu_H_tmp];
       }
     }
 
@@ -1493,19 +1481,19 @@ void SupervisoryController::ReducedQRN(const real_T rtu_G[25], const real_T
 
       // Product: '<S202>/Product4'
       rtu_N_0[rtb_Add_ih_tmp] = 0.0;
-      for (i_0 = 0; i_0 < 5; i_0++) {
+      for (i_0 = 0; i_0 < 8; i_0++) {
         // Product: '<S202>/Product3' incorporates:
         //   Product: '<S202>/Product4'
         //   Sum: '<S202>/Add'
 
-        rtu_H_tmp = 5 * i_1 + i_0;
+        rtu_H_tmp = (i_1 << 3UL) + i_0;
         rtu_H_0[rtb_Add_ih_tmp] += rtu_H[3 * i_0 + i] * rtb_Add_a[rtu_H_tmp];
 
         // Product: '<S202>/Product4' incorporates:
         //   Math: '<S202>/Transpose'
         //   Math: '<S202>/Transpose2'
 
-        rtu_N_0[rtb_Add_ih_tmp] += rtu_N[5 * i + i_0] *
+        rtu_N_0[rtb_Add_ih_tmp] += rtu_N[(i << 3UL) + i_0] *
           rtb_Transpose2_k[rtu_H_tmp];
       }
     }
@@ -1534,8 +1522,8 @@ void SupervisoryController::ReducedQRN(const real_T rtu_G[25], const real_T
 //    '<S182>/ScalarExpansionQ'
 //    '<S252>/ScalarExpansionQ'
 //
-void SupervisoryController::ScalarExpansionQ(const real_T rtu_u[25], real_T
-  rty_y[25])
+void SupervisoryController::ScalarExpansionQ(const real_T rtu_u[64], real_T
+  rty_y[64])
 {
   int32_T tmp;
 
@@ -1554,17 +1542,17 @@ void SupervisoryController::ScalarExpansionQ(const real_T rtu_u[25], real_T
   //    Copyright 2014-2015 The MathWorks, Inc.
   // '<S226>:1:16' y = ctrlScalarExpansion(u,n,IsStrictPositiveDefinite,OutputSquareRootY); 
   tmp = 0;
-  for (int32_T i_0{0}; i_0 < 5; i_0++) {
+  for (int32_T i_0{0}; i_0 < 8; i_0++) {
     int32_T tmp_0;
     tmp_0 = 0;
-    for (int32_T i{0}; i < 5; i++) {
+    for (int32_T i{0}; i < 8; i++) {
       int32_T tmp_1;
       tmp_1 = i + tmp;
       rty_y[tmp_1] = (rtu_u[tmp_0 + i_0] + rtu_u[tmp_1]) / 2.0;
-      tmp_0 += 5;
+      tmp_0 += 8;
     }
 
-    tmp += 5;
+    tmp += 8;
   }
 
   // End of MATLAB Function: '<S204>/ScalarExpansion'
@@ -5086,7 +5074,7 @@ real_T rt_nrand_Upu32_Yd_f_pw_snf(uint32_T *u)
 // Model step function
 void SupervisoryController::step()
 {
-  static const real_T b_a_0[1442]{ -0.0, -1.0001226651251065,
+  static const real_T b_a_0[2060]{ -0.0, -1.0001226651251065,
     0.0016804698402870472, -0.025, -0.0, -0.0, -1.0002454535095886,
     0.0033601438631711473, -0.050003066628127667, 4.201174600717618E-5, -0.0,
     -1.0003683651173199, 0.0050390227502789741, -0.075009202965867383,
@@ -5222,53 +5210,151 @@ void SupervisoryController::step()
     0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
     0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
     0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -0.0, -0.0, -1.0, -0.0, -0.0, -0.0, -0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0125, 0.0125, 0.0125, -0.0, -0.0,
+    -0.025, 0.025, 0.025, -0.0, -0.0, -0.037500000000000006,
+    0.037500000000000006, 0.037500000000000006, -0.0, -0.0, -0.05, 0.05, 0.05,
+    -0.0, -0.0, -0.0625, 0.0625, 0.0625, -0.0, -0.0, -0.075, 0.075, 0.075, -0.0,
+    -0.0, -0.0875, 0.0875, 0.0875, -0.0, -0.0, -0.099999999999999992,
+    0.099999999999999992, 0.099999999999999992, -0.0, -0.0, -0.11249999999999999,
+    0.11249999999999999, 0.11249999999999999, -0.0, -0.0, -0.12499999999999999,
+    0.12499999999999999, 0.12499999999999999, -0.0, -0.0, -0.13749999999999998,
+    0.13749999999999998, 0.13749999999999998, -0.0, -0.0, -0.15, 0.15, 0.15,
+    -0.0, -0.0, -0.1625, 0.1625, 0.1625, -0.0, -0.0, -0.17500000000000002,
+    0.17500000000000002, 0.17500000000000002, -0.0, -0.0, -0.18750000000000003,
+    0.18750000000000003, 0.18750000000000003, -0.0, -0.0, -0.20000000000000004,
+    0.20000000000000004, 0.20000000000000004, -0.0, -0.0, -0.21250000000000005,
+    0.21250000000000005, 0.21250000000000005, -0.0, -0.0, -0.22500000000000006,
+    0.22500000000000006, 0.22500000000000006, -0.0, -0.0, -0.23750000000000007,
+    0.23750000000000007, 0.23750000000000007, -0.0, -0.0, -0.25000000000000006,
+    0.25000000000000006, 0.25000000000000006, -0.0, -0.0, 0.0125, -0.0125,
+    -0.0125, 0.0, 0.0, 0.025, -0.025, -0.025, 0.0, 0.0, 0.037500000000000006,
+    -0.037500000000000006, -0.037500000000000006, 0.0, 0.0, 0.05, -0.05, -0.05,
+    0.0, 0.0, 0.0625, -0.0625, -0.0625, 0.0, 0.0, 0.075, -0.075, -0.075, 0.0,
+    0.0, 0.0875, -0.0875, -0.0875, 0.0, 0.0, 0.099999999999999992,
+    -0.099999999999999992, -0.099999999999999992, 0.0, 0.0, 0.11249999999999999,
+    -0.11249999999999999, -0.11249999999999999, 0.0, 0.0, 0.12499999999999999,
+    -0.12499999999999999, -0.12499999999999999, 0.0, 0.0, 0.13749999999999998,
+    -0.13749999999999998, -0.13749999999999998, 0.0, 0.0, 0.15, -0.15, -0.15,
+    0.0, 0.0, 0.1625, -0.1625, -0.1625, 0.0, 0.0, 0.17500000000000002,
+    -0.17500000000000002, -0.17500000000000002, 0.0, 0.0, 0.18750000000000003,
+    -0.18750000000000003, -0.18750000000000003, 0.0, 0.0, 0.20000000000000004,
+    -0.20000000000000004, -0.20000000000000004, 0.0, 0.0, 0.21250000000000005,
+    -0.21250000000000005, -0.21250000000000005, 0.0, 0.0, 0.22500000000000006,
+    -0.22500000000000006, -0.22500000000000006, 0.0, 0.0, 0.23750000000000007,
+    -0.23750000000000007, -0.23750000000000007, 0.0, 0.0, 0.25000000000000006,
+    -0.25000000000000006, -0.25000000000000006, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, -0.5, 0.5, 0.5, -0.0, -0.0, -0.5, 0.5, 0.5, -0.0, -0.0, -0.5, 0.5,
+    0.5, -0.0, -0.0, -0.5, 0.5, 0.5, -0.0, -0.0, -0.5, 0.5, 0.5, -0.0, -0.0,
+    -0.5, 0.5, 0.5, -0.0, -0.0, -0.5, 0.5, 0.5, -0.0, -0.0, -0.5, 0.5, 0.5, -0.0,
+    -0.0, -0.5, 0.5, 0.5, -0.0, -0.0, -0.5, 0.5, 0.5, -0.0, -0.0, -0.5, 0.5, 0.5,
+    -0.0, -0.0, -0.5, 0.5, 0.5, -0.0, -0.0, -0.5, 0.5, 0.5, -0.0, -0.0, -0.5,
+    0.5, 0.5, -0.0, -0.0, -0.5, 0.5, 0.5, -0.0, -0.0, -0.5, 0.5, 0.5, -0.0, -0.0,
+    -0.5, 0.5, 0.5, -0.0, -0.0, -0.5, 0.5, 0.5, -0.0, -0.0, -0.5, 0.5, 0.5, -0.0,
+    -0.0, -0.5, 0.5, 0.5, -0.0, -0.0, 0.5, -0.5, -0.5, 0.0, 0.0, 0.5, -0.5, -0.5,
+    0.0, 0.0, 0.5, -0.5, -0.5, 0.0, 0.0, 0.5, -0.5, -0.5, 0.0, 0.0, 0.5, -0.5,
+    -0.5, 0.0, 0.0, 0.5, -0.5, -0.5, 0.0, 0.0, 0.5, -0.5, -0.5, 0.0, 0.0, 0.5,
+    -0.5, -0.5, 0.0, 0.0, 0.5, -0.5, -0.5, 0.0, 0.0, 0.5, -0.5, -0.5, 0.0, 0.0,
+    0.5, -0.5, -0.5, 0.0, 0.0, 0.5, -0.5, -0.5, 0.0, 0.0, 0.5, -0.5, -0.5, 0.0,
+    0.0, 0.5, -0.5, -0.5, 0.0, 0.0, 0.5, -0.5, -0.5, 0.0, 0.0, 0.5, -0.5, -0.5,
+    0.0, 0.0, 0.5, -0.5, -0.5, 0.0, 0.0, 0.5, -0.5, -0.5, 0.0, 0.0, 0.5, -0.5,
+    -0.5, 0.0, 0.0, 0.5, -0.5, -0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0125, -0.0125, 0.0125, -0.0, -0.0, 0.025, -0.025, 0.025, -0.0, -0.0,
+    0.037500000000000006, -0.037500000000000006, 0.037500000000000006, -0.0,
+    -0.0, 0.05, -0.05, 0.05, -0.0, -0.0, 0.0625, -0.0625, 0.0625, -0.0, -0.0,
+    0.075, -0.075, 0.075, -0.0, -0.0, 0.0875, -0.0875, 0.0875, -0.0, -0.0,
+    0.099999999999999992, -0.099999999999999992, 0.099999999999999992, -0.0,
+    -0.0, 0.11249999999999999, -0.11249999999999999, 0.11249999999999999, -0.0,
+    -0.0, 0.12499999999999999, -0.12499999999999999, 0.12499999999999999, -0.0,
+    -0.0, 0.13749999999999998, -0.13749999999999998, 0.13749999999999998, -0.0,
+    -0.0, 0.15, -0.15, 0.15, -0.0, -0.0, 0.1625, -0.1625, 0.1625, -0.0, -0.0,
+    0.17500000000000002, -0.17500000000000002, 0.17500000000000002, -0.0, -0.0,
+    0.18750000000000003, -0.18750000000000003, 0.18750000000000003, -0.0, -0.0,
+    0.20000000000000004, -0.20000000000000004, 0.20000000000000004, -0.0, -0.0,
+    0.21250000000000005, -0.21250000000000005, 0.21250000000000005, -0.0, -0.0,
+    0.22500000000000006, -0.22500000000000006, 0.22500000000000006, -0.0, -0.0,
+    0.23750000000000007, -0.23750000000000007, 0.23750000000000007, -0.0, -0.0,
+    0.25000000000000006, -0.25000000000000006, 0.25000000000000006, -0.0, -0.0,
+    -0.0125, 0.0125, -0.0125, 0.0, 0.0, -0.025, 0.025, -0.025, 0.0, 0.0,
+    -0.037500000000000006, 0.037500000000000006, -0.037500000000000006, 0.0, 0.0,
+    -0.05, 0.05, -0.05, 0.0, 0.0, -0.0625, 0.0625, -0.0625, 0.0, 0.0, -0.075,
+    0.075, -0.075, 0.0, 0.0, -0.0875, 0.0875, -0.0875, 0.0, 0.0,
+    -0.099999999999999992, 0.099999999999999992, -0.099999999999999992, 0.0, 0.0,
+    -0.11249999999999999, 0.11249999999999999, -0.11249999999999999, 0.0, 0.0,
+    -0.12499999999999999, 0.12499999999999999, -0.12499999999999999, 0.0, 0.0,
+    -0.13749999999999998, 0.13749999999999998, -0.13749999999999998, 0.0, 0.0,
+    -0.15, 0.15, -0.15, 0.0, 0.0, -0.1625, 0.1625, -0.1625, 0.0, 0.0,
+    -0.17500000000000002, 0.17500000000000002, -0.17500000000000002, 0.0, 0.0,
+    -0.18750000000000003, 0.18750000000000003, -0.18750000000000003, 0.0, 0.0,
+    -0.20000000000000004, 0.20000000000000004, -0.20000000000000004, 0.0, 0.0,
+    -0.21250000000000005, 0.21250000000000005, -0.21250000000000005, 0.0, 0.0,
+    -0.22500000000000006, 0.22500000000000006, -0.22500000000000006, 0.0, 0.0,
+    -0.23750000000000007, 0.23750000000000007, -0.23750000000000007, 0.0, 0.0,
+    -0.25000000000000006, 0.25000000000000006, -0.25000000000000006, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, -0.5, 0.5, -0.0, -0.0, 0.5, -0.5, 0.5,
+    -0.0, -0.0, 0.5, -0.5, 0.5, -0.0, -0.0, 0.5, -0.5, 0.5, -0.0, -0.0, 0.5,
+    -0.5, 0.5, -0.0, -0.0, 0.5, -0.5, 0.5, -0.0, -0.0, 0.5, -0.5, 0.5, -0.0,
+    -0.0, 0.5, -0.5, 0.5, -0.0, -0.0, 0.5, -0.5, 0.5, -0.0, -0.0, 0.5, -0.5, 0.5,
+    -0.0, -0.0, 0.5, -0.5, 0.5, -0.0, -0.0, 0.5, -0.5, 0.5, -0.0, -0.0, 0.5,
+    -0.5, 0.5, -0.0, -0.0, 0.5, -0.5, 0.5, -0.0, -0.0, 0.5, -0.5, 0.5, -0.0,
+    -0.0, 0.5, -0.5, 0.5, -0.0, -0.0, 0.5, -0.5, 0.5, -0.0, -0.0, 0.5, -0.5, 0.5,
+    -0.0, -0.0, 0.5, -0.5, 0.5, -0.0, -0.0, 0.5, -0.5, 0.5, -0.0, -0.0, -0.5,
+    0.5, -0.5, 0.0, 0.0, -0.5, 0.5, -0.5, 0.0, 0.0, -0.5, 0.5, -0.5, 0.0, 0.0,
+    -0.5, 0.5, -0.5, 0.0, 0.0, -0.5, 0.5, -0.5, 0.0, 0.0, -0.5, 0.5, -0.5, 0.0,
+    0.0, -0.5, 0.5, -0.5, 0.0, 0.0, -0.5, 0.5, -0.5, 0.0, 0.0, -0.5, 0.5, -0.5,
+    0.0, 0.0, -0.5, 0.5, -0.5, 0.0, 0.0, -0.5, 0.5, -0.5, 0.0, 0.0, -0.5, 0.5,
+    -0.5, 0.0, 0.0, -0.5, 0.5, -0.5, 0.0, 0.0, -0.5, 0.5, -0.5, 0.0, 0.0, -0.5,
+    0.5, -0.5, 0.0, 0.0, -0.5, 0.5, -0.5, 0.0, 0.0, -0.5, 0.5, -0.5, 0.0, 0.0,
+    -0.5, 0.5, -0.5, 0.0, 0.0, -0.5, 0.5, -0.5, 0.0, 0.0, -0.5, 0.5, -0.5, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0125, 0.0125, -0.0125, -0.0, -0.0,
+    0.025, 0.025, -0.025, -0.0, -0.0, 0.037500000000000006, 0.037500000000000006,
+    -0.037500000000000006, -0.0, -0.0, 0.05, 0.05, -0.05, -0.0, -0.0, 0.0625,
+    0.0625, -0.0625, -0.0, -0.0, 0.075, 0.075, -0.075, -0.0, -0.0, 0.0875,
+    0.0875, -0.0875, -0.0, -0.0, 0.099999999999999992, 0.099999999999999992,
+    -0.099999999999999992, -0.0, -0.0, 0.11249999999999999, 0.11249999999999999,
+    -0.11249999999999999, -0.0, -0.0, 0.12499999999999999, 0.12499999999999999,
+    -0.12499999999999999, -0.0, -0.0, 0.13749999999999998, 0.13749999999999998,
+    -0.13749999999999998, -0.0, -0.0, 0.15, 0.15, -0.15, -0.0, -0.0, 0.1625,
+    0.1625, -0.1625, -0.0, -0.0, 0.17500000000000002, 0.17500000000000002,
+    -0.17500000000000002, -0.0, -0.0, 0.18750000000000003, 0.18750000000000003,
+    -0.18750000000000003, -0.0, -0.0, 0.20000000000000004, 0.20000000000000004,
+    -0.20000000000000004, -0.0, -0.0, 0.21250000000000005, 0.21250000000000005,
+    -0.21250000000000005, -0.0, -0.0, 0.22500000000000006, 0.22500000000000006,
+    -0.22500000000000006, -0.0, -0.0, 0.23750000000000007, 0.23750000000000007,
+    -0.23750000000000007, -0.0, -0.0, 0.25000000000000006, 0.25000000000000006,
+    -0.25000000000000006, -0.0, -0.0, -0.0125, -0.0125, 0.0125, 0.0, 0.0, -0.025,
+    -0.025, 0.025, 0.0, 0.0, -0.037500000000000006, -0.037500000000000006,
+    0.037500000000000006, 0.0, 0.0, -0.05, -0.05, 0.05, 0.0, 0.0, -0.0625,
+    -0.0625, 0.0625, 0.0, 0.0, -0.075, -0.075, 0.075, 0.0, 0.0, -0.0875, -0.0875,
+    0.0875, 0.0, 0.0, -0.099999999999999992, -0.099999999999999992,
+    0.099999999999999992, 0.0, 0.0, -0.11249999999999999, -0.11249999999999999,
+    0.11249999999999999, 0.0, 0.0, -0.12499999999999999, -0.12499999999999999,
+    0.12499999999999999, 0.0, 0.0, -0.13749999999999998, -0.13749999999999998,
+    0.13749999999999998, 0.0, 0.0, -0.15, -0.15, 0.15, 0.0, 0.0, -0.1625,
+    -0.1625, 0.1625, 0.0, 0.0, -0.17500000000000002, -0.17500000000000002,
+    0.17500000000000002, 0.0, 0.0, -0.18750000000000003, -0.18750000000000003,
+    0.18750000000000003, 0.0, 0.0, -0.20000000000000004, -0.20000000000000004,
+    0.20000000000000004, 0.0, 0.0, -0.21250000000000005, -0.21250000000000005,
+    0.21250000000000005, 0.0, 0.0, -0.22500000000000006, -0.22500000000000006,
+    0.22500000000000006, 0.0, 0.0, -0.23750000000000007, -0.23750000000000007,
+    0.23750000000000007, 0.0, 0.0, -0.25000000000000006, -0.25000000000000006,
+    0.25000000000000006, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.5, -0.5,
+    -0.0, -0.0, 0.5, 0.5, -0.5, -0.0, -0.0, 0.5, 0.5, -0.5, -0.0, -0.0, 0.5, 0.5,
+    -0.5, -0.0, -0.0, 0.5, 0.5, -0.5, -0.0, -0.0, 0.5, 0.5, -0.5, -0.0, -0.0,
+    0.5, 0.5, -0.5, -0.0, -0.0, 0.5, 0.5, -0.5, -0.0, -0.0, 0.5, 0.5, -0.5, -0.0,
+    -0.0, 0.5, 0.5, -0.5, -0.0, -0.0, 0.5, 0.5, -0.5, -0.0, -0.0, 0.5, 0.5, -0.5,
+    -0.0, -0.0, 0.5, 0.5, -0.5, -0.0, -0.0, 0.5, 0.5, -0.5, -0.0, -0.0, 0.5, 0.5,
+    -0.5, -0.0, -0.0, 0.5, 0.5, -0.5, -0.0, -0.0, 0.5, 0.5, -0.5, -0.0, -0.0,
+    0.5, 0.5, -0.5, -0.0, -0.0, 0.5, 0.5, -0.5, -0.0, -0.0, 0.5, 0.5, -0.5, -0.0,
+    -0.0, -0.5, -0.5, 0.5, 0.0, 0.0, -0.5, -0.5, 0.5, 0.0, 0.0, -0.5, -0.5, 0.5,
+    0.0, 0.0, -0.5, -0.5, 0.5, 0.0, 0.0, -0.5, -0.5, 0.5, 0.0, 0.0, -0.5, -0.5,
+    0.5, 0.0, 0.0, -0.5, -0.5, 0.5, 0.0, 0.0, -0.5, -0.5, 0.5, 0.0, 0.0, -0.5,
+    -0.5, 0.5, 0.0, 0.0, -0.5, -0.5, 0.5, 0.0, 0.0, -0.5, -0.5, 0.5, 0.0, 0.0,
+    -0.5, -0.5, 0.5, 0.0, 0.0, -0.5, -0.5, 0.5, 0.0, 0.0, -0.5, -0.5, 0.5, 0.0,
+    0.0, -0.5, -0.5, 0.5, 0.0, 0.0, -0.5, -0.5, 0.5, 0.0, 0.0, -0.5, -0.5, 0.5,
+    0.0, 0.0, -0.5, -0.5, 0.5, 0.0, 0.0, -0.5, -0.5, 0.5, 0.0, 0.0, -0.5, -0.5,
+    0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 
-  static const real_T b_a_1[882]{ -0.98979340248168846, 0.036210018833518431,
+  static const real_T b_a_1[1260]{ -0.98979340248168846, 0.036210018833518431,
     -0.0, -0.9796800787081813, 0.072076616087004344, -0.0, -0.96965918005766349,
     0.10760292110357451, -0.0, -0.9597298656277844, 0.14279203475849142, -0.0,
     -0.9498913021654386, 0.17764702971811902, -0.0, -0.94014266399718538,
@@ -5340,34 +5426,123 @@ void SupervisoryController::step()
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-    1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -1.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -1.0, -0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0,
-    0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0,
-    -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0,
-    -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0, -0.0, -1.0, -0.0,
-    -0.0, -1.0, -0.0, -0.0, -1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0,
-    0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0125, 0.0125,
+    0.0125, -0.025, 0.025, 0.025, -0.037500000000000006, 0.037500000000000006,
+    0.037500000000000006, -0.05, 0.05, 0.05, -0.0625, 0.0625, 0.0625, -0.075,
+    0.075, 0.075, -0.0875, 0.0875, 0.0875, -0.099999999999999992,
+    0.099999999999999992, 0.099999999999999992, -0.11249999999999999,
+    0.11249999999999999, 0.11249999999999999, -0.12499999999999999,
+    0.12499999999999999, 0.12499999999999999, -0.13749999999999998,
+    0.13749999999999998, 0.13749999999999998, -0.15, 0.15, 0.15, -0.1625, 0.1625,
+    0.1625, -0.17500000000000002, 0.17500000000000002, 0.17500000000000002,
+    -0.18750000000000003, 0.18750000000000003, 0.18750000000000003,
+    -0.20000000000000004, 0.20000000000000004, 0.20000000000000004,
+    -0.21250000000000005, 0.21250000000000005, 0.21250000000000005,
+    -0.22500000000000006, 0.22500000000000006, 0.22500000000000006,
+    -0.23750000000000007, 0.23750000000000007, 0.23750000000000007,
+    -0.25000000000000006, 0.25000000000000006, 0.25000000000000006, 0.0125,
+    -0.0125, -0.0125, 0.025, -0.025, -0.025, 0.037500000000000006,
+    -0.037500000000000006, -0.037500000000000006, 0.05, -0.05, -0.05, 0.0625,
+    -0.0625, -0.0625, 0.075, -0.075, -0.075, 0.0875, -0.0875, -0.0875,
+    0.099999999999999992, -0.099999999999999992, -0.099999999999999992,
+    0.11249999999999999, -0.11249999999999999, -0.11249999999999999,
+    0.12499999999999999, -0.12499999999999999, -0.12499999999999999,
+    0.13749999999999998, -0.13749999999999998, -0.13749999999999998, 0.15, -0.15,
+    -0.15, 0.1625, -0.1625, -0.1625, 0.17500000000000002, -0.17500000000000002,
+    -0.17500000000000002, 0.18750000000000003, -0.18750000000000003,
+    -0.18750000000000003, 0.20000000000000004, -0.20000000000000004,
+    -0.20000000000000004, 0.21250000000000005, -0.21250000000000005,
+    -0.21250000000000005, 0.22500000000000006, -0.22500000000000006,
+    -0.22500000000000006, 0.23750000000000007, -0.23750000000000007,
+    -0.23750000000000007, 0.25000000000000006, -0.25000000000000006,
+    -0.25000000000000006, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5, 0.5, 0.5, -0.5,
+    0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5,
+    -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5,
+    0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5,
+    0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5,
+    0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5,
+    -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5,
+    -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5,
+    0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5,
+    -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0125, -0.0125, 0.0125, 0.025, -0.025, 0.025, 0.037500000000000006,
+    -0.037500000000000006, 0.037500000000000006, 0.05, -0.05, 0.05, 0.0625,
+    -0.0625, 0.0625, 0.075, -0.075, 0.075, 0.0875, -0.0875, 0.0875,
+    0.099999999999999992, -0.099999999999999992, 0.099999999999999992,
+    0.11249999999999999, -0.11249999999999999, 0.11249999999999999,
+    0.12499999999999999, -0.12499999999999999, 0.12499999999999999,
+    0.13749999999999998, -0.13749999999999998, 0.13749999999999998, 0.15, -0.15,
+    0.15, 0.1625, -0.1625, 0.1625, 0.17500000000000002, -0.17500000000000002,
+    0.17500000000000002, 0.18750000000000003, -0.18750000000000003,
+    0.18750000000000003, 0.20000000000000004, -0.20000000000000004,
+    0.20000000000000004, 0.21250000000000005, -0.21250000000000005,
+    0.21250000000000005, 0.22500000000000006, -0.22500000000000006,
+    0.22500000000000006, 0.23750000000000007, -0.23750000000000007,
+    0.23750000000000007, 0.25000000000000006, -0.25000000000000006,
+    0.25000000000000006, -0.0125, 0.0125, -0.0125, -0.025, 0.025, -0.025,
+    -0.037500000000000006, 0.037500000000000006, -0.037500000000000006, -0.05,
+    0.05, -0.05, -0.0625, 0.0625, -0.0625, -0.075, 0.075, -0.075, -0.0875,
+    0.0875, -0.0875, -0.099999999999999992, 0.099999999999999992,
+    -0.099999999999999992, -0.11249999999999999, 0.11249999999999999,
+    -0.11249999999999999, -0.12499999999999999, 0.12499999999999999,
+    -0.12499999999999999, -0.13749999999999998, 0.13749999999999998,
+    -0.13749999999999998, -0.15, 0.15, -0.15, -0.1625, 0.1625, -0.1625,
+    -0.17500000000000002, 0.17500000000000002, -0.17500000000000002,
+    -0.18750000000000003, 0.18750000000000003, -0.18750000000000003,
+    -0.20000000000000004, 0.20000000000000004, -0.20000000000000004,
+    -0.21250000000000005, 0.21250000000000005, -0.21250000000000005,
+    -0.22500000000000006, 0.22500000000000006, -0.22500000000000006,
+    -0.23750000000000007, 0.23750000000000007, -0.23750000000000007,
+    -0.25000000000000006, 0.25000000000000006, -0.25000000000000006, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5,
+    -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5,
+    0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5,
+    0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5,
+    -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5,
+    -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5,
+    0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5,
+    -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5,
+    -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5,
+    0.5, -0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0125, 0.0125, -0.0125, 0.025,
+    0.025, -0.025, 0.037500000000000006, 0.037500000000000006,
+    -0.037500000000000006, 0.05, 0.05, -0.05, 0.0625, 0.0625, -0.0625, 0.075,
+    0.075, -0.075, 0.0875, 0.0875, -0.0875, 0.099999999999999992,
+    0.099999999999999992, -0.099999999999999992, 0.11249999999999999,
+    0.11249999999999999, -0.11249999999999999, 0.12499999999999999,
+    0.12499999999999999, -0.12499999999999999, 0.13749999999999998,
+    0.13749999999999998, -0.13749999999999998, 0.15, 0.15, -0.15, 0.1625, 0.1625,
+    -0.1625, 0.17500000000000002, 0.17500000000000002, -0.17500000000000002,
+    0.18750000000000003, 0.18750000000000003, -0.18750000000000003,
+    0.20000000000000004, 0.20000000000000004, -0.20000000000000004,
+    0.21250000000000005, 0.21250000000000005, -0.21250000000000005,
+    0.22500000000000006, 0.22500000000000006, -0.22500000000000006,
+    0.23750000000000007, 0.23750000000000007, -0.23750000000000007,
+    0.25000000000000006, 0.25000000000000006, -0.25000000000000006, -0.0125,
+    -0.0125, 0.0125, -0.025, -0.025, 0.025, -0.037500000000000006,
+    -0.037500000000000006, 0.037500000000000006, -0.05, -0.05, 0.05, -0.0625,
+    -0.0625, 0.0625, -0.075, -0.075, 0.075, -0.0875, -0.0875, 0.0875,
+    -0.099999999999999992, -0.099999999999999992, 0.099999999999999992,
+    -0.11249999999999999, -0.11249999999999999, 0.11249999999999999,
+    -0.12499999999999999, -0.12499999999999999, 0.12499999999999999,
+    -0.13749999999999998, -0.13749999999999998, 0.13749999999999998, -0.15,
+    -0.15, 0.15, -0.1625, -0.1625, 0.1625, -0.17500000000000002,
+    -0.17500000000000002, 0.17500000000000002, -0.18750000000000003,
+    -0.18750000000000003, 0.18750000000000003, -0.20000000000000004,
+    -0.20000000000000004, 0.20000000000000004, -0.21250000000000005,
+    -0.21250000000000005, 0.21250000000000005, -0.22500000000000006,
+    -0.22500000000000006, 0.22500000000000006, -0.23750000000000007,
+    -0.23750000000000007, 0.23750000000000007, -0.25000000000000006,
+    -0.25000000000000006, 0.25000000000000006, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5,
+    0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5,
+    0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5,
+    -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5,
+    0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5,
+    0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5,
+    -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5,
+    0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5,
+    -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5,
+    -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0 };
 
   static const real_T b_a[830]{ -0.9977021834978721, -0.0, -0.0, -0.025,
     -0.99540964695642165, -0.0, -0.0, -0.049942554587446807,
@@ -6394,19 +6569,27 @@ void SupervisoryController::step()
     612.0, 612.0, 15.3, 612.0, 612.0, 612.0, 15.3, 612.0, 612.0, 612.0, 15.3,
     80.0, 80.0, 80.0, -0.0, -0.0, -0.0 };
 
-  static const real_T b_Kx_0[21]{ -0.026404598946573047, -0.046701198280547959,
-    0.0, 0.0, -0.027435037351643085, -0.047106463579682338, 0.0,
-    0.53251906053640408, -0.24750295164334835, 0.0, 0.0, 0.52591591852487163,
-    -0.24906487889444787, 0.0, -0.18632686544532984, 0.399349755453896, 0.0, 0.0,
-    -0.17681546557705763, 0.40245619880339512, 0.0 };
+  static const real_T b_Kx_0[30]{ -0.026404598946573047, -0.046701198280547959,
+    0.0, 0.0, 0.01272345948645465, 0.037270750465662715, 0.0033497241568256767,
+    0.0098357131140196265, -0.0033497241568256767, -0.0098357131140196265,
+    0.53251906053640408, -0.24750295164334835, 0.0, 0.0, -0.047200403868953772,
+    -0.13842551981521189, 0.1325109312144673, 0.38749039870965973,
+    -0.1325109312144673, -0.38749039870965973, -0.18632686544532984,
+    0.399349755453896, 0.0, 0.0, -0.038548352187758039, -0.11282036661316876,
+    -0.098974123982060735, -0.28963583219022637, 0.098974123982060735,
+    0.28963583219022637 };
 
-  static const real_T b_Kx_1[21]{ 0.064401756957438827, 0.047455061923499582,
-    0.014630349328867837, 0.0078609701236701246, 0.090742080898368632,
-    0.043732737337692507, 0.0, -0.19527152302960851, 0.2933282397767637,
-    -0.01094980165376826, 0.042692224192222988, -0.067749117999953076,
-    0.27445318611580427, 0.0, 0.17088341788856595, -0.13723068591963278,
-    0.018711210911735485, -0.01918263454114651, 0.115953552636297,
-    -0.12895417294734363, 0.0 };
+  static const real_T b_Kx_1[30]{ 0.064401756957438827, 0.047455061923499582,
+    0.014630349328867837, 0.0078609701236701246, 0.0083676462875701737,
+    0.023504671780338056, -0.0083676462875701737, -0.023504671780338056,
+    -0.022373044832746304, -0.067237409118030569, -0.19527152302960851,
+    0.2933282397767637, -0.01094980165376826, 0.042692224192222988,
+    -0.058729563105943725, -0.17110115205787868, 0.058729563105943725,
+    0.17110115205787868, -0.03580480575973545, -0.1033520340579256,
+    0.17088341788856595, -0.13723068591963278, 0.018711210911735485,
+    -0.01918263454114651, 0.042280008669469162, 0.1224538627918203,
+    -0.042280008669469162, -0.1224538627918203, 0.0030144432630561436,
+    0.0065003101555233091 };
 
   static const real_T b_Hinv[16]{ 6.9623302122049981, 8.6381748287066245,
     8.6381748287066245, 0.0, 8.6381748287066245, 25.967662402148488,
@@ -6511,16 +6694,20 @@ void SupervisoryController::step()
   real_T a__1_1[126];
   real_T rseq_0[100];
   real_T rseq[80];
-  real_T B_est_0[45];
+  real_T B_est_0[72];
+  real_T rtb_A[64];
+  real_T rtb_Product[64];
+  real_T rtb_Q[64];
+  real_T rtb_Z_e[64];
+  real_T y[48];
   real_T B_est[36];
-  real_T y_0[30];
   real_T D_est[27];
   real_T rtb_R_tmp[27];
-  real_T rtb_A[25];
-  real_T rtb_Product[25];
-  real_T rtb_Q[25];
-  real_T rtb_Z_e[25];
-  real_T y[24];
+  real_T rtb_B[24];
+  real_T rtb_C[24];
+  real_T rtb_L[24];
+  real_T rtb_N[24];
+  real_T rtb_Product2[24];
   real_T Abar[16];
   real_T rtb_A_e[16];
   real_T rtb_Q_j[16];
@@ -6528,25 +6715,21 @@ void SupervisoryController::step()
   real_T rtb_Z[16];
   real_T rtb_y_g[16];
   real_T rtb_y_m[16];
-  real_T rtb_B[15];
-  real_T rtb_C[15];
-  real_T rtb_L[15];
-  real_T rtb_N[15];
-  real_T rtb_Product2[15];
   real_T Sum_h[12];
   real_T rtb_Add_k[12];
   real_T rtb_C_c[12];
   real_T rtb_N_f[12];
   real_T rtb_Product2_bg[12];
   real_T rtb_Transpose2[12];
+  real_T rtb_xest[10];
   real_T rtb_N_h[9];
   real_T rtb_R[9];
   real_T rtb_y[9];
   real_T tmp_0[9];
-  real_T rtb_xest[7];
+  real_T rtb_A_0[8];
+  real_T rtb_Sum2[8];
   real_T rtb_ywt[6];
   real_T rtb_ywtT[6];
-  real_T rtb_A_0[5];
   real_T rtb_TmpSignalConversionAtSFu_o4[5];
   real_T rtb_Sum2_f[4];
   real_T rtb_TmpSignalConversionAtSFu_ia[4];
@@ -7540,24 +7723,24 @@ void SupervisoryController::step()
         (void)std::memset(&B_est[0], 0, 36U * sizeof(real_T));
 
         // 'stateEst_:25' B_est(1:ns, 1:ni+no) = blkdiag(Bp, Bod);
-        (void)std::memset(&y[0], 0, 24U * sizeof(real_T));
+        (void)std::memset(&rtb_B[0], 0, 24U * sizeof(real_T));
         k_0 = 0;
         k = 0;
         for (ii = 0; ii < 3; ii++) {
-          y[k_0] = rtP.Constant4_Value[ii];
-          y[k_0 + 13] = rtP.Bod1[k];
-          y[k_0 + 14] = rtP.Bod1[k + 1];
-          y[k_0 + 15] = rtP.Bod1[k + 2];
+          rtb_B[k_0] = rtP.Constant4_Value[ii];
+          rtb_B[k_0 + 13] = rtP.Bod1[k];
+          rtb_B[k_0 + 14] = rtP.Bod1[k + 1];
+          rtb_B[k_0 + 15] = rtP.Bod1[k + 2];
           k_0 += 4;
           k += 3;
         }
 
         k_0 = 0;
         for (k = 0; k < 6; k++) {
-          B_est[k_0] = y[k_0];
-          B_est[k_0 + 1] = y[k_0 + 1];
-          B_est[k_0 + 2] = y[k_0 + 2];
-          B_est[k_0 + 3] = y[k_0 + 3];
+          B_est[k_0] = rtb_B[k_0];
+          B_est[k_0 + 1] = rtb_B[k_0 + 1];
+          B_est[k_0 + 2] = rtb_B[k_0 + 2];
+          B_est[k_0 + 3] = rtb_B[k_0 + 3];
           k_0 += 4;
         }
 
@@ -8425,14 +8608,33 @@ void SupervisoryController::step()
                           POS_ZCSIG) || rtDW.icLoad_a);
         rtPrevZCX.MemoryX_Reset_ZCE_g = 0U;
         if (rtDW.icLoad_a) {
-          for (k = 0; k < 5; k++) {
-            rtDW.MemoryX_DSTATE_c[k] = rtP.X0_Value_k[k];
-          }
+          (void)std::memcpy(&rtDW.MemoryX_DSTATE_c[0], &rtP.X0_Value_k[0],
+                            sizeof(real_T) << 3UL);
         }
 
+        // Sum: '<S159>/Sum2' incorporates:
+        //   Delay: '<S182>/MemoryX'
+
+        rtb_Sum2[0] = rtDW.MemoryX_DSTATE_c[0];
+        rtb_Sum2[1] = rtDW.MemoryX_DSTATE_c[1];
+
+        // End of Outputs for SubSystem: '<S1>/mpc2'
+        for (k = 0; k <= 4; k += 2) {
+          // Outputs for Function Call SubSystem: '<S1>/mpc2'
+          tmp_3 = _mm_loadu_pd(&rtDW.MemoryX_DSTATE_c[k + 2]);
+          (void)_mm_storeu_pd(&rtb_Sum2[k + 2], _mm_add_pd(tmp_3, _mm_loadu_pd
+            (&rtP.Constant1_Value_p[k])));
+
+          // End of Outputs for SubSystem: '<S1>/mpc2'
+        }
+
+        // Outputs for Function Call SubSystem: '<S1>/mpc2'
         // SignalConversion generated from: '<S181>/ SFunction ' incorporates:
+        //   Constant: '<S159>/Constant1'
         //   Constant: '<S4>/Constant'
+        //   Delay: '<S182>/MemoryX'
         //   MATLAB Function: '<S180>/optimizer'
+        //   Sum: '<S159>/Sum2'
 
         rtb_TmpSignalConversionAtSFu_o4[0] = Sum2_c[0];
         rtb_TmpSignalConversionAtSFu_o4[1] = Sum2_c[1];
@@ -8441,15 +8643,12 @@ void SupervisoryController::step()
         rtb_TmpSignalConversionAtSFu_o4[4] = rtP.Constant_Value_p[1];
 
         // MATLAB Function: '<S180>/optimizer' incorporates:
-        //   Constant: '<S159>/Constant1'
-        //   Delay: '<S182>/MemoryX'
         //   DiscreteIntegrator: '<S4>/Discrete-Time Integrator'
         //   Gain: '<S4>/Gain2'
         //   Inport: '<Root>/umax'
         //   SignalConversion generated from: '<S181>/ SFunction '
-        //   Sum: '<S159>/Sum2'
         //   UnitDelay: '<S160>/last_mv'
-
+        //
         // MATLAB Function 'MPC Controller/MPC/optimizer/optimizer': '<S181>:1'
         // '<S181>:1:17' coder.extrinsic('mpcblock_optimizer_double_mex');
         // '<S181>:1:18' coder.extrinsic('mpcblock_optimizer_single_mex');
@@ -8576,13 +8775,13 @@ void SupervisoryController::step()
         // '<S181>:1:135' delmv = zeros(nu,1,'like',ref);
         //  Obtain x[k|k]
         // '<S181>:1:143' xk = xk - xoff;
-        rtb_xest[0] = rtDW.MemoryX_DSTATE_c[0];
+        rtb_xest[0] = rtb_Sum2[0];
         rtb_xest[2] = rtP.dt * rtDW.DiscreteTimeIntegrator_DSTATE_m[0];
-        rtb_xest[1] = rtDW.MemoryX_DSTATE_c[1];
+        rtb_xest[1] = rtb_Sum2[1];
         rtb_xest[3] = rtP.dt * rtDW.DiscreteTimeIntegrator_DSTATE_m[1];
-        rtb_xest[4] = rtP.Constant1_Value_p[0] + rtDW.MemoryX_DSTATE_c[2];
-        rtb_xest[5] = rtP.Constant1_Value_p[1] + rtDW.MemoryX_DSTATE_c[3];
-        rtb_xest[6] = rtP.Constant1_Value_p[2] + rtDW.MemoryX_DSTATE_c[4];
+        for (k = 0; k < 6; k++) {
+          rtb_xest[k + 4] = rtb_Sum2[k + 2];
+        }
 
         //  Remove offset
         // '<S181>:1:144' if CustomEstimation
@@ -8622,7 +8821,7 @@ void SupervisoryController::step()
           int16_T b_Mrows_0;
           dwt = b_Mlim_1[k];
           Bc_2 = 0.0;
-          for (k_0 = 0; k_0 < 7; k_0++) {
+          for (k_0 = 0; k_0 < 10; k_0++) {
             Bc_2 += b_a_0[206 * k_0 + k] * rtb_xest[k_0];
           }
 
@@ -8655,8 +8854,8 @@ void SupervisoryController::step()
         rtb_Sum2_f[3] = 0.0;
         for (k = 0; k < 3; k++) {
           dwt = 0.0;
-          for (k_0 = 0; k_0 < 7; k_0++) {
-            dwt += b_Kx_0[7 * k + k_0] * rtb_xest[k_0];
+          for (k_0 = 0; k_0 < 10; k_0++) {
+            dwt += b_Kx_0[10 * k + k_0] * rtb_xest[k_0];
           }
 
           Bc_2 = 0.0;
@@ -8710,19 +8909,18 @@ void SupervisoryController::step()
                           POS_ZCSIG) || rtDW.icLoad_p);
         rtPrevZCX.MemoryP_Reset_ZCE_i = 0U;
         if (rtDW.icLoad_p) {
-          (void)std::memcpy(&rtDW.MemoryP_DSTATE_h[0], &rtP.P0_Value_c[0], 25U *
-                            sizeof(real_T));
+          (void)std::memcpy(&rtDW.MemoryP_DSTATE_h[0], &rtP.P0_Value_c[0],
+                            sizeof(real_T) << 6UL);
         }
 
         // MATLAB Function: '<S159>/MATLAB Function' incorporates:
-        //   BusCreator: '<S4>/Bus Creator1'
         //   Constant: '<S4>/Constant12'
         //   Constant: '<S4>/Constant13'
         //   Constant: '<S4>/Constant3'
         //   Constant: '<S4>/Constant4'
 
         // MATLAB Function 'SupervisoryController/mpc2/State Estimator OD (KF)/MATLAB Function': '<S183>:1' 
-        // '<S183>:1:2' [A, B, C, D, Q, R, N] = stateEst_(Ap, Bp, Cp, Dp, Aod2, Bod2, Cod2, Dod2, Dmn1, 3, 3, 2); 
+        // '<S183>:1:2' [A, B, C, D, Q, R, N] = stateEst_(Ap, Bp, Cp, Dp, Aod2, Bod2, Cod2(1:3,:), Dod2(1:3,:), Dmn1, 3, 3, 2); 
         // 'stateEst_:3' nsp = ns_;
         //  n_plant_states
         // 'stateEst_:4' nsod = size(Aod,1);
@@ -8732,7 +8930,7 @@ void SupervisoryController::step()
         // 'stateEst_:7' A = zeros(ns);
         //  n_states x n_states
         // 'stateEst_:8' B = zeros(ns,ni);
-        (void)std::memset(&rtb_B[0], 0, 15U * sizeof(real_T));
+        (void)std::memset(&rtb_B[0], 0, 24U * sizeof(real_T));
 
         //  n_states  x n_inputs
         // 'stateEst_:9' C = zeros(no,ns);
@@ -8752,77 +8950,105 @@ void SupervisoryController::step()
         //  combine plant and output disturbance model
         //  (force the outputs to fit in preallocated memory)
         // 'stateEst_:19' A(1:ns, 1:ns) = blkdiag(Ap, Aod);
-        (void)std::memset(&rtb_A[0], 0, 25U * sizeof(real_T));
+        (void)std::memset(&rtb_A[0], 0, sizeof(real_T) << 6UL);
         rtb_A[0] = rtP.Constant3_Value_d[0];
         rtb_A[1] = rtP.Constant3_Value_d[1];
-        rtb_A[5] = rtP.Constant3_Value_d[2];
-        rtb_A[6] = rtP.Constant3_Value_d[3];
+        rtb_A[8] = rtP.Constant3_Value_d[2];
+        rtb_A[9] = rtP.Constant3_Value_d[3];
+        k_0 = 0;
+        k = 0;
+        for (ii = 0; ii < 6; ii++) {
+          for (i = 0; i < 6; i++) {
+            rtb_A[(i + k_0) + 18] = rtP.Aod2[i + k];
+          }
+
+          k_0 += 8;
+          k += 6;
+        }
 
         // 'stateEst_:20' B(1:nsp, 1:ni) = Bp;
         k_0 = 0;
         k = 0;
-        ii = 0;
-        for (i = 0; i < 3; i++) {
-          rtb_A[k_0 + 12] = rtP.Aod2[k];
-          rtb_A[k_0 + 13] = rtP.Aod2[k + 1];
-          rtb_A[k_0 + 14] = rtP.Aod2[k + 2];
-          rtb_B[k_0] = rtP.Constant4_Value_n[ii];
-          rtb_B[k_0 + 1] = rtP.Constant4_Value_n[ii + 1];
-          k_0 += 5;
-          k += 3;
-          ii += 2;
+        for (ii = 0; ii < 3; ii++) {
+          rtb_B[k_0] = rtP.Constant4_Value_n[k];
+          rtb_B[k_0 + 1] = rtP.Constant4_Value_n[k + 1];
+          k_0 += 8;
+          k += 2;
         }
 
         // 'stateEst_:21' C(1:no, 1:ns) = [Cp Cod];
-        for (k = 0; k < 6; k++) {
-          rtb_C[k] = rtP.Constant12_Value_i[k];
+        k_0 = 0;
+        for (k = 0; k < 2; k++) {
+          rtb_C[k_0] = rtP.Constant12_Value_i[k_0];
+          rtb_C[k_0 + 1] = rtP.Constant12_Value_i[k_0 + 1];
+          rtb_C[k_0 + 2] = rtP.Constant12_Value_i[k_0 + 2];
+          k_0 += 3;
         }
 
-        (void)std::memcpy(&rtb_C[6], &rtP.Cod2[0], 9U * sizeof(real_T));
+        k_0 = 0;
+        k = 0;
+        for (ii = 0; ii < 6; ii++) {
+          rtb_C[k_0 + 6] = rtP.Cod2[k];
+          rtb_C[k_0 + 7] = rtP.Cod2[k + 1];
+          rtb_C[k_0 + 8] = rtP.Cod2[k + 2];
+          k_0 += 3;
+          k += 5;
+        }
 
         // 'stateEst_:22' D(1:no, 1:ni) = Dp;
         // 'stateEst_:24' B_est = zeros(ns, ni + no + no);
-        (void)std::memset(&B_est_0[0], 0, 45U * sizeof(real_T));
+        (void)std::memset(&B_est_0[0], 0, 72U * sizeof(real_T));
 
         // 'stateEst_:25' B_est(1:ns, 1:ni+no) = blkdiag(Bp, Bod);
-        (void)std::memset(&y_0[0], 0, 30U * sizeof(real_T));
+        (void)std::memset(&y[0], 0, 48U * sizeof(real_T));
         k_0 = 0;
         k = 0;
-        ii = 0;
-        for (i = 0; i < 3; i++) {
-          y_0[k_0] = rtP.Constant4_Value_n[k];
-          y_0[k_0 + 1] = rtP.Constant4_Value_n[k + 1];
-          y_0[k_0 + 17] = rtP.Bod2[ii];
-          y_0[k_0 + 18] = rtP.Bod2[ii + 1];
-          y_0[k_0 + 19] = rtP.Bod2[ii + 2];
-          k_0 += 5;
+        for (ii = 0; ii < 3; ii++) {
+          y[k_0] = rtP.Constant4_Value_n[k];
+          y[k_0 + 1] = rtP.Constant4_Value_n[k + 1];
+          k_0 += 8;
           k += 2;
-          ii += 3;
         }
 
-        (void)std::memcpy(&B_est_0[0], &y_0[0], 30U * sizeof(real_T));
+        for (k_0 = 0; k_0 < 6; k_0++) {
+          y[k_0 + 26] = rtP.Bod2[k_0];
+          y[k_0 + 34] = rtP.Bod2[k_0 + 6];
+          y[k_0 + 42] = rtP.Bod2[k_0 + 12];
+        }
+
+        (void)std::memcpy(&B_est_0[0], &y[0], 48U * sizeof(real_T));
 
         // 'stateEst_:26' D_est = [Dp Dod Dn];
-        for (k_0 = 0; k_0 < 9; k_0++) {
+        k_0 = 0;
+        k = 0;
+        for (ii = 0; ii < 3; ii++) {
           D_est[k_0] = rtP.Constant13_Value_g[k_0];
-          D_est[k_0 + 9] = rtP.Dod2[k_0];
+          D_est[k_0 + 9] = rtP.Dod2[k];
           D_est[k_0 + 18] = rtP.Dmn1[k_0];
+          D_est[k_0 + 1] = rtP.Constant13_Value_g[k_0 + 1];
+          D_est[k_0 + 10] = rtP.Dod2[k + 1];
+          D_est[k_0 + 19] = rtP.Dmn1[k_0 + 1];
+          D_est[k_0 + 2] = rtP.Constant13_Value_g[k_0 + 2];
+          D_est[k_0 + 11] = rtP.Dod2[k + 2];
+          D_est[k_0 + 20] = rtP.Dmn1[k_0 + 2];
+          k_0 += 3;
+          k += 5;
         }
 
         // 'stateEst_:27' Q = B_est * B_est';
-        for (k_0 = 0; k_0 < 5; k_0++) {
+        for (k_0 = 0; k_0 < 8; k_0++) {
           k = 0;
-          for (ii = 0; ii < 5; ii++) {
+          for (ii = 0; ii < 8; ii++) {
             int32_T rtb_Q_tmp;
             rtb_Q_tmp = k + k_0;
             rtb_Q[rtb_Q_tmp] = 0.0;
             i = 0;
             for (int32_T rtb_y_tmp{0}; rtb_y_tmp < 9; rtb_y_tmp++) {
               rtb_Q[rtb_Q_tmp] += B_est_0[i + k_0] * B_est_0[i + ii];
-              i += 5;
+              i += 8;
             }
 
-            k += 5;
+            k += 8;
           }
         }
 
@@ -8845,11 +9071,11 @@ void SupervisoryController::step()
             }
           }
 
-          for (k = 0; k < 5; k++) {
-            i = 5 * k_0 + k;
+          for (k = 0; k < 8; k++) {
+            i = (k_0 << 3UL) + k;
             rtb_N[i] = 0.0;
             for (ii = 0; ii < 9; ii++) {
-              rtb_N[i] += B_est_0[5 * ii + k] * rtb_R_tmp[9 * k_0 + ii];
+              rtb_N[i] += B_est_0[(ii << 3UL) + k] * rtb_R_tmp[9 * k_0 + ii];
             }
           }
         }
@@ -8982,7 +9208,7 @@ void SupervisoryController::step()
           // Product: '<S185>/Product'
           rtb_C_0[k_0] = 0.0;
           k = 0;
-          for (ii = 0; ii < 5; ii++) {
+          for (ii = 0; ii < 8; ii++) {
             rtb_C_0[k_0] += rtb_C[k + k_0] * rtDW.MemoryX_DSTATE_c[ii];
             k += 3;
           }
@@ -9026,12 +9252,12 @@ void SupervisoryController::step()
 
         // Update for Delay: '<S182>/MemoryX'
         rtDW.icLoad_a = false;
-        for (k_0 = 0; k_0 < 5; k_0++) {
+        for (k_0 = 0; k_0 < 8; k_0++) {
           // Product: '<S201>/B[k]*u[k]'
-          rtb_TmpSignalConversionAtSFu_o4[k_0] = 0.0;
-          rtb_TmpSignalConversionAtSFu_o4[k_0] += rtb_B[k_0] * rtb_Sum1[0];
-          rtb_TmpSignalConversionAtSFu_o4[k_0] += rtb_B[k_0 + 5] * rtb_Sum1[1];
-          rtb_TmpSignalConversionAtSFu_o4[k_0] += rtb_B[k_0 + 10] * rtb_Sum1[2];
+          rtb_Sum2[k_0] = 0.0;
+          rtb_Sum2[k_0] += rtb_B[k_0] * rtb_Sum1[0];
+          rtb_Sum2[k_0] += rtb_B[k_0 + 8] * rtb_Sum1[1];
+          rtb_Sum2[k_0] += rtb_B[k_0 + 16] * rtb_Sum1[2];
 
           // Product: '<S201>/A[k]*xhat[k|k-1]' incorporates:
           //   Delay: '<S182>/MemoryX'
@@ -9039,21 +9265,21 @@ void SupervisoryController::step()
 
           rtb_A_0[k_0] = 0.0;
           k = 0;
-          for (ii = 0; ii < 5; ii++) {
+          for (ii = 0; ii < 8; ii++) {
             rtb_A_0[k_0] += rtb_A[k + k_0] * rtDW.MemoryX_DSTATE_c[ii];
-            k += 5;
+            k += 8;
           }
 
           // End of Product: '<S201>/A[k]*xhat[k|k-1]'
         }
 
         // End of Outputs for SubSystem: '<S1>/mpc2'
-        for (k_0 = 0; k_0 <= 2; k_0 += 2) {
+        for (k_0 = 0; k_0 <= 6; k_0 += 2) {
           __m128d tmp_1;
           __m128d tmp_2;
 
           // Outputs for Function Call SubSystem: '<S1>/mpc2'
-          tmp_3 = _mm_loadu_pd(&rtb_TmpSignalConversionAtSFu_o4[k_0]);
+          tmp_3 = _mm_loadu_pd(&rtb_Sum2[k_0]);
           tmp_1 = _mm_loadu_pd(&rtb_A_0[k_0]);
           tmp_2 = _mm_loadu_pd(&rtDW.Product3_a[k_0]);
           (void)_mm_storeu_pd(&rtDW.MemoryX_DSTATE_c[k_0], _mm_add_pd(_mm_add_pd
@@ -9063,22 +9289,14 @@ void SupervisoryController::step()
         }
 
         // Outputs for Function Call SubSystem: '<S1>/mpc2'
-        for (k_0 = 4; k_0 < 5; k_0++) {
-          // Update for Delay: '<S182>/MemoryX' incorporates:
-          //   Sum: '<S201>/Add'
-
-          rtDW.MemoryX_DSTATE_c[k_0] = (rtb_TmpSignalConversionAtSFu_o4[k_0] +
-            rtb_A_0[k_0]) + rtDW.Product3_a[k_0];
-        }
-
         // Update for Delay: '<S182>/MemoryP' incorporates:
         //   Delay: '<S182>/MemoryX'
         //   Product: '<S201>/B[k]*u[k]'
         //   Sum: '<S201>/Add'
 
         rtDW.icLoad_p = false;
-        (void)std::memcpy(&rtDW.MemoryP_DSTATE_h[0], &rtb_Q[0], 25U * sizeof
-                          (real_T));
+        (void)std::memcpy(&rtDW.MemoryP_DSTATE_h[0], &rtb_Q[0], sizeof(real_T) <<
+                          6UL);
         rtY.yhat[0] = rtb_Sum6[0];
         rtY.yhat[1] = rtb_Sum6[1];
 
@@ -9119,14 +9337,33 @@ void SupervisoryController::step()
                         POS_ZCSIG) || rtDW.icLoad);
         rtPrevZCX.MemoryX_Reset_ZCE = 0U;
         if (rtDW.icLoad) {
-          for (k = 0; k < 5; k++) {
-            rtDW.MemoryX_DSTATE[k] = rtP.X0_Value_a[k];
-          }
+          (void)std::memcpy(&rtDW.MemoryX_DSTATE[0], &rtP.X0_Value_a[0], sizeof
+                            (real_T) << 3UL);
         }
 
+        // Sum: '<S229>/Sum2' incorporates:
+        //   Delay: '<S252>/MemoryX'
+
+        rtb_Sum2[0] = rtDW.MemoryX_DSTATE[0];
+        rtb_Sum2[1] = rtDW.MemoryX_DSTATE[1];
+
+        // End of Outputs for SubSystem: '<S1>/mpc3'
+        for (k = 0; k <= 4; k += 2) {
+          // Outputs for Function Call SubSystem: '<S1>/mpc3'
+          tmp_3 = _mm_loadu_pd(&rtDW.MemoryX_DSTATE[k + 2]);
+          (void)_mm_storeu_pd(&rtb_Sum2[k + 2], _mm_add_pd(tmp_3, _mm_loadu_pd
+            (&rtP.Constant1_Value_h[k])));
+
+          // End of Outputs for SubSystem: '<S1>/mpc3'
+        }
+
+        // Outputs for Function Call SubSystem: '<S1>/mpc3'
         // SignalConversion generated from: '<S251>/ SFunction ' incorporates:
+        //   Constant: '<S229>/Constant1'
         //   Constant: '<S5>/Constant'
+        //   Delay: '<S252>/MemoryX'
         //   MATLAB Function: '<S250>/optimizer'
+        //   Sum: '<S229>/Sum2'
 
         rtb_TmpSignalConversionAtSFu_o4[0] = Sum2_c[0];
         rtb_TmpSignalConversionAtSFu_o4[1] = Sum2_c[1];
@@ -9135,15 +9372,12 @@ void SupervisoryController::step()
         rtb_TmpSignalConversionAtSFu_o4[4] = rtP.Constant_Value_e[1];
 
         // MATLAB Function: '<S250>/optimizer' incorporates:
-        //   Constant: '<S229>/Constant1'
-        //   Delay: '<S252>/MemoryX'
         //   DiscreteIntegrator: '<S5>/Discrete-Time Integrator'
         //   Gain: '<S5>/Gain2'
         //   Inport: '<Root>/umax'
         //   SignalConversion generated from: '<S251>/ SFunction '
-        //   Sum: '<S229>/Sum2'
         //   UnitDelay: '<S230>/last_mv'
-
+        //
         // MATLAB Function 'MPC Controller/MPC/optimizer/optimizer': '<S251>:1'
         // '<S251>:1:17' coder.extrinsic('mpcblock_optimizer_double_mex');
         // '<S251>:1:18' coder.extrinsic('mpcblock_optimizer_single_mex');
@@ -9270,13 +9504,13 @@ void SupervisoryController::step()
         // '<S251>:1:135' delmv = zeros(nu,1,'like',ref);
         //  Obtain x[k|k]
         // '<S251>:1:143' xk = xk - xoff;
-        rtb_xest[0] = rtDW.MemoryX_DSTATE[0];
+        rtb_xest[0] = rtb_Sum2[0];
         rtb_xest[2] = rtP.dt * rtDW.DiscreteTimeIntegrator_DSTATE[0];
-        rtb_xest[1] = rtDW.MemoryX_DSTATE[1];
+        rtb_xest[1] = rtb_Sum2[1];
         rtb_xest[3] = rtP.dt * rtDW.DiscreteTimeIntegrator_DSTATE[1];
-        rtb_xest[4] = rtP.Constant1_Value_h[0] + rtDW.MemoryX_DSTATE[2];
-        rtb_xest[5] = rtP.Constant1_Value_h[1] + rtDW.MemoryX_DSTATE[3];
-        rtb_xest[6] = rtP.Constant1_Value_h[2] + rtDW.MemoryX_DSTATE[4];
+        for (k = 0; k < 6; k++) {
+          rtb_xest[k + 4] = rtb_Sum2[k + 2];
+        }
 
         //  Remove offset
         // '<S251>:1:144' if CustomEstimation
@@ -9317,7 +9551,7 @@ void SupervisoryController::step()
           int16_T b_Mrows_0;
           b_Mlim = b_Mlim_2[k];
           Bc_2 = 0.0;
-          for (k_0 = 0; k_0 < 7; k_0++) {
+          for (k_0 = 0; k_0 < 10; k_0++) {
             Bc_2 += b_a_1[126 * k_0 + k] * rtb_xest[k_0];
           }
 
@@ -9351,8 +9585,8 @@ void SupervisoryController::step()
         rtb_Sum2_f[3] = 0.0;
         for (k = 0; k < 3; k++) {
           dwt = 0.0;
-          for (k_0 = 0; k_0 < 7; k_0++) {
-            dwt += b_Kx_1[7 * k + k_0] * rtb_xest[k_0];
+          for (k_0 = 0; k_0 < 10; k_0++) {
+            dwt += b_Kx_1[10 * k + k_0] * rtb_xest[k_0];
           }
 
           Bc_2 = 0.0;
@@ -9406,19 +9640,18 @@ void SupervisoryController::step()
                           POS_ZCSIG) || rtDW.icLoad_e);
         rtPrevZCX.MemoryP_Reset_ZCE = 0U;
         if (rtDW.icLoad_e) {
-          (void)std::memcpy(&rtDW.MemoryP_DSTATE[0], &rtP.P0_Value_m[0], 25U *
-                            sizeof(real_T));
+          (void)std::memcpy(&rtDW.MemoryP_DSTATE[0], &rtP.P0_Value_m[0], sizeof
+                            (real_T) << 6UL);
         }
 
         // MATLAB Function: '<S229>/MATLAB Function' incorporates:
-        //   BusCreator: '<S5>/Bus Creator1'
         //   Constant: '<S5>/Constant12'
         //   Constant: '<S5>/Constant13'
         //   Constant: '<S5>/Constant3'
         //   Constant: '<S5>/Constant4'
 
         // MATLAB Function 'SupervisoryController/mpc3/State Estimator OD (KF)/MATLAB Function': '<S253>:1' 
-        // '<S253>:1:2' [A, B, C, D, Q, R, N] = stateEst_(Ap, Bp, Cp, Dp, Aod3, Bod3, Cod3, Dod3, Dmn1, 3, 3, 2); 
+        // '<S253>:1:2' [A, B, C, D, Q, R, N] = stateEst_(Ap, Bp, Cp, Dp, Aod3, Bod3, Cod3(1:3,:), Dod3(1:3,:), Dmn1, 3, 3, 2); 
         // 'stateEst_:3' nsp = ns_;
         //  n_plant_states
         // 'stateEst_:4' nsod = size(Aod,1);
@@ -9428,7 +9661,7 @@ void SupervisoryController::step()
         // 'stateEst_:7' A = zeros(ns);
         //  n_states x n_states
         // 'stateEst_:8' B = zeros(ns,ni);
-        (void)std::memset(&rtb_B[0], 0, 15U * sizeof(real_T));
+        (void)std::memset(&rtb_B[0], 0, 24U * sizeof(real_T));
 
         //  n_states  x n_inputs
         // 'stateEst_:9' C = zeros(no,ns);
@@ -9448,77 +9681,105 @@ void SupervisoryController::step()
         //  combine plant and output disturbance model
         //  (force the outputs to fit in preallocated memory)
         // 'stateEst_:19' A(1:ns, 1:ns) = blkdiag(Ap, Aod);
-        (void)std::memset(&rtb_A[0], 0, 25U * sizeof(real_T));
+        (void)std::memset(&rtb_A[0], 0, sizeof(real_T) << 6UL);
         rtb_A[0] = rtP.Constant3_Value_g[0];
         rtb_A[1] = rtP.Constant3_Value_g[1];
-        rtb_A[5] = rtP.Constant3_Value_g[2];
-        rtb_A[6] = rtP.Constant3_Value_g[3];
+        rtb_A[8] = rtP.Constant3_Value_g[2];
+        rtb_A[9] = rtP.Constant3_Value_g[3];
+        k_0 = 0;
+        k = 0;
+        for (ii = 0; ii < 6; ii++) {
+          for (i = 0; i < 6; i++) {
+            rtb_A[(i + k_0) + 18] = rtP.Aod3[i + k];
+          }
+
+          k_0 += 8;
+          k += 6;
+        }
 
         // 'stateEst_:20' B(1:nsp, 1:ni) = Bp;
         k_0 = 0;
         k = 0;
-        ii = 0;
-        for (i = 0; i < 3; i++) {
-          rtb_A[k_0 + 12] = rtP.Aod3[k];
-          rtb_A[k_0 + 13] = rtP.Aod3[k + 1];
-          rtb_A[k_0 + 14] = rtP.Aod3[k + 2];
-          rtb_B[k_0] = rtP.Constant4_Value_f[ii];
-          rtb_B[k_0 + 1] = rtP.Constant4_Value_f[ii + 1];
-          k_0 += 5;
-          k += 3;
-          ii += 2;
+        for (ii = 0; ii < 3; ii++) {
+          rtb_B[k_0] = rtP.Constant4_Value_f[k];
+          rtb_B[k_0 + 1] = rtP.Constant4_Value_f[k + 1];
+          k_0 += 8;
+          k += 2;
         }
 
         // 'stateEst_:21' C(1:no, 1:ns) = [Cp Cod];
-        for (k = 0; k < 6; k++) {
-          rtb_C[k] = rtP.Constant12_Value_f[k];
+        k_0 = 0;
+        for (k = 0; k < 2; k++) {
+          rtb_C[k_0] = rtP.Constant12_Value_f[k_0];
+          rtb_C[k_0 + 1] = rtP.Constant12_Value_f[k_0 + 1];
+          rtb_C[k_0 + 2] = rtP.Constant12_Value_f[k_0 + 2];
+          k_0 += 3;
         }
 
-        (void)std::memcpy(&rtb_C[6], &rtP.Cod3[0], 9U * sizeof(real_T));
+        k_0 = 0;
+        k = 0;
+        for (ii = 0; ii < 6; ii++) {
+          rtb_C[k_0 + 6] = rtP.Cod3[k];
+          rtb_C[k_0 + 7] = rtP.Cod3[k + 1];
+          rtb_C[k_0 + 8] = rtP.Cod3[k + 2];
+          k_0 += 3;
+          k += 5;
+        }
 
         // 'stateEst_:22' D(1:no, 1:ni) = Dp;
         // 'stateEst_:24' B_est = zeros(ns, ni + no + no);
-        (void)std::memset(&B_est_0[0], 0, 45U * sizeof(real_T));
+        (void)std::memset(&B_est_0[0], 0, 72U * sizeof(real_T));
 
         // 'stateEst_:25' B_est(1:ns, 1:ni+no) = blkdiag(Bp, Bod);
-        (void)std::memset(&y_0[0], 0, 30U * sizeof(real_T));
+        (void)std::memset(&y[0], 0, 48U * sizeof(real_T));
         k_0 = 0;
         k = 0;
-        ii = 0;
-        for (i = 0; i < 3; i++) {
-          y_0[k_0] = rtP.Constant4_Value_f[k];
-          y_0[k_0 + 1] = rtP.Constant4_Value_f[k + 1];
-          y_0[k_0 + 17] = rtP.Bod3[ii];
-          y_0[k_0 + 18] = rtP.Bod3[ii + 1];
-          y_0[k_0 + 19] = rtP.Bod3[ii + 2];
-          k_0 += 5;
+        for (ii = 0; ii < 3; ii++) {
+          y[k_0] = rtP.Constant4_Value_f[k];
+          y[k_0 + 1] = rtP.Constant4_Value_f[k + 1];
+          k_0 += 8;
           k += 2;
-          ii += 3;
         }
 
-        (void)std::memcpy(&B_est_0[0], &y_0[0], 30U * sizeof(real_T));
+        for (k_0 = 0; k_0 < 6; k_0++) {
+          y[k_0 + 26] = rtP.Bod3[k_0];
+          y[k_0 + 34] = rtP.Bod3[k_0 + 6];
+          y[k_0 + 42] = rtP.Bod3[k_0 + 12];
+        }
+
+        (void)std::memcpy(&B_est_0[0], &y[0], 48U * sizeof(real_T));
 
         // 'stateEst_:26' D_est = [Dp Dod Dn];
-        for (k_0 = 0; k_0 < 9; k_0++) {
+        k_0 = 0;
+        k = 0;
+        for (ii = 0; ii < 3; ii++) {
           D_est[k_0] = rtP.Constant13_Value_a[k_0];
-          D_est[k_0 + 9] = rtP.Dod3[k_0];
+          D_est[k_0 + 9] = rtP.Dod3[k];
           D_est[k_0 + 18] = rtP.Dmn1[k_0];
+          D_est[k_0 + 1] = rtP.Constant13_Value_a[k_0 + 1];
+          D_est[k_0 + 10] = rtP.Dod3[k + 1];
+          D_est[k_0 + 19] = rtP.Dmn1[k_0 + 1];
+          D_est[k_0 + 2] = rtP.Constant13_Value_a[k_0 + 2];
+          D_est[k_0 + 11] = rtP.Dod3[k + 2];
+          D_est[k_0 + 20] = rtP.Dmn1[k_0 + 2];
+          k_0 += 3;
+          k += 5;
         }
 
         // 'stateEst_:27' Q = B_est * B_est';
-        for (k_0 = 0; k_0 < 5; k_0++) {
+        for (k_0 = 0; k_0 < 8; k_0++) {
           k = 0;
-          for (ii = 0; ii < 5; ii++) {
+          for (ii = 0; ii < 8; ii++) {
             int32_T rtb_Q_tmp;
             rtb_Q_tmp = k + k_0;
             rtb_Q[rtb_Q_tmp] = 0.0;
             i = 0;
             for (int32_T rtb_y_tmp{0}; rtb_y_tmp < 9; rtb_y_tmp++) {
               rtb_Q[rtb_Q_tmp] += B_est_0[i + k_0] * B_est_0[i + ii];
-              i += 5;
+              i += 8;
             }
 
-            k += 5;
+            k += 8;
           }
         }
 
@@ -9541,11 +9802,11 @@ void SupervisoryController::step()
             }
           }
 
-          for (k = 0; k < 5; k++) {
-            i = 5 * k_0 + k;
+          for (k = 0; k < 8; k++) {
+            i = (k_0 << 3UL) + k;
             rtb_N[i] = 0.0;
             for (ii = 0; ii < 9; ii++) {
-              rtb_N[i] += B_est_0[5 * ii + k] * rtb_R_tmp[9 * k_0 + ii];
+              rtb_N[i] += B_est_0[(ii << 3UL) + k] * rtb_R_tmp[9 * k_0 + ii];
             }
           }
         }
@@ -9678,7 +9939,7 @@ void SupervisoryController::step()
           // Product: '<S255>/Product'
           rtb_C_0[k_0] = 0.0;
           k = 0;
-          for (ii = 0; ii < 5; ii++) {
+          for (ii = 0; ii < 8; ii++) {
             rtb_C_0[k_0] += rtb_C[k + k_0] * rtDW.MemoryX_DSTATE[ii];
             k += 3;
           }
@@ -9722,12 +9983,12 @@ void SupervisoryController::step()
 
         // Update for Delay: '<S252>/MemoryX'
         rtDW.icLoad = false;
-        for (k_0 = 0; k_0 < 5; k_0++) {
+        for (k_0 = 0; k_0 < 8; k_0++) {
           // Product: '<S271>/B[k]*u[k]'
-          rtb_TmpSignalConversionAtSFu_o4[k_0] = 0.0;
-          rtb_TmpSignalConversionAtSFu_o4[k_0] += rtb_B[k_0] * rtb_Sum1[0];
-          rtb_TmpSignalConversionAtSFu_o4[k_0] += rtb_B[k_0 + 5] * rtb_Sum1[1];
-          rtb_TmpSignalConversionAtSFu_o4[k_0] += rtb_B[k_0 + 10] * rtb_Sum1[2];
+          rtb_Sum2[k_0] = 0.0;
+          rtb_Sum2[k_0] += rtb_B[k_0] * rtb_Sum1[0];
+          rtb_Sum2[k_0] += rtb_B[k_0 + 8] * rtb_Sum1[1];
+          rtb_Sum2[k_0] += rtb_B[k_0 + 16] * rtb_Sum1[2];
 
           // Product: '<S271>/A[k]*xhat[k|k-1]' incorporates:
           //   Delay: '<S252>/MemoryX'
@@ -9735,21 +9996,21 @@ void SupervisoryController::step()
 
           rtb_A_0[k_0] = 0.0;
           k = 0;
-          for (ii = 0; ii < 5; ii++) {
+          for (ii = 0; ii < 8; ii++) {
             rtb_A_0[k_0] += rtb_A[k + k_0] * rtDW.MemoryX_DSTATE[ii];
-            k += 5;
+            k += 8;
           }
 
           // End of Product: '<S271>/A[k]*xhat[k|k-1]'
         }
 
         // End of Outputs for SubSystem: '<S1>/mpc3'
-        for (k_0 = 0; k_0 <= 2; k_0 += 2) {
+        for (k_0 = 0; k_0 <= 6; k_0 += 2) {
           __m128d tmp_1;
           __m128d tmp_2;
 
           // Outputs for Function Call SubSystem: '<S1>/mpc3'
-          tmp_3 = _mm_loadu_pd(&rtb_TmpSignalConversionAtSFu_o4[k_0]);
+          tmp_3 = _mm_loadu_pd(&rtb_Sum2[k_0]);
           tmp_1 = _mm_loadu_pd(&rtb_A_0[k_0]);
           tmp_2 = _mm_loadu_pd(&rtDW.Product3[k_0]);
           (void)_mm_storeu_pd(&rtDW.MemoryX_DSTATE[k_0], _mm_add_pd(_mm_add_pd
@@ -9759,22 +10020,14 @@ void SupervisoryController::step()
         }
 
         // Outputs for Function Call SubSystem: '<S1>/mpc3'
-        for (k_0 = 4; k_0 < 5; k_0++) {
-          // Update for Delay: '<S252>/MemoryX' incorporates:
-          //   Sum: '<S271>/Add'
-
-          rtDW.MemoryX_DSTATE[k_0] = (rtb_TmpSignalConversionAtSFu_o4[k_0] +
-            rtb_A_0[k_0]) + rtDW.Product3[k_0];
-        }
-
         // Update for Delay: '<S252>/MemoryP' incorporates:
         //   Delay: '<S252>/MemoryX'
         //   Product: '<S271>/B[k]*u[k]'
         //   Sum: '<S271>/Add'
 
         rtDW.icLoad_e = false;
-        (void)std::memcpy(&rtDW.MemoryP_DSTATE[0], &rtb_Q[0], 25U * sizeof
-                          (real_T));
+        (void)std::memcpy(&rtDW.MemoryP_DSTATE[0], &rtb_Q[0], sizeof(real_T) <<
+                          6UL);
         rtY.yhat[0] = rtb_Sum6[0];
         rtY.yhat[1] = rtb_Sum6[1];
 
@@ -10018,14 +10271,14 @@ void SupervisoryController::initialize()
     // SystemInitialize for Chart: '<Root>/SupervisoryController' incorporates:
     //   SubSystem: '<S1>/mpc2'
 
-    // InitializeConditions for Memory: '<S160>/Memory'
-    (void)std::memcpy(&rtDW.Memory_PreviousInput_c[0],
-                      &rtP.Memory_InitialCondition_j[0], 206U * sizeof(boolean_T));
-
     // InitializeConditions for DiscreteIntegrator: '<S4>/Discrete-Time Integrator' 
     rtDW.DiscreteTimeIntegrator_DSTATE_m[0] = rtP.DiscreteTimeIntegrator_IC_n[0];
     rtDW.DiscreteTimeIntegrator_DSTATE_m[1] = rtP.DiscreteTimeIntegrator_IC_n[1];
     rtDW.DiscreteTimeIntegrator_PrevRe_f = 2;
+
+    // InitializeConditions for Memory: '<S160>/Memory'
+    (void)std::memcpy(&rtDW.Memory_PreviousInput_c[0],
+                      &rtP.Memory_InitialCondition_j[0], 206U * sizeof(boolean_T));
 
     // InitializeConditions for UnitDelay: '<S160>/last_mv'
     rtDW.last_mv_DSTATE_i[0] = rtP.last_mv_InitialCondition_b[0];

@@ -5,7 +5,7 @@ ns = no;
 
 tau = 1;
 b = 1;
-Bsign = diag(ones(no,1)) - 0.5*(eye(no) ~= 1);
+Bsign = eye(no) - 0.5*(eye(no) ~= 1);
 
 A_i = 1 - tau*dt;
 B_i = b*dt;
