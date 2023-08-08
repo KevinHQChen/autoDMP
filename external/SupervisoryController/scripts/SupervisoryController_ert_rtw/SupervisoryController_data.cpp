@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2471
+// Model version                  : 1.2472
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon Aug  7 23:52:10 2023
+// C/C++ source code generated on : Tue Aug  8 00:20:38 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -49,7 +49,9 @@ SupervisoryController::P SupervisoryController::rtP{
   // Variable: Aod1
   //  Referenced by: '<S89>/MATLAB Function'
 
-  { 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0 },
+  { 1.0, 0.025, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
+    0.025, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
+    0.025, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0 },
 
   // Variable: Aod2
   //  Referenced by: '<S159>/MATLAB Function'
@@ -79,7 +81,9 @@ SupervisoryController::P SupervisoryController::rtP{
   // Variable: Bod1
   //  Referenced by: '<S89>/MATLAB Function'
 
-  { 0.025, 0.0, 0.0, 0.0, 0.025, 0.0, 0.0, 0.0, 0.025 },
+  { 0.05, 0.00062500000000000012, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.05,
+    0.00062500000000000012, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.05,
+    0.00062500000000000012 },
 
   // Variable: Bod2
   //  Referenced by: '<S159>/MATLAB Function'
@@ -107,7 +111,8 @@ SupervisoryController::P SupervisoryController::rtP{
   // Variable: Cod1
   //  Referenced by: '<S89>/MATLAB Function'
 
-  { 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0 },
+  { 0.0, 0.0, 0.0, 0.0, 0.5, -0.5, -0.5, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5, 0.5,
+    -0.5, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5, -0.5, 0.5, 0.0 },
 
   // Variable: Cod2
   //  Referenced by: '<S159>/MATLAB Function'
@@ -148,7 +153,7 @@ SupervisoryController::P SupervisoryController::rtP{
   // Variable: Dod1
   //  Referenced by: '<S89>/MATLAB Function'
 
-  { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+  { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
 
   // Variable: Dod2
   //  Referenced by: '<S159>/MATLAB Function'
@@ -605,12 +610,12 @@ SupervisoryController::P SupervisoryController::rtP{
   // Expression: zeros(size(God1.A,1),1)
   //  Referenced by: '<S89>/Constant1'
 
-  { 0.0, 0.0, 0.0 },
+  { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
 
   // Expression: pInitialization.X0
   //  Referenced by: '<S112>/X0'
 
-  { 0.0, 0.0, 0.0, 0.0 },
+  { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
 
   // Expression: zeros(nym,1)
   //  Referenced by: '<S90>/ym_zero'
@@ -680,8 +685,10 @@ SupervisoryController::P SupervisoryController::rtP{
   // Expression: pInitialization.P0
   //  Referenced by: '<S112>/P0'
 
-  { 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    1.0 },
+  { 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 1.0 },
 
   // Expression: 1
   //  Referenced by: '<S3>/Constant1'
@@ -691,13 +698,16 @@ SupervisoryController::P SupervisoryController::rtP{
   // Expression: pInitialization.H
   //  Referenced by: '<S112>/H'
 
-  { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+  { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
 
   // Expression: pInitialization.G
   //  Referenced by: '<S112>/G'
 
-  { 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    1.0 },
+  { 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 1.0 },
 
   // Expression: MVscale
   //  Referenced by: '<S90>/umin_scale1'

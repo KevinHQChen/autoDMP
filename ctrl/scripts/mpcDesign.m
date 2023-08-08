@@ -102,8 +102,9 @@ mpc1.Weights.ECR = 100000;
 
 %% use custom state estimator implementation
 s = tf('s');
-God1 = c2d(ss(1/s * eye(3)), dt);
-% God1 = getoutdist(mpc1);
+tfOD = [1/s^2 * (eye(3) - (eye(no) ~= 1)); zeros(1, 3)];
+setoutdist(mpc1, 'model', tfOD);
+God1 = getoutdist(mpc1);
 Aod1 = God1.A;
 Bod1 = God1.B;
 Cod1 = God1.C;

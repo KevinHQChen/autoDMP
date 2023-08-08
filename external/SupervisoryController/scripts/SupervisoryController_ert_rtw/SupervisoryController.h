@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2471
+// Model version                  : 1.2472
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon Aug  7 23:52:10 2023
+// C/C++ source code generated on : Tue Aug  8 00:20:38 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -284,7 +284,7 @@ class SupervisoryController final
     real_T thetaSgn_k[24];             // '<Root>/SupervisoryController'
     real_T Product3[8];                // '<S295>/Product3'
     real_T Product3_a[8];              // '<S225>/Product3'
-    real_T Product3_c[4];              // '<S155>/Product3'
+    real_T Product3_c[7];              // '<S155>/Product3'
     real_T Delay_DSTATE[6];            // '<S8>/Delay'
     real_T DiscreteTimeIntegrator_DSTATE[2];// '<S5>/Discrete-Time Integrator'
     real_T last_mv_DSTATE[3];          // '<S230>/last_mv'
@@ -295,8 +295,8 @@ class SupervisoryController final
     real_T MemoryX_DSTATE_c[8];        // '<S182>/MemoryX'
     real_T MemoryP_DSTATE_h[64];       // '<S182>/MemoryP'
     real_T last_mv_DSTATE_n[3];        // '<S90>/last_mv'
-    real_T MemoryX_DSTATE_l[4];        // '<S112>/MemoryX'
-    real_T MemoryP_DSTATE_e[16];       // '<S112>/MemoryP'
+    real_T MemoryX_DSTATE_l[7];        // '<S112>/MemoryX'
+    real_T MemoryP_DSTATE_e[49];       // '<S112>/MemoryP'
     real_T MemoryX_DSTATE_d[18];       // '<S42>/MemoryX'
     real_T MemoryP_DSTATE_h4[324];     // '<S42>/MemoryP'
     real_T traj[14400];                // '<Root>/SupervisoryController'
@@ -422,7 +422,7 @@ class SupervisoryController final
     real_T Aod[144];                   // Variable: Aod
                                           //  Referenced by: '<S11>/MATLAB Function'
 
-    real_T Aod1[9];                    // Variable: Aod1
+    real_T Aod1[36];                   // Variable: Aod1
                                           //  Referenced by: '<S89>/MATLAB Function'
 
     real_T Aod2[36];                   // Variable: Aod2
@@ -434,7 +434,7 @@ class SupervisoryController final
     real_T Bod[72];                    // Variable: Bod
                                           //  Referenced by: '<S11>/MATLAB Function'
 
-    real_T Bod1[9];                    // Variable: Bod1
+    real_T Bod1[18];                   // Variable: Bod1
                                           //  Referenced by: '<S89>/MATLAB Function'
 
     real_T Bod2[18];                   // Variable: Bod2
@@ -446,7 +446,7 @@ class SupervisoryController final
     real_T Cod[72];                    // Variable: Cod
                                           //  Referenced by: '<S11>/MATLAB Function'
 
-    real_T Cod1[9];                    // Variable: Cod1
+    real_T Cod1[24];                   // Variable: Cod1
                                           //  Referenced by: '<S89>/MATLAB Function'
 
     real_T Cod2[30];                   // Variable: Cod2
@@ -467,7 +467,7 @@ class SupervisoryController final
     real_T Dod[36];                    // Variable: Dod
                                           //  Referenced by: '<S11>/MATLAB Function'
 
-    real_T Dod1[9];                    // Variable: Dod1
+    real_T Dod1[12];                   // Variable: Dod1
                                           //  Referenced by: '<S89>/MATLAB Function'
 
     real_T Dod2[15];                   // Variable: Dod2
@@ -692,10 +692,10 @@ class SupervisoryController final
     real_T Constant2_Value_a;          // Expression: zeros(size(G0.A, 1), 1)
                                           //  Referenced by: '<S3>/Constant2'
 
-    real_T Constant1_Value_j[3];       // Expression: zeros(size(God1.A,1),1)
+    real_T Constant1_Value_j[6];       // Expression: zeros(size(God1.A,1),1)
                                           //  Referenced by: '<S89>/Constant1'
 
-    real_T X0_Value_f[4];              // Expression: pInitialization.X0
+    real_T X0_Value_f[7];              // Expression: pInitialization.X0
                                           //  Referenced by: '<S112>/X0'
 
     real_T ym_zero_Value_c[4];         // Expression: zeros(nym,1)
@@ -737,16 +737,16 @@ class SupervisoryController final
     real_T ecrwt_zero_Value_o;         // Expression: zeros(1,1)
                                           //  Referenced by: '<S88>/ecr.wt_zero'
 
-    real_T P0_Value_a[16];             // Expression: pInitialization.P0
+    real_T P0_Value_a[49];             // Expression: pInitialization.P0
                                           //  Referenced by: '<S112>/P0'
 
     real_T Constant1_Value_e;          // Expression: 1
                                           //  Referenced by: '<S3>/Constant1'
 
-    real_T H_Value_o[12];              // Expression: pInitialization.H
+    real_T H_Value_o[21];              // Expression: pInitialization.H
                                           //  Referenced by: '<S112>/H'
 
-    real_T G_Value_a[16];              // Expression: pInitialization.G
+    real_T G_Value_a[49];              // Expression: pInitialization.G
                                           //  Referenced by: '<S112>/G'
 
     real_T umin_scale1_Gain[3];        // Expression: MVscale
@@ -1202,7 +1202,7 @@ class SupervisoryController final
               const real_T b_Ac[664], const real_T b[166], boolean_T iA[166],
               int32_T maxiter, real_T FeasTol, real_T x[4], real_T lambda[166],
               int32_T *status);
-  void mrdiv_c(const real_T A[12], const real_T B_1[9], real_T Y[12]);
+  void mrdiv_c(const real_T A[21], const real_T B_1[9], real_T Y[21]);
 
   // Real-Time Model
   RT_MODEL rtM;
