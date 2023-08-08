@@ -5,21 +5,21 @@ samplingRate = 40;
 clockPeriod = 4;
 dt = 1/samplingRate;
 
-trainPath = "~/thesis/data/state0trainFlu.csv";
+trainPath = "~/thesis/data/state1trainFlu.csv";
 % trainPath = "~/autoDMP/ctrl/scripts/simSysID/train/ctrlDataQueue.txt";
-trainStart = 1; % state0
+trainStart = 40; % state0
 % trainEnd = clockPeriod*2^10-3-1-1; % 102.3/dt
 trainEnd = clockPeriod*2^10-3-1-1 - 12.3/dt; % 102.3/dt (for state1)
 
-valPath = "~/thesis/data/state0valFlu.csv";
+valPath = "~/thesis/data/state1valFlu.csv";
 % valPath = "~/autoDMP/ctrl/scripts/simSysID/val/ctrlDataQueue.txt";
-valStart = 1;
+valStart = 40;
 % valEnd = clockPeriod*2^10-3-1-1; % 102.3/dt
 valEnd = clockPeriod*2^10-3-1-1 - 12.3/dt; % 102.3/dt (for state1)
 
 col = dictionary(["t", "y0", "y1", "y2", "u0", "u1", "u2"], 1:7);
 
-idMdlName = 'G0'; % [G0 | G1 | G2]
+idMdlName = 'G1'; % [G0 | G1 | G2]
 inputs = col(["u0" "u1" "u2"]);
 inputNames = {'Pump1', 'Pump2', 'Pump3'};
 
@@ -173,6 +173,12 @@ tf_est = tf_est_;
 
 tf_est
 
+%% proc estimation
+Opt = procestOptions;
+Opt.WeightingFilter = [0 31.4159];
+Opt.Regularization.Lambda = 10;
+proc_ = procest(sys_valdf,{'P1IZ', 'P1IZ', 'P1IZ'; 'P1IZ', 'P1IZ', 'P1IZ'} , Opt);
+
 %% State space model estimation - sim state1/state2: 2 state N4SID
 Options = n4sidOptions;
 Options.WeightingFilter = [0 31.4159];
@@ -202,13 +208,22 @@ ss_est.B(2) = ( ss_est.B(2) + ss_est.B(3) ) / 2;
 ss_est.B(3) = ss_est.B(2);
 
 %% State space model estimation - 2 states
+% Options = ssestOptions;
+% Options.Focus = 'simulation';
+% Options.OutputWeight = [1 0;0 1];
+% Options.N4Weight = 'CVA';
+% Options.N4Horizon = [15 27 27];
+
+% ss_est = ssest(sys_valdf, 2, 'Form', 'canonical', 'Ts', 0.025, Options)
+
 Options = ssestOptions;
 Options.Focus = 'simulation';
+Options.InitialState = 'estimate';
 Options.OutputWeight = [1 0;0 1];
-Options.N4Weight = 'CVA';
-Options.N4Horizon = [15 27 27];
+Options.SearchOptions.Tolerance = 0;
+Options.SearchOptions.MaxIterations = 0;
 
-ss_est = ssest(sys_valdf, 2, 'Form', 'canonical', 'Ts', 0.025, Options)
+ss_est = ssest(sys_traindf, 2, 'Form', 'canonical', 'Ts', 0.025, Options)
 
 %% State space model estimation - 2 states
 Options = ssestOptions;

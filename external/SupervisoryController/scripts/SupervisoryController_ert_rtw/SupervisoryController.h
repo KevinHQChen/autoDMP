@@ -9,7 +9,7 @@
 //
 // Model version                  : 1.2467
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Mon Aug  7 19:31:29 2023
+// C/C++ source code generated on : Mon Aug  7 22:26:20 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -272,24 +272,24 @@ class SupervisoryController final
     DW_paramEst1 paramEst2;            // '<S1>/paramEst2'
     DW_paramEst1 paramEst1_o;          // '<S1>/paramEst1'
     real_T r[6];                       // '<Root>/SupervisoryController'
-    real_T y_h[6];                     // '<Root>/SupervisoryController'
+    real_T y_l[6];                     // '<Root>/SupervisoryController'
     real_T ymax[6];                    // '<Root>/SupervisoryController'
-    real_T ywt_c[6];                   // '<Root>/SupervisoryController'
-    real_T y0_j[6];                    // '<Root>/SupervisoryController'
+    real_T ywt_o[6];                   // '<Root>/SupervisoryController'
+    real_T y0_p[6];                    // '<Root>/SupervisoryController'
     real_T x0[6];                      // '<Root>/SupervisoryController'
-    real_T u0_lg[3];                   // '<Root>/SupervisoryController'
+    real_T u0_e[3];                    // '<Root>/SupervisoryController'
     real_T umax[3];                    // '<Root>/SupervisoryController'
     real_T uwt[3];                     // '<Root>/SupervisoryController'
     real_T theta_m[24];                // '<Root>/SupervisoryController'
-    real_T thetaSgn_a[24];             // '<Root>/SupervisoryController'
+    real_T thetaSgn_k[24];             // '<Root>/SupervisoryController'
     real_T Product3[5];                // '<S295>/Product3'
     real_T Product3_a[5];              // '<S225>/Product3'
     real_T Product3_c[4];              // '<S155>/Product3'
+    real_T Delay_DSTATE[6];            // '<S8>/Delay'
     real_T DiscreteTimeIntegrator_DSTATE[2];// '<S5>/Discrete-Time Integrator'
     real_T last_mv_DSTATE[3];          // '<S230>/last_mv'
     real_T MemoryX_DSTATE[5];          // '<S252>/MemoryX'
     real_T MemoryP_DSTATE[25];         // '<S252>/MemoryP'
-    real_T Delay_DSTATE[6];            // '<S8>/Delay'
     real_T DiscreteTimeIntegrator_DSTATE_m[2];// '<S4>/Discrete-Time Integrator' 
     real_T last_mv_DSTATE_i[3];        // '<S160>/last_mv'
     real_T MemoryX_DSTATE_c[5];        // '<S182>/MemoryX'
@@ -882,15 +882,6 @@ class SupervisoryController final
     real_T Saturation_LowerSat_o;      // Expression: 0
                                           //  Referenced by: '<S4>/Saturation'
 
-    real_T ywt_Y0;                     // Computed Parameter: ywt_Y0
-                                          //  Referenced by: '<S8>/ywt'
-
-    real_T y_Y0;                       // Computed Parameter: y_Y0
-                                          //  Referenced by: '<S8>/y_'
-
-    real_T r_Y0;                       // Computed Parameter: r_Y0
-                                          //  Referenced by: '<S8>/r_'
-
     real_T u_Y0_h;                     // Computed Parameter: u_Y0_h
                                           //  Referenced by: '<S5>/u'
 
@@ -1014,6 +1005,15 @@ class SupervisoryController final
 
     real_T Saturation_LowerSat_b;      // Expression: 0
                                           //  Referenced by: '<S5>/Saturation'
+
+    real_T ywt_Y0;                     // Computed Parameter: ywt_Y0
+                                          //  Referenced by: '<S8>/ywt'
+
+    real_T y_Y0;                       // Computed Parameter: y_Y0
+                                          //  Referenced by: '<S8>/y_'
+
+    real_T r_Y0;                       // Computed Parameter: r_Y0
+                                          //  Referenced by: '<S8>/r_'
 
     int32_T FixedHorizonOptimizer_Ndis;// Expression: Ndis
                                           //  Referenced by: '<S40>/FixedHorizonOptimizer'
