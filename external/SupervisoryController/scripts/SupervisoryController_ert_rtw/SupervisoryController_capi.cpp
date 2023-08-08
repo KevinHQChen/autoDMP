@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2472
+// Model version                  : 1.2474
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Tue Aug  8 00:20:38 2023
+// C/C++ source code generated on : Tue Aug  8 00:41:47 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -1359,10 +1359,10 @@ static rtwCAPI_ModelMappingStaticInfo mmiStatic{
     rtElementMap, rtSampleTimeMap, rtDimensionArray },
   "float",
 
-  { 3513604103U,
-    1087475955U,
-    1325710786U,
-    3677191592U },
+  { 1627508467U,
+    1368249835U,
+    1370400U,
+    2954344246U },
   (nullptr), 0,
   (boolean_T)0
 };

@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2472
+// Model version                  : 1.2474
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Tue Aug  8 00:20:38 2023
+// C/C++ source code generated on : Tue Aug  8 00:41:47 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -7605,10 +7605,9 @@ void SupervisoryController::step()
         //  Obtain x[k|k]
         // '<S111>:1:143' xk = xk - xoff;
         rtb_Sum2[0] = rtb_Sum2_f[0];
-        rtb_Sum2[1] = rtb_Sum2_f[1];
-        rtb_Sum2[2] = rtP.dt * rtDW.DiscreteTimeIntegrator_DSTATE_j;
-        for (k = 0; k < 5; k++) {
-          rtb_Sum2[k + 3] = rtb_Sum2_f[k + 2];
+        rtb_Sum2[1] = rtP.dt * rtDW.DiscreteTimeIntegrator_DSTATE_j;
+        for (k = 0; k < 6; k++) {
+          rtb_Sum2[k + 2] = rtb_Sum2_f[k + 1];
         }
 
         //  Remove offset
