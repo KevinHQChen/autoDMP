@@ -64,7 +64,7 @@ void Supervisor::startThread() {
         supOut.yhat[no + ch] = 0;
         // input
         supIn.u0[ch] = pump->outputs[ch];
-        supIn.umax[ch] = 20;
+        supIn.umax[ch] = 60;
         supIn.uwt[ch] = 0.025;
         // zero-cross flag
         supIn.yo[ch] = false;
@@ -179,8 +179,6 @@ void Supervisor::start() {
 
         // Collect data
         ctrlDataQueuePtr->push(0);
-        // ctrlDataQueuePtr->out << y[0] << ", " << y[1] << ", " << y[2] << ", " << du[0] << ", "
-        //                       << du[1] << ", " << du[2] << "\n";
         ctrlDataQueuePtr->out << imProc->yDirect1[0].value_or(0.0) << ", "
                               << imProc->yDirect1[1].value_or(0.0) << ", "
                               << imProc->yDirect1[2].value_or(0.0) << ", "
