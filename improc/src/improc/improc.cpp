@@ -1,23 +1,15 @@
 #include "improc/improc.hpp"
+#include <numeric>
 
-ImProc::ImProc(ImCap *imCap)
-    : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")),
-      confPath(toml::get<std::string>(conf["improc"]["confPath"])),
-      dataPath(toml::get<std::string>(conf["postproc"]["procDataPath"])),
-      numChans(toml::get<int>(conf["improc"]["numChans"])), imCap(imCap),
-      procFrameQueuePtr(new QueueFPS<cv::Mat>(dataPath + "procFramesQueue.txt")),
-      tempResultQueueArr({new QueueFPS<cv::Mat>(dataPath + "tempResultsQueue1.txt"),
-                          new QueueFPS<cv::Mat>(dataPath + "tempResultsQueue2.txt"),
-                          new QueueFPS<cv::Mat>(dataPath + "tempResultsQueue3.txt")}),
-      procFrameQueueArr({new QueueFPS<cv::Mat>(dataPath + "procFramesQueue1.txt"),
-                         new QueueFPS<cv::Mat>(dataPath + "procFramesQueue2.txt"),
-                         new QueueFPS<cv::Mat>(dataPath + "procFramesQueue3.txt")}),
-      tmplThres(toml::get<double>(conf["improc"]["tmplThres"])),
-      procDataQArr({new QueueFPS<Pose>(dataPath + "procDataQueue1.txt"),
-                    new QueueFPS<Pose>(dataPath + "procDataQueue2.txt"),
-                    new QueueFPS<Pose>(dataPath + "procDataQueue3.txt")}) {
-  for (int ch = 0; ch < numChans; ch++)
-    procDataQArr[ch]->out << "time (ms), maxLoc.x (px), maxLoc.y (px)\n";
+ImProc::ImProc(ImCap *imCap, std::shared_ptr<logger> log)
+    : conf(Config::conf), confPath(toml::get<std::string>(conf["improc"]["confPath"])),
+      dataPath(toml::get<std::string>(conf["postproc"]["procDataPath"])), imCap(imCap),
+      procData(new QueueFPS<std::vector<double>>(dataPath + "procDataQueue.txt")), lg(log) {
+  lg->info("Initializing ImProc...");
+  procData->out << "time (ms), ";
+  procData->out << "yState1_1, yState1_2, yState1_3, yState2_1, yState2_2, yState2_3, ";
+  procData->out << "y1, y2, y3, y4, y5, y6, ";
+  procData->out << "yPrev1, yPrev2, yPrev3, yPrev4, yPrev5, yPrev6, ";
 
   // save images with proper format PNG, CV_16UC1
   compParams.push_back(cv::IMWRITE_PNG_COMPRESSION);
@@ -25,23 +17,227 @@ ImProc::ImProc(ImCap *imCap)
 }
 
 ImProc::~ImProc() {
-  stopProcThread();
-  for (auto &q : procFrameQueueArr)
-    delete q;
-  for (auto &q : tempResultQueueArr)
-    delete q;
+  lg->info("Terminating ImProc...");
+  stopThread();
+  delete procData;
 }
 
-// load channel/template images, bounding boxes from file
+void findMeasCombs(const std::vector<std::vector<double>> &sets, std::vector<int> &indices,
+                   int setIndex, std::function<void(const std::vector<int> &)> callback) {
+  if (setIndex == sets.size()) {
+    callback(indices);
+    return;
+  }
+  for (int i = 0; i < sets[setIndex].size(); ++i) {
+    indices[setIndex] = i;
+    findMeasCombs(sets, indices, setIndex + 1, callback);
+  }
+}
+
+void findChCombs(int offset, int j, int m, std::vector<int> &combination,
+                 std::vector<std::vector<int>> &combinations) {
+  if (j == 0) {
+    combinations.push_back(combination);
+    return;
+  }
+  for (int i = offset; i <= m - j; ++i) {
+    combination.push_back(i);
+    findChCombs(i + 1, j - 1, m, combination, combinations);
+    combination.pop_back();
+  }
+}
+
+std::vector<std::vector<double>>
+findInferredClstrs(const std::vector<std::vector<double>> &directClstrs,
+                   std::shared_ptr<logger> lg) {
+  int n = directClstrs.size();
+  std::vector<std::vector<double>> newClstrs(n);
+
+  for (int ch = 0; ch < n; ++ch) {
+    // make a copy of directClstrs_,
+    // remove i-th channel (we only use other channels to infer clstr locations in current channel)
+    // remove empty channels (i.e. channels w/o direct clstrs),
+    // remove +ve clstrs in each channel (we won't use them for inference),
+    std::vector<std::vector<double>> otherClstrs(directClstrs);
+    otherClstrs.erase(otherClstrs.begin() + ch);
+    for (auto &ch : otherClstrs)
+      ch.erase(std::remove_if(ch.begin(), ch.end(), [](double x) { return x > 0; }), ch.end());
+    otherClstrs.erase(std::remove_if(otherClstrs.begin(), otherClstrs.end(),
+                                     [](const std::vector<double> &v) { return v.empty(); }),
+                      otherClstrs.end());
+
+    int m = otherClstrs.size();
+    // lg->info("{} otherClstrs with valid yDirect selected for calculating yInferred in channel {}",
+    //          m, ch);
+
+    // find all ways to choose an index from each of the m vectors in `otherClstrs`
+    std::vector<int> indices(m, 0);
+    findMeasCombs(otherClstrs, indices, 0, [&](const std::vector<int> &indices) {
+      double sum = 0;
+      for (int j = 0; j < m; ++j)
+        sum += otherClstrs[j][indices[j]];
+      newClstrs[ch].push_back(-sum / (n - 1));
+    });
+  }
+
+  return newClstrs;
+}
+
+void skeletonize(cv::Mat &img, cv::Mat element) {
+  // skeletonize
+  if (cv::countNonZero(img) == img.total())
+    img.setTo(cv::Scalar(0));
+  cv::Mat skel(img.size(), CV_8UC1, cv::Scalar(0));
+  cv::Mat temp;
+  cv::Mat eroded;
+  bool done;
+  do {
+    cv::erode(img, eroded, element);
+    cv::dilate(eroded, temp, element); // temp = open(img)
+    cv::subtract(img, temp, temp);
+    cv::bitwise_or(skel, temp, skel);
+    eroded.copyTo(img);
+    done = (cv::countNonZero(img) == 0);
+  } while (!done);
+  img = skel;
+}
+
+void ImProc::initStates(int maxInitialDirectChs) {
+  if (numInitDirectChs == maxInitialDirectChs)
+    return;
+
+  for (size_t ch = 0; ch < no; ++ch) {
+    if (yDirect1[ch].has_value() && yDirect1[ch].value() < 0 &&
+        numInitDirectChs < maxInitialDirectChs) {
+      // Transition from inferred to direct
+      yState1[ch] = true;
+      yState2[ch] = true;
+      numInitDirectChs++;
+    }
+  }
+}
+
+/*
+ * update measurement given current state
+ *   - in direct state: y[ch] = yDirect[ch] (if it'ss valid and close to yPrev[ch])
+ *   - in inferred state: y[ch] = yInferred[ch] (if it's valid and close to yPrev[ch])
+ */
+void updateMeasCh(std::vector<double> &y, std::vector<double> &yPrev,
+                  const std::vector<OptDouble> &yDirect, const std::vector<OptDouble> &yInferred,
+                  std::vector<bool> &state) {
+  int epsil = 56 / 2; // half of channel width
+
+  for (size_t ch = 0; ch < y.size(); ++ch) {
+    if (state[ch]) // Direct state
+      y[ch] = (yDirect[ch].has_value() && std::abs(yDirect[ch].value() - yPrev[ch]) < epsil)
+                  ? yDirect[ch].value()
+                  : yPrev[ch];
+    else // Inferred state
+      y[ch] = (yInferred[ch].has_value() && std::abs(yInferred[ch].value() - yPrev[ch]) < epsil)
+                  ? yInferred[ch].value()
+                  : yPrev[ch];
+  }
+}
+
+void ImProc::updateMeasAndStateOnZeroCross() {
+  int epsil = 56 / 2; // half of channel width
+  bool d2iTxRequested = false;
+  for (int ch = 0; ch < no; ++ch) {
+    yDirect0[ch] = argMinDist(directFgClstrs[ch], 0);
+    yInferred0[ch] = argMinDist(inferredFgClstrs[ch], 0);
+  }
+
+  for (int ch = 0; ch < no; ++ch) {
+    if ((yState1[ch] && y1[ch] >= 0) || (yState2[ch] && y2[ch] >= 0)) {
+      d2iTxRequested = true;
+      lg->info("d2i transition requested on channel {}", ch);
+    }
+  }
+
+  {
+    // std::lock_guard<std::mutex> lock(zeroCrossMtx);
+    zeroCross.assign(2 * no, false);
+    bool y1Controlled = anyNonZeroR(0, no);
+    bool y2Controlled = anyNonZeroR(no, 2 * no);
+    if (d2iTxRequested && y1Controlled) {
+      for (int ch = 0; ch < no; ++ch) {
+        y2[ch] = yState2[ch] ? -1 : 1;
+        zeroCross[no + ch] = true;
+      }
+    }
+    if (d2iTxRequested && y2Controlled) {
+      for (int ch = 0; ch < no; ++ch) {
+        y1[ch] = yState1[ch] ? -1 : 1;
+        zeroCross[ch] = true;
+      }
+    }
+  }
+
+  for (int ch = 0; ch < no; ++ch) {
+    if (yState1[ch]) {
+      if (y1[ch] >= 0) {
+        yState1[ch] = false;
+        lg->info("y1 d2i tx 1 ch: {}", ch);
+      } else if (!yDirect0[ch].has_value() && yInferred0[ch].has_value() &&
+                 yInferred0[ch].value() > 0 && std::abs(yInferred0[ch].value() - y1[ch]) < epsil) {
+        yState1[ch] = false;
+        lg->info("y1 d2i tx 2 ch: {}", ch);
+      }
+    } else {
+      if (yDirect0[ch].has_value() && yDirect0[ch].value() < 0 &&
+          std::abs(yDirect0[ch].value() - y1[ch]) < epsil) {
+        yState1[ch] = true;
+        y1[ch] = yDirect0[ch].value();
+        lg->info("y1 i2d tx ch: {}", ch);
+      }
+    }
+    if (yState2[ch]) {
+      if (y2[ch] >= 0) {
+        yState2[ch] = false;
+        lg->info("y2 d2i tx 1 ch: {}", ch);
+      } else if (!yDirect0[ch].has_value() && yInferred0[ch].has_value() &&
+                 yInferred0[ch].value() > 0 && std::abs(yInferred0[ch].value() - y2[ch]) < epsil) {
+        yState2[ch] = false;
+        lg->info("y2 d2i tx 2 ch: {}", ch);
+      }
+    } else {
+      if (yDirect0[ch].has_value() && yDirect0[ch].value() < 0 &&
+          std::abs(yDirect0[ch].value() - y2[ch]) < epsil) {
+        yState2[ch] = true;
+        y2[ch] = yDirect0[ch].value();
+        lg->info("y2 i2d tx ch: {}", ch);
+      }
+    }
+  }
+}
+
+void ImProc::updateMeas() {
+  // get closest direct & inferred clstr (yDirect and yInferred) to prev measurements if they
+  // exist
+  yPrev1 = y1;
+  yPrev2 = y2;
+  for (int ch = 0; ch < no; ++ch) {
+    directMeasAvail[ch] = !directFgClstrs[ch].empty();
+    yDirect1[ch] = argMinDist(directFgClstrs[ch], yPrev1[ch]);
+    yInferred1[ch] = argMinDist(inferredFgClstrs[ch], yPrev1[ch]);
+    yDirect2[ch] = argMinDist(directFgClstrs[ch], yPrev2[ch]);
+    yInferred2[ch] = argMinDist(inferredFgClstrs[ch], yPrev2[ch]);
+    // lg->info("ch: {}, yDirect1: {}, yInferred1: {}, yDirect2: {}, yInferred2: {}, yState1: {}, "
+    //          "yState2 : {} ",
+    //          ch, yDirect1[ch].value_or(1000), yInferred1[ch].value_or(1000),
+    //          yDirect2[ch].value_or(1000), yInferred2[ch].value_or(1000), yState1[ch], yState2[ch]);
+  }
+
+  initStates(1);
+  updateMeasCh(y1, yPrev1, yDirect1, yInferred1, yState1);
+  updateMeasCh(y2, yPrev2, yDirect2, yInferred2, yState2);
+  updateMeasAndStateOnZeroCross();
+}
+
 void ImProc::loadConfig() {
   // load bboxes from file
   ordered_value v = toml::parse<toml::discard_comments, tsl::ordered_map>(confPath + "config.toml");
   impConf.from_toml(v);
-
-  // load template images from file
-  for (int i = 0; i < NUM_TEMPLATES; ++i)
-    impConf.tmplImg_[i] =
-        cv::imread(confPath + "tmpl" + std::to_string(i) + ".png", cv::IMREAD_GRAYSCALE);
 }
 
 void ImProc::saveConfig() {
@@ -50,160 +246,207 @@ void ImProc::saveConfig() {
   std::ofstream out(confPath + "config.toml");
   out << toml::format(newImProcConfig);
   out.close();
-
-  // save template images to file
-  for (int i = 0; i < NUM_TEMPLATES; ++i)
-    cv::imwrite(confPath + "tmpl" + std::to_string(i) + ".png", impConf.tmplImg_[i], compParams);
 }
 
-void ImProc::startProcThread() {
+void ImProc::startThread() {
   if (!started()) {
-    info("Starting image processing...");
+    lg->info("Starting image processing...");
     startedImProc = true;
-    imCap->clearPreFrameQueue();
+    no = impConf.numChs_;
+    pBackSub =
+        cv::createBackgroundSubtractorMOG2(impConf.bgSubHistory_, impConf.bgSubThres_, false);
+    rectElement = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
+
+    procFrameArr.assign(no, cv::Mat());
+    directFgClstrs.assign(no, std::vector<double>());
+    y1.assign(no, 0);
+    y2.assign(no, 0);
+    yPrev1.assign(no, 0);
+    yPrev2.assign(no, 0);
+    yState1.assign(no, false);
+    yState2.assign(no, false);
+    yDirect0.assign(no, 0);
+    yDirect1.assign(no, 0);
+    yDirect2.assign(no, 0);
+    yInferred0.assign(no, 0);
+    yInferred1.assign(no, 0);
+    yInferred2.assign(no, 0);
+    directMeasAvail.assign(no, false);
+    // TODO handle yMax initialization for non-90-degree channels
+    yMax.clear();
+    for (int ch = 0; ch < no; ch++)
+      (ch == 0) ? yMax.push_back(impConf.getChROIs()[ch].height - impConf.getChWidth())
+                : yMax.push_back(impConf.getChROIs()[ch].width - impConf.getChWidth());
+
+    zeroCross.assign(2 * no, false);
+    numInitDirectChs = 0;
+
     procThread = std::thread(&ImProc::start, this);
     procThread.detach();
   }
 }
 
-void ImProc::stopProcThread() {
+void ImProc::stopThread() {
   if (started()) {
-    info("Stopping image processing...");
+    lg->info("Stopping image processing...");
     startedImProc = false;
-    if (procThread.joinable())
-      procThread.join();
-    imCap->clearPreFrameQueue();
-    this->clearProcFrameQueues();
-    this->clearTempFrameQueues();
+    std::lock_guard<std::mutex> guard(imProcMtx); // wait for thread to finish
   }
 }
 
 void ImProc::start() {
   while (started()) {
-    preFrame = imCap->getPreFrame();
+    std::lock_guard<std::mutex> guard(imProcMtx);
+    preFrame = imCap->getFrame();
     try {
-      if (!preFrame.empty()) {
-        auto startTime = high_resolution_clock::now();
-        // grab most recent raw frame
-        tempFrame = preFrame(impConf.getBBox());
-        for (int ch = 0; ch < numChans; ++ch) {
-          // use chanPose to crop preFrame
-          tempPreFrame = tempFrame(impConf.getChanBBox()[ch]);
-          if (impConf.getRotAngle()[ch] != 0) {
-            // assume tempPreFrame is square
-            cv::RotatedRect rr = cv::RotatedRect(
-                cv::Point2f(tempPreFrame.cols / 2, tempPreFrame.rows / 2),
-                cv::Size2f(impConf.getRotChanBBox()[ch].width, impConf.getRotChanBBox()[ch].height),
-                impConf.getRotAngle()[ch]);
-            cv::Point2f vertices[4];
-            rr.points(vertices);
-            for (int i = 0; i < 4; ++i)
-              cv::line(tempPreFrame, vertices[i], vertices[(i + 1) % 4], cv::Scalar::all(0), 1);
-            rotateMat(tempPreFrame, tempProcFrame, impConf.getRotAngle()[ch]);
-            tempPreFrame = tempProcFrame(impConf.getRotChanBBox()[ch]);
-          } else
-            cv::rectangle(tempFrame, impConf.getChanBBox()[ch], cv::Scalar::all(0));
-          tempProcFrame = tempPreFrame;
+      // Timer t("ImProc");
 
-          // if setup is currently active, use tmplBBox to update tmplImg
-          if (startedSetup && ch == 0) {
-            tmplFrames[0] = tempProcFrame(impConf.getTmplBBox());
-            cv::flip(tmplFrames[0], tmplFrames[1], -1); // 180deg CCW (flip around x & y-axis)
-            impConf.setTmplImg(
-                std::array<cv::Mat, NUM_TEMPLATES>{tmplFrames[0].clone(), tmplFrames[1].clone()});
-          }
+      // update foreground mask based on background threshold,
+      // (optionally update background model at preset learning rate),
+      // then apply dilation/erosion to remove noise
+      pBackSub->apply(preFrame, fgMask, 0);
+      cv::dilate(fgMask, tempFgMask, rectElement, cv::Point(-1, -1), 2);
+      cv::erode(tempFgMask, tempFgMask, rectElement, cv::Point(-1, -1), 4); // 6
+      cv::dilate(tempFgMask, tempFgMask, rectElement, cv::Point(-1, -1), 2);
+      skeletonize(tempFgMask, rectElement);
+      cv::dilate(tempFgMask, tempFgMask, rectElement);
 
-          // perform TM for each tmpl rotation, for each channel
-          currMaxLoc.reset();
-          int matchRot = 0;
-          for (int rot = 0; rot < NUM_TEMPLATES; ++rot) {
-            // outputs a 32-bit float matrix to result (we're using normed cross-correlation)
-            cv::matchTemplate(tempProcFrame, impConf.getTmplImg()[rot], tempResultFrame[rot],
-                              cv::TM_CCOEFF_NORMED);
-            cv::threshold(tempResultFrame[rot], tempResultFrame[rot], tmplThres, 255,
-                          cv::THRESH_TOZERO);
-            cv::minMaxLoc(tempResultFrame[rot], &minVal, &maxVal, &minLoc, &maxLoc,
-                          cv::Mat()); // we only need maxVal & maxLoc if we use correlation
-            // keep only the maxLoc closest to junction (i.e. with the highest y value)
-            if ((maxVal >= tmplThres) && (maxLoc.y >= currMaxLoc.value_or(maxLoc).y)) {
-              currMaxLoc = maxLoc;
-              matchRot = rot;
-            }
-          }
+      for (int ch = 0; ch < no; ++ch) {
+        segAndOrientCh(tempFgMask, tempChFgMask, procFrameArr[ch], impConf.chROIs_[ch],
+                       impConf.chWidth_);
+        // find fgLocs in center column (excluding all +ve values except 2 rows above row Wch/2)
+        cv::findNonZero(
+            procFrameArr[ch](cv::Range(impConf.chWidth_ / 2 - 2, procFrameArr[ch].rows),
+                             cv::Range(procFrameArr[ch].cols / 2, procFrameArr[ch].cols / 2 + 1)),
+            fgLocs);
+        // print fgLocs
+        // for (int i = 0; i < fgLocs.size(); ++i)
+        //   lg->info("ch: {}, i: {}, fgLocs: {}", ch, i, fgLocs[i]);
 
-          if (currMaxLoc.has_value()) {
-            // save timestamp and maxLoc to file
-            Pose p = {matchRot, *currMaxLoc};
-            procDataQArr[ch]->push(p);
-            procDataQArr[ch]->out << currMaxLoc->x << ", " << currMaxLoc->y << "\n";
-            // draw tmpl match for each channel
-            cv::rectangle(tempProcFrame, *currMaxLoc,
-                          cv::Point(currMaxLoc->x + impConf.getTmplImg()[0].cols,
-                                    currMaxLoc->y + impConf.getTmplImg()[0].rows),
-                          cv::Scalar(0, 255, 0), 2, 8, 0);
-          }
+        findClusters(fgLocs, directFgClstrs[ch]);
 
-          // push processed frame to queue for display
-          // tempResultQueueArr[ch]->push(tempResultFrame[i]);
-          procFrameQueueArr[ch]->push(tempProcFrame);
-
-          // debug info
-          // info("tempPreFrame size: {}", tempPreFrame.size());
-          // info("tempProcFrame size: {}", tempProcFrame.size());
-          // info("currPose rotChanBBox: {}", currPose.rotChanBBox[idx]);
-        } // iterate over all channels
-        procFrameQueuePtr->push(tempFrame);
-        auto stopTime = high_resolution_clock::now();
-        auto duration = duration_cast<milliseconds>(stopTime - startTime);
-        // info("imProc duration: {}", duration.count());
+        // coordinate transformation
+        for (auto &clstrLoc : directFgClstrs[ch])
+          clstrLoc = -clstrLoc + 2;
       }
+
+      inferredFgClstrs = findInferredClstrs(directFgClstrs, lg);
+
+      // for (int ch = 0; ch < no; ++ch)
+      //   for (int i = 0; i < directFgClstrs[ch].size(); ++i)
+      //     lg->info("ch: {}, i: {}, directFgClstrs: {}", ch, i, directFgClstrs[ch][i]);
+      // for (int ch = 0; ch < no; ++ch)
+      //   for (int i = 0; i < inferredFgClstrs[ch].size(); ++i)
+      //     lg->info("ch: {}, i: {}, inferredFgClstrs: {}", ch, i, inferredFgClstrs[ch][i]);
+
+      updateMeas();
+
+      {
+        std::lock_guard<std::mutex> lock(yMtx);
+        y.clear();
+        y.insert(y.end(), y1.begin(), y1.end());
+        y.insert(y.end(), y2.begin(), y2.end());
+      }
+      // print y1 and y2
+      // for (int ch = 0; ch < no; ++ch)
+      //   lg->info("ch: {}, y1: {}, y2: {}", ch, y1[ch], y2[ch]);
+
+      procData->push(y);
+      procFrameBuf.set(procFrameArr);
+      procData->out << "\n";
     } catch (cv::Exception &e) {
-      error("Message: {}", e.what());
-      error("Type: {}", type_name<decltype(e)>());
+      lg->error("Message: {}", e.what());
+      lg->error("Type: {}", type_name<decltype(e)>());
     }
   }
 }
 
 bool ImProc::started() { return startedImProc; }
 
-void ImProc::setSetupStatus(bool status) { startedSetup = status; }
+OptDouble ImProc::argMinDist(std::vector<double> &vec, double prevVal) {
+  OptDouble argMin;
+  if (vec.empty())
+    return argMin; // empty opt indicates no argmin found (i.e. value is not up-to-date)
 
-std::vector<cv::Mat> ImProc::getTempFrames() {
-  std::vector<cv::Mat> tempFrames;
-  for (auto &q : tempResultQueueArr)
-    tempFrames.push_back(q->get());
-  return tempFrames;
+  return *std::min_element(vec.begin(), vec.end(), [prevVal](double a, double b) {
+    return std::abs(a - prevVal) < std::abs(b - prevVal);
+  });
 }
 
-cv::Mat ImProc::getProcFrame(int idx) {
-  if (!procFrameQueueArr[idx]->empty())
-    return procFrameQueueArr[idx]->get();
-  return cv::Mat();
+void ImProc::segAndOrientCh(cv::Mat &srcImg, cv::Mat &tmpImg, cv::Mat &destImg, RotRect &chROI,
+                            int &chWidth) {
+  tmpImg = srcImg(chROI);
+  switch (chROI.angle) {
+  case 0:
+    destImg = tmpImg;
+    break;
+  case 90:
+    cv::rotate(tmpImg, destImg, cv::ROTATE_90_COUNTERCLOCKWISE);
+    break;
+  case -90:
+    cv::rotate(tmpImg, destImg, cv::ROTATE_90_CLOCKWISE);
+    break;
+  case 180:
+    cv::rotate(tmpImg, destImg, cv::ROTATE_180);
+    break;
+  default:
+    rotateMat(tmpImg, destImg, chROI.angle);
+    int x = destImg.cols / 2 - chWidth / 2;
+    int y = 0;
+    int chHeight = destImg.rows;
+    destImg = destImg(cv::Rect(x, y, chWidth, chHeight));
+    break;
+  }
 }
 
-cv::Mat ImProc::getProcFrame() {
-  if (!procFrameQueuePtr->empty())
-    return procFrameQueuePtr->get();
-  return cv::Mat();
+void ImProc::findClusters(const std::vector<cv::Point> &fgLocs, std::vector<double> &clusters) {
+  clusters.clear();
+  if (fgLocs.empty())
+    return;
+
+  int clusterStart = fgLocs[0].y;
+  int clusterEnd = fgLocs[0].y;
+  for (size_t i = 1; i < fgLocs.size(); ++i) {
+    if (fgLocs[i].y == clusterEnd + 1) // This point is part of the current cluster.
+      clusterEnd = fgLocs[i].y;
+    else {
+      // This point starts a new cluster. Compute the center of the current cluster.
+      double clusterCenter = (clusterStart + clusterEnd) / 2.0;
+      clusters.push_back(clusterCenter);
+
+      // Start a new cluster.
+      clusterStart = fgLocs[i].y;
+      clusterEnd = fgLocs[i].y;
+    }
+  }
+
+  // Compute the center of the last cluster.
+  double clusterCenter = (clusterStart + clusterEnd) / 2.0;
+  clusters.push_back(clusterCenter);
 }
 
-cv::Point ImProc::getProcData(int idx) {
-  if (!procDataQArr[idx]->empty())
-    return procDataQArr[idx]->get().loc;
-  return cv::Point();
+bool ImProc::anyNonZeroR(std::size_t start, std::size_t end) {
+  for (std::size_t i = start; i < end; ++i)
+    if (r[i] != 0)
+      return true;
+  return false;
 }
 
-void ImProc::clearTempFrameQueues() {
-  for (auto &q : tempResultQueueArr)
-    q->clear();
+void ImProc::setR(double currTraj[2 * MAX_NO]) {
+  for (int i = 0; i < 2 * no; ++i)
+    r[i] = currTraj[i];
 }
 
-void ImProc::clearProcFrameQueues() {
-  for (auto &q : procFrameQueueArr)
-    q->clear();
+std::vector<double> ImProc::getY() {
+  std::lock_guard<std::mutex> lock(yMtx);
+  return y;
 }
 
-void ImProc::clearProcDataQueues() {
-  for (auto &q : procDataQArr)
-    q->clear();
+unsigned char ImProc::getZeroCross(int ch) {
+  std::lock_guard<std::mutex> lock(zeroCrossMtx);
+  return zeroCross[ch];
 }
+
+cv::Mat ImProc::getProcFrame(int idx) { return procFrameBuf.get()[idx]; }
+
+void ImProc::clearData() { procData->clear(); }

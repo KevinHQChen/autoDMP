@@ -17,42 +17,36 @@
       "version>=": "1.10.0"
     },
     {
-      "name": "sdl2",
-      "version>=": "2.0.20"
-    },
-    {
       "name": "glew",
+      "version>=": "2.2.0",
       "$feature-description": "OpenGL Extension Wrangler: cross-platform open-source C/C++ extension (anything beyond OpenGL 1.1) library for OpenGL."
     },
     {
-      "name": "glfw3",
-      "$feature-description": "OpenGL Framework designed for game development"
-    },
-    {
-      "name": "imgui",
-      "default-features": false,
-      "$feature-description": "Platform/Renderer backends, docking support",
-      "features": ["sdl2-binding", "opengl3-binding", "glfw-binding", "docking-experimental"]
-    },
-    {
-      "name": "implot"
-    },
-    {
-      "name": "nativefiledialog"
-    },
-    {
       "name": "opencv4",
+      "version>=": "4.5.5",
       "default-features": false,
       "features": ["contrib", "eigen", "ffmpeg", "opengl", "gtk", "jpeg", "png"]
     },
     {
-      "name": "boost-program-options"
+      "name": "toml11",
+      "version>=": "3.7.0"
     },
     {
-      "name": "toml11"
+      "name": "tsl-ordered-map",
+      "version>=": "1.0.0"
     },
     {
-      "name": "tsl-ordered-map"
+      "name": "pybind11",
+      "version>=": "2.9.1"
+    },
+    {
+      "name": "boost-hana",
+      "version>=": "1.78.0",
+      "$feature-description": "for some reason this is needed for boost-pfr"
+    },
+    {
+      "name": "boost-pfr",
+      "version>=": "1.78.0"
     }
   ],
   "features": {

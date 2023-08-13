@@ -3,13 +3,16 @@
 #include <array>
 #include <chrono>
 #include <cmath>
+#include <condition_variable>
 #include <fstream>
 #include <iostream>
 #include <iterator>
 #include <map>
 #include <optional>
 #include <sstream>
+#include <stdexcept>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "opencv2/core.hpp"
@@ -18,25 +21,20 @@
 #include "opencv2/imgproc.hpp"
 #include "opencv2/opencv.hpp"
 
-// #include "boost/program_options.hpp"
-// #include "opencv2/core/cuda.hpp"
 #include <Eigen/Dense>
 
-// #include <CLI/CLI.hpp>
-// #include <nfd.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <spdlog/spdlog.h>
 #include <toml.hpp>
 #include <tsl/ordered_map.h>
 
-#include <string_view>
+// #include <string_view>
+#include <boost/pfr.hpp>
+#include <type_traits>
 
 using namespace spdlog;
 using namespace std::chrono;
-using Vector1d = Eigen::Matrix<double, 1, 1>;
-using Vector1ui = Eigen::Matrix<unsigned int, 1, 1>;
-using Vector2ui = Eigen::Matrix<unsigned int, 2, 1>;
 
 using ordered_value = toml::basic_value<toml::discard_comments, tsl::ordered_map, std::vector>;
 
@@ -65,6 +63,60 @@ template <typename T> constexpr auto type_name() {
   return name;
 }
 
+template <typename T> struct isArray : std::false_type {};
+
+template <typename T, std::size_t N> struct isArray<std::array<T, N>> : std::true_type {};
+
+template <typename T> std::vector<std::variant<int, double>> toVector(const T &s) {
+  std::vector<std::variant<int, double>> v;
+  boost::pfr::for_each_field(s, [&](const auto &field) {
+    if constexpr (isArray<std::decay_t<decltype(field)>>::value)
+      for (const auto &item : field)
+        v.push_back(item);
+    else
+      v.push_back(field);
+  });
+  return v;
+}
+
+template <typename T> T toStruct(const std::vector<std::variant<int, double>> &v) {
+  T s;
+  size_t i = 0;
+  boost::pfr::for_each_field(s, [&](auto &field) {
+    if constexpr (isArray<std::decay_t<decltype(field)>>::value) {
+      for (auto &item : field) {
+        if constexpr (std::is_same_v<decltype(item), int &>)
+          item = std::get<int>(v[i]);
+        else if constexpr (std::is_same_v<decltype(item), double &>)
+          item = std::get<double>(v[i]);
+        ++i;
+      }
+    } else {
+      if constexpr (std::is_same_v<decltype(field), int &>)
+        field = std::get<int>(v[i]);
+      else if constexpr (std::is_same_v<decltype(field), double &>)
+        field = std::get<double>(v[i]);
+      ++i;
+    }
+  });
+  return s;
+}
+
+class Timer {
+public:
+  Timer(const std::string &label) : start(high_resolution_clock::now()), label_(label) {}
+
+  ~Timer() {
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<milliseconds>(stop - start);
+    info("{} duration: {} ms", label_, duration.count());
+  }
+
+private:
+  high_resolution_clock::time_point start;
+  std::string label_;
+};
+
 struct guiConfig {
   std::string windowTitle;
   int width;
@@ -76,15 +128,6 @@ struct guiConfig {
   float fontSize;
   float scale;
   std::string fontPath;
-  bool startImCap;
-  bool startImProc;
-  bool startImProcSetup;
-  bool startPumpSetup;
-  bool startCtrl;
-  bool startCtrlSetup;
-  bool startSysID;
-  bool startSysIDSetup;
-  bool pauseCtrlDataViz;
   bool showDebug;
 
   void from_toml(const ordered_value &v) {
@@ -98,18 +141,14 @@ struct guiConfig {
     fontSize = toml::find<float>(v, "fontSize");
     scale = toml::find<float>(v, "scale");
     fontPath = toml::find<std::string>(v, "fontPath");
-    startImCap = toml::find<bool>(v, "startImCap");
-    startImProc = toml::find<bool>(v, "startImProc");
-    startImProcSetup = toml::find<bool>(v, "startImProcSetup");
-    startPumpSetup = toml::find<bool>(v, "startPumpSetup");
-    startCtrl = toml::find<bool>(v, "startCtrl");
-    startCtrlSetup = toml::find<bool>(v, "startCtrlSetup");
-    startSysID = toml::find<bool>(v, "startSysID");
-    startSysIDSetup = toml::find<bool>(v, "startSysIDSetup");
-    pauseCtrlDataViz = toml::find<bool>(v, "pauseCtrlDataViz");
     showDebug = toml::find<bool>(v, "showDebug");
   }
 };
+
+namespace Config {
+static ordered_value conf = TOML11_PARSE_IN_ORDER("config/setup.toml");
+static guiConfig guiConf = toml::find<guiConfig>(conf, "gui");
+} // namespace Config
 
 struct ffstream {
   std::ofstream fileStream;
@@ -138,13 +177,37 @@ template <class T> mstream &operator<<(mstream &st, T val) {
   return st;
 };
 
-void saveData(std::string fileName, Eigen::MatrixXd matrix);
+template <typename T> class SharedBuffer {
+public:
+  T get() {
+    std::unique_lock<std::mutex> lock(mtx);
+    cond_var.wait(lock);
+    return item;
+  }
 
-Eigen::MatrixXd openData(std::string fileToOpen);
+  void set(const T &newItem) {
+    std::lock_guard<std::mutex> lock(mtx);
+    item = newItem;
+    cond_var.notify_all();
+  }
+
+  void clear() {
+    std::lock_guard<std::mutex> lock(mtx);
+    item = T();
+  }
+
+private:
+  T item;
+  std::mutex mtx;
+  std::condition_variable cond_var;
+};
 
 // create a generic type queue class template for storing frames
-template <typename T> class QueueFPS : public std::queue<T> {
+template <typename T> class QueueFPS : public std::deque<T> {
   std::string fileName;
+  cv::TickMeter tm, tmSinceLastPush;
+  std::mutex mutex;
+  unsigned int counter;
 
 public:
   // constructor:
@@ -160,7 +223,7 @@ public:
 
   void push(const T &entry) {
     std::lock_guard<std::mutex> lockGuard(mutex);
-    std::queue<T>::push(entry);
+    this->push_back(entry);
     out << std::fixed << std::setprecision(3);
     out << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() -
                                                                  startTime)
@@ -179,7 +242,7 @@ public:
   T get() {
     std::lock_guard<std::mutex> lockGuard(mutex);
     T entry = this->front();
-    this->pop();
+    this->pop_front();
     return entry;
   }
 
@@ -202,7 +265,7 @@ public:
   void clear() {
     std::lock_guard<std::mutex> lockGuard(mutex);
     while (!this->empty())
-      this->pop();
+      this->pop_front();
   }
 
   void clearFile() {
@@ -229,9 +292,4 @@ public:
 
   ffstream out;
   std::chrono::time_point<std::chrono::steady_clock> startTime;
-
-private:
-  cv::TickMeter tm, tmSinceLastPush;
-  std::mutex mutex;
-  unsigned int counter;
 };

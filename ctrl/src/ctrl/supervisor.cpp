@@ -1,132 +1,226 @@
-#include "ctrl/supervisor.hpp" // ensures supervisor.hpp compiles in isolation
-#include "ctrl/state/state0.hpp"
-#include "ctrl/state/state2.hpp"
-#include "ctrl/state/sysidstate.hpp"
+#include "ctrl/supervisor.hpp"
 
-Supervisor::Supervisor(ImProc *imProc, Pump *pump)
-    : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")),
-      simModeActive(toml::get<bool>(conf["ctrl"]["simMode"])),
+Supervisor::Supervisor(ImProc *imProc, Pump *pump, std::shared_ptr<logger> log)
+    : conf(Config::conf), simModeActive(toml::get<bool>(conf["ctrl"]["simMode"])),
       dataPath(toml::get<std::string>(conf["ctrl"]["dataPath"])),
       confPath(toml::get<std::string>(conf["ctrl"]["confPath"])), pump(pump), imProc(imProc),
-      currState_(new State0(this, Eigen::Vector3d(100, 70, 70))),
-      currEvent_(new Event(0, 0, Eigen::Vector3d(0.5, 0, 0), Eigen::Vector3d(10, 0, 0))),
-      eventQueue_(new QueueFPS<Event *>(dataPath + "eventQueue.txt")),
-      ctrlDataQueuePtr(new QueueFPS<int>(dataPath + "ctrlDataQueue.txt")) {}
+      sup(new SupervisoryController()), supIn({}), supOut({}),
+      evQueue_(new QueueFPS<event_bus>(dataPath + "eventQueue.txt")),
+      ctrlDataQueuePtr(new QueueFPS<int>(dataPath + "ctrlDataQueue.txt")), lg(log) {
+  lg->info("Initializing Supervisor...");
+  sup->initialize();
+  rtM = sup->getRTM();
+  nullEv = *(event_bus *)getSupervisorParam(&rtM->DataMapInfo.mmi, 53 - 53);
+  currEv_ = nullEv;
+  mdlNum = *(double *)getSupervisorParam(&rtM->DataMapInfo.mmi, 63 - 53);
+}
 
 Supervisor::~Supervisor() {
-  delete eventQueue_;
-  delete currEvent_;
-  delete currState_;
+  lg->info("Terminating Supervisor...");
+  stopThread();
+  delete evQueue_;
+  delete sup;
+  delete ctrlDataQueuePtr;
 }
 
 void Supervisor::startThread() {
-  if (!started()) {
-    info("Starting Supervisor...");
+  if (!startedCtrl) {
+    lg->info("Starting Supervisor...");
     startedCtrl = true;
-    imProc->clearProcFrameQueues();
-    imProc->clearTempFrameQueues();
-    imProc->clearProcDataQueues();
-    updateState<State0>(Eigen::Vector3d(116, 90, 134));
-    // updateState<State1>(Eigen::Vector3d(90, 60, 50));
-    // updateState<State2>(Eigen::Vector3d(135, 101, 101));
-    if (!simModeActive)
-      pump->setFreq(200);
+
+    imProc->clearData();
+    no = imProc->impConf.getNumChs();
+    lg->info("Supervisor found {} channels.", no);
+
+    if (!sysID) {
+      switch ((int)mdlNum) {
+      case 0: // integrator model
+        ns = no;
+        break;
+      case 1: // first-order model
+        ns = no;
+        break;
+      }
+      lg->info("Supervisor found {} states.", ns);
+
+      // initialize adaptive control constants
+      supIn.excitation = 1;
+      supIn.dPmod_ = 0.0001;
+      supIn.p_ = 0.0001;
+      supIn.lambda = 1; // 0.9975;
+      supIn.k_2 = 2;
+      for (int ch = 0; ch < 2 * no; ++ch)
+        supIn.enAdapt[ch] = true;
+
+      // initialize input/output constants
+      for (int ch = 0; ch < no; ++ch) {
+        // primary output
+        supIn.ymax[ch] = imProc->yMax[ch];
+        supIn.y0[ch] = 0;
+        supOut.yhat[ch] = 0;
+        // secondary output
+        supIn.ymax[no + ch] = imProc->yMax[ch];
+        supIn.y0[no + ch] = 0;
+        supOut.yhat[no + ch] = 0;
+        // input
+        supIn.u0[ch] = pump->outputs[ch];
+        supIn.umax[ch] = 60;
+        supIn.uwt[ch] = 0.025;
+        // zero-cross flag
+        supIn.yo[ch] = false;
+        supIn.yo[no + ch] = false;
+      }
+      for (int s = 0; s < ns; ++s) {
+        supIn.x0[s] = 0;
+        supIn.x0[ns + s] = 0;
+      }
+
+      // initialize SupervisoryController
+      sup->initialize();
+    }
+
+    if (!simModeActive && pump->getPumpType() == "BARTELS")
+      pump->setFreq(250);
     ctrlThread = std::thread(&Supervisor::start, this);
     ctrlThread.detach();
   }
 }
 
 void Supervisor::stopThread() {
-  if (started()) {
-    info("Stopping Supervisor...");
+  if (startedCtrl) {
+    lg->info("Stopping Supervisor...");
     startedCtrl = false;
-    if (ctrlThread.joinable())
-      ctrlThread.join();
-    imProc->clearProcFrameQueues();
-    imProc->clearTempFrameQueues();
-    imProc->clearProcDataQueues();
+    std::lock_guard<std::mutex> guard(ctrlMtx); // wait for thread to finish
+    if (!sysID) {
+      supIn = {};
+      supOut = {};
+      sup->terminate();
+    }
+    imProc->clearData();
     // this->clearCtrlDataQueue();
   }
 }
 
 void Supervisor::start() {
-  while (started()) {
-    if (currState_->measurementAvailable()) {
-      currState_->updateMeasurement();
+  std::vector<double> uref(pump->outputs.begin(), pump->outputs.end());
+  int excitationStep = 0;
+  int actualStep = 0;
 
-      // events are pushed to a FIFO event queue by GUI
-      // get the first event in the queue and pop it
-      if (currEvent_ == nullptr && !eventQueue_->empty())
-        currEvent_ = eventQueue_->get();
+  while (startedCtrl) {
+    std::lock_guard<std::mutex> guard(ctrlMtx);
+    if (!imProc->procData->empty()) {
+      if (!sysID) {
+        // Timer t("Ctrl");
+        if (supOut.requestEvent && !evQueue_->empty()) {
+          supIn.nextEv = evQueue_->get();
+          setCurrEv(supIn.nextEv);
+          imProc->setR(getCurrEv().r);
+        } else
+          supIn.nextEv = nullEv;
 
-      // call the current state's trajectory generation function corresponding to the event
-      if (currEvent_ != nullptr)
-        currState_->handleEvent(currEvent_);
+        y = imProc->procData->get();
+        for (int ch = 0; ch < 2 * no; ++ch) {
+          supIn.y[ch] = y[ch];
+          supIn.yo[ch] = imProc->zeroCross[ch];
+        }
 
-      // generate optimal control signals at current time step
-      // and save to ctrlDataQueue
-      if (!simModeActive)
-        pump->sendSigs(currState_->step());
-      else
-        info(currState_->step());
-    }
-  }
-}
+        supIn.measAvail = !supIn.measAvail;
 
-void Supervisor::startSysIDThread() {
-  if (!startedSysID()) {
-    info("Starting SysID...");
-    startedSysIDFlag = true;
+        supIn.iRST = iRST;
 
-    sysidUref = Eigen::Vector3d(sysidUrefArr[0], sysidUrefArr[1], sysidUrefArr[2]);
-    if (!simModeActive)
-      pump->setFreq(200);
+        sup->rtU = supIn;
+        sup->step();
+        supOut = sup->rtY;
 
-    updateState<SysIDState>(sysidUref);
-    sysIDThread = std::thread(&Supervisor::startSysID, this);
-    sysIDThread.detach();
-  }
-}
+        !simModeActive
+            ? pump->setOutputs(std::vector<double>(supOut.u, supOut.u + no))
+            : lg->info("Pump outputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
+        // lg->info("Pump inputs: {}, {}, {}", supOut.u[0], supOut.u[1], supOut.u[2]);
 
-void Supervisor::stopSysIDThread() {
-  if (startedSysID()) {
-    info("Stopping SysID...");
-    startedSysIDFlag = false;
+        ctrlDataQueuePtr->out << "y: " << (double)supIn.y[0] << ", " << (double)supIn.y[1] << ", "
+                              << (double)supIn.y[2] << ", " << (double)supIn.y[3] << ", "
+                              << (double)supIn.y[4] << ", " << (double)supIn.y[5]
+                              << ", yhat: " << (double)supOut.yhat[0] << ", "
+                              << (double)supOut.yhat[1] << ", " << (double)supOut.yhat[2] << ", "
+                              << (double)supOut.yhat[3] << ", " << (double)supOut.yhat[4] << ", "
+                              << (double)supOut.yhat[5] << ", u: " << (double)supOut.u[0] << ", "
+                              << (double)supOut.u[1] << ", " << (double)supOut.u[2] << "\n";
+        // ctrlDataQueuePtr->out << "params: " << supOut.theta[0] << ", " << supOut.theta[1] << ", "
+        //                       << supOut.theta[2] << ", " << supOut.theta[3] << ", "
+        //                       << supOut.theta[4] << ", " << supOut.theta[5] << ", "
+        //                       << supOut.theta[6] << ", " << supOut.theta[7] << ", "
+        //                       << supOut.theta[8] << ", " << supOut.theta[9] << ", "
+        //                       << supOut.theta[10] << ", " << supOut.theta[11] << ", "
+        //                       << supOut.theta[12] << ", " << supOut.theta[13] << ", "
+        //                       << supOut.theta[14] << ", " << supOut.theta[15] << ", "
+        //                       << supOut.theta[16] << ", " << supOut.theta[17] << ", "
+        //                       << supOut.theta[18] << ", " << supOut.theta[19] << ", "
+        //                       << supOut.theta[20] << ", " << supOut.theta[21] << ", "
+        //                       << supOut.theta[22] << ", " << supOut.theta[23] << "\n";
+      } else {
+        y = imProc->procData->get();
 
-    if (!simModeActive)
-      pump->sendSigs(sysidUref.cast<int16_t>());
-    else
-      info(sysidUref);
+        // Only update the excitation signal every fourth iteration to achieve 10 Hz
+        if (actualStep % 4 == 0) {
+          // Get current step of excitation signal
+          if (excitationStep < excitationSignal_.cols()) {
+            du = excitationSignal_.col(excitationStep);
+            pump->setOutput(0, du[2] + uref[0]);
+            pump->setOutput(1, du[0] + uref[1]);
+            pump->setOutput(2, du[1] + uref[2]);
+            excitationStep++;
+          } else {
+            du = Eigen::VectorXd::Zero(no);
+            pump->setOutput(0, uref[0]);
+            pump->setOutput(1, uref[1]);
+            pump->setOutput(2, uref[2]);
+          }
+        }
 
-    if (sysIDThread.joinable())
-      sysIDThread.join();
-    updateState<State0>(Eigen::Vector3d(110, 79, 126));
-  }
-}
+        // Collect data
+        ctrlDataQueuePtr->push(0);
+        ctrlDataQueuePtr->out << imProc->yDirect1[0].value_or(0.0) << ", "
+                              << imProc->yDirect1[1].value_or(0.0) << ", "
+                              << imProc->yDirect1[2].value_or(0.0) << ", "
+                              << du[2] << ", " << du[0] << ", " << du[1] << "\n";
 
-void Supervisor::startSysID() {
-  while (startedSysID()) {
-    if (currState_->measurementAvailable()) {
-      currState_->updateMeasurement();
-      // send excitation signal to pump and save to ctrlDataQueue
-      if (!simModeActive)
-        pump->sendSigs(currState_->step());
-      else
-        info(currState_->step());
+        // Increment update counter, resetting if it reaches 4
+        actualStep = (actualStep + 1) % 4;
+      }
     }
   }
 }
 
 bool Supervisor::started() { return startedCtrl; }
 
-bool Supervisor::startedSysID() { return startedSysIDFlag; }
+void *Supervisor::getSupervisorParam(rtwCAPI_ModelMappingInfo *mmi, uint_T paramIdx) {
+  const rtwCAPI_ModelParameters *modelParams;
+  void **dataAddrMap;
 
-void Supervisor::addEvent(int srcState, int destState, Eigen::Vector3d pos, Eigen::Vector3d vel) {
-  eventQueue_->push(new Event(srcState, destState, pos, vel));
+  uint_T addrIdx;
+
+  void *paramAddress;
+
+  /* Assert the parameter index is less than total number of parameters */
+  lg->info("SupervisoryController variable block parameters: {}",
+           rtwCAPI_GetNumModelParameters(mmi));
+  assert(paramIdx < rtwCAPI_GetNumModelParameters(mmi));
+
+  /* Get modelParams, an array of rtwCAPI_ModelParameters structure  */
+  modelParams = rtwCAPI_GetModelParameters(mmi);
+  if (modelParams == NULL) {
+    lg->error("Model parameters not available");
+    return nullptr;
+  }
+
+  /* Get the address to this parameter */
+  dataAddrMap = rtwCAPI_GetDataAddressMap(mmi);
+  addrIdx = rtwCAPI_GetModelParameterAddrIdx(modelParams, paramIdx);
+  paramAddress = (void *)rtwCAPI_GetDataAddress(dataAddrMap, addrIdx);
+  if (paramAddress == NULL) {
+    lg->error("Model parameter address not available");
+    return nullptr;
+  }
+
+  return paramAddress;
 }
-
-// Eigen::Matrix<int16_t, 3, 1> Supervisor::getCtrlData() {
-//     if (!ctrlDataQueuePtr->empty())
-//         return ctrlDataQueuePtr->get();
-//     return Eigen::Matrix<int16_t, 3, 1>::Zero();
-// }

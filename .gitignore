@@ -7,8 +7,14 @@ conan-cache/
 .cache/
 coverage.xml
 
+# Python
+**/venv/
+**/__pycache__/
+
 # Generated data
 data/
+**/html/
+**/_htmllib/
 
 # User specific settings
 CMakeUserPresets.json

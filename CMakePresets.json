@@ -1,0 +1,62 @@
+{
+  "version": 4,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 23,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "Multi-Config",
+      "generator": "Ninja Multi-Config",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++",
+        "CMAKE_CXX_STANDARD": "20",
+        "CMAKE_CXX_STANDARD_REQUIRED": "ON",
+        "CMAKE_CXX_EXTENSIONS": "OFF",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "BUILD_TESTS": "OFF",
+        "BUILD_DOCS": "OFF"
+      }
+    },
+    {
+      "name": "docs",
+      "inherits": "Multi-Config",
+      "cacheVariables": {"BUILD_DOCS": "ON"}
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "test-base",
+      "hidden": true,
+      "output": {"outputOnFailure": true},
+      "execution": {"noTestsAction": "error", "stopOnFailure": true}
+    },
+    {
+      "name": "debug",
+      "inherits": "test-base",
+      "configurePreset": "Multi-Config",
+      "execution": {
+        "ctestCommandArgs": ["--build-config", "Debug"]
+      }
+    },
+    {
+      "name": "release",
+      "inherits": "test-base",
+      "configurePreset": "Multi-Config",
+      "execution": {
+        "ctestCommandArgs": ["--build-config", "Release"]
+      }
+    },
+    {
+      "name": "relwithdebinfo",
+      "inherits": "test-base",
+      "configurePreset": "Multi-Config",
+      "execution": {
+        "ctestCommandArgs": ["--build-config", "RelWithDebInfo"]
+      }
+    }
+  ]
+}

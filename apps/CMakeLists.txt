@@ -1,5 +1,4 @@
 add_executable(autoDMP "./src/main.cpp")
-target_link_libraries(autoDMP PRIVATE project_options project_warnings)
 
 # includes (private includes require absolute paths)
 set(autoDMP_INCLUDE_DIR
@@ -7,25 +6,21 @@ set(autoDMP_INCLUDE_DIR
   CACHE STRING "")
 target_include_directories(autoDMP PRIVATE ${autoDMP_INCLUDE_DIR})
 
-# # find dependencies (disabled for now since no dependencies need to be found)
-# set(autoDMP_DEPENDENCIES_CONFIGURED
-#     fmt
-#     CACHE STRING "")
-# foreach (dep ${autoDMP_DEPENDENCIES_CONFIGURED})
-#   find_package(${dep} CONFIG REQUIRED)
-# endforeach()
-
 # link dependencies
-target_link_system_libraries(autoDMP PRIVATE
+target_link_options(autoDMP PUBLIC "LINKER:-export-dynamic")
+target_link_libraries(autoDMP PRIVATE
   util
   cam
   pump
   gui
   imcap
   improc
-  ctrl)
+  ctrl
+  supervisor
+  imgui_bundle
+)
 
 # tests
-if(FEATURE_TESTS)
+if(BUILD_TESTS)
   add_subdirectory("./test")
 endif()

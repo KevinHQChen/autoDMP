@@ -1,5 +1,4 @@
 add_library(util "./src/util/util.cpp")
-target_link_libraries(util PRIVATE project_options project_warnings)
 
 # includes
 set(util_INCLUDE_DIR
@@ -11,14 +10,13 @@ target_include_directories(util PUBLIC
 
 # find dependencies
 set(util_DEPENDENCIES_CONFIGURED
-    unofficial-nativefiledialog
     fmt
+    Boost
     spdlog
     CLI11
     toml11
     tsl-ordered-map
     OpenCV
-    # Boost
     CACHE STRING "")
 foreach (dep ${util_DEPENDENCIES_CONFIGURED})
   find_package(${dep} REQUIRED) # certain packages like boost may need different find_package calls, check the output of run_vcpkg
@@ -28,18 +26,17 @@ foreach (dep ${util_DEPENDENCIES_CONFIGURED})
 endforeach ()
 
 # link dependencies
-target_link_system_libraries(util PRIVATE
-    unofficial::nativefiledialog::nfd
+target_link_libraries(util PRIVATE
+    # unofficial::nativefiledialog::nfd
     fmt::fmt fmt::fmt-header-only
     spdlog::spdlog spdlog::spdlog_header_only
     CLI11::CLI11
     toml11::toml11
     tsl::ordered_map
     ${OpenCV_LIBS}
-    # Boost::program_options
 )
 
 # tests
-if(FEATURE_TESTS)
+if(BUILD_TESTS)
   add_subdirectory("./test")
 endif()

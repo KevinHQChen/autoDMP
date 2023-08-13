@@ -1,11 +1,9 @@
 FROM ubuntu:20.04
 
-ARG DEBIAN_FRONTEND=noninteractive
-
-# build emacs
+# install general dependencies
 WORKDIR "/"
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
+RUN apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y --no-install-recommends \
     # common tools
     make pkg-config wget curl tar unzip \
     # X server dependencies for cpp GUI libs
@@ -14,7 +12,7 @@ RUN apt-get update \
     nasm \
     # install dependencies of snap emacs 27.2 (current snap version of emacs)
     # (ref: https://github.com/hubisan/emacs-wsl)
-    autoconf automake bsd-mailx dbus-x11 debhelper dpkg-dev \
+    autoconf automake dbus-x11 debhelper dpkg-dev \
     libacl1-dev libasound2-dev libdbus-1-dev libgif-dev libgnutls28-dev libgpm-dev \
     libgtk-3-dev libjansson-dev libjpeg-dev liblcms2-dev liblockfile-dev libm17n-dev \
     libncurses5-dev liboss4-salsa2 libotf-dev libpng-dev librsvg2-dev \
@@ -51,42 +49,51 @@ RUN apt-get update \
     libtool-bin libssl-dev \
     # dev tools
     python3-pip python3-venv meld gitk tree \
-    # for org-download
-    xclip \
-    # for generating sheet music and midi (lilypond)
-    lilypond \
-    # pdf stuff
-    imagemagick \
     # for llvm
     lsb-release software-properties-common gnupg \
-    # convenience
-    firefox \
     && rm -rf /var/lib/apt/lists/*
+# Install necessary packages available from standard repos
+RUN apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y --no-install-recommends \
+    software-properties-common wget apt-utils file zip unzip pkg-config \
+    openssh-client gpg-agent socat rsync \
+    make ninja-build git \
+    python3 python3-pip \
+    yaru-theme-gtk yaru-theme-sound yaru-theme-gnome-shell yaru-theme-icon yaru-theme-unity
 
-# for converting from pdf to png
-# ghostscript <9.24 has a vulnerability related to imagemagick, so convert was disabled
-# since it's now been patched, run this to enable it again (https://stackoverflow.com/a/59193253)
-# now you can run 'convert input.pdf -trim output.png' to do what you want (trim removes whitespace, it's like magic)
-RUN sed -i '/disable ghostscript format types/,+6d' /etc/ImageMagick-6/policy.xml
-
+# install dependencies specific to our cpp build system
+# (by default, anything you run in Docker is done as superuser, so we won't need sudo)
 # get llvm (mainly for the static analysis tools) (this is missing clang-tidy)
 RUN bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
-# ARG LLVM_VER="13"
-# # Add clang-${LLVM_VER}
-# ARG LLVM_URL="http://apt.llvm.org/focal/"
-# ARG LLVM_PKG="llvm-toolchain-focal-${LLVM_VER}"
-# RUN wget https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - && \
-#     add-apt-repository -y "deb ${LLVM_URL} ${LLVM_PKG} main" && \
-#     apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
-#     apt-get install -y --no-install-recommends \
-#         clang-${LLVM_VER} lldb-${LLVM_VER} lld-${LLVM_VER} clangd-${LLVM_VER} \
-#         llvm-${LLVM_VER}-dev libclang-${LLVM_VER}-dev clang-tidy-${LLVM_VER}
+RUN wget --no-verbose --no-check-certificate "https://github.com/aminya/setup-cpp/releases/download/v0.19.0/setup_cpp_linux"
+RUN chmod +x setup_cpp_linux
+# (setting llvm as compiler would be nice, but vcpkg's ffmpeg cannot be built with it)
+RUN ./setup_cpp_linux --compiler gcc \
+    # build system tools
+    --cmake true --ninja true --make true \
+    # code analysis tools
+    --cppcheck true --clangtidy true --clangformat true \
+    # package management
+    --vcpkg true \
+    # code coverage
+    --gcovr true \
+    # cache
+    --ccache true \
+    # documentation
+    --doxygen true
 
-# needed for emacs DAP-mode
-RUN git clone git@github.com:lldb-tools/lldb-mi.git
-RUN cd /lldb-mi \
+# setup access to ssh-agent on host
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ssh retry
+# download public key for github.com
+RUN mkdir -p -m 0700 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+# for emacs DAP-mode
+RUN --mount=type=ssh git clone git@github.com:lldb-tools/lldb-mi.git
+RUN bash -c 'cd /lldb-mi \
+    &&  source ~/.cpprc \
     && cmake . \
-    && cmake --build .
+    && cmake --build .'
 RUN ln -s /lldb-mi/src/lldb-mi /usr/local/bin/lldb-mi
 
 # get fonts
@@ -110,12 +117,6 @@ RUN export CC=/usr/bin/gcc-10 CXX=/usr/bin/gcc-10 && cd /emacs \
     && git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.emacs.d && cd ~/.emacs.d \
     && ~/.emacs.d/bin/doom install 2>&1 | tee doominstall.log
 
-# setup access to ssh-agent on host
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends ssh retry
-# download public key for github.com
-RUN mkdir -p -m 0700 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
-
 # setup doom config
 RUN --mount=type=ssh cd ~/.doom.d && rm * \
     && git init \
@@ -124,5 +125,12 @@ RUN --mount=type=ssh cd ~/.doom.d && rm * \
     # -t makes this branch the default upstream branch (equivalent to git push -u)
     && git checkout origin/dev -ft
 RUN bash -c 'retry --until=success timeout 1200 ~/.emacs.d/bin/doom sync'
+
+# manual fixes for doom emacs
+# - emoji font causes doom emacs to hang: remove config.el after install so we can access vanilla doom emacs to install emoji fonts
+# - doom sync error: https://discourse.doomemacs.org/t/error-on-syncing-wrong-type-argument-string-p-afternoon-theme/3432/3
+# - no icons: after fresh install, run M-x all-the-icons-install-fonts to install all-the-icons fonts
+# for ipython plotting support:
+    # apt-get install '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev
 
 ENTRYPOINT ["/bin/bash"]

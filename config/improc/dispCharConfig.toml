@@ -1,0 +1,8 @@
+chWidth = 56
+numChs = 1
+bgSubHistory = 500
+bgSubThres = 60.0
+
+chROIs = [
+{height=56,width=1280,angle=90,chHeight=628.0,y=50,x=0},
+]

@@ -1,74 +1,50 @@
 #include "imcap/imcap.hpp"
 
-ImCap::ImCap()
-    : conf(TOML11_PARSE_IN_ORDER("config/setup.toml")),
-      dataPath(toml::get<std::string>(conf["postproc"]["rawDataPath"])), cam(new Cam(0, conf)),
-      rawFrameQueuePtr(new QueueFPS<cv::Mat>(dataPath + "rawFramesQueue.txt")),
-      preFrameQueuePtr(new QueueFPS<cv::Mat>(dataPath + "preFramesQueue.txt")) {}
-
-ImCap::~ImCap() {
-  stopCaptureThread();
-  delete preFrameQueuePtr;
-  delete rawFrameQueuePtr;
-  delete cam;
+ImCap::ImCap(Cam *cam, std::shared_ptr<logger> log)
+    : conf(Config::conf), dataPath(toml::get<std::string>(conf["postproc"]["rawDataPath"])),
+      cam_(cam), lg(log) {
+  lg->info("Initializing image capture...");
 }
 
-void ImCap::startCaptureThread() {
+ImCap::~ImCap() {
+  lg->info("Terminating image capture...");
+  stopThread();
+  delete cam_;
+}
+
+void ImCap::startThread() {
   if (!started()) {
-    info("Starting image capture...");
+    lg->info("Starting image capture...");
     startedImCap = true;
+    cam_->start((int)(100 / 1000)); // timerInterval of 100ms
     captureThread = std::thread(&ImCap::start, this);
     captureThread.detach();
   }
 }
 
-void ImCap::stopCaptureThread() {
+void ImCap::stopThread() {
   if (started()) {
-    info("Stopping image capture...");
+    lg->info("Stopping image capture...");
     startedImCap = false;
-    if (captureThread.joinable())
-      captureThread.join();
-    cam->stop();
-    rawFrameQueuePtr->clear();
-    preFrameQueuePtr->clear();
+    std::lock_guard<std::mutex> guard(imcapMtx); // wait for thread to finish
+    cam_->stop();
   }
 }
 
 void ImCap::start() {
-  // start camera (allocate circular buffer to store frames)
-  // timerInterval sets the size of buffers needed (min size of 1) multiplied by the framerate
-  // (pretty sure) if timerInterval is less than 1000ms, only 1 buffer (i.e .40 frames) is needed
-  cam->start((int)(100 / 1000)); // timerInterval of 100ms
   while (startedImCap) {
-    // auto startTime = high_resolution_clock::now();
-    imCapSuccess = cam->process(currImg);
+    std::lock_guard<std::mutex> guard(imcapMtx);
+    // Timer t("ImCap");
+    imCapSuccess = cam_->process(currImg);
     if (imCapSuccess) {
-      rawFrameQueuePtr->push(currImg.clone());
       if (toml::get<std::string>(conf["cam"]["source"]) == "Andor")
         currImg.convertTo(currImg, CV_8UC1, 255.0 / 65535);
-      preFrameQueuePtr->push(currImg.clone());
+      rawFrameBuf.set(currImg);
     } else
-      continue; // error("cannot read image");
-    // auto stopTime = high_resolution_clock::now();
-    // auto duration = duration_cast<milliseconds>(stopTime - startTime);
-    // info("imCap duration: {}", duration.count());
+      continue; // lg->error("cannot read image");
   }
 }
 
 bool ImCap::started() { return startedImCap; }
 
-cv::Mat ImCap::getRawFrame() {
-  if (!rawFrameQueuePtr->empty())
-    return rawFrameQueuePtr->get();
-  return cv::Mat();
-}
-
-cv::Mat ImCap::getPreFrame() {
-  if (!preFrameQueuePtr->empty())
-    return preFrameQueuePtr->get();
-  return cv::Mat();
-}
-
-void ImCap::clearRawFrameQueue() { rawFrameQueuePtr->clear(); }
-
-void ImCap::clearPreFrameQueue() { preFrameQueuePtr->clear(); }
+cv::Mat ImCap::getFrame() { return rawFrameBuf.get(); }

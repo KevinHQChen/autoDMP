@@ -1,66 +1,176 @@
 #pragma once
 
 #include "imcap/imcap.hpp"
-#include "improc/improc.config.hpp"
 #include "util/util.hpp"
 
-struct Pose {
-  int rot;
-  cv::Point loc;
+#define MAX_NO 20
+
+using OptDouble = std::optional<double>;
+
+void rotateMat(cv::Mat &src, cv::Mat &dst, double angle);
+
+class RotRect : public cv::Rect {
+public:
+  int angle;
+  double chHeight;
+
+  // Constructors
+  RotRect() : cv::Rect(), angle(0) {}
+  RotRect(int _x, int _y, int _width, int _height, double _chHeight = 0, double _angle = 0)
+      : cv::Rect(_x, _y, _width, _height), angle(_angle) {
+    switch (angle) {
+    case 0:
+    case 180:
+      chHeight = _height;
+      break;
+    case 90:
+    case -90:
+      chHeight = _width;
+      break;
+    default:
+      chHeight = sqrt(_width * _width + _height * _height);
+      break;
+    }
+  }
+  RotRect(const cv::Rect &r, double _chHeight = 0, int _angle = 0) : cv::Rect(r), angle(_angle) {
+    switch (angle) {
+    case 0:
+    case 180:
+      chHeight = height;
+      break;
+    case 90:
+    case -90:
+      chHeight = width;
+      break;
+    default:
+      chHeight = sqrt(width * width + height * height);
+      break;
+    }
+  }
 };
 
-/* Helper functions */
-void rotateMat(cv::Mat &src, cv::Mat &dst, double angle);
-/* Helper functions */
-
-class ImProc {
-  ordered_value conf;
-  std::string confPath, dataPath;
-  int numChans;
-  ImCap *imCap = nullptr;
-  QueueFPS<cv::Mat> *procFrameQueuePtr;
-  std::vector<QueueFPS<cv::Mat> *> tempResultQueueArr, procFrameQueueArr;
-  std::vector<int> compParams;
-
-  cv::Mat preFrame{0, 0, CV_16UC1}, tempFrame{0, 0, CV_16UC1}, tempPreFrame{0, 0, CV_16UC1},
-      tempProcFrame{0, 0, CV_16UC1};
-
-  // for tmpl matching
-  cv::Mat tmplFrames[NUM_TEMPLATES];
-  cv::Mat tempResultFrame[NUM_TEMPLATES];
-  cv::Point minLoc, maxLoc;
-  std::optional<cv::Point> currMaxLoc;
-  std::vector<cv::Point> maxLocs;
-  double minVal, maxVal;
-
-  std::atomic<bool> startedImProc{false}, startedSetup{false};
-  std::thread procThread;
-
-  // Called within imProcThread context
-  void start();
+class ImProcConfig {
+  mutable std::mutex chanROIMtx, chWidthMtx, numChsMtx, bgSubHistoryMtx, bgSubThresMtx;
+  std::vector<RotRect> chROIs_;
+  int chWidth_, numChs_, bgSubHistory_;
+  double bgSubThres_;
 
 public:
-  ImProcConfig impConf;
-  std::atomic<double> tmplThres;
-  std::vector<QueueFPS<Pose> *> procDataQArr;
+  ImProcConfig();
+  ImProcConfig(const ImProcConfig &other);
+  ImProcConfig &operator=(const ImProcConfig &other) {
+    chROIs_ = other.getChROIs();
+    chWidth_ = other.getChWidth();
+    numChs_ = other.getNumChs();
+    bgSubHistory_ = other.getBgSubHistory();
+    bgSubThres_ = other.getBgSubThres();
+    return *this;
+  }
 
-  ImProc(ImCap *imCap);
+  std::vector<RotRect> getChROIs() const;
+  int getChWidth() const;
+  int getNumChs() const;
+  int getBgSubHistory() const;
+  double getBgSubThres() const;
+
+  void setChROIs(const std::vector<RotRect> &chROIs);
+  void setChWidth(int chWidth);
+  void setNumChs(int numChs);
+  void setBgSubHistory(int bgSubHistory);
+  void setBgSubThres(double bgSubThres);
+
+  void from_toml(const ordered_value &v);
+  ordered_value into_toml() const;
+
+  friend class ImProc;
+};
+
+class ImProc {
+
+public:
+  ImProc(ImCap *imCap, std::shared_ptr<logger> log);
   ~ImProc();
 
-  // load/save template images, channel bounding boxes into imProcConfig
+  std::vector<int> yMax;
+  ImProcConfig impConf;
+  QueueFPS<std::vector<double>> *procData;
+
+  bool started();
+
+  // load/save channel bounding boxes into/from imProcConfig
   void loadConfig();
   void saveConfig();
 
-  void startProcThread();
-  void stopProcThread();
-  bool started();
-  void setSetupStatus(bool status);
+  void startThread();
+  void stopThread();
 
-  std::vector<cv::Mat> getTempFrames();
+  void setR(double r[2 * MAX_NO]);
+
+  std::vector<double> getY();
+  unsigned char getZeroCross(int ch);
+
   cv::Mat getProcFrame(int idx);
-  cv::Mat getProcFrame();
-  cv::Point getProcData(int idx);
-  void clearTempFrameQueues();
-  void clearProcFrameQueues();
-  void clearProcDataQueues();
+
+  void clearData();
+
+  std::vector<bool> directMeasAvail, yState1, yState2;
+  std::vector<unsigned char> zeroCross;
+
+  std::vector<OptDouble> yDirect0, yDirect1, yDirect2, yInferred0, yInferred1, yInferred2;
+  std::vector<double> y, y1, y2, yPrev1, yPrev2;
+
+private:
+  std::shared_ptr<logger> lg;
+  ordered_value conf;
+  std::string confPath, dataPath;
+  std::vector<int> compParams;
+  ImCap *imCap;
+
+  int no;
+  std::mutex imProcMtx, yMtx, zeroCrossMtx;
+  std::atomic<bool> startedImProc{false};
+  std::thread procThread;
+  SharedBuffer<std::vector<cv::Mat>> procFrameBuf;
+
+  cv::Ptr<cv::BackgroundSubtractor> pBackSub;
+  cv::Mat rectElement, preFrame, fgMask, tempFgMask, tempChFgMask;
+  std::vector<cv::Point> fgLocs;
+  std::vector<cv::Mat> procFrameArr;
+  std::vector<std::vector<double>> directFgClstrs, inferredFgClstrs;
+  // state is true for direct, false for inferred
+  // std::vector<bool> directMeasAvail, yState1, yState2;
+  // std::vector<double> yDirect1, yDirect2, yInferred1, yInferred2;
+  // std::vector<double> y, y1, y2, yPrev1, yPrev2;
+  int numInitDirectChs;
+  // bool txOccurred1, txOccurred2;
+  double r[2 * MAX_NO];
+
+  void start(); // Called within imProcThread context
+
+  std::optional<double> argMinDist(std::vector<double> &vec, double value);
+
+  void segAndOrientCh(cv::Mat &srcImg, cv::Mat &tmpImg, cv::Mat &destImg, RotRect &chROI,
+                      int &chWidth);
+  void findClusters(const std::vector<cv::Point> &fgLocs, std::vector<double> &clusters);
+  bool anyNonZeroR(std::size_t start, std::size_t end);
+
+  void updateMeas();
+
+  /*
+   * initialize state of each channel
+   *   - each channel is initialized to 0 in inferred (0) state
+   *   - given n channels,
+   *     initialization is complete after n-2 channels transition to direct (1) state
+   */
+  void initStates(int maxInitialDirectChs);
+
+  /*
+   * if direct->inferred (i.e. -ve to +ve) zero crossing occurred in y1 or y2,
+   *   - if y1/y2 is currently controlled,
+   *     - set the uncontrolled measurement (y2/y1) to a small value in its current state
+   *   - update each channel state
+         - direct->inferred: if y[ch] >= 0
+         - inferred->direct: if the closest directFgClstr[ch] to 0 is -ve and close to current y[ch]
+   */
+  void updateMeasAndStateOnZeroCross();
 };
