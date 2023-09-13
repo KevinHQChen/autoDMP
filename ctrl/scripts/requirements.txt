@@ -6,6 +6,4 @@ numpy
 scipy
 matplotlib
 control
-slycot
-casadi
 future
