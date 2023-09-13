@@ -306,7 +306,7 @@ void ImProc::start() {
       // then apply dilation/erosion to remove noise
       pBackSub->apply(preFrame, fgMask, 0);
       cv::dilate(fgMask, tempFgMask, rectElement, cv::Point(-1, -1), 2);
-      cv::erode(tempFgMask, tempFgMask, rectElement, cv::Point(-1, -1), 4); // 6
+      cv::erode(tempFgMask, tempFgMask, rectElement, cv::Point(-1, -1), 2); // 6
       cv::dilate(tempFgMask, tempFgMask, rectElement, cv::Point(-1, -1), 2);
       skeletonize(tempFgMask, rectElement);
       cv::dilate(tempFgMask, tempFgMask, rectElement);
