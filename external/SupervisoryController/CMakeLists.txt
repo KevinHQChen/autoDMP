@@ -11,5 +11,5 @@ target_include_directories(supervisor PUBLIC
   "$<BUILD_INTERFACE:${supervisor_INCLUDE_DIR}>"
   "$<INSTALL_INTERFACE:./${CMAKE_INSTALL_INCLUDEDIR}>"
   "${supervisor_INCLUDE_DIR}/scripts/SupervisoryController_ert_rtw"
-  "${supervisor_INCLUDE_DIR}/R2022b/simulink/include"
-  "${supervisor_INCLUDE_DIR}/R2022b/rtw/c/src")
+  "${supervisor_INCLUDE_DIR}/R2023a/simulink/include"
+  "${supervisor_INCLUDE_DIR}/R2023a/rtw/c/src")
