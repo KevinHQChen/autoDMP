@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2480
-// Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Tue Aug  8 01:21:19 2023
+// Model version                  : 1.2497
+// Simulink Coder version         : 9.9 (R2023a) 19-Nov-2022
+// C/C++ source code generated on : Wed Sep 13 11:16:54 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -20,7 +20,7 @@
 //
 #ifndef RTW_HEADER_SupervisoryController_h_
 #define RTW_HEADER_SupervisoryController_h_
-#include <stdio.h>
+#include <cstdio>
 #include "rtwtypes.h"
 #include "rtw_modelmap.h"
 #include <stddef.h>
@@ -271,45 +271,56 @@ class SupervisoryController final
     DW_MeasurementUpdate MeasurementUpdate_j;// '<S201>/MeasurementUpdate'
     DW_paramEst1 paramEst2;            // '<S1>/paramEst2'
     DW_paramEst1 paramEst1_o;          // '<S1>/paramEst1'
-    real_T r[6];                       // '<Root>/SupervisoryController'
-    real_T y_l[6];                     // '<Root>/SupervisoryController'
-    real_T ymax[6];                    // '<Root>/SupervisoryController'
-    real_T ywt_o[6];                   // '<Root>/SupervisoryController'
-    real_T y0_p[6];                    // '<Root>/SupervisoryController'
-    real_T x0[6];                      // '<Root>/SupervisoryController'
-    real_T u0_e[3];                    // '<Root>/SupervisoryController'
-    real_T umax[3];                    // '<Root>/SupervisoryController'
-    real_T uwt[3];                     // '<Root>/SupervisoryController'
-    real_T theta_m[24];                // '<Root>/SupervisoryController'
-    real_T thetaSgn_k[24];             // '<Root>/SupervisoryController'
-    real_T Product3[8];                // '<S295>/Product3'
-    real_T Product3_a[8];              // '<S225>/Product3'
-    real_T Product3_c[7];              // '<S155>/Product3'
+    real_T r_[3];                      // '<Root>/SupervisoryController'
+    real_T y_[3];                      // '<Root>/SupervisoryController'
+    real_T y0_b[3];                    // '<Root>/SupervisoryController'
+    real_T u0_j[3];                    // '<Root>/SupervisoryController'
+    real_T umax_d[3];                  // '<Root>/SupervisoryController'
+    real_T uwt_a[3];                   // '<Root>/SupervisoryController'
+    real_T r__e[3];                    // '<Root>/SupervisoryController'
+    real_T y__e[3];                    // '<Root>/SupervisoryController'
+    real_T y0_a[3];                    // '<Root>/SupervisoryController'
+    real_T x0_i[2];                    // '<Root>/SupervisoryController'
+    real_T u0_iv[3];                   // '<Root>/SupervisoryController'
+    real_T umax_n[3];                  // '<Root>/SupervisoryController'
+    real_T uwt_n[3];                   // '<Root>/SupervisoryController'
+    real_T r__g[3];                    // '<Root>/SupervisoryController'
+    real_T y__p[3];                    // '<Root>/SupervisoryController'
+    real_T y0_m[3];                    // '<Root>/SupervisoryController'
+    real_T x0_l[2];                    // '<Root>/SupervisoryController'
+    real_T u0_b[3];                    // '<Root>/SupervisoryController'
+    real_T umax_e[3];                  // '<Root>/SupervisoryController'
+    real_T uwt_j[3];                   // '<Root>/SupervisoryController'
+    real_T Product3_n[18];             // '<S85>/Product3'
     real_T Delay_DSTATE[6];            // '<S8>/Delay'
-    real_T DiscreteTimeIntegrator_DSTATE[2];// '<S5>/Discrete-Time Integrator'
-    real_T last_mv_DSTATE[3];          // '<S230>/last_mv'
     real_T MemoryX_DSTATE[8];          // '<S252>/MemoryX'
     real_T MemoryP_DSTATE[64];         // '<S252>/MemoryP'
-    real_T DiscreteTimeIntegrator_DSTATE_m[2];// '<S4>/Discrete-Time Integrator' 
-    real_T last_mv_DSTATE_i[3];        // '<S160>/last_mv'
     real_T MemoryX_DSTATE_c[8];        // '<S182>/MemoryX'
     real_T MemoryP_DSTATE_h[64];       // '<S182>/MemoryP'
-    real_T last_mv_DSTATE_n[3];        // '<S90>/last_mv'
     real_T MemoryX_DSTATE_l[7];        // '<S112>/MemoryX'
     real_T MemoryP_DSTATE_e[49];       // '<S112>/MemoryP'
+    real_T last_mv_DSTATE_m[3];        // '<S12>/last_mv'
     real_T MemoryX_DSTATE_d[18];       // '<S42>/MemoryX'
     real_T MemoryP_DSTATE_h4[324];     // '<S42>/MemoryP'
+    real_T DiscreteFilter1_states[177];// '<S2>/Discrete Filter1'
     real_T traj[14400];                // '<Root>/SupervisoryController'
     real_T P0_1[144];                  // '<Root>/SupervisoryController'
     real_T P0_2[144];                  // '<Root>/SupervisoryController'
     real_T theta0_1[12];               // '<Root>/SupervisoryController'
     real_T theta0_2[12];               // '<Root>/SupervisoryController'
     real_T thetaSgn[24];               // '<Root>/SupervisoryController'
-    real_T DiscreteFilter1_tmp[3];     // '<S2>/Discrete Filter1'
+    real_T NextOutput[3];              // '<S2>/excitation'
+    real_T Bu[1134];
+    real_T dv[5166];
+    real_T f[4428];
+    real_T g[738];
+    real_T k[984];
+    real_T b_Sx[2160];
+    real_T b_Hv[2520];
+    real_T Su[7200];
     real_T e_data[1199];
     real_T t_data[1199];
     real_T tmp_data[1199];
-    real_T exVal;                      // '<Root>/SupervisoryController'
     real_T SFunction_o50;              // '<Root>/SupervisoryController'
     real_T SFunction_o51;              // '<Root>/SupervisoryController'
     real_T SFunction_o52;              // '<Root>/SupervisoryController'
@@ -317,26 +328,21 @@ class SupervisoryController final
     real_T SFunction_o54;              // '<Root>/SupervisoryController'
     real_T SFunction_o55;              // '<Root>/SupervisoryController'
     real_T SFunction_o56;              // '<Root>/SupervisoryController'
-    real_T DiscreteTimeIntegrator_DSTATE_j;// '<S3>/Discrete-Time Integrator'
+    real_T x0_h;                       // '<Root>/SupervisoryController'
     real_T sigPrev;                    // '<Root>/SupervisoryController'
+    uint32_T RandSeed[3];              // '<S2>/excitation'
     uint16_T waypt;                    // '<Root>/SupervisoryController'
     uint16_T trajSize;                 // '<Root>/SupervisoryController'
-    int8_T DiscreteTimeIntegrator_PrevRese;// '<S5>/Discrete-Time Integrator'
-    int8_T DiscreteTimeIntegrator_PrevRe_f;// '<S4>/Discrete-Time Integrator'
-    int8_T DiscreteTimeIntegrator_PrevRe_b;// '<S3>/Discrete-Time Integrator'
-    uint8_T is_EventHandler;           // '<Root>/SupervisoryController'
     uint8_T is_active_c6_SupervisoryControl;// '<Root>/SupervisoryController'
+    uint8_T is_EventHandler;           // '<Root>/SupervisoryController'
     boolean_T enAdapt_[6];             // '<Root>/SupervisoryController'
-    boolean_T Memory_PreviousInput[126];// '<S230>/Memory'
-    boolean_T Memory_PreviousInput_c[206];// '<S160>/Memory'
-    boolean_T Memory_PreviousInput_d[166];// '<S90>/Memory'
+    boolean_T Memory_PreviousInput_j[246];// '<S12>/Memory'
+    boolean_T integratorRST;           // '<Root>/SupervisoryController'
+    boolean_T integratorRST_i;         // '<Root>/SupervisoryController'
+    boolean_T integratorRST_a;         // '<Root>/SupervisoryController'
     boolean_T evDone;                  // '<Root>/SupervisoryController'
-    boolean_T icLoad;                  // '<S252>/MemoryX'
-    boolean_T icLoad_e;                // '<S252>/MemoryP'
-    boolean_T icLoad_a;                // '<S182>/MemoryX'
-    boolean_T icLoad_p;                // '<S182>/MemoryP'
-    boolean_T icLoad_n;                // '<S112>/MemoryX'
-    boolean_T icLoad_h;                // '<S112>/MemoryP'
+    boolean_T icLoad_k;                // '<S42>/MemoryX'
+    boolean_T icLoad_j;                // '<S42>/MemoryP'
     boolean_T MeasurementUpdate_MODE;  // '<S131>/MeasurementUpdate'
     boolean_T MeasurementUpdate_MODE_b;// '<S61>/MeasurementUpdate'
   };
@@ -386,7 +392,7 @@ class SupervisoryController final
     event_bus currEv;                  // '<Root>/currEv'
     real_T theta[24];                  // '<Root>/theta'
     real_T prmErr[6];                  // '<Root>/prmErr'
-    real_T P_c[576];                   // '<Root>/P'
+    real_T P_p[576];                   // '<Root>/P'
     boolean_T requestEvent;            // '<Root>/requestEvent'
     real_T sig;                        // '<Root>/sig'
   };
@@ -1160,11 +1166,14 @@ class SupervisoryController final
   void trajGen(const event_bus *event, const real_T y_[6], real_T trajectory
                [14400], uint16_T *trajectorySize);
   void handleEvent(real_T *holdT, boolean_T *eventDone, uint16_T *waypt_) const;
-  boolean_T any(const real_T x[3]);
+  boolean_T any_k(const real_T x[3]);
   real_T gainSchSig(const real_T ywt_[6]);
+  void binary_expand_op_n(real_T in1[24], int32_T in2, const real_T in3[24],
+    int32_T in4, int32_T in5, const real_T in6[24], int32_T in7, int32_T in8);
   int32_T xpotrf(real_T b_A[16]);
   real_T minimum(const real_T x[4]);
-  void trisolve(const real_T b_A[16], real_T B_1[16]);
+  void mpc_checkhessian(real_T b_H[16], real_T L[16], real_T *BadH);
+  void trisolve(const real_T b_A[16], real_T b_B[16]);
   real_T norm(const real_T x[4]);
   real_T maximum(const real_T x[4]);
   real_T xnrm2(int32_T n, const real_T x[16], int32_T ix0);
@@ -1172,34 +1181,27 @@ class SupervisoryController final
              real_T x[16], int32_T ix0, real_T y[4]);
   void xgerc(int32_T b_m, int32_T n, real_T alpha1, int32_T ix0, const real_T y
              [4], real_T b_A[16], int32_T ia0);
-  void KWIKfactor_ow(const real_T b_Ac[504], const int32_T iC[126], int32_T nA,
-                     const real_T b_Linv[16], real_T D[16], real_T b_H[16],
-                     int32_T n, real_T RLinv[16], real_T *Status);
-  void DropConstraint_m(int32_T kDrop, boolean_T iA[126], int32_T *nA, int32_T
-                        iC[126]);
-  void qpkwik_f(const real_T b_Linv[16], const real_T b_Hinv[16], const real_T
-                f[4], const real_T b_Ac[504], const real_T b[126], boolean_T iA
-                [126], int32_T maxiter, real_T FeasTol, real_T x[4], real_T
-                lambda[126], int32_T *status);
-  void KWIKfactor_o(const real_T b_Ac[824], const int32_T iC[206], int32_T nA,
-                    const real_T b_Linv[16], real_T D[16], real_T b_H[16],
-                    int32_T n, real_T RLinv[16], real_T *Status);
-  void DropConstraint_f(int32_T kDrop, boolean_T iA[206], int32_T *nA, int32_T
-                        iC[206]);
-  void qpkwik_o(const real_T b_Linv[16], const real_T b_Hinv[16], const real_T
-                f[4], const real_T b_Ac[824], const real_T b[206], boolean_T iA
-                [206], int32_T maxiter, real_T FeasTol, real_T x[4], real_T
-                lambda[206], int32_T *status);
-  void KWIKfactor(const real_T b_Ac[664], const int32_T iC[166], int32_T nA,
-                  const real_T b_Linv[16], real_T D[16], real_T b_H[16], int32_T
-                  n, real_T RLinv[16], real_T *Status);
-  void DropConstraint(int32_T kDrop, boolean_T iA[166], int32_T *nA, int32_T iC
-                      [166]);
+  void KWIKfactor(const real_T b_Ac[984], const int32_T iC[246], int32_T nA,
+                  const real_T b_Linv[16], real_T b_D[16], real_T b_H[16],
+                  int32_T n, real_T RLinv[16], real_T *Status);
+  void DropConstraint(int32_T kDrop, boolean_T iA[246], int32_T *nA, int32_T iC
+                      [246]);
   void qpkwik(const real_T b_Linv[16], const real_T b_Hinv[16], const real_T f[4],
-              const real_T b_Ac[664], const real_T b[166], boolean_T iA[166],
-              int32_T maxiter, real_T FeasTol, real_T x[4], real_T lambda[166],
+              const real_T b_Ac[984], const real_T b[246], boolean_T iA[246],
+              int32_T maxiter, real_T FeasTol, real_T x[4], real_T lambda[246],
               int32_T *status);
-  void mrdiv_c(const real_T A[21], const real_T B_2[9], real_T Y[21]);
+  void mpcblock_optimizer(const real_T rseq[120], const real_T vseq[21], const
+    real_T umax[3], const real_T ymin[6], const real_T ymax[6], const real_T x
+    [18], const real_T old_u[3], const boolean_T iA[246], const real_T b_Mlim
+    [246], real_T b_Mx[4428], real_T b_Mu1[738], real_T b_Mv[5166], const real_T
+    b_utarget[60], const real_T b_uoff[3], const real_T b_yoff[6], real_T b_H[16],
+    real_T b_Ac[984], const real_T ywt[6], const real_T uwt[3], const real_T
+    b_Wdu[3], const real_T b_Jm[180], const real_T b_I1[180], const real_T b_A
+    [324], const real_T Bu[1134], const real_T Bv[378], const real_T b_C[108],
+    const real_T Dv[126], const int32_T b_Mrows[246], const real_T b_RYscale[6],
+    const real_T b_RMVscale[3], real_T u[3], real_T useq[63], real_T *status,
+    boolean_T iAout[246]);
+  void mrdiv_g(const real_T A[108], const real_T B_1[36], real_T Y[108]);
 
   // Real-Time Model
   RT_MODEL rtM;
@@ -1208,6 +1210,7 @@ class SupervisoryController final
 //-
 //  These blocks were eliminated from the model due to optimizations:
 //
+//  Block '<S12>/Constant' : Unused code path elimination
 //  Block '<S12>/Floor' : Unused code path elimination
 //  Block '<S12>/Floor1' : Unused code path elimination
 //  Block '<S13>/Matrix Dimension Check' : Unused code path elimination
@@ -1236,6 +1239,7 @@ class SupervisoryController final
 //  Block '<S36>/Vector Dimension Check' : Unused code path elimination
 //  Block '<S37>/Vector Dimension Check' : Unused code path elimination
 //  Block '<S38>/Vector Dimension Check' : Unused code path elimination
+//  Block '<S12>/Min' : Unused code path elimination
 //  Block '<S12>/last_x' : Unused code path elimination
 //  Block '<S39>/Vector Dimension Check' : Unused code path elimination
 //  Block '<S12>/useq_scale' : Unused code path elimination
@@ -1261,6 +1265,7 @@ class SupervisoryController final
 //  Block '<S78>/CheckSignalProperties' : Unused code path elimination
 //  Block '<S80>/CheckSignalProperties' : Unused code path elimination
 //  Block '<S81>/CheckSignalProperties' : Unused code path elimination
+//  Block '<S90>/Constant' : Unused code path elimination
 //  Block '<S90>/Floor' : Unused code path elimination
 //  Block '<S90>/Floor1' : Unused code path elimination
 //  Block '<S91>/Matrix Dimension Check' : Unused code path elimination
@@ -1281,6 +1286,7 @@ class SupervisoryController final
 //  Block '<S106>/Vector Dimension Check' : Unused code path elimination
 //  Block '<S107>/Vector Dimension Check' : Unused code path elimination
 //  Block '<S108>/Vector Dimension Check' : Unused code path elimination
+//  Block '<S90>/Min' : Unused code path elimination
 //  Block '<S90>/constant' : Unused code path elimination
 //  Block '<S90>/last_x' : Unused code path elimination
 //  Block '<S109>/Vector Dimension Check' : Unused code path elimination
@@ -1306,6 +1312,7 @@ class SupervisoryController final
 //  Block '<S148>/CheckSignalProperties' : Unused code path elimination
 //  Block '<S150>/CheckSignalProperties' : Unused code path elimination
 //  Block '<S151>/CheckSignalProperties' : Unused code path elimination
+//  Block '<S160>/Constant' : Unused code path elimination
 //  Block '<S160>/Floor' : Unused code path elimination
 //  Block '<S160>/Floor1' : Unused code path elimination
 //  Block '<S161>/Matrix Dimension Check' : Unused code path elimination
@@ -1326,6 +1333,7 @@ class SupervisoryController final
 //  Block '<S176>/Vector Dimension Check' : Unused code path elimination
 //  Block '<S177>/Vector Dimension Check' : Unused code path elimination
 //  Block '<S178>/Vector Dimension Check' : Unused code path elimination
+//  Block '<S160>/Min' : Unused code path elimination
 //  Block '<S160>/constant' : Unused code path elimination
 //  Block '<S160>/last_x' : Unused code path elimination
 //  Block '<S179>/Vector Dimension Check' : Unused code path elimination
@@ -1351,6 +1359,7 @@ class SupervisoryController final
 //  Block '<S218>/CheckSignalProperties' : Unused code path elimination
 //  Block '<S220>/CheckSignalProperties' : Unused code path elimination
 //  Block '<S221>/CheckSignalProperties' : Unused code path elimination
+//  Block '<S230>/Constant' : Unused code path elimination
 //  Block '<S230>/Floor' : Unused code path elimination
 //  Block '<S230>/Floor1' : Unused code path elimination
 //  Block '<S231>/Matrix Dimension Check' : Unused code path elimination
@@ -1371,6 +1380,7 @@ class SupervisoryController final
 //  Block '<S246>/Vector Dimension Check' : Unused code path elimination
 //  Block '<S247>/Vector Dimension Check' : Unused code path elimination
 //  Block '<S248>/Vector Dimension Check' : Unused code path elimination
+//  Block '<S230>/Min' : Unused code path elimination
 //  Block '<S230>/constant' : Unused code path elimination
 //  Block '<S230>/last_x' : Unused code path elimination
 //  Block '<S249>/Vector Dimension Check' : Unused code path elimination

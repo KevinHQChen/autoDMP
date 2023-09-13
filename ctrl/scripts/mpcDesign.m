@@ -13,12 +13,12 @@ mdlMap = containers.Map(keySet, valSet);
 mdlNum = mdlMap(mdlStr);
 
 %% define constants for control
-% G0 = load('G0').G;
-% G1 = load('G1').G;
-% G2 = load('G2').G;
-G0 = load('simSysID/G0').G;
-G1 = load('simSysID/G1').G;
-G2 = load('simSysID/G2').G;
+G0 = load('G0').G;
+G1 = load('G1').G;
+G2 = load('G2').G;
+% G0 = load('simSysID/G0').G;
+% G1 = load('simSysID/G1').G;
+% G2 = load('simSysID/G2').G;
 
 %% define non-virtual buses for AMPC
 mdlFull = struct('A', G.A, 'B', G.B, 'C', G.C, 'D', G.D, 'U', u_0, 'Y', y_0, 'X', x_0, 'DX', zeros(2*ns, 1));

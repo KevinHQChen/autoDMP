@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2480
-// Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Tue Aug  8 01:21:19 2023
+// Model version                  : 1.2497
+// Simulink Coder version         : 9.9 (R2023a) 19-Nov-2022
+// C/C++ source code generated on : Wed Sep 13 11:16:54 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)

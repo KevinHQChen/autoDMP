@@ -1,4 +1,4 @@
-/* Copyright 2002-2021 The MathWorks, Inc. */
+/* Copyright 2002-2022 The MathWorks, Inc. */
 /**
  *
  * Types and define related to zero crossing signals and events
@@ -8,6 +8,10 @@
 /* Leading _ in header guards violates MISRA standard rule 21.1 */
 #ifndef solver_zc_hpp_
 #define solver_zc_hpp_
+
+#if !defined(MATLAB_MEX_FILE)
+#include "rtwtypes.h"
+#endif
 
 /* slZcSignalType ==============================================================
  *
