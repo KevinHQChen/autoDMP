@@ -1,17 +1,18 @@
 #include "pump/pump.hpp"
 
-Pump::Pump(std::shared_ptr<logger> log) : lg(log) {
+// Constructor definition intakes shared ptr that only points at a logger type (from spdlog namespace, see util.hpp)
+Pump::Pump(std::shared_ptr<logger> log) : lg(log) {  //sets private member lg = log 
   lg->info("Initializing pump...");
 
   if (simModeActive)
     return;
 
   if (pumpType_ == "FLUIGENT") {
-    // detect number/type of instrument controllers and their serial numbers
-    numControllers = Fgt_detect(SN, instrumentType);
+    // detect number/type of instrument controllers and their serial numbers, set numControllers to the number of instrument controllers (one controller one pump)
+    numControllers = Fgt_detect(SN, instrumentType); // numControllers is private member variable 
     lg->info("Number of controllers detected: {}", int(numControllers));
 
-    // only initialize MFCS-EZ (SN is populated sequentially for each detected controller)
+    // only initialize MFCS-EZ (SN is populated sequentially for each detected controller), indices start at 0
     for (unsigned char controllerIdx = 0; controllerIdx < numControllers; controllerIdx++) {
       if (instrumentType[controllerIdx] == fgt_INSTRUMENT_TYPE::MFCS_EZ)
         lg->info("MFCS-EZ instrument detected at index: {}, serial number: {}", int(controllerIdx),
@@ -19,23 +20,24 @@ Pump::Pump(std::shared_ptr<logger> log) : lg(log) {
       else
         SN[controllerIdx] = 0;
     }
-    Fgt_initEx(SN);
+    Fgt_initEx(SN); //initializes fluigent instruments from their unique serial number 
 
-    // Get total number of initialized pressure channel(s)
+    // Get total number of initialized pressure channel(s), sets numPressureChannels private member variable = to the number of pressure channels
     Fgt_get_pressureChannelCount(&numPressureChannels);
-    lg->info("Total number of pressure channels: {}", int(numPressureChannels));
+    lg->info("Total number of pressure channels: {}", int(numPressureChannels)); 
 
-    // Get detailed info about all pressure channels
+    // Get detailed info about all pressure channels (order, controller , ID, instrument type), sets private member variable channelInfo to this array
     Fgt_get_pressureChannelsInfo(channelInfo);
 
+    //get pressure limits and calibrate each pressure channel
     for (unsigned char ch = 0; ch < numPressureChannels; ch++) {
-      // initialize data structures
-      outputs.push_back(0.0);
+      // initialize data structures (vectors) with zeros
+      outputs.push_back(0.0); 
       prevOutputs.push_back(0.0);
 
       // Get pressure limits
-      unsigned int idx = channelInfo[ch].index;
-      Fgt_get_pressureRange(idx, &minPressure, &maxPressure);
+      unsigned int idx = channelInfo[ch].index; // creates int variable of index of pressure channel
+      Fgt_get_pressureRange(idx, &minPressure, &maxPressure); //returns min and max pressure for the channel
       lg->info("Channel {} max pressure: {} mbar, min pressure: {} mbar", idx, maxPressure,
            minPressure);
 
@@ -116,6 +118,7 @@ Pump::Pump(std::shared_ptr<logger> log) : lg(log) {
   }
 }
 
+//Destructor definition
 Pump::~Pump() {
   lg->info("Terminating pump...");
 
@@ -134,10 +137,11 @@ Pump::~Pump() {
   }
 }
 
+//SetOutput function definition intakes index of pressure channel and desired output pressure value
 bool Pump::setOutput(unsigned int pumpIdx, float output) {
   std::lock_guard lock(mutex);
 
-  if (pumpType_ == "FLUIGENT") {
+  if (pumpType_ == "FLUIGENT") { //recall pumpType is private member variable defined in class and initialized from config file setup.toml
     // check pump index
     if (pumpIdx >= numPressureChannels) {
      lg->error("Pump index {} out of range (max {})", pumpIdx, numPressureChannels - 1);
@@ -148,13 +152,13 @@ bool Pump::setOutput(unsigned int pumpIdx, float output) {
     if (output == prevOutputs[pumpIdx])
       return true;
 
-    if (!simModeActive)
+    if (!simModeActive) //if not in simulation set the pressure at the desired channel to the desired output
       Fgt_set_pressure(pumpIdx, output);
 
     // sim mode is active or command was successful
-    outputs[pumpIdx] = output;
-    prevOutputs[pumpIdx] = output;
-    lg->info("Pump {} set to {} V.", pumpIdx + 1, output);
+    outputs[pumpIdx] = output; //sets the desired pressure channel to the desired pressure (replaces old pressure value)
+    prevOutputs[pumpIdx] = output; // holds the previous pressure value of that channel in the prevOutput data structure (vector)
+    lg->info("Pump {} set to {} mbar.", pumpIdx + 1, output);
     return true;
   } else if (pumpType_ == "BARTELS") {
     int16_t outputInt = static_cast<int16_t>(output);
@@ -186,6 +190,7 @@ bool Pump::setOutput(unsigned int pumpIdx, float output) {
   }
 }
 
+//setFreq function definition 
 void Pump::setFreq(int freq_) {
   if (pumpType_ != "BARTELS")
     return;
@@ -213,6 +218,7 @@ void Pump::setFreq(int freq_) {
   }
 }
 
+//setValve function definition BARTELS
 void Pump::setValve(unsigned int valveIdx, bool state) {
   if (pumpType_ != "BARTELS")
     return;
@@ -238,6 +244,7 @@ void Pump::setValve(unsigned int valveIdx, bool state) {
   }
 }
 
+//sendCmd function definition BARTELS
 bool Pump::sendCmd(std::string cmd, int len) {
   if (pumpType_ != "BARTELS")
     return false;
@@ -262,6 +269,7 @@ bool Pump::sendCmd(std::string cmd, int len) {
   return ret;
 }
 
+//setOutputs fn definition, intakes set of pressures for each channel as vector and calls setOutput on each channel for each desired pressure
 void Pump::setOutputs(std::vector<double> u) {
   if (pumpType_ == "FLUIGENT")
     for (int ch = 0; ch < numPressureChannels; ++ch)
@@ -271,8 +279,10 @@ void Pump::setOutputs(std::vector<double> u) {
       setOutput(ch, u[ch]);
 }
 
+//getPumpType fn defn, intakes nothing, returns string the type of pump in use 
 std::string Pump::getPumpType() { return pumpType_; }
 
+//getNumPumps fn defn, intakes nothing as argument, outputs the number of pressure channels in pump
 int Pump::getNumPumps() {
   if (pumpType_ == "FLUIGENT")
     return numPressureChannels;

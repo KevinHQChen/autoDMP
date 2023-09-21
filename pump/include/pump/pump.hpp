@@ -17,18 +17,18 @@
 class Pump {
 
 public:
-  Pump(std::shared_ptr<logger> log);
-  ~Pump();
+  Pump(std::shared_ptr<logger> log); //constructor declaration
+  ~Pump(); //destructor declaration 
 
-  // generic variables
-  std::vector<float> outputs, prevOutputs;
+  // generic variables declaration
+  std::vector<float> outputs, prevOutputs; //defines two vectors of type float one being current outputs and other being previous outputs
 
   /* BARTELS */
   bool valveState[4]{true, true, true, true}, prevValveState[4]{true, true, true, true};
   int freq{0}, prevFreq{0};
   /* BARTELS END */
 
-  // generic functions
+  // generic function declarations
   bool setOutput(unsigned int pumpIdx, float voltage);
   int getOutput(unsigned int pumpIdx);
   void setOutputs(std::vector<double> u);
@@ -48,8 +48,8 @@ public:
 private:
   std::shared_ptr<logger> lg;
   std::mutex mutex;
-  const std::string pumpType_ = toml::get<std::string>(Config::conf["pump"]["type"]);
-  const bool simModeActive = toml::get<bool>(Config::conf["ctrl"]["simMode"]);
+  const std::string pumpType_ = toml::get<std::string>(Config::conf["pump"]["type"]); //pulled from config file setup.toml
+  const bool simModeActive = toml::get<bool>(Config::conf["ctrl"]["simMode"]); //pulled from config file setup.toml
 
   /* FLUIGENT */
   // structures holding controller/instrument identification and details

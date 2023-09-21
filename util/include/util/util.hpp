@@ -25,7 +25,7 @@
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
-#include <spdlog/spdlog.h>
+#include <spdlog/spdlog.h> // library used for logging in the command line 
 #include <toml.hpp>
 #include <tsl/ordered_map.h>
 
@@ -33,7 +33,7 @@
 #include <boost/pfr.hpp>
 #include <type_traits>
 
-using namespace spdlog;
+using namespace spdlog; // removing the need to use the namespace everytime we use the identifiers inside the spdlog namespace
 using namespace std::chrono;
 
 using ordered_value = toml::basic_value<toml::discard_comments, tsl::ordered_map, std::vector>;
