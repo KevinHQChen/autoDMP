@@ -20,10 +20,10 @@ message(STATUS "Python site packages: ${Python_SITELIB}")
 # if a python virtual environment does not exist, create it, update pip, and use it to install dependencies
 if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/scripts/venv")
   execute_process(COMMAND ${Python_EXECUTABLE} -m venv venv WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/scripts)
-  # update pip and install dependencies
-  execute_process(COMMAND venv/bin/python -m pip install --upgrade pip WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/scripts)
-  execute_process(COMMAND venv/bin/python -m pip install -r ${CMAKE_CURRENT_SOURCE_DIR}/scripts/requirements.txt WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/scripts)
 endif()
+# update pip and install dependencies
+execute_process(COMMAND venv/bin/python -m pip install --upgrade pip WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/scripts)
+execute_process(COMMAND venv/bin/python -m pip install -r ${CMAKE_CURRENT_SOURCE_DIR}/scripts/requirements.txt WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/scripts)
 # use virtual environment python interpreter
 set(Python_EXECUTABLE ${CMAKE_CURRENT_SOURCE_DIR}/scripts/venv/bin/python)
 

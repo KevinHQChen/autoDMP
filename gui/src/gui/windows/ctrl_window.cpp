@@ -97,6 +97,8 @@ void CtrlWindow::renderAddEventDialog() {
       std::string filename(filenameBuffer.data());
       loadEventsFromFile(filename);
     }
+    if (ImGui::Button("Clear Events"))
+      sv_->evQueue_->clear();
     ImGui::TreePop();
   }
   ImGui::Separator();
