@@ -14,6 +14,3 @@ def sinewave(p_offset,p_amp_percentage, f, del_t, num_periods):
     
     return p_vs_t
 
-test = sinewave(50, .50, 1, .001, 3)
-plt.plot(test[:,0], test[:,1])
-plt.show()
