@@ -64,7 +64,10 @@ void Supervisor::startThread() {
         supOut.yhat[no + ch] = 0;
         // input
         supIn.u0[ch] = pump->outputs[ch];
-        supIn.umax[ch] = 60;
+        if (pump->getPumpType() != "BARTELS")
+          supIn.umax[ch] = 60;
+        else
+          supIn.umax[ch] = 50;
         supIn.uwt[ch] = 0.025;
         // zero-cross flag
         supIn.yo[ch] = false;
@@ -80,7 +83,7 @@ void Supervisor::startThread() {
     }
 
     if (!simModeActive && pump->getPumpType() == "BARTELS")
-      pump->setFreq(250);
+      pump->setFreq(800);
     ctrlThread = std::thread(&Supervisor::start, this);
     ctrlThread.detach();
   }
