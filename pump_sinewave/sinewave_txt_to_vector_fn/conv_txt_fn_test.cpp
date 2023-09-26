@@ -1,8 +1,5 @@
 #include "conv_txt_to_vec_fn.hpp"
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <string>
+
 
 //File used to test conv_txt_to_vec_fn
 

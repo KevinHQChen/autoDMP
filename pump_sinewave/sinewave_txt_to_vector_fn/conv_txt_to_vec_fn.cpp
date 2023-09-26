@@ -1,8 +1,5 @@
 #include "conv_txt_to_vec_fn.hpp"
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <string>
+
 
 //Function that intakes the location of a text file with each line of the text file being a number and the final line being a whitespace and converts
 //into a double vector of the values
