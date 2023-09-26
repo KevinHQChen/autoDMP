@@ -3,6 +3,8 @@
 #include <vector>
 #include <string>
 
+
+//File used as precursor to conv_txt_to_vec_fn to get the logic correct, same general code as the fn
 int main()
 {
     std::ifstream file;
