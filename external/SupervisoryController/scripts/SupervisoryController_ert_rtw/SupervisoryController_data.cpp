@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2498
+// Model version                  : 1.2500
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Fri Sep 29 08:37:49 2023
+// C/C++ source code generated on : Fri Sep 29 09:03:32 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -1001,14 +1001,14 @@ SupervisoryController::P SupervisoryController::rtP{
   // Expression: G2.A
   //  Referenced by: '<S5>/Constant3'
 
-  { 0.98979340248168846, -0.036210018833518431, 0.00030104618687214896,
-    1.0007224384072255 },
+  { 1.037706002097353, -0.079753630068648107, 0.017369693697524134,
+    0.96326929912949766 },
 
   // Expression: G2.B
   //  Referenced by: '<S5>/Constant4'
 
-  { 0.025118718490858984, 0.016819265413734148, -0.0189087824026894,
-    0.066906613140151408, 0.032190816623613963, -0.026334884546125613 },
+  { 0.012833874300233495, -0.0041418861268163118, -0.070284965108028785,
+    0.14663165769825054, 0.012189402618931072, -0.0067808254674796425 },
 
   // Expression: G2.C
   //  Referenced by: '<S5>/Constant12'

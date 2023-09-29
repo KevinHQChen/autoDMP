@@ -232,14 +232,24 @@ Options.N4Horizon = [15 15 15];
 ss_est = ssest(sys_valdf, 2, 'Form', 'canonical', 'Ts', 0.025, Options)
 
 %% State space model estimation - 2 states
+% Options = ssestOptions;
+% % Options.WeightingFilter = [0 31.4159];
+% Options.Focus = 'simulation';
+% Options.OutputWeight = [1 0;0 1];
+% Options.SearchOptions.MaxIterations = 50;
+% Options.N4Horizon = [15 15 15];
+
+% ss_est = ssest(sys_valdf, 2, 'Form', 'canonical', 'Ts', 0.025, Options)
+
 Options = ssestOptions;
-% Options.WeightingFilter = [0 31.4159];
 Options.Focus = 'simulation';
+Options.InitialState = 'estimate';
 Options.OutputWeight = [1 0;0 1];
+Options.SearchOptions.Tolerance = 0;
 Options.SearchOptions.MaxIterations = 50;
 Options.N4Horizon = [15 15 15];
 
-ss_est = ssest(sys_valdf, 2, 'Form', 'canonical', 'Ts', 0.025, Options)
+ss_est = ssest(sys_traindf, 2, 'Form', 'canonical', 'Ts', 0.025, Options)
 
 %% select model
 idMdl = ss_est;
