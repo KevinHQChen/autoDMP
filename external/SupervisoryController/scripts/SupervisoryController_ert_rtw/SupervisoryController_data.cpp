@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2497
+// Model version                  : 1.2498
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Thu Sep 14 15:03:33 2023
+// C/C++ source code generated on : Fri Sep 29 08:09:58 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -583,7 +583,7 @@ SupervisoryController::P SupervisoryController::rtP{
   // Expression: G0.B
   //  Referenced by: '<S3>/Constant4'
 
-  { 0.79122484190511555, -0.38405785839595113, -0.40170178830419839 },
+  { 0.22599754912864506, -0.087367622049086546, -0.087367622049086546 },
 
   // Expression: G0.C
   //  Referenced by: '<S3>/Constant12'
@@ -598,7 +598,7 @@ SupervisoryController::P SupervisoryController::rtP{
   // Expression: G0.A
   //  Referenced by: '<S3>/Constant3'
 
-  1.000241761520104,
+  0.9977021834978721,
 
   // Expression: zeros(size(G0.A, 1), 1)
   //  Referenced by: '<S3>/Constant2'
@@ -790,14 +790,14 @@ SupervisoryController::P SupervisoryController::rtP{
   // Expression: G1.A
   //  Referenced by: '<S4>/Constant3'
 
-  { 0.99981895136368126, 7.8807008189629713E-5, 8.1229176736807851E-5,
-    0.99990026672706 },
+  { 1.0001226651251065, -0.0016804698402870472, -6.4394278387945068E-5,
+    0.999403766481181 },
 
   // Expression: G1.B
   //  Referenced by: '<S4>/Constant4'
 
-  { -0.34110662600625374, -0.40614309108436936, 0.79250221407906185,
-    -0.33624306151348915, -0.47352011811231631, 0.77393739369480219 },
+  { -0.0071318388640683669, -0.012368697539837475, 0.13659152296751884,
+    -0.063538603002101665, -0.04588890657825119, 0.10453377294976968 },
 
   // Expression: G1.C
   //  Referenced by: '<S4>/Constant12'
@@ -1001,14 +1001,14 @@ SupervisoryController::P SupervisoryController::rtP{
   // Expression: G2.A
   //  Referenced by: '<S5>/Constant3'
 
-  { 0.9999833005011054, -8.1991007045145725E-5, 8.73505862606927E-5,
-    0.99973733508980145 },
+  { 1.2343135750901617, -0.40767568887821365, 0.1325213450421594,
+    0.76943487988535775 },
 
   // Expression: G2.B
   //  Referenced by: '<S5>/Constant4'
 
-  { 0.75908836047540262, -0.33339527419687, -0.45723132181234372,
-    0.78902817360832445, -0.30572116804619587, -0.47432965912160835 },
+  { 0.013238326405856324, -0.00082657848609910337, -0.0975828100542709,
+    0.17201265187948039, 0.0045204478952194614, -0.0089914818106844388 },
 
   // Expression: G2.C
   //  Referenced by: '<S5>/Constant12'

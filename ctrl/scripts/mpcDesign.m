@@ -13,12 +13,12 @@ mdlMap = containers.Map(keySet, valSet);
 mdlNum = mdlMap(mdlStr);
 
 %% define constants for control
-% G0 = load('G0').G;
-% G1 = load('G1').G;
-% G2 = load('G2').G;
-G0 = load('simSysID/G0').G;
-G1 = load('simSysID/G1').G;
-G2 = load('simSysID/G2').G;
+G0 = load('G0').G;
+G1 = load('G1').G;
+G2 = load('G2').G;
+% G0 = load('simSysID/G0').G;
+% G1 = load('simSysID/G1').G;
+% G2 = load('simSysID/G2').G;
 
 %% define non-virtual buses for AMPC
 mdlFull = struct('A', G.A, 'B', G.B, 'C', G.C, 'D', G.D, 'U', u_0, 'Y', y_0, 'X', x_0, 'DX', zeros(2*ns, 1));
@@ -295,6 +295,13 @@ tsl_ = 2; % learning timescale
 ts_ = 2; % validation timescale
 Dplug = Wch/2;
 
+eventQueue = [...
+    struct('r', [-0.5;  -0.5;  0; 0; 0; 0],      'preT', Tpre, 'moveT', tsl_*5, 'postT', tsl_*5);
+    struct('r', [-0.25; -0.75; 0; 0; 0; 0],      'preT', Tpre, 'moveT', tsl_*5, 'postT', tsl_*5);
+    struct('r', [-0.5;  -0.75; 0; 0; 0; 0],      'preT', Tpre, 'moveT', tsl_*5, 'postT', tsl_*5);
+    struct('r', [-0.5; -0.5;   0; 0; 0; 0],      'preT', Tpre, 'moveT', tsl_*5, 'postT', tsl_*5);
+             ]
+
 % eventQueue = [...
 %     struct('r', [0; 0;  0; -0.5;     0; 0],      'preT', Tpre, 'moveT', tsl_*5, 'postT', tsl_*5);
 %     struct('r', [0; 0;  0; -Wch/2;     0; 0],      'preT', Tpre, 'moveT', tsl_*5, 'postT', tsl_*5);
@@ -337,41 +344,41 @@ Dplug = Wch/2;
 %     struct('r', [0; 0;       0;  Dplug; Ld/2-1; 0],  'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
 %              ];
 
-eventQueue = [...
-    % 1. pre-gen: get in position for droplet generation
-    struct('r', [0; -Wch/2;  -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', tsl_*5, 'postT', tsl_*5);
-    % 2. gen: perform droplet generation
-    struct('r', [0; Dneck; -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', tsl_*2, 'postT', 0);
-    % 3. post-gen: move droplet out of the way for next droplet
-    struct('r', [0; 0;       0;  -Wch/2; 0; Ld/2-1], 'preT', 0, 'moveT', tsl_*5, 'postT', tsl_*5);
-    % post-gen cont.: get in position for next droplet generation
-    struct('r', [0; 0;       0;  Dplug; 0; Ld/2-1],  'preT', Tpre, 'moveT', tsl_*2, 'postT', 0);
+% eventQueue = [...
+%     % 1. pre-gen: get in position for droplet generation
+%     struct('r', [0; -Wch/2;  -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', tsl_*5, 'postT', tsl_*5);
+%     % 2. gen: perform droplet generation
+%     struct('r', [0; Dneck; -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', tsl_*2, 'postT', 0);
+%     % 3. post-gen: move droplet out of the way for next droplet
+%     struct('r', [0; 0;       0;  -Wch/2; 0; Ld/2-1], 'preT', 0, 'moveT', tsl_*5, 'postT', tsl_*5);
+%     % post-gen cont.: get in position for next droplet generation
+%     struct('r', [0; 0;       0;  Dplug; 0; Ld/2-1],  'preT', Tpre, 'moveT', tsl_*2, 'postT', 0);
 
-    struct('r', [0; -Wch/2;  -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*5, 'postT', ts_*5);
-    struct('r', [0; Dneck; -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
-    struct('r', [0; 0;       0;  -Wch/2; 0; Ld/2-1], 'preT', 0, 'moveT', ts_*5, 'postT', ts_*5);
-    struct('r', [0; 0;       0;  Dplug; 0; Ld/2-1],  'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
+%     struct('r', [0; -Wch/2;  -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*5, 'postT', ts_*5);
+%     struct('r', [0; Dneck; -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
+%     struct('r', [0; 0;       0;  -Wch/2; 0; Ld/2-1], 'preT', 0, 'moveT', ts_*5, 'postT', ts_*5);
+%     struct('r', [0; 0;       0;  Dplug; 0; Ld/2-1],  'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
 
-    struct('r', [0; -Wch/2;  -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*5, 'postT', ts_*5);
-    struct('r', [0; Dneck; -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
-    struct('r', [0; 0;       0;  -Wch/2; 0; Ld/2-1], 'preT', 0, 'moveT', ts_*5, 'postT', ts_*5);
-    struct('r', [0; 0;       0;  Dplug; 0; Ld/2-1],  'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
+%     struct('r', [0; -Wch/2;  -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*5, 'postT', ts_*5);
+%     struct('r', [0; Dneck; -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
+%     struct('r', [0; 0;       0;  -Wch/2; 0; Ld/2-1], 'preT', 0, 'moveT', ts_*5, 'postT', ts_*5);
+%     struct('r', [0; 0;       0;  Dplug; 0; Ld/2-1],  'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
 
-    struct('r', [0; -Wch/2;  -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*5, 'postT', ts_*5);
-    struct('r', [0; Dneck; -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
-    struct('r', [0; 0;       0;  -Wch/2; 0; Ld/2-1], 'preT', 0, 'moveT', ts_*5, 'postT', ts_*5);
-    struct('r', [0; 0;       0;  Dplug; 0; Ld/2-1],  'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
+%     struct('r', [0; -Wch/2;  -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*5, 'postT', ts_*5);
+%     struct('r', [0; Dneck; -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
+%     struct('r', [0; 0;       0;  -Wch/2; 0; Ld/2-1], 'preT', 0, 'moveT', ts_*5, 'postT', ts_*5);
+%     struct('r', [0; 0;       0;  Dplug; 0; Ld/2-1],  'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
 
-    struct('r', [0; -Wch/2;  -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*5, 'postT', ts_*5);
-    struct('r', [0; Dneck; -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
-    struct('r', [0; 0;       0;  -Wch/2; 0; Ld/2-1], 'preT', 0, 'moveT', ts_*5, 'postT', ts_*5);
-    struct('r', [0; 0;       0;  Dplug; 0; Ld/2-1],  'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
+%     struct('r', [0; -Wch/2;  -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*5, 'postT', ts_*5);
+%     struct('r', [0; Dneck; -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
+%     struct('r', [0; 0;       0;  -Wch/2; 0; Ld/2-1], 'preT', 0, 'moveT', ts_*5, 'postT', ts_*5);
+%     struct('r', [0; 0;       0;  Dplug; 0; Ld/2-1],  'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
 
-    struct('r', [0; -Wch/2;  -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*5, 'postT', ts_*5);
-    struct('r', [0; Dneck; -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
-    struct('r', [0; 0;       0;  -Wch/2; 0; Ld/2-1], 'preT', 0, 'moveT', ts_*5, 'postT', ts_*5);
-    struct('r', [0; 0;       0;  Dplug; 0; Ld/2-1],  'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
-             ];
+%     struct('r', [0; -Wch/2;  -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*5, 'postT', ts_*5);
+%     struct('r', [0; Dneck; -Ld; 0;     0; 0],      'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
+%     struct('r', [0; 0;       0;  -Wch/2; 0; Ld/2-1], 'preT', 0, 'moveT', ts_*5, 'postT', ts_*5);
+%     struct('r', [0; 0;       0;  Dplug; 0; Ld/2-1],  'preT', Tpre, 'moveT', ts_*2, 'postT', 0);
+%              ];
 
 %% trajectory parameters
 maxTrajLength = 60/dt; % 60 seconds
