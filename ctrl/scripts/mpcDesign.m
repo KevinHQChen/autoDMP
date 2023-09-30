@@ -201,7 +201,7 @@ beta = 0.13534; % maximize robustness in closed-loop performance
 %% specify weights
 mpc3.Weights.MV = uwt0*beta;
 mpc3.Weights.MVRate = duwt0/beta;
-mpc3.Weights.OV = [1, 1, 0, 1, 1]*beta;
+mpc3.Weights.OV = [1, 1, 0, 0, 0]*beta;
 mpc3.Weights.ECR = 100000;
 
 %% use custom state estimator implementation
@@ -216,16 +216,16 @@ setEstimator(mpc3, 'custom');
 
 %% create MPC controller object with sample time
 % add integral action
-A = [Gg.A, zeros(size(Gg.A, 1), 2);
-     dt*eye(2, size(Gg.A, 1)), eye(2)];
-B = [Gg.B;
+A = [G2.A, zeros(size(G2.A, 1), 2);
+     dt*eye(2, size(G2.A, 1)), eye(2)];
+B = [G2.B;
      zeros(2, 3)];
-C = [Gg.C, zeros(size(Gg.C, 1), 2);
-     zeros(2, size(Gg.A, 1)), eye(2)];
-D = [Gg.D;
+C = [G2.C, zeros(size(G2.C, 1), 2);
+     zeros(2, size(G2.A, 1)), eye(2)];
+D = [G2.D;
      zeros(2, 3)];
-Ggi = ss(A, B, C, D, dt);
-mpcg = mpc(Ggi, dt);
+G2i = ss(A, B, C, D, dt);
+mpcg = mpc(G2i, dt);
 %% specify prediction horizon
 mpcg.PredictionHorizon = 20;
 %% specify control horizon
@@ -252,7 +252,7 @@ beta = 0.13534; % maximize robustness in closed-loop performance
 %% specify weights
 mpcg.Weights.MV = uwt0*beta;
 mpcg.Weights.MVRate = duwt0/beta;
-mpcg.Weights.OV = [1, 1, 0, 1, 1]*beta;
+mpcg.Weights.OV = [1, 1, 0, 0, 0]*beta;
 mpcg.Weights.ECR = 100000;
 
 %% use custom state estimator implementation

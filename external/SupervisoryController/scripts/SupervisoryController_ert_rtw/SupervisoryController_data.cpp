@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2507
+// Model version                  : 1.2514
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Sat Sep 30 07:51:38 2023
+// C/C++ source code generated on : Sat Sep 30 09:52:54 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -1003,19 +1003,18 @@ SupervisoryController::P SupervisoryController::rtP{
   // Expression: G2.A
   //  Referenced by: '<S5>/Constant3'
 
-  { 2.5925132908216568, -2.6847690272135338, 0.94447534451687432,
-    -0.59226481678673792 },
+  { 1.0, 0.0, 0.0, 1.0 },
 
   // Expression: G2.B
   //  Referenced by: '<S5>/Constant4'
 
-  { 0.014855982386626665, -0.021410040181387535, -0.084007149074223714,
-    0.14150118617769722, -0.0095650942228733, 0.012732852115225568 },
+  { 0.00025, -0.099108107281090041, -0.00025, 0.020123801605080698,
+    -0.019490220104579719, -0.000125 },
 
   // Expression: G2.C
   //  Referenced by: '<S5>/Constant12'
 
-  { 1.0, 0.0, 0.0, 0.0, 1.0, 0.0 },
+  { 1.0, 0.0, 0.0, 0.0, 2.0, 0.0 },
 
   // Expression: G2.D
   //  Referenced by: '<S5>/Constant13'
@@ -1166,6 +1165,11 @@ SupervisoryController::P SupervisoryController::rtP{
 
   0.0,
 
+  // Computed Parameter: yhat_Y0_b
+  //  Referenced by: '<S6>/yhat'
+
+  0.0,
+
   // Expression: [0;0]
   //  Referenced by: '<S6>/Constant'
 
@@ -1224,7 +1228,7 @@ SupervisoryController::P SupervisoryController::rtP{
   // Expression: lastx+xoff
   //  Referenced by: '<S300>/last_x'
 
-  { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+  { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
 
   // Expression: zeros(1,1)
   //  Referenced by: '<S299>/md_zero'

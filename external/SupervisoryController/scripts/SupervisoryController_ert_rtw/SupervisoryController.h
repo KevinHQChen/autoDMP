@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2507
+// Model version                  : 1.2514
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Sat Sep 30 07:51:38 2023
+// C/C++ source code generated on : Sat Sep 30 09:52:54 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -1019,6 +1019,9 @@ class SupervisoryController final
     real_T u_Y0_j;                     // Computed Parameter: u_Y0_j
                                           //  Referenced by: '<S6>/u'
 
+    real_T yhat_Y0_b;                  // Computed Parameter: yhat_Y0_b
+                                          //  Referenced by: '<S6>/yhat'
+
     real_T Constant_Value_f[2];        // Expression: [0;0]
                                           //  Referenced by: '<S6>/Constant'
 
@@ -1053,7 +1056,7 @@ class SupervisoryController final
     real_T last_mv_InitialCondition_g[3];// Expression: lastu+uoff
                                             //  Referenced by: '<S300>/last_mv'
 
-    real_T last_x_InitialCondition[11];// Expression: lastx+xoff
+    real_T last_x_InitialCondition[7]; // Expression: lastx+xoff
                                           //  Referenced by: '<S300>/last_x'
 
     real_T md_zero_Value_c;            // Expression: zeros(1,1)
@@ -1146,9 +1149,9 @@ class SupervisoryController final
 
     struct {
       rtwCAPI_ModelMappingInfo mmi;
-      void* dataAddress[238];
-      int32_T* vardimsAddress[238];
-      RTWLoggingFcnPtr loggingPtrs[238];
+      void* dataAddress[239];
+      int32_T* vardimsAddress[239];
+      RTWLoggingFcnPtr loggingPtrs[239];
     } DataMapInfo;
   };
 

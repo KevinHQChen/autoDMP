@@ -8,14 +8,14 @@ dt = 1/samplingRate;
 trainPath = "~/thesis/data/train.csv";
 % trainPath = "~/autoDMP/ctrl/scripts/simSysID/train/ctrlDataQueue.txt";
 trainStart = 1; % state0
-% trainEnd = clockPeriod*2^10-3-1-1; % 102.3/dt
-trainEnd = clockPeriod*2^9-3-1-1; % - 12.3/dt; % 102.3/dt (for state1)
+trainEnd = clockPeriod*2^10-3-1-1; % 102.3/dt
+% trainEnd = clockPeriod*2^9-3-1-1; % - 12.3/dt; % 102.3/dt (for state1)
 
 valPath = "~/thesis/data/val.csv";
 % valPath = "~/autoDMP/ctrl/scripts/simSysID/val/ctrlDataQueue.txt";
 valStart = 1;
-% valEnd = clockPeriod*2^10-3-1-1; % 102.3/dt
-valEnd = clockPeriod*2^9-3-1-1; % - 12.3/dt; % 102.3/dt (for state1)
+valEnd = clockPeriod*2^10-3-1-1; % 102.3/dt
+% valEnd = clockPeriod*2^9-3-1-1; % - 12.3/dt; % 102.3/dt (for state1)
 
 col = dictionary(["t", "y0", "y1", "y2", "u0", "u1", "u2"], 1:7);
 
@@ -245,20 +245,7 @@ ss_est = ssest(sys_valdf, 2, 'Form', 'canonical', 'Ts', 0.025, Options)
 
 % ss_est = ssest(sys_valdf, 2, 'Form', 'canonical', 'Ts', 0.025, Options)
 
-% Options = ssestOptions;
-% Options.Focus = 'simulation';
-% Options.InitialState = 'estimate';
-% Options.OutputWeight = [1 0;0 1];
-% Options.SearchOptions.Tolerance = 0;
-% Options.SearchOptions.MaxIterations = 50;
-% Options.N4Horizon = [15 15 15];
-
-% ss_est = ssest(sys_traindf, 2, 'Form', 'canonical', 'Ts', 0.025, Options)
-
-
-% State space model estimation
 Options = ssestOptions;
-Options.WeightingFilter = [0 15.708];
 Options.Focus = 'simulation';
 Options.InitialState = 'estimate';
 Options.OutputWeight = [1 0;0 1];
