@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2506
+// Model version                  : 1.2507
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Sat Sep 30 06:00:49 2023
+// C/C++ source code generated on : Sat Sep 30 06:51:34 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -282,18 +282,16 @@ class SupervisoryController final
     real_T uwt[3];                     // '<Root>/SupervisoryController'
     real_T theta_m[24];                // '<Root>/SupervisoryController'
     real_T thetaSgn_k[24];             // '<Root>/SupervisoryController'
-    real_T r__p[3];                    // '<Root>/SupervisoryController'
-    real_T y__g[3];                    // '<Root>/SupervisoryController'
-    real_T y0_j[3];                    // '<Root>/SupervisoryController'
-    real_T x0_l[2];                    // '<Root>/SupervisoryController'
-    real_T u0_f[3];                    // '<Root>/SupervisoryController'
-    real_T umax_i[3];                  // '<Root>/SupervisoryController'
-    real_T uwt_m[3];                   // '<Root>/SupervisoryController'
+    real_T r__k[3];                    // '<Root>/SupervisoryController'
+    real_T y__l[3];                    // '<Root>/SupervisoryController'
+    real_T umax_g[3];                  // '<Root>/SupervisoryController'
+    real_T uwt_mr[3];                  // '<Root>/SupervisoryController'
+    real_T Product3[8];                // '<S296>/Product3'
     real_T Product3_a[8];              // '<S226>/Product3'
     real_T Product3_c[7];              // '<S156>/Product3'
-    real_T DiscreteTimeIntegrator_DSTATE[2];// '<S6>/Discrete-Time Integrator'
-    real_T last_mv_DSTATE[3];          // '<S300>/last_mv'
     real_T Delay_DSTATE[6];            // '<S9>/Delay'
+    real_T DiscreteTimeIntegrator_DSTATE_b[2];// '<S5>/Discrete-Time Integrator' 
+    real_T last_mv_DSTATE_k[3];        // '<S231>/last_mv'
     real_T MemoryX_DSTATE[8];          // '<S253>/MemoryX'
     real_T MemoryP_DSTATE[64];         // '<S253>/MemoryP'
     real_T DiscreteTimeIntegrator_DSTATE_m[2];// '<S4>/Discrete-Time Integrator' 
@@ -311,7 +309,6 @@ class SupervisoryController final
     real_T theta0_1[12];               // '<Root>/SupervisoryController'
     real_T theta0_2[12];               // '<Root>/SupervisoryController'
     real_T thetaSgn[24];               // '<Root>/SupervisoryController'
-    real_T last_x_PreviousInput[11];   // '<S300>/last_x'
     real_T DiscreteFilter1_tmp[3];     // '<S2>/Discrete Filter1'
     real_T e_data[1199];
     real_T t_data[1199];
@@ -328,17 +325,19 @@ class SupervisoryController final
     real_T sigPrev;                    // '<Root>/SupervisoryController'
     uint16_T waypt;                    // '<Root>/SupervisoryController'
     uint16_T trajSize;                 // '<Root>/SupervisoryController'
-    int8_T DiscreteTimeIntegrator_PrevRese;// '<S6>/Discrete-Time Integrator'
+    int8_T DiscreteTimeIntegrator_PrevRe_a;// '<S5>/Discrete-Time Integrator'
     int8_T DiscreteTimeIntegrator_PrevRe_f;// '<S4>/Discrete-Time Integrator'
     int8_T DiscreteTimeIntegrator_PrevRe_b;// '<S3>/Discrete-Time Integrator'
     uint8_T is_EventHandler;           // '<Root>/SupervisoryController'
     uint8_T is_active_c6_SupervisoryControl;// '<Root>/SupervisoryController'
     boolean_T enAdapt_[6];             // '<Root>/SupervisoryController'
-    boolean_T Memory_PreviousInput[206];// '<S300>/Memory'
+    boolean_T Memory_PreviousInput_n[206];// '<S231>/Memory'
     boolean_T Memory_PreviousInput_c[206];// '<S161>/Memory'
     boolean_T Memory_PreviousInput_d[166];// '<S91>/Memory'
-    boolean_T integratorRST_oj;        // '<Root>/SupervisoryController'
+    boolean_T integratorRST_g;         // '<Root>/SupervisoryController'
     boolean_T evDone;                  // '<Root>/SupervisoryController'
+    boolean_T icLoad;                  // '<S253>/MemoryX'
+    boolean_T icLoad_e;                // '<S253>/MemoryP'
     boolean_T icLoad_a;                // '<S183>/MemoryX'
     boolean_T icLoad_p;                // '<S183>/MemoryP'
     boolean_T icLoad_n;                // '<S113>/MemoryX'
