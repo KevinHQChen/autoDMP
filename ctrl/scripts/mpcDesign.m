@@ -16,6 +16,7 @@ mdlNum = mdlMap(mdlStr);
 G0 = load('G0').G;
 G1 = load('G1').G;
 G2 = load('G2').G;
+Gg = load('GgFull').G;
 % G0 = load('simSysID/G0').G;
 % G1 = load('simSysID/G1').G;
 % G2 = load('simSysID/G2').G;
@@ -191,10 +192,10 @@ for i = 1:no
     mpc3.OV(i).Min = -y_max(i);
     mpc3.OV(i).Max = y_max(i);
 end
-mpc2.OV(4).Min = -y_max(1)*dt;
-mpc2.OV(4).Max = y_max(1)*dt;
-mpc2.OV(5).Min = -y_max(2)*dt;
-mpc2.OV(5).Max = y_max(2)*dt;
+mpc3.OV(4).Min = -y_max(1)*dt;
+mpc3.OV(4).Max = y_max(1)*dt;
+mpc3.OV(5).Min = -y_max(2)*dt;
+mpc3.OV(5).Max = y_max(2)*dt;
 %% specify overall adjustment factor applied to weights
 beta = 0.13534; % maximize robustness in closed-loop performance
 %% specify weights
@@ -212,6 +213,57 @@ Bod3 = God3.B;
 Cod3 = God3.C;
 Dod3 = God3.D;
 setEstimator(mpc3, 'custom');
+
+%% create MPC controller object with sample time
+% add integral action
+A = [Gg.A, zeros(size(Gg.A, 1), 2);
+     dt*eye(2, size(Gg.A, 1)), eye(2)];
+B = [Gg.B;
+     zeros(2, 3)];
+C = [Gg.C, zeros(size(Gg.C, 1), 2);
+     zeros(2, size(Gg.A, 1)), eye(2)];
+D = [Gg.D;
+     zeros(2, 3)];
+Ggi = ss(A, B, C, D, dt);
+mpcg = mpc(Ggi, dt);
+%% specify prediction horizon
+mpcg.PredictionHorizon = 20;
+%% specify control horizon
+mpcg.ControlHorizon = 1;
+%% specify nominal values for inputs and outputs
+mpcg.Model.Nominal.U = u_0;
+mpcg.Model.Nominal.Y = [0;0;0;0;0];
+%% specify constraints for MV and MV Rate
+for i = 1:ni
+    mpcg.MV(i).Min = 0;
+    mpcg.MV(i).Max = u_max(i);
+end
+%% specify constraints for OV
+for i = 1:no
+    mpcg.OV(i).Min = -y_max(i);
+    mpcg.OV(i).Max = y_max(i);
+end
+mpcg.OV(4).Min = -y_max(1)*dt;
+mpcg.OV(4).Max = y_max(1)*dt;
+mpcg.OV(5).Min = -y_max(2)*dt;
+mpcg.OV(5).Max = y_max(2)*dt;
+%% specify overall adjustment factor applied to weights
+beta = 0.13534; % maximize robustness in closed-loop performance
+%% specify weights
+mpcg.Weights.MV = uwt0*beta;
+mpcg.Weights.MVRate = duwt0/beta;
+mpcg.Weights.OV = [1, 1, 0, 1, 1]*beta;
+mpcg.Weights.ECR = 100000;
+
+%% use custom state estimator implementation
+% tfOD = [1/s^2 * (eye(3) - (eye(no) ~= 1)); zeros(2, 3)];
+% setoutdist(mpcg, 'model', tfOD);
+% God3 = getoutdist(mpcg);
+% Aod3 = God3.A;
+% Bod3 = God3.B;
+% Cod3 = God3.C;
+% Dod3 = God3.D;
+% setEstimator(mpcg, 'custom');
 
 mdl0 = struct('A', G0.A, 'B', G0.B, 'C', G0.C, 'D', G0.D, 'U', u_0, 'Y', [0;0;0], 'X', 0, 'DX', 0);
 busInfo = Simulink.Bus.createObject(mdl0);
