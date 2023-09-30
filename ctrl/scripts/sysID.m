@@ -7,15 +7,13 @@ dt = 1/samplingRate;
 
 trainPath = "~/thesis/data/train.csv";
 % trainPath = "~/autoDMP/ctrl/scripts/simSysID/train/ctrlDataQueue.txt";
-trainStart = 10/dt; % state0
-% trainEnd = clockPeriod*2^10-3-1-1; % 102.3/dt
-trainEnd = clockPeriod*2^9-3-1-1; % - 12.3/dt; % 102.3/dt (for state1)
+trainStart = 1; % state0
+trainEnd = clockPeriod*2^10-3-1-1 - 10/dt; % 102.3/dt
 
 valPath = "~/thesis/data/val.csv";
 % valPath = "~/autoDMP/ctrl/scripts/simSysID/val/ctrlDataQueue.txt";
-valStart = 10/dt;
-% valEnd = clockPeriod*2^10-3-1-1; % 102.3/dt
-valEnd = clockPeriod*2^9-3-1-1; % - 12.3/dt; % 102.3/dt (for state1)
+valStart = 1;
+valEnd = clockPeriod*2^10-3-1-1 - 10/dt; % 102.3/dt
 
 col = dictionary(["t", "y0", "y1", "y2", "u0", "u1", "u2"], 1:7);
 
@@ -89,6 +87,10 @@ figure
 plot(sys_vald)
 print(rootPath + "plots/valIDData", "-dpng");
 rootPath + "plots/valIDData" + ".png";
+
+%% process estimation - pure integrator
+Opt = procestOptions;
+proc_ = procest(sys_traindf,{'P0I', 'P0I', 'P0I'; 'P0I', 'P0I', 'P0I'} , Opt);
 
 %% process estimation - 1 pole
 Opt = procestOptions;
