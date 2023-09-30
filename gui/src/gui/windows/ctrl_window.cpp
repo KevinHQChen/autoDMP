@@ -231,6 +231,10 @@ void CtrlWindow::renderSupervisorStatus() {
 
         ImGui::TableHeadersRow();
 
+        std::vector<double> yy = imProc_->getY();
+
+        displayArrayNd("y1Improc", std::vector<double>(yy.begin(), yy.begin() + no));
+        displayArrayNd("y2Improc", std::vector<double>(yy.begin() + no, yy.begin() + 2 * no));
         displayArrayNd("y1", std::vector<double>(sv_->supIn.y, sv_->supIn.y + no));
         displayArrayNd("y2", std::vector<double>(sv_->supIn.y + no, sv_->supIn.y + 2 * no));
         // displayArrayNd("yPrev1", imProc_->yPrev1);
