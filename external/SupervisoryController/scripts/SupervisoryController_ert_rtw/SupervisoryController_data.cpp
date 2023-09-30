@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2514
+// Model version                  : 1.2516
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Sat Sep 30 09:52:54 2023
+// C/C++ source code generated on : Sat Sep 30 10:58:52 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -124,9 +124,8 @@ SupervisoryController::P SupervisoryController::rtP{
   // Variable: Cod3
   //  Referenced by: '<S230>/MATLAB Function'
 
-  { 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, -0.5, -0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-    -0.5, 0.5, -0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5, -0.5, 0.5, 0.0,
-    0.0 },
+  { 0.0, 0.0, 0.0, 0.5, -0.5, -0.5, 0.0, 0.0, 0.0, -0.5, 0.5, -0.5, 0.0, 0.0,
+    0.0, -0.5, -0.5, 0.5 },
 
   // Variable: Dmn
   //  Referenced by: '<S12>/MATLAB Function'
@@ -163,7 +162,7 @@ SupervisoryController::P SupervisoryController::rtP{
   // Variable: Dod3
   //  Referenced by: '<S230>/MATLAB Function'
 
-  { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+  { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
 
   // Variable: beta
   //  Referenced by:
@@ -183,7 +182,6 @@ SupervisoryController::P SupervisoryController::rtP{
   //    '<S2>/MATLAB Function2'
   //    '<S3>/Gain2'
   //    '<S4>/Gain2'
-  //    '<S5>/Gain2'
   //    '<S6>/Gain2'
   //    '<S9>/MATLAB Function'
   //    '<S322>/MATLAB Function1'
@@ -945,30 +943,15 @@ SupervisoryController::P SupervisoryController::rtP{
 
   0.0,
 
-  // Expression: [0;0]
-  //  Referenced by: '<S5>/Constant'
-
-  { 0.0, 0.0 },
-
-  // Computed Parameter: DiscreteTimeIntegrator_gainva_k
-  //  Referenced by: '<S5>/Discrete-Time Integrator'
-
-  1.0,
-
-  // Expression: zeros(2, 1)
-  //  Referenced by: '<S5>/Discrete-Time Integrator'
-
-  { 0.0, 0.0 },
-
   // Expression: zeros(1,1)
   //  Referenced by: '<S229>/G_zero'
 
   0.0,
 
-  // Expression: zeros(5,1)
+  // Expression: zeros(3,1)
   //  Referenced by: '<S229>/y.wt_zero'
 
-  { 0.0, 0.0, 0.0, 0.0, 0.0 },
+  { 0.0, 0.0, 0.0 },
 
   // Expression: zeros(3,1)
   //  Referenced by: '<S229>/du.wt_zero'
@@ -1003,18 +986,17 @@ SupervisoryController::P SupervisoryController::rtP{
   // Expression: G2.A
   //  Referenced by: '<S5>/Constant3'
 
-  { 1.0, 0.0, 0.0, 1.0 },
+  { 1.00107782, 0.0, 0.0, 0.99930767 },
 
   // Expression: G2.B
   //  Referenced by: '<S5>/Constant4'
 
-  { 0.00025, -0.099108107281090041, -0.00025, 0.020123801605080698,
-    -0.019490220104579719, -0.000125 },
+  { 0.144117, -0.0930431, -0.101003, 0.119576, -0.0275178, -0.0102807 },
 
   // Expression: G2.C
   //  Referenced by: '<S5>/Constant12'
 
-  { 1.0, 0.0, 0.0, 0.0, 2.0, 0.0 },
+  { 1.0, 0.0, 0.0, 0.0, 1.0, 0.0 },
 
   // Expression: G2.D
   //  Referenced by: '<S5>/Constant13'
@@ -1039,7 +1021,7 @@ SupervisoryController::P SupervisoryController::rtP{
   // Expression: zeros(nym,1)
   //  Referenced by: '<S231>/ym_zero'
 
-  { 0.0, 0.0, 0.0, 0.0, 0.0 },
+  { 0.0, 0.0, 0.0 },
 
   // Expression: zeros(1,1)
   //  Referenced by: '<S229>/md_zero'
@@ -1051,15 +1033,15 @@ SupervisoryController::P SupervisoryController::rtP{
 
   { 0.0, 0.0, 0.0 },
 
-  // Expression: zeros(5,1)
+  // Expression: zeros(3,1)
   //  Referenced by: '<S229>/ymin_zero'
 
-  { 0.0, 0.0, 0.0, 0.0, 0.0 },
+  { 0.0, 0.0, 0.0 },
 
-  // Expression: zeros(5,1)
+  // Expression: zeros(3,1)
   //  Referenced by: '<S229>/ymax_zero'
 
-  { 0.0, 0.0, 0.0, 0.0, 0.0 },
+  { 0.0, 0.0, 0.0 },
 
   // Expression: zeros(1,3)
   //  Referenced by: '<S229>/E_zero'
@@ -1071,15 +1053,15 @@ SupervisoryController::P SupervisoryController::rtP{
 
   { 1.0, 1.0, 1.0 },
 
-  // Expression: zeros(1,5)
+  // Expression: zeros(1,3)
   //  Referenced by: '<S229>/F_zero'
 
-  { 0.0, 0.0, 0.0, 0.0, 0.0 },
+  { 0.0, 0.0, 0.0 },
 
   // Expression: Yscale(:,ones(1,max(nCC,1)))'
   //  Referenced by: '<S231>/ymin_scale1'
 
-  { 1.0, 1.0, 1.0, 1.0, 1.0 },
+  { 1.0, 1.0, 1.0 },
 
   // Expression: zeros(1,1)
   //  Referenced by: '<S229>/S_zero'
@@ -1175,7 +1157,7 @@ SupervisoryController::P SupervisoryController::rtP{
 
   { 0.0, 0.0 },
 
-  // Computed Parameter: DiscreteTimeIntegrator_gainv_kx
+  // Computed Parameter: DiscreteTimeIntegrator_gainva_k
   //  Referenced by: '<S6>/Discrete-Time Integrator'
 
   1.0,
@@ -1409,14 +1391,7 @@ SupervisoryController::P SupervisoryController::rtP{
     false, false, false, false, false, false, false, false, false, false, false,
     false, false, false, false, false, false, false, false, false, false, false,
     false, false, false, false, false, false, false, false, false, false, false,
-    false, false, false, false, false, false, false, false, false, false, false,
-    false, false, false, false, false, false, false, false, false, false, false,
-    false, false, false, false, false, false, false, false, false, false, false,
-    false, false, false, false, false, false, false, false, false, false, false,
-    false, false, false, false, false, false, false, false, false, false, false,
-    false, false, false, false, false, false, false, false, false, false, false,
-    false, false, false, false, false, false, false, false, false, false, false,
-    false, false, false, false, false, false, false, false },
+    false, false, false, false, false },
 
   // Expression: pInitialization.isSqrtUsed
   //  Referenced by: '<S294>/isSqrtUsed'

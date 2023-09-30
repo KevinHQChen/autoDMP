@@ -174,14 +174,14 @@ C = [G2.C, zeros(size(G2.C, 1), 2);
 D = [G2.D;
      zeros(2, 3)];
 G2i = ss(A, B, C, D, dt);
-mpc3 = mpc(G2i, dt);
+mpc3 = mpc(G2, dt);
 %% specify prediction horizon
 mpc3.PredictionHorizon = 20;
 %% specify control horizon
 mpc3.ControlHorizon = 1;
 %% specify nominal values for inputs and outputs
 mpc3.Model.Nominal.U = u_0;
-mpc3.Model.Nominal.Y = [0;0;0;0;0];
+mpc3.Model.Nominal.Y = [0;0;0];
 %% specify constraints for MV and MV Rate
 for i = 1:ni
     mpc3.MV(i).Min = 0;
@@ -192,20 +192,16 @@ for i = 1:no
     mpc3.OV(i).Min = -y_max(i);
     mpc3.OV(i).Max = y_max(i);
 end
-mpc3.OV(4).Min = -y_max(1)*dt;
-mpc3.OV(4).Max = y_max(1)*dt;
-mpc3.OV(5).Min = -y_max(2)*dt;
-mpc3.OV(5).Max = y_max(2)*dt;
 %% specify overall adjustment factor applied to weights
 beta = 0.13534; % maximize robustness in closed-loop performance
 %% specify weights
 mpc3.Weights.MV = uwt0*beta;
 mpc3.Weights.MVRate = duwt0/beta;
-mpc3.Weights.OV = [1, 1, 0, 0, 0]*beta;
+mpc3.Weights.OV = [1, 1, 0]*beta;
 mpc3.Weights.ECR = 100000;
 
 %% use custom state estimator implementation
-tfOD = [1/s^2 * (eye(3) - (eye(no) ~= 1)); zeros(2, 3)];
+tfOD = 1/s^2 * (eye(3) - (eye(no) ~= 1));
 setoutdist(mpc3, 'model', tfOD);
 God3 = getoutdist(mpc3);
 Aod3 = God3.A;
