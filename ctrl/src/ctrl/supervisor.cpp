@@ -146,20 +146,24 @@ void Supervisor::start() {
                               << ", yhat: " << (double)supOut.yhat[0] << ", "
                               << (double)supOut.yhat[1] << ", " << (double)supOut.yhat[2] << ", "
                               << (double)supOut.yhat[3] << ", " << (double)supOut.yhat[4] << ", "
-                              << (double)supOut.yhat[5] << ", u: " << (double)supOut.u[0] << ", "
-                              << (double)supOut.u[1] << ", " << (double)supOut.u[2] << "\n";
-        // ctrlDataQueuePtr->out << "params: " << supOut.theta[0] << ", " << supOut.theta[1] << ", "
-        //                       << supOut.theta[2] << ", " << supOut.theta[3] << ", "
-        //                       << supOut.theta[4] << ", " << supOut.theta[5] << ", "
-        //                       << supOut.theta[6] << ", " << supOut.theta[7] << ", "
-        //                       << supOut.theta[8] << ", " << supOut.theta[9] << ", "
-        //                       << supOut.theta[10] << ", " << supOut.theta[11] << ", "
-        //                       << supOut.theta[12] << ", " << supOut.theta[13] << ", "
-        //                       << supOut.theta[14] << ", " << supOut.theta[15] << ", "
-        //                       << supOut.theta[16] << ", " << supOut.theta[17] << ", "
-        //                       << supOut.theta[18] << ", " << supOut.theta[19] << ", "
-        //                       << supOut.theta[20] << ", " << supOut.theta[21] << ", "
-        //                       << supOut.theta[22] << ", " << supOut.theta[23] << "\n";
+                              << (double)supOut.yhat[5] << ", r: " << (double)supOut.currTraj[0]
+                              << ", " << (double)supOut.currTraj[1] << ", "
+                              << (double)supOut.currTraj[2] << ", " << (double)supOut.currTraj[3]
+                              << ", " << (double)supOut.currTraj[4] << ", "
+                              << (double)supOut.currTraj[5] << ", u: " << (double)supOut.u[0]
+                              << ", " << (double)supOut.u[1] << ", " << (double)supOut.u[2] << "\n";
+        ctrlDataQueuePtr->out << "params: " << supOut.theta[0] << ", " << supOut.theta[1] << ", "
+                              << supOut.theta[2] << ", " << supOut.theta[3] << ", "
+                              << supOut.theta[4] << ", " << supOut.theta[5] << ", "
+                              << supOut.theta[6] << ", " << supOut.theta[7] << ", "
+                              << supOut.theta[8] << ", " << supOut.theta[9] << ", "
+                              << supOut.theta[10] << ", " << supOut.theta[11] << ", "
+                              << supOut.theta[12] << ", " << supOut.theta[13] << ", "
+                              << supOut.theta[14] << ", " << supOut.theta[15] << ", "
+                              << supOut.theta[16] << ", " << supOut.theta[17] << ", "
+                              << supOut.theta[18] << ", " << supOut.theta[19] << ", "
+                              << supOut.theta[20] << ", " << supOut.theta[21] << ", "
+                              << supOut.theta[22] << ", " << supOut.theta[23] << "\n";
       } else {
         y = imProc->procData->get();
 
@@ -168,9 +172,9 @@ void Supervisor::start() {
           // Get current step of excitation signal
           if (excitationStep < excitationSignal_.cols()) {
             du = excitationSignal_.col(excitationStep);
-            pump->setOutput(0, du[2] + uref[0]);
-            pump->setOutput(1, du[0] + uref[1]);
-            pump->setOutput(2, du[1] + uref[2]);
+            pump->setOutput(0, du[0] + uref[0]);
+            pump->setOutput(1, du[1] + uref[1]);
+            pump->setOutput(2, du[2] + uref[2]);
             excitationStep++;
           } else {
             du = Eigen::VectorXd::Zero(no);
@@ -184,8 +188,8 @@ void Supervisor::start() {
         ctrlDataQueuePtr->push(0);
         ctrlDataQueuePtr->out << imProc->yDirect1[0].value_or(0.0) << ", "
                               << imProc->yDirect1[1].value_or(0.0) << ", "
-                              << imProc->yDirect1[2].value_or(0.0) << ", "
-                              << du[2] << ", " << du[0] << ", " << du[1] << "\n";
+                              << imProc->yDirect1[2].value_or(0.0) << ", " << du[2] << ", " << du[0]
+                              << ", " << du[1] << "\n";
 
         // Increment update counter, resetting if it reaches 4
         actualStep = (actualStep + 1) % 4;

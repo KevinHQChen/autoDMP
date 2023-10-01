@@ -344,7 +344,13 @@ void ImProc::start() {
       {
         std::lock_guard<std::mutex> lock(yMtx);
         y.clear();
-        y.insert(y.end(), y1.begin(), y1.end());
+        std::vector<double> yDirect_;
+
+        for (const auto& yOpt : yDirect1)
+          yDirect_.push_back(yOpt.value_or(0.0));
+
+        y.insert(y.end(), yDirect_.begin(), yDirect_.end());
+        // y.insert(y.end(), y1.begin(), y1.end());
         y.insert(y.end(), y2.begin(), y2.end());
       }
       // print y1 and y2
