@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'SupervisoryController'.
 //
-// Model version                  : 1.2516
+// Model version                  : 1.2521
 // Simulink Coder version         : 9.8 (R2022b) 13-May-2022
-// C/C++ source code generated on : Sun Oct  1 03:35:01 2023
+// C/C++ source code generated on : Sun Oct  1 04:18:34 2023
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: Intel->x86-64 (Linux 64)
@@ -290,6 +290,7 @@ class SupervisoryController final
     real_T Product3_a[8];              // '<S226>/Product3'
     real_T Product3_c[7];              // '<S156>/Product3'
     real_T Delay_DSTATE[6];            // '<S9>/Delay'
+    real_T DiscreteTimeIntegrator_DSTATE_b[2];// '<S5>/Discrete-Time Integrator' 
     real_T last_mv_DSTATE_k[3];        // '<S231>/last_mv'
     real_T MemoryX_DSTATE[8];          // '<S253>/MemoryX'
     real_T MemoryP_DSTATE[64];         // '<S253>/MemoryP'
@@ -324,6 +325,7 @@ class SupervisoryController final
     real_T sigPrev;                    // '<Root>/SupervisoryController'
     uint16_T waypt;                    // '<Root>/SupervisoryController'
     uint16_T trajSize;                 // '<Root>/SupervisoryController'
+    int8_T DiscreteTimeIntegrator_PrevRe_a;// '<S5>/Discrete-Time Integrator'
     int8_T DiscreteTimeIntegrator_PrevRe_f;// '<S4>/Discrete-Time Integrator'
     int8_T DiscreteTimeIntegrator_PrevRe_b;// '<S3>/Discrete-Time Integrator'
     uint8_T is_EventHandler;           // '<Root>/SupervisoryController'
@@ -455,7 +457,7 @@ class SupervisoryController final
     real_T Cod2[30];                   // Variable: Cod2
                                           //  Referenced by: '<S160>/MATLAB Function'
 
-    real_T Cod3[18];                   // Variable: Cod3
+    real_T Cod3[30];                   // Variable: Cod3
                                           //  Referenced by: '<S230>/MATLAB Function'
 
     real_T Dmn[36];                    // Variable: Dmn
@@ -476,7 +478,7 @@ class SupervisoryController final
     real_T Dod2[15];                   // Variable: Dod2
                                           //  Referenced by: '<S160>/MATLAB Function'
 
-    real_T Dod3[9];                    // Variable: Dod3
+    real_T Dod3[15];                   // Variable: Dod3
                                           //  Referenced by: '<S230>/MATLAB Function'
 
     real_T beta;                       // Variable: beta
@@ -495,6 +497,7 @@ class SupervisoryController final
                                           //    '<S2>/MATLAB Function2'
                                           //    '<S3>/Gain2'
                                           //    '<S4>/Gain2'
+                                          //    '<S5>/Gain2'
                                           //    '<S6>/Gain2'
                                           //    '<S9>/MATLAB Function'
                                           //    '<S322>/MATLAB Function1'
@@ -889,10 +892,20 @@ class SupervisoryController final
     real_T yhat_Y0_f;                  // Computed Parameter: yhat_Y0_f
                                           //  Referenced by: '<S5>/yhat'
 
+    real_T Constant_Value_o[2];        // Expression: [0;0]
+                                          //  Referenced by: '<S5>/Constant'
+
+    real_T DiscreteTimeIntegrator_gainva_k;
+                          // Computed Parameter: DiscreteTimeIntegrator_gainva_k
+                             //  Referenced by: '<S5>/Discrete-Time Integrator'
+
+    real_T DiscreteTimeIntegrator_IC_c[2];// Expression: zeros(2, 1)
+                                             //  Referenced by: '<S5>/Discrete-Time Integrator'
+
     real_T G_zero_Value_j;             // Expression: zeros(1,1)
                                           //  Referenced by: '<S229>/G_zero'
 
-    real_T ywt_zero_Value_g[3];        // Expression: zeros(3,1)
+    real_T ywt_zero_Value_g[5];        // Expression: zeros(5,1)
                                           //  Referenced by: '<S229>/y.wt_zero'
 
     real_T duwt_zero_Value_a[3];       // Expression: zeros(3,1)
@@ -934,7 +947,7 @@ class SupervisoryController final
     real_T X0_Value_a[8];              // Expression: pInitialization.X0
                                           //  Referenced by: '<S253>/X0'
 
-    real_T ym_zero_Value_d[3];         // Expression: zeros(nym,1)
+    real_T ym_zero_Value_d[5];         // Expression: zeros(nym,1)
                                           //  Referenced by: '<S231>/ym_zero'
 
     real_T md_zero_Value_o;            // Expression: zeros(1,1)
@@ -943,10 +956,10 @@ class SupervisoryController final
     real_T umin_zero_Value_b[3];       // Expression: zeros(3,1)
                                           //  Referenced by: '<S229>/umin_zero'
 
-    real_T ymin_zero_Value_e[3];       // Expression: zeros(3,1)
+    real_T ymin_zero_Value_e[5];       // Expression: zeros(5,1)
                                           //  Referenced by: '<S229>/ymin_zero'
 
-    real_T ymax_zero_Value_d[3];       // Expression: zeros(3,1)
+    real_T ymax_zero_Value_d[5];       // Expression: zeros(5,1)
                                           //  Referenced by: '<S229>/ymax_zero'
 
     real_T E_zero_Value_j[3];          // Expression: zeros(1,3)
@@ -955,10 +968,10 @@ class SupervisoryController final
     real_T umin_scale4_Gain_f[3];  // Expression: MVscale(:,ones(1,max(nCC,1)))'
                                       //  Referenced by: '<S231>/umin_scale4'
 
-    real_T F_zero_Value_n[3];          // Expression: zeros(1,3)
+    real_T F_zero_Value_n[5];          // Expression: zeros(1,5)
                                           //  Referenced by: '<S229>/F_zero'
 
-    real_T ymin_scale1_Gain_e[3];   // Expression: Yscale(:,ones(1,max(nCC,1)))'
+    real_T ymin_scale1_Gain_e[5];   // Expression: Yscale(:,ones(1,max(nCC,1)))'
                                        //  Referenced by: '<S231>/ymin_scale1'
 
     real_T S_zero_Value_i;             // Expression: zeros(1,1)
@@ -1012,8 +1025,8 @@ class SupervisoryController final
     real_T Constant_Value_f[2];        // Expression: [0;0]
                                           //  Referenced by: '<S6>/Constant'
 
-    real_T DiscreteTimeIntegrator_gainva_k;
-                          // Computed Parameter: DiscreteTimeIntegrator_gainva_k
+    real_T DiscreteTimeIntegrator_gainv_kx;
+                          // Computed Parameter: DiscreteTimeIntegrator_gainv_kx
                              //  Referenced by: '<S6>/Discrete-Time Integrator'
 
     real_T DiscreteTimeIntegrator_IC_o[2];// Expression: zeros(2, 1)
@@ -1136,9 +1149,9 @@ class SupervisoryController final
 
     struct {
       rtwCAPI_ModelMappingInfo mmi;
-      void* dataAddress[236];
-      int32_T* vardimsAddress[236];
-      RTWLoggingFcnPtr loggingPtrs[236];
+      void* dataAddress[239];
+      int32_T* vardimsAddress[239];
+      RTWLoggingFcnPtr loggingPtrs[239];
     } DataMapInfo;
   };
 
@@ -1436,8 +1449,6 @@ class SupervisoryController final
 //  Block '<S219>/CheckSignalProperties' : Unused code path elimination
 //  Block '<S221>/CheckSignalProperties' : Unused code path elimination
 //  Block '<S222>/CheckSignalProperties' : Unused code path elimination
-//  Block '<S5>/Discrete-Time Integrator' : Unused code path elimination
-//  Block '<S5>/Gain2' : Unused code path elimination
 //  Block '<S231>/Floor' : Unused code path elimination
 //  Block '<S231>/Floor1' : Unused code path elimination
 //  Block '<S232>/Matrix Dimension Check' : Unused code path elimination
@@ -1483,7 +1494,6 @@ class SupervisoryController final
 //  Block '<S289>/CheckSignalProperties' : Unused code path elimination
 //  Block '<S291>/CheckSignalProperties' : Unused code path elimination
 //  Block '<S292>/CheckSignalProperties' : Unused code path elimination
-//  Block '<S5>/Sum' : Unused code path elimination
 //  Block '<S300>/Floor' : Unused code path elimination
 //  Block '<S300>/Floor1' : Unused code path elimination
 //  Block '<S301>/Matrix Dimension Check' : Unused code path elimination
