@@ -13,13 +13,13 @@ mdlMap = containers.Map(keySet, valSet);
 mdlNum = mdlMap(mdlStr);
 
 %% define constants for control
-G0 = load('G0').G;
-G1 = load('G1').G;
-G2 = load('G2').G;
+% G0 = load('G0').G;
+% G1 = load('G1').G;
+% G2 = load('G2').G;
 Gg = load('GgFull').G;
-% G0 = load('simSysID/G0').G;
-% G1 = load('simSysID/G1').G;
-% G2 = load('simSysID/G2').G;
+G0 = load('simSysID/G0').G;
+G1 = load('simSysID/G1').G;
+G2 = load('simSysID/G2').G;
 
 %% define non-virtual buses for AMPC
 mdlFull = struct('A', G.A, 'B', G.B, 'C', G.C, 'D', G.D, 'U', u_0, 'Y', y_0, 'X', x_0, 'DX', zeros(2*ns, 1));
@@ -348,11 +348,18 @@ ts_ = 2; % validation timescale
 Dplug = Wch/2;
 
 eventQueue = [...
-    struct('r', [-0.5;  -0.5;  0; 0; 0; 0],      'preT', Tpre, 'moveT', tsl_*5, 'postT', tsl_*5);
-    struct('r', [-0.25; -0.75; 0; 0; 0; 0],      'preT', Tpre, 'moveT', tsl_*5, 'postT', tsl_*5);
-    struct('r', [-0.5;  -0.75; 0; 0; 0; 0],      'preT', Tpre, 'moveT', tsl_*5, 'postT', tsl_*5);
-    struct('r', [-0.5; -0.5;   0; 0; 0; 0],      'preT', Tpre, 'moveT', tsl_*5, 'postT', tsl_*5);
+    struct('r', [-300/668; -300/668; 0; 0; 0; 0], 'preT', 0, 'moveT', 10, 'postT', 2);
+    struct('r', [-200/668; -400/668; 0; 0; 0; 0], 'preT', 0, 'moveT', 10, 'postT', 2);
+    struct('r', [-400/668; -200/668; 0; 0; 0; 0], 'preT', 0, 'moveT', 10, 'postT', 2);
+    struct('r', [-300/668; -200/668; 0; 0; 0; 0], 'preT', 0, 'moveT', 10, 'postT', 2);
+    struct('r', [-300/668; -300/668; 0; 0; 0; 0], 'preT', 0, 'moveT', 10, 'postT', 20);
              ]
+
+% -300, -300, 0, 0, 0, 0, 0, 10, 2
+% -200, -400, 0, 0, 0, 0, 0, 10, 2
+% -400, -200, 0, 0, 0, 0, 0, 10, 2
+% -300, -200, 0, 0, 0, 0, 0, 10, 2
+% -300, -300, 0, 0, 0, 0, 0, 10, 2
 
 % eventQueue = [...
 %     struct('r', [0; 0;  0; -0.5;     0; 0],      'preT', Tpre, 'moveT', tsl_*5, 'postT', tsl_*5);
@@ -496,6 +503,18 @@ y = squeeze(signals('y'));
 ywt = squeeze(signals('ywt'));
 r = squeeze(signals('r'));
 theta = squeeze(out.logsout.getElement(3).Values.Data);
+
+figure
+plot(t(1:80/dt), r([1 2],1:80/dt)*668/612*200/30)
+grid
+legend('r_1', 'r_2');
+xlabel('Time [s]')
+ylabel('Position [um]')
+set(gcf, 'Position', [100, 100, 2*300, 300]);
+set(gcf, 'Color', 'w');
+% export_fig /home/khqc/thesis/assets/reftraj.pdf
+
+writematrix(r([1 2],1:80/dt)' * 668/612 * 200/30, "/home/khqc/thesis/data/r_export.csv");
 
 figure
 plot(t, y([2 3 4 5],:))

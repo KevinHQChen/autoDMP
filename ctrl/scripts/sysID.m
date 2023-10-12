@@ -25,13 +25,13 @@ inputNames = {'Pump1', 'Pump2', 'Pump3'};
 
 if strcmp(idMdlName, 'G0')
     outputs = col(["y0"]); % ["y0" "y1" "y2"]
-    outputNames = {'Ch1Water'}; % {'Ch1Water', 'Ch2Oil', 'Ch3Oil'};
+    outputNames = {'Ch1 [um]'}; % {'Ch1Water', 'Ch2Oil', 'Ch3Oil'};
 elseif strcmp(idMdlName, 'G1')
     outputs = col(["y1" "y2"]);
-    outputNames = {'Ch2Oil', 'Ch3Oil'};
+    outputNames = {'Ch2 [um]', 'Ch3 [um]'};
 elseif strcmp(idMdlName, 'G2')
     outputs = col(["y0" "y1"]); % ["y0" "y1" "y2"]
-    outputNames = {'Ch1Water', 'Ch2Oil'}; % {'Ch1Water', 'Ch2Oil', 'Ch3Oil'};
+    outputNames = {'Ch1 [um]', 'Ch2 [um]'}; % {'Ch1Water', 'Ch2Oil', 'Ch3Oil'};
 end
 no = length(outputs);
 
@@ -41,7 +41,7 @@ data_train = readmatrix(trainPath);
 data_train = data_train(1:end,:);
 t_train = (0:dt:(size(data_train,1) - 1)*dt)'; % assume uniform sampling
 u_train = data_train(:, inputs);
-y_train = data_train(:, outputs);
+y_train = data_train(:, outputs) * 200/30;
 % u_train_ts = timeseries(u_train, t_train);
 % y_train_ts = timeseries(y_train, t_train);
 
@@ -50,7 +50,7 @@ data_val = readmatrix(valPath);
 data_val = data_val(1:end,:);
 t_val = (0:dt:(size(data_val,1) - 1)*dt)'; % assume uniform sampling
 u_val = data_val(:, inputs);
-y_val = data_val(:, outputs);
+y_val = data_val(:, outputs) * 200/30;
 % u_val_ts = timeseries(u_val, t_val);
 % y_val_ts = timeseries(y_val, t_val);
 
@@ -254,6 +254,39 @@ Options.SearchOptions.MaxIterations = 50;
 Options.N4Horizon = [15 15 15];
 
 ss_est = ssest(sys_traindf, 2, 'Form', 'canonical', 'Ts', 0.025, Options)
+
+%% State space model estimation - 2 states
+
+Options = ssestOptions;
+Options.Focus = 'simulation';
+Options.InitialState = 'estimate';
+Options.WeightingFilter = [0 31.4159];
+Options.OutputWeight = [1 0;0 1];
+Options.SearchOptions.Tolerance = 0;
+Options.SearchOptions.MaxIterations = 50;
+Options.N4Horizon = [15 15 15];
+% ss_est = ssest(sys_traind(1:80/dt), 2, 'Form', 'canonical', 'Ts', 0.025, Options)
+
+ss_est = ssest(sys_traind(10/dt:65/dt), 2, 'Form', 'canonical', 'Ts', 0.025, Options)
+
+figure; compare(ss_est, sys_traind(10/dt:65/dt));
+set(gcf, 'Position', [100, 100, 2*400, 400]);
+set(gcf, 'Color', 'w');
+% export_fig /home/khqc/thesis/assets/compare.pdf
+
+ss_est.B(1,1) = ss_est.B(1,1) / (1.1^6) / 1.1;
+ss_est.B(2,2) = ss_est.B(2,2) / (1.2^4);
+figure; resid(ss_est, sys_traind(50/dt:60/dt));
+set(gcf, 'Position', [100, 100, 2*400, 400]);
+set(gcf, 'Color', 'w');
+% export_fig /home/khqc/thesis/assets/resid.pdf
+
+% Options = ssestOptions;
+% Options.EnforceStability = false;
+% Options.SearchOptions.MaxIterations = 50;
+% Options.N4Horizon = [15 15 15];
+
+% ss_est = ssest(sys_traind(1:80/dt), 2, 'Form', 'canonical', 'DisturbanceModel', 'none', 'Ts', 0.025, Options)
 
 %% select model
 idMdl = ss_est;
