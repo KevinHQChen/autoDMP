@@ -1,3 +1,3 @@
-add_executable(sinvec "/autoDMP/pump_pressure_inputs/sinewave_txt_to_vector_fn/conv_txt_fn_test.cpp" "/autoDMP/pump_pressure_inputs/sinewave_txt_to_vector_fn/conv_txt_to_vec_fn.cpp")
-target_include_directories(sinvec PRIVATE sinewave_txt_to_vector_fn)
+add_executable(sinvec "/autoDMP/pump_pressure_inputs/test/class_test.cpp" "/autoDMP/pump_pressure_inputs/src/pump_pressure_inputs.cpp")
+target_include_directories(sinvec PRIVATE "/autoDMP/pump_pressure_inputs/include")
 target_link_libraries(sinvec PRIVATE util)
