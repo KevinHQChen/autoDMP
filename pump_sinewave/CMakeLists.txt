@@ -1,3 +1,0 @@
-add_executable(sinvec "/autoDMP/pump_sinewave/sinewave_txt_to_vector_fn/conv_txt_fn_test.cpp" "/autoDMP/pump_sinewave/sinewave_txt_to_vector_fn/conv_txt_to_vec_fn.cpp")
-target_include_directories(sinvec PRIVATE sinewave_txt_to_vector_fn)
-target_link_libraries(sinvec PRIVATE util)
