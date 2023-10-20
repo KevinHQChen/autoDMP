@@ -1,0 +1,46 @@
+[2023-10-20 15:09:42.318] [Cam] [info] zyla initialized library
+
+[2023-10-20 15:09:42.319] [Cam] [info] zyla initialized utility library
+
+[2023-10-20 15:09:42.321] [Cam] [info] zyla opened with handle 101
+
+[2023-10-20 15:09:42.322] [Cam] [error] FAIL: can not set Overlap
+
+[2023-10-20 15:09:42.322] [Cam] [error] FAIL: zyla could not set all camera features
+
+[2023-10-20 15:09:42.322] [ImCap] [info] Initializing image capture...
+[2023-10-20 15:09:42.322] [ImProc] [info] Initializing ImProc...
+[2023-10-20 15:09:42.322] [Pump] [info] Initializing pump...
+[2023-10-20 15:09:42.346] [Pump] [info] Number of controllers detected: 0
+[2023-10-20 15:09:42.364] [Pump] [info] Total number of pressure channels: 0
+[2023-10-20 15:09:42.371] [Supervisor] [info] Initializing Supervisor...
+[2023-10-20 15:09:42.371] [Supervisor] [info] SupervisoryController variable block parameters: 26
+[2023-10-20 15:09:42.371] [Supervisor] [info] SupervisoryController variable block parameters: 26
+[2023-10-20 15:09:42.371] [GUI] [info] Config type: guiConfig
+[2023-10-20 15:09:42.371] [GUI] [info] Parsed config: windowTitle = "autoDMP"
+width = 1920
+height = 1080
+clearColor = [
+0.45,
+0.55,
+0.6,
+1.0,
+]
+enableVsync = 1
+keyboardNav = true
+startDark = true
+fontSize = 18.0
+scale = 2.0
+fontPath = "/root/.local/share/fonts/JetBrainsMono-1.0.2/ttf/JetBrainsMono-Medium.ttf"
+showDebug = false
+
+[2023-10-20 15:09:46.012] [Supervisor] [info] Terminating Supervisor...
+[2023-10-20 15:09:46.012] [Pump] [info] Terminating pump...
+[2023-10-20 15:09:46.027] [ImProc] [info] Terminating ImProc...
+[2023-10-20 15:09:46.027] [ImCap] [info] Terminating image capture...
+[2023-10-20 15:09:46.027] [Cam] [info] zyla closed
+
+[2023-10-20 15:09:46.030] [Cam] [info] zyla finalised library
+
+[2023-10-20 15:09:46.031] [Cam] [info] zyla finalised utility library
+
