@@ -8,7 +8,7 @@
 int main()
 {
     std::ifstream file;
-    file.open("/autoDMP/pump_sinestream/sinewave_txt_file_generation/p.txt");
+    file.open("/autoDMP/pump_sinewave/sinewave_txt_file_generation/press[mbar].txt");
     std::vector<std::string> pressures;
     std::string line;
 
