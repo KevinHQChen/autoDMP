@@ -6,10 +6,7 @@ ImProc::ImProc(ImCap *imCap, std::shared_ptr<logger> log)
       dataPath(toml::get<std::string>(conf["postproc"]["procDataPath"])), imCap(imCap),
       procData(new QueueFPS<std::vector<double>>(dataPath + "procDataQueue.txt")), lg(log) {
   lg->info("Initializing ImProc...");
-  procData->out << "time (ms), ";
-  procData->out << "yState1_1, yState1_2, yState1_3, yState2_1, yState2_2, yState2_3, ";
-  procData->out << "y1, y2, y3, y4, y5, y6, ";
-  procData->out << "yPrev1, yPrev2, yPrev3, yPrev4, yPrev5, yPrev6, ";
+  procData->out << "time (ms), y1\n";
 
   // save images with proper format PNG, CV_16UC1
   compParams.push_back(cv::IMWRITE_PNG_COMPRESSION);
@@ -344,13 +341,7 @@ void ImProc::start() {
       {
         std::lock_guard<std::mutex> lock(yMtx);
         y.clear();
-        std::vector<double> yDirect_;
-
-        for (const auto& yOpt : yDirect1)
-          yDirect_.push_back(yOpt.value_or(0.0));
-
-        y.insert(y.end(), yDirect_.begin(), yDirect_.end());
-        // y.insert(y.end(), y1.begin(), y1.end());
+        y.insert(y.end(), y1.begin(), y1.end());
         y.insert(y.end(), y2.begin(), y2.end());
       }
       // print y1 and y2
@@ -359,7 +350,7 @@ void ImProc::start() {
 
       procData->push(y);
       procFrameBuf.set(procFrameArr);
-      procData->out << "\n";
+      procData->out << y1[0] << "\n";
     } catch (cv::Exception &e) {
       lg->error("Message: {}", e.what());
       lg->error("Type: {}", type_name<decltype(e)>());
