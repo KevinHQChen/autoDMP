@@ -14,11 +14,13 @@ public:
   void clearRawFrameQueue();
   void clearPreFrameQueue();
   bool started();
+  void saveRawFrameToFile();
 
 private:
   std::shared_ptr<logger> lg;
   ordered_value conf;
   std::string dataPath;
+  std::vector<int> compParams;
   Cam *cam_;
 
   std::mutex imcapMtx;

@@ -55,6 +55,8 @@ void ImProcWindow::renderImCap() {
       ImGui::SameLine();
       if (ImGui::Button("Select Channel"))
         drawChs = true;
+      if (ImGui::Button("Save Raw Frame To File"))
+        imCap_->saveRawFrameToFile();
       draw(imgOrigin, scale);
       renderImProcConfigTable();
 
