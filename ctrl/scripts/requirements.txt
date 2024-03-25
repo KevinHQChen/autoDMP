@@ -1,11 +1,1 @@
-python-lsp-server
-pyqt6
-gnureadline
-ipython
-numpy
-scipy
-matplotlib
-control
-slycot
-casadi
-future
+
